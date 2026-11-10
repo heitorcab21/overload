@@ -518,6 +518,8 @@ const ui = {
   'Legs · Pernas': `Legs`,
   'Superior': `Upper`,
   'Inferior': `Lower`,
+  'Sobre o app': `About the app`,
+  'Política de privacidade': `Privacy policy`,
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };

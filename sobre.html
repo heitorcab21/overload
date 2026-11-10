@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Overload · Sobre o app</title>
+  <meta name="description" content="Overload: progressão de carga para musculação com metas semanais e mensais, registro por toque e por voz.">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/app.css">
+  <style>
+    #view { padding-bottom: 48px; }
+    .page h2 { margin-top: 8px; }
+    .page p, .page li { color: var(--ink-2); }
+    .page ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+    .lang-sep { border: 0; border-top: 1px solid var(--line); margin: 28px 0 8px; }
+  </style>
+</head>
+<body>
+  <main id="view" class="page">
+    <div class="hero">
+      <img class="logo" src="icons/icon.svg" alt="">
+      <h1>Overload</h1>
+      <p class="muted">Progressão de carga para musculação, com metas semanais e mensais por exercício e por grupamento muscular.</p>
+    </div>
+    <div class="stack">
+      <a class="btn primary big" href="./">Abrir o app</a>
+
+      <div class="card stack">
+        <h2>O que o Overload faz</h2>
+        <ul>
+          <li>Registra cada série com um toque ou com a voz.</li>
+          <li>Calcula a carga e as repetições do próximo treino (dupla progressão).</li>
+          <li>Acompanha metas da semana e do mês, com exportação e importação em planilha.</li>
+          <li>Mostra a execução correta de cada exercício.</li>
+          <li>Funciona no navegador do celular, pode ser instalado na tela inicial e funciona sem internet.</li>
+          <li>Disponível em português, inglês e espanhol.</li>
+        </ul>
+      </div>
+
+      <div class="card stack">
+        <h2>Login com Google</h2>
+        <p>O login é opcional. Com ele, o app guarda uma cópia dos seus treinos numa pasta "Overload" do <b>seu próprio</b> Google Drive, para você usar em qualquer aparelho. O app só consegue acessar os arquivos que ele mesmo cria; não vê nem altera nenhum outro arquivo do seu Drive. Não existe servidor do Overload: os dados ficam no seu aparelho e no seu Drive.</p>
+        <p>Detalhes na <a href="privacidade.html">política de privacidade</a>.</p>
+      </div>
+
+      <hr class="lang-sep">
+      <div class="card stack" lang="en">
+        <h2>About Overload (English)</h2>
+        <p>Overload is a free strength-training log with automatic load progression and weekly and monthly goals. Log each set with one tap or by voice. Signing in with Google is optional: it stores a copy of your workouts in an "Overload" folder in <b>your own</b> Google Drive, so you can use the app on any device. The app can only access files it creates itself. There is no Overload server. See the <a href="privacidade.html#en">privacy policy</a>.</p>
+      </div>
+
+      <p class="small muted" style="text-align:center"><a href="privacidade.html">Política de privacidade · Privacy policy</a> · <a href="https://github.com/heitorcab21/overload">Código-fonte</a></p>
+    </div>
+  </main>
+</body>
+</html>

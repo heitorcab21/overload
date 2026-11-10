@@ -518,6 +518,8 @@ const ui = {
   'Legs · Pernas': `Piernas`,
   'Superior': `Superior`,
   'Inferior': `Inferior`,
+  'Sobre o app': `Acerca de la app`,
+  'Política de privacidade': `Política de privacidad`,
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

@@ -59,6 +59,7 @@ function renderOnboarding() {
         </div>
         <button class="btn ghost block" data-act="skipLogin">${t('Usar sem conta')}</button>
         <p class="small muted" style="text-align:center">${t('Sem conta, os dados ficam só neste aparelho. Dá para entrar depois em Ajustes.')}</p>
+        <p class="small muted" style="text-align:center"><a href="privacidade.html">${t('Política de privacidade')}</a></p>
       </div>`;
     return;
   }
