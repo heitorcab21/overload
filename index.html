@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Overload</title>
+  <meta name="description" content="Progressão de carga com metas semanais e mensais por exercício e grupamento muscular.">
+  <meta name="theme-color" content="#0d0d0d">
+  <meta name="color-scheme" content="dark light">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Overload">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <main id="view" tabindex="-1"></main>
+
+  <nav id="tabbar" aria-label="Seções" hidden>
+    <a href="#/hoje" data-tab="hoje"><span data-ic="home"></span>Hoje</a>
+    <a href="#/metas" data-tab="metas"><span data-ic="target"></span>Metas</a>
+    <a href="#/progresso" data-tab="progresso"><span data-ic="chart"></span>Progresso</a>
+    <a href="#/exercicios" data-tab="exercicios"><span data-ic="dumbbell"></span>Treinos</a>
+    <a href="#/ajustes" data-tab="ajustes"><span data-ic="gear"></span>Ajustes</a>
+  </nav>
+
+  <div id="sheet" class="sheet" hidden></div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <noscript>O Overload precisa de JavaScript para funcionar.</noscript>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
