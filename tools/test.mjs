@@ -152,4 +152,29 @@ eq(state.goals.groups.Costas, { week: 12, month: 51, auto: false }, 'CSV com ví
 assert.throws(() => importGoalsCSV('a;b\n1;2', now), /colunas/);
 n++;
 
+// ---- sincronização: juntar versões de dois aparelhos ----
+const store = await import('../js/store.js');
+const S = () => store.state;
+store.resetAll();
+S().sessions = [{ id: 'a', date: day(1), entries: [] }, { id: 'b', date: day(3), entries: [] }];
+S().routines = [{ id: 'r1', name: 'Local', ex: [] }];
+S().settings.apiKey = 'chave-local';
+S().sync = { connected: true, email: 'x@y', syncedAt: 1 };
+store.save();
+eq(S().updatedAt > 1, true, 'alteração marca a data');
+const exported = store.exportData();
+eq([exported.settings.apiKey, 'sync' in exported, exported.active], ['', false, null], 'chave e status ficam fora do arquivo do Drive');
+
+const remote = { ...exported, sessions: [{ id: 'b', date: day(3), entries: [] }, { id: 'c', date: day(2), entries: [] }],
+  routines: [{ id: 'r2', name: 'Do outro celular', ex: [] }], updatedAt: S().updatedAt + 1000 };
+store.mergeRemote(remote);
+eq(S().sessions.map(s => s.id), ['a', 'c', 'b'], 'treinos dos dois aparelhos, sem repetir, em ordem de data');
+eq(S().routines[0].name, 'Do outro celular', 'rotina da versão mais recente');
+eq([S().settings.apiKey, S().sync.email], ['chave-local', 'x@y'], 'chave e conexão deste aparelho são mantidas');
+
+store.applyRemote({ ...remote, sessions: [], updatedAt: 5 });
+eq([S().sessions.length, S().updatedAt, S().settings.apiKey], [0, 5, 'chave-local'], 'aplicar o Drive não conta como alteração local');
+assert.throws(() => store.applyRemote({ foo: 1 }), /corrompido/);
+n++;
+
 console.log(`ok: ${n} verificações passaram`);

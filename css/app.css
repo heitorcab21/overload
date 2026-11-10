@@ -374,6 +374,19 @@ button.set:active { background: var(--surface-2); }
 .tip-box small { display: block; font-weight: 400; opacity: .8; }
 .empty { text-align: center; color: var(--muted); padding: 22px 8px; }
 
+/* Ajuda */
+details.help { padding: 0; }
+details.help summary {
+  list-style: none; cursor: pointer;
+  display: flex; align-items: center; gap: 12px; padding: 14px 16px; min-height: 56px;
+}
+details.help summary::-webkit-details-marker { display: none; }
+details.help summary .ic { color: var(--muted); transition: transform .15s; }
+details.help[open] summary .ic { transform: rotate(180deg); }
+details.help .help-body { padding: 0 16px 16px; display: grid; gap: 10px; color: var(--ink-2); }
+details.help .help-body b { color: var(--ink); }
+@media (prefers-reduced-motion: reduce) { details.help summary .ic { transition: none; } }
+
 /* Primeiro acesso */
 .hero { padding: 28px 0 8px; display: grid; gap: 10px; }
 .hero .logo { width: 64px; height: 64px; }

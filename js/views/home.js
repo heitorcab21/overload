@@ -9,6 +9,7 @@ import {
 } from '../logic.js';
 import { startWorkout } from './workout.js';
 import { aiEnabled, aiWeeklyAnalysis } from '../ai.js';
+import { driveAvailable, driveConnected, driveDirty, hasToken } from '../drive.js';
 
 export function ensureExercise(libId) {
   if (state.exercises[libId]) return state.exercises[libId];
@@ -26,13 +27,32 @@ export const planStr = p => (p.first && !p.w ? 'definir carga' : `${kg(p.w)} × 
 // ---------- Primeiro acesso ----------
 
 function renderOnboarding() {
-  $('#view').innerHTML = `
-    <div class="hero">
+  const hero = `<div class="hero">
       <img class="logo" src="icons/icon.svg" alt="">
       <h1>Overload</h1>
       <p class="muted">Registre cada série com um toque ou com a voz. O app calcula a próxima carga e acompanha suas metas da semana e do mês.</p>
-    </div>
+    </div>`;
+
+  // 1º passo: entrar com Google (se o Drive estiver configurado e a pessoa ainda não escolheu)
+  if (driveAvailable() && !driveConnected() && !state.loginSkipped) {
+    $('#view').innerHTML = `${hero}
+      <div class="stack">
+        <div class="card stack">
+          <h2>Entre com sua conta Google</h2>
+          <p class="muted">Seus treinos ficam salvos no seu Google Drive e aparecem em qualquer celular ou computador em que você entrar. Se você já usa o Overload, seus dados voltam na hora.</p>
+          <button class="btn primary big" data-act="driveConnect">Entrar com Google</button>
+          <p class="small muted">O app só acessa os arquivos que ele mesmo cria, numa pasta "Overload" do seu Drive. Se aparecer "O Google não verificou este app", toque em <b>Continuar</b>.</p>
+        </div>
+        <button class="btn ghost block" data-act="skipLogin">Usar sem conta</button>
+        <p class="small muted" style="text-align:center">Sem conta, os dados ficam só neste aparelho. Dá para entrar depois em Ajustes.</p>
+      </div>`;
+    return;
+  }
+
+  // 2º passo: escolher os treinos
+  $('#view').innerHTML = `${hero}
     <div class="stack">
+      ${driveConnected() ? `<p class="small">Conectado como <b>${esc(state.sync.email)}</b>. Agora escolha seus treinos.</p>` : ''}
       <h3>Escolha um ponto de partida</h3>
       ${TEMPLATES.map(t => `
         <button class="tpl" data-act="pickTemplate" data-id="${t.id}">
@@ -41,9 +61,12 @@ function renderOnboarding() {
       <button class="tpl" data-act="pickTemplate" data-id="">
         <b>Começar do zero</b><span>Monte seus treinos escolhendo os exercícios.</span>
       </button>
-      <p class="small muted">Tudo pode ser editado depois em Treinos. Seus dados ficam salvos só neste aparelho.</p>
+      <p class="small muted">Tudo pode ser editado depois em Treinos.${driveConnected() ? '' : ' Seus dados ficam salvos só neste aparelho.'}</p>
     </div>`;
 }
+
+actions.skipLogin = () => { state.loginSkipped = true; save({ touch: false }); rerender(); };
+actions.drivePromptLater = () => { state.drivePromptDismissed = true; save({ touch: false }); rerender(); };
 
 actions.pickTemplate = el => {
   const t = TEMPLATES.find(x => x.id === el.dataset.id);
@@ -119,7 +142,20 @@ function renderHome() {
   // Lembrete de backup: os dados só existem neste aparelho
   const lb = state.lastBackup ? new Date(state.lastBackup) : null;
   const daysSince = lb ? Math.floor((now - lb) / DAY) : null;
-  const backup = state.sessions.length >= 3 && (!lb || daysSince >= 7) ? `<div class="card stack">
+  const driveRecent = state.sync?.lastSync && now - new Date(state.sync.lastSync) < 7 * DAY;
+  const drive = driveConnected() && driveDirty() && !hasToken() ? `<div class="card stack">
+      <h3>Google Drive</h3>
+      <p class="muted">Há alterações ainda não salvas no seu Drive. Toque para confirmar a conta e enviar.</p>
+      <button class="btn primary block" data-act="driveConnect">Sincronizar</button>
+    </div>` : '';
+  // Para quem já usava o app antes do login existir: convite único para conectar o Drive
+  const driveInvite = driveAvailable() && !driveConnected() && !state.drivePromptDismissed && !drive ? `<div class="card stack">
+      <h3>Novo: Google Drive</h3>
+      <p class="muted">Entre com sua conta Google para seus treinos ficarem salvos no seu Drive e aparecerem em qualquer aparelho.</p>
+      <button class="btn primary block" data-act="driveConnect">Entrar com Google</button>
+      <button class="btn ghost block" data-act="drivePromptLater">Agora não</button>
+    </div>` : '';
+  const backup = !driveInvite && !driveRecent && state.sessions.length >= 3 && (!lb || daysSince >= 7) ? `<div class="card stack">
       <h3>Backup</h3>
       <p class="muted">${lb ? `Seu último backup foi há ${daysSince} dias.` : `Você já tem ${state.sessions.length} treinos e nenhum backup.`}
         Os dados ficam só neste aparelho: trocar de celular ou limpar o navegador apaga tudo.</p>
@@ -139,7 +175,7 @@ function renderHome() {
 
   $('#view').innerHTML = `
     <div class="head"><div class="brand grow"><b>Overload</b><span class="muted small">${fmtDate(now)}</span></div></div>
-    <div class="stack">${week}${main}${backup}${goals}${ai}</div>`;
+    <div class="stack">${week}${main}${drive}${driveInvite}${backup}${goals}${ai}</div>`;
 }
 
 actions.start = el => startWorkout(el.dataset.id);

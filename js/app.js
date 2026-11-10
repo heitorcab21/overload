@@ -7,7 +7,9 @@ import './views/workout.js';
 import './views/goals.js';
 import './views/progress.js';
 import './views/library.js';
+import './views/help.js';
 import { applyTheme } from './views/settings.js';
+import { initDrive } from './drive.js';
 
 // Ícones da barra inferior
 for (const el of $$('[data-ic]')) el.outerHTML = icon[el.dataset.ic];
@@ -55,6 +57,10 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme
 
 if (!location.hash) location.hash = state.onboarded ? '#/hoje' : '#/inicio';
 rerender();
+initDrive();
+
+// Pede ao navegador para não apagar os dados deste site quando faltar espaço
+navigator.storage?.persist?.().catch(() => {});
 
 // Offline: o service worker guarda o app no aparelho. Em localhost fica desligado
 // (use ?sw=1 para testar) para não servir arquivos antigos durante o desenvolvimento.

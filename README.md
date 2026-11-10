@@ -14,6 +14,7 @@ Funciona no navegador do celular, pode ser instalado na tela inicial e roda sem 
 - **Execução ideal** de cada movimento: passo a passo, erros comuns e uma dica para 41 exercícios, acessível durante o treino.
 - **Progresso**: séries por semana, evolução da força estimada por exercício, recordes e histórico.
 - **Planilhas**: exporta treinos e metas em CSV (abre no Excel e no Google Planilhas) e faz backup completo em JSON.
+- **Login com Google e Ajuda**: na primeira abertura o app pede para entrar com a conta Google (com a opção de usar sem conta), e a aba Ajuda tem tutoriais de cada parte do app.
 - **Treinador IA (opcional)**: com uma chave da API do Claude, entende frases de voz mais livres, analisa a semana, tira dúvidas de execução e gera orientações para exercícios personalizados.
 
 ## Instalar no celular
@@ -40,6 +41,24 @@ Em **Ajustes > Treinador IA**, cole uma chave criada no Console da Anthropic (pl
 - A chave fica salva apenas no aparelho e é enviada somente à Anthropic.
 - O uso é cobrado na sua conta da API. Vale definir um limite de gastos no Console.
 - Sem chave, todo o resto funciona normalmente, inclusive offline.
+
+## Google Drive (opcional)
+
+Com o Drive configurado, cada pessoa entra com a própria conta Google e o app guarda sozinho uma cópia dos dados no Drive dela, num arquivo `overload-dados.json` dentro da pasta "Overload". Em outro celular ou no computador, basta entrar com a mesma conta para recuperar tudo. O app só tem acesso aos arquivos que ele mesmo cria (permissão `drive.file`).
+
+Como não existe servidor, a autorização do Google vale cerca de 1 hora. Depois disso, o app mostra um botão "Sincronizar" e um toque confirma a conta. Se dois aparelhos mudarem os dados sem internet, os treinos dos dois são somados e, no resto, vale a versão mais recente.
+
+### Configurar (uma vez, pelo dono do app)
+
+1. Em [console.cloud.google.com](https://console.cloud.google.com), crie um projeto.
+2. Em **APIs e serviços > Biblioteca**, ative a **Google Drive API**.
+3. Em **Google Auth Platform**, configure o app com público **Externo**.
+4. Em **Público > Usuários de teste**, adicione o e-mail Gmail de cada pessoa que vai usar (até 100).
+5. Em **Acesso a dados**, adicione o escopo `https://www.googleapis.com/auth/drive.file`.
+6. Em **Clientes**, crie um cliente do tipo **Aplicativo da Web** com as origens JavaScript `https://SEU-USUARIO.github.io` e `http://localhost:5173`.
+7. Copie o **ID do cliente** para `GOOGLE_CLIENT_ID` em `js/config.js` e publique. O ID não é segredo; a chave secreta do cliente não é usada.
+
+Enquanto o app estiver em modo de teste, só os e-mails da lista conseguem entrar, e o Google mostra um aviso de "app não verificado" (toque em **Continuar**).
 
 ## Seus dados
 
