@@ -10,6 +10,7 @@ import './views/library.js';
 import './views/help.js';
 import { applyTheme } from './views/settings.js';
 import { initDrive } from './drive.js';
+import { initInstall } from './install.js';
 
 // Ícones da barra inferior
 for (const el of $$('[data-ic]')) el.outerHTML = icon[el.dataset.ic];
@@ -45,13 +46,7 @@ document.addEventListener('submit', ev => {
   submits[form.dataset.submit]?.(form, ev);
 });
 
-window.addEventListener('beforeinstallprompt', ev => {
-  ev.preventDefault();
-  window.__installPrompt = ev;
-  const b = $('#installBtn');
-  if (b) b.hidden = false;
-});
-
+initInstall();
 applyTheme();
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
 

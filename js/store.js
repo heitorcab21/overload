@@ -105,8 +105,25 @@ export function mergeRemote(raw) {
   save();
 }
 
-/** Apaga tudo deste aparelho e desconecta do Drive (o arquivo no Drive continua lá). */
+/** Apaga tudo deste aparelho, inclusive a conexão com o Drive (o arquivo no Drive continua lá). */
 export function resetAll() {
   state = defaults();
+  save({ touch: false });
+}
+
+/** Conjunto de dados vazio, como o de um app recém-instalado (para "começar do zero"). */
+export function emptyData() {
+  const d = defaults();
+  delete d.sync;
+  d.updatedAt = Date.now();
+  return d;
+}
+
+/** Começa do zero neste aparelho mantendo só a conta Google conectada. */
+export function resetKeepAccount(updatedAt) {
+  const sync = state.sync;
+  state = defaults();
+  state.updatedAt = updatedAt;
+  if (sync) state.sync = { ...sync, syncedAt: updatedAt, lastSync: new Date().toISOString(), needLogin: false, error: null };
   save({ touch: false });
 }

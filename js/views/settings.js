@@ -1,32 +1,34 @@
 // Ajustes: descanso, tema, IA, dados e instalação.
-import { state, save, exportJSON, importJSON, resetAll } from '../store.js';
-import { $, esc, actions, changes, submits, toast, sheet, closeSheet, stepper, shareFile, fmtDate } from '../ui.js';
+import { state, save, exportJSON, importJSON, emptyData, resetKeepAccount } from '../store.js';
+import { $, esc, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, shareFile, fmtDate } from '../ui.js';
 import { route, go, rerender } from '../router.js';
 import { sessionsCSV } from '../export.js';
 import { aiEnabled, aiAskExecution } from '../ai.js';
-import { driveAvailable, driveConnected, driveDirty, connect, disconnect, sync, hasToken } from '../drive.js';
+import { driveAvailable, driveConnected, driveDirty, connect, sync, hasToken, refreshIfNeeded, logout, wipeRemote } from '../drive.js';
+import { isInstalled } from '../install.js';
 
-function driveCard() {
+function accountCard() {
   if (!driveAvailable()) return '';
   const s = state.sync;
   if (!driveConnected()) {
     return `<div class="card stack">
-      <h3>Google Drive</h3>
-      <p class="muted small">Entre com sua conta Google para o app guardar uma cópia dos seus dados no seu Drive, sozinho. Em outro celular ou no computador, é só entrar com a mesma conta. O app só enxerga os arquivos que ele mesmo cria, numa pasta "Overload".</p>
+      <h3>Conta</h3>
+      <p class="muted small">Você está usando o app sem conta: os dados ficam só neste aparelho. Entre com sua conta Google para salvar tudo no seu Drive e usar em qualquer aparelho. O app só enxerga os arquivos que ele mesmo cria, numa pasta "Overload".</p>
       <button class="btn primary block" data-act="driveConnect">Entrar com Google</button>
     </div>`;
   }
   const status = s.error ? `<span class="badge warn">${esc(s.error)}</span>`
     : !hasToken() ? (driveDirty() ? '<span class="badge warn">alterações ainda não enviadas</span>' : '<span class="badge">toque em Sincronizar para atualizar</span>')
-      : driveDirty() ? '<span class="badge">enviando…</span>' : `<span class="badge good">em dia</span>`;
+      : driveDirty() ? '<span class="badge">enviando…</span>' : `<span class="badge good">${icon.check}em dia</span>`;
   return `<div class="card stack">
-    <h3>Google Drive</h3>
+    <h3>Conta</h3>
     <p class="small">Conectado como <b>${esc(s.email)}</b></p>
-    <p class="small muted">Última sincronização: ${s.lastSync ? `${fmtDate(s.lastSync)} às ${new Date(s.lastSync).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}` : 'nunca'}</p>
+    <p class="small muted">Última sincronização com o Google Drive: ${s.lastSync ? `${fmtDate(s.lastSync)} às ${new Date(s.lastSync).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}` : 'nunca'}</p>
     <div>${status}</div>
     <button class="btn primary block" data-act="driveConnect">Sincronizar agora</button>
-    <p class="muted small">O app salva no Drive sozinho depois de cada alteração. Como não existe servidor, o Google pede um toque para confirmar a conta quando a autorização expira (cerca de 1 hora).</p>
-    <button class="btn ghost block" data-act="driveDisconnectAsk">Desconectar</button>
+    <p class="muted small">O app salva no Drive sozinho, inclusive ao finalizar cada treino.</p>
+    <button class="btn block" data-act="logoutAsk">Sair da conta</button>
+    <p class="muted small">Para usar outro perfil, saia e entre com outra conta Google.</p>
   </div>`;
 }
 
@@ -76,7 +78,7 @@ function render() {
         <p class="muted small">A chave fica guardada só neste aparelho e é enviada apenas à Anthropic. O uso é cobrado na sua conta da API. Crie a chave no Console da Anthropic (platform.claude.com) e, se puder, defina um limite de gastos.</p>
       </div>
 
-      ${driveCard()}
+      ${accountCard()}
 
       <div class="card stack">
         <h3>Seus dados</h3>
@@ -86,18 +88,21 @@ function render() {
         <p class="muted small">No celular, abre o menu de compartilhar para mandar o arquivo ao Google Drive, WhatsApp ou e-mail. Se o navegador não permitir, o arquivo é baixado.</p>
         <button class="btn block" data-act="exportCSV">Exportar treinos (planilha CSV)</button>
         <label class="btn block">Restaurar backup<input type="file" accept="application/json,.json,text/plain,.txt" data-change="importBackup" class="sr"></label>
-        <button class="btn ghost danger block" data-act="resetAsk">Apagar todos os dados</button>
       </div>
 
-      <div class="card stack">
+      ${isInstalled() ? '' : `<div class="card stack">
         <h3>Instalar no celular</h3>
-        <p class="muted small"><b>Android (Chrome):</b> menu de três pontos, depois "Instalar app" ou "Adicionar à tela inicial".<br>
-        <b>iPhone (Safari):</b> botão Compartilhar, depois "Adicionar à Tela de Início".</p>
-        <button class="btn block" id="installBtn" data-act="install" hidden>Instalar o Overload</button>
+        <p class="muted small">Instalado, o app abre pelo ícone na tela inicial, em tela cheia e funciona sem internet.</p>
+        <button class="btn block" data-act="installApp">${icon.download}Instalar o Overload</button>
+      </div>`}
+
+      <div class="card stack">
+        <h3>Começar do zero</h3>
+        <p class="muted small">Apaga todos os treinos, exercícios, metas e ajustes${driveConnected() ? ', neste aparelho e no seu Google Drive' : ''}.</p>
+        <button class="btn ghost danger block" data-act="wipeAsk">${icon.trash}Apagar tudo e começar do zero</button>
       </div>
       <p class="small muted" style="text-align:center">Overload · feito para uso pessoal</p>
     </div>`;
-  if (window.__installPrompt) $('#installBtn').hidden = false;
 }
 
 changes.setRest = el => { state.settings.rest = Math.max(0, Math.round(Number(el.value) || 0)); save(); };
@@ -181,28 +186,92 @@ actions.driveConnect = async el => {
   el.textContent = label;
   rerender();
 };
-actions.driveDisconnectAsk = () => {
-  sheet(`<h2>Desconectar do Google Drive?</h2>
-    <p class="muted">Os dados continuam neste aparelho e a cópia continua no seu Drive. Só para de sincronizar.</p>
-    <button class="btn danger block" data-act="driveDisconnect">Desconectar</button>
-    <button class="btn block" data-act="closeSheet">Cancelar</button>`);
-};
-actions.driveDisconnect = () => { disconnect(); closeSheet(); rerender(); toast('Desconectado do Google Drive.'); };
+// ---------- Sair da conta ----------
 
-actions.resetAsk = () => {
-  sheet(`<h2>Apagar todos os dados?</h2>
-    <p class="muted">Treinos, exercícios, metas e ajustes serão apagados deste aparelho. Esta ação não pode ser desfeita. Salve um backup antes se quiser guardar seu histórico.${driveConnected() ? ' O app também se desconecta do Google Drive; a cópia que está lá não é apagada.' : ''}</p>
-    <button class="btn danger block" data-act="resetNow">Apagar tudo</button>
+actions.logoutAsk = () => {
+  const s = state.sync;
+  sheet(`<h2>Sair da conta?</h2>
+    <ul class="errs">
+      <li>Seus treinos continuam salvos no Google Drive de <b>${esc(s.email)}</b>.</li>
+      <li>Este aparelho fica sem dados e volta para a tela de entrada.</li>
+      <li>Para usar outro perfil, escolha outra conta Google na próxima entrada. Para voltar a este, entre com a mesma conta e tudo reaparece.</li>
+    </ul>
+    ${driveDirty() ? '<p class="tip">Há alterações deste aparelho ainda não enviadas. O app tenta enviar antes de sair.</p>' : ''}
+    <button class="btn primary block" data-act="logoutNow">Sair</button>
     <button class="btn block" data-act="closeSheet">Cancelar</button>`);
 };
-actions.resetNow = () => { resetAll(); closeSheet(); applyTheme(); go('#/inicio'); };
-actions.install = async () => {
-  const p = window.__installPrompt;
-  if (!p) return;
-  p.prompt();
-  await p.userChoice;
-  window.__installPrompt = null;
-  rerender();
+function doLogout() {
+  logout();
+  closeSheet();
+  applyTheme();
+  toast('Você saiu da conta.');
+  go('#/inicio');
+}
+actions.logoutNow = el => {
+  if (!driveDirty()) { doLogout(); return; }
+  // envia o que falta antes de sair (a renovação precisa partir deste toque)
+  const ready = refreshIfNeeded();
+  el.disabled = true;
+  el.textContent = 'Salvando no Drive…';
+  ready.then(ok => (ok ? sync() : false)).catch(() => false).then(() => {
+    if (!driveDirty()) { doLogout(); return; }
+    sheet(`<h2>Não deu para salvar as últimas alterações</h2>
+      <p class="muted">Sem internet ou sem confirmar a conta, o app não conseguiu enviar o que mudou desde a última sincronização. Se sair agora, essas alterações se perdem; o que já estava no Drive continua lá.</p>
+      <button class="btn block" data-act="closeSheet">Cancelar e tentar depois</button>
+      <button class="btn danger block" data-act="logoutForce">Sair mesmo assim</button>`);
+  });
+};
+actions.logoutForce = () => doLogout();
+
+// ---------- Apagar tudo e começar do zero ----------
+
+actions.wipeAsk = () => {
+  const n = state.sessions.length;
+  const ex = Object.keys(state.exercises).length;
+  const rt = state.routines.length;
+  const goals = Object.keys(state.goals.ex).length + Object.keys(state.goals.groups).length;
+  const connected = driveConnected();
+  sheet(`<h2>Apagar tudo e começar do zero?</h2>
+    <p class="muted">O que vai acontecer:</p>
+    <ul class="errs">
+      <li><b>${n} treino${n === 1 ? '' : 's'}</b>, ${ex} exercício${ex === 1 ? '' : 's'}, ${rt} rotina${rt === 1 ? '' : 's'} e ${goals} meta${goals === 1 ? '' : 's'} serão apagados.</li>
+      ${connected
+        ? `<li>Também no seu Google Drive (<b>${esc(state.sync.email)}</b>). Outros aparelhos com esta conta ficam vazios na próxima sincronização.</li>
+           <li>Você continua conectado com esta conta e escolhe os treinos de novo.</li>`
+        : '<li>Apenas neste aparelho. O app volta para a tela inicial.</li>'}
+      <li>Os ajustes voltam ao padrão${state.settings.apiKey ? ' e a chave da IA é removida' : ''}.</li>
+      <li><b>Não dá para desfazer.</b></li>
+    </ul>
+    ${n ? '<button class="btn block" data-act="backupNow">Salvar um backup antes</button>' : ''}
+    <label class="check"><input type="checkbox" data-change="wipeCheck">Entendo que ${n > 1 ? `meus ${n} treinos serão apagados` : n === 1 ? 'meu treino será apagado' : 'tudo será apagado'} para sempre.</label>
+    <button class="btn danger block" id="wipeBtn" data-act="wipeNow" disabled>Apagar tudo</button>
+    <button class="btn block" data-act="closeSheet">Cancelar</button>`);
+};
+changes.wipeCheck = el => { $('#wipeBtn').disabled = !el.checked; };
+actions.wipeNow = el => {
+  if (!$('#sheet input[data-change=wipeCheck]')?.checked) return;
+  const connected = driveConnected();
+  // a renovação da conta precisa partir deste toque
+  const ready = connected ? refreshIfNeeded() : Promise.resolve(true);
+  el.disabled = true;
+  el.textContent = 'Apagando…';
+  (async () => {
+    const empty = emptyData();
+    if (connected) {
+      if (!(await ready)) throw new Error('Não foi possível confirmar a conta Google.');
+      await wipeRemote(empty); // primeiro o Drive: se falhar, nada é apagado
+    }
+    resetKeepAccount(empty.updatedAt);
+  })().then(() => {
+    closeSheet();
+    applyTheme();
+    toast('Tudo apagado. Vamos começar do zero.', 4000);
+    go('#/inicio');
+  }, e => {
+    toast(`${e.message} Nada foi apagado.`, 6000);
+    el.disabled = false;
+    el.textContent = 'Apagar tudo';
+  });
 };
 
 route('ajustes', render);

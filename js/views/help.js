@@ -72,6 +72,8 @@ const TOPICS = [
       <li>Se você mudar algo fora do treino e a autorização tiver vencido, aparece um botão <b>Sincronizar</b> na tela Hoje: um toque resolve.</li>
       <li>Sem internet, o app funciona normal e envia depois.</li>
       <li>Sem conta Google, use <b>Ajustes &gt; Salvar backup completo</b> de vez em quando e guarde o arquivo fora do celular.</li>
+      <li><b>Trocar de perfil</b>: Ajustes &gt; Conta &gt; <b>Sair da conta</b> e entre com outra conta Google. Cada conta tem os próprios treinos; voltando para a primeira, tudo reaparece.</li>
+      <li><b>Começar do zero</b>: Ajustes &gt; <b>Apagar tudo e começar do zero</b>. O app mostra o que será apagado e pede confirmação. Com a conta conectada, apaga também no Drive.</li>
     </ul>`],
 
   ['Execução correta dos exercícios', 'Passo a passo de cada movimento', `
@@ -91,6 +93,7 @@ const TOPICS = [
     <p>Com uma chave da API do Claude em <b>Ajustes</b>, o app analisa sua semana, responde dúvidas de execução e entende frases de voz mais livres. O uso é cobrado na sua conta da API. Sem chave, todo o resto funciona.</p>`],
 
   ['Instalar e atualizar o app', 'Na tela inicial do celular', `
+    <p>Toque no <b>ícone laranja de download</b> no canto superior direito da tela. Ele some quando o app já está instalado. Se o navegador não instalar direto, o app mostra os passos:</p>
     <ul class="errs">
       <li><b>Android (Chrome)</b>: menu de três pontos &gt; Instalar app.</li>
       <li><b>iPhone (Safari)</b>: botão Compartilhar &gt; Adicionar à Tela de Início.</li>

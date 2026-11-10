@@ -10,6 +10,9 @@
   "background_color": "#0d0d0d",
   "theme_color": "#0d0d0d",
   "categories": ["health", "fitness", "sports"],
+  "related_applications": [
+    { "platform": "webapp", "url": "https://heitorcab21.github.io/overload/manifest.webmanifest" }
+  ],
   "icons": [
     { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },

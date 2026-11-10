@@ -125,6 +125,7 @@ body.no-tabs #view { padding-bottom: calc(170px + var(--safe-b)); }
 .btn.primary { background: var(--accent); border-color: transparent; color: var(--accent-ink); }
 .btn.ghost { background: transparent; }
 .btn.danger { color: var(--crit); }
+.btn.danger:not(.ghost) { background: var(--crit); color: #fff; border-color: transparent; }
 .btn.big { min-height: 62px; font-size: 19px; width: 100%; border-radius: 16px; }
 .btn.block { width: 100%; }
 .btn.sm { min-height: 36px; padding: 0 12px; font-size: 14px; border-radius: 10px; }
@@ -374,6 +375,19 @@ button.set:active { background: var(--surface-2); }
 }
 .tip-box small { display: block; font-weight: 400; opacity: .8; }
 .empty { text-align: center; color: var(--muted); padding: 22px 8px; }
+
+/* Ícone de instalar (canto superior direito, some depois de instalado) */
+.install-top {
+  position: absolute; z-index: 25;
+  top: calc(14px + var(--safe-t));
+  right: max(12px, calc((100vw - 560px) / 2 + 12px));
+  width: 44px; height: 44px; border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--accent); color: var(--accent-ink); border: 0;
+  box-shadow: var(--shadow);
+}
+.install-top:active { transform: scale(.95); }
+body.has-install .head, body.has-install .hero { padding-right: 52px; }
 
 /* Ajuda */
 details.help { padding: 0; }

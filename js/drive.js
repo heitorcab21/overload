@@ -2,7 +2,7 @@
 // Sem servidor: o navegador recebe uma autorização do Google (válida por cerca de 1 hora)
 // e grava um arquivo "overload-dados.json" numa pasta "Overload" do Drive.
 // O app só consegue ver os arquivos que ele mesmo criou (permissão drive.file).
-import { state, save, onSave, exportData, applyRemote, mergeRemote } from './store.js';
+import { state, save, onSave, exportData, applyRemote, mergeRemote, resetAll } from './store.js';
 import { GOOGLE_CLIENT_ID } from './config.js';
 import { rerender } from './router.js';
 
@@ -233,6 +233,22 @@ export function disconnect() {
   localStorage.removeItem(TOKEN_KEY);
   state.sync = null;
   save({ touch: false });
+}
+
+/**
+ * Sair da conta: desconecta e limpa este aparelho. Os dados continuam no Drive da conta.
+ * Na próxima entrada o Google mostra a escolha de conta, para trocar de perfil.
+ */
+export function logout() {
+  disconnect();
+  resetAll();
+}
+
+/** Substitui o arquivo do Drive por dados vazios. Se falhar, lança erro e nada muda. */
+export async function wipeRemote(empty) {
+  const s = state.sync;
+  if (!s.fileId) s.fileId = await findFile();
+  await upload(empty);
 }
 
 /** Sincroniza sozinho: ao abrir o app, ao voltar para ele e alguns segundos depois de cada alteração. */
