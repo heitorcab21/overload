@@ -282,6 +282,16 @@ textarea { padding: 10px 12px; min-height: 80px; resize: vertical; }
 .set { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); font-weight: 600; }
 .set .i { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); color: var(--muted); font-size: 13px; flex: none; }
 .set .v { flex: 1; font-size: 17px; font-variant-numeric: tabular-nums; }
+button.set { width: 100%; text-align: left; color: inherit; }
+button.set:active { background: var(--surface-2); }
+.set .edit-ic .ic { width: 18px; height: 18px; color: var(--muted); display: block; }
+.check { display: flex; align-items: center; gap: 10px; min-height: 44px; font-weight: 600; }
+.check input { width: 22px; height: 22px; accent-color: var(--accent); }
+.set-edit { display: grid; grid-template-columns: 26px 1fr auto 1fr 44px; align-items: center; gap: 8px; }
+.set-edit .i { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); color: var(--muted); font-size: 13px; font-weight: 600; }
+.set-edit input { text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+.load-row { cursor: text; }
+.load-row input { width: 92px; flex: none; text-align: center; font-weight: 700; }
 .set.done .i { background: var(--good); color: #fff; }
 .set.done .i .ic { width: 16px; height: 16px; }
 .set.cur { border-color: var(--accent); }

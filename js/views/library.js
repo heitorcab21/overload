@@ -35,6 +35,7 @@ function renderRoutines() {
         <div style="padding:8px 12px 12px"><button class="btn block" data-act="pickEx" data-r="${ri}">${icon.plus}Adicionar exercício</button></div>
       </div>`).join('')}
       <button class="btn primary block" data-act="newRoutine">${icon.plus}Novo treino</button>
+      ${noHistory().length ? `<a class="btn block" href="#/cargas">Definir cargas iniciais</a>` : ''}
 
       ${all.length ? `<h3 class="group-title">Todos os exercícios</h3>
       <div class="card flat"><div class="list">${all.map(ex => `<a class="item" href="#/exercicio/${encodeURIComponent(ex.id)}">
@@ -268,5 +269,35 @@ actions.delExercise = el => {
   save(); closeSheet(); go('#/exercicios');
 };
 
+// ---------- Cargas iniciais ----------
+
+const noHistory = () => Object.values(state.exercises).filter(ex => !entriesFor(ex.id).length)
+  .sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group) || a.name.localeCompare(b.name));
+
+function renderLoads() {
+  const pending = noHistory();
+  $('#view').innerHTML = `
+    <div class="head"><div class="grow"><h1>Cargas iniciais</h1>
+      <p class="sub">Opcional. Informe a carga que você usa hoje para o primeiro treino já vir preenchido. O que ficar em branco você ajusta na hora.</p></div></div>
+    <div class="stack">
+      ${pending.length ? `<div class="card flat"><div class="list">${pending.map(ex => `<label class="item load-row">
+        <span class="grow"><span class="t">${esc(ex.name)}</span><br>
+          <span class="d">${esc(ex.group)} · ${ex.sets} × ${ex.repMin}–${ex.repMax}${ex.bw ? ' · carga extra' : ''}</span></span>
+        <input type="number" inputmode="decimal" step="any" min="0" value="${ex.startW || ''}" placeholder="kg"
+          data-change="setStartW" data-id="${esc(ex.id)}" aria-label="Carga inicial de ${esc(ex.name)} em kg">
+      </label>`).join('')}</div></div>`
+      : '<p class="empty">Todos os seus exercícios já têm histórico. A carga agora vem dos treinos.</p>'}
+      <a class="btn primary big" href="#/hoje">Concluir</a>
+    </div>`;
+}
+changes.setStartW = el => {
+  const ex = state.exercises[el.dataset.id];
+  if (!ex) return;
+  const v = Number(el.value);
+  if (v > 0) ex.startW = v; else delete ex.startW;
+  save();
+};
+
+route('cargas', renderLoads, { tab: 'exercicios' });
 route('exercicios', renderRoutines);
 route('exercicio', renderExercise, { tab: 'exercicios' });

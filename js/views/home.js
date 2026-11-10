@@ -65,7 +65,7 @@ actions.pickTemplate = el => {
   }
   state.onboarded = true;
   save();
-  go(t ? '#/hoje' : '#/exercicios');
+  go(t ? '#/cargas' : '#/exercicios');
 };
 
 // ---------- Hoje ----------

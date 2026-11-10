@@ -23,6 +23,10 @@ document.addEventListener('keydown', ev => {
   if (ev.key === 'Escape' && !$('#sheet').hidden) closeSheet();
   if (ev.key === 'Enter' && ev.target.matches?.('tr[data-act]')) ev.target.click();
 });
+// Ao tocar em um número, ele já fica selecionado: é só digitar o novo valor
+document.addEventListener('focusin', ev => {
+  if (ev.target.matches?.('input[type="number"]')) ev.target.select();
+});
 const onChange = ev => {
   const el = ev.target.closest?.('[data-change]');
   if (!el) return;

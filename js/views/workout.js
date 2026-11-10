@@ -69,8 +69,9 @@ function render() {
   const rows = Array.from({ length: total }, (_, i) => {
     if (i < en.sets.length) {
       const s = en.sets[i];
-      return `<div class="set done"><span class="i">${icon.check}</span><span class="v">${setStr(s)}</span>
-        ${s.t ? '<span class="badge warn">falhou</span>' : ''}</div>`;
+      return `<button class="set done" data-act="wEditSet" data-i="${i}" aria-label="Corrigir série ${i + 1}: ${setStr(s)}">
+        <span class="i">${icon.check}</span><span class="v">${setStr(s)}</span>
+        ${s.t ? '<span class="badge warn">falhou</span>' : ''}<span class="edit-ic">${icon.edit}</span></button>`;
     }
     if (i === en.sets.length && logging) {
       return `<div class="set cur"><span class="i">${i + 1}</span><span class="v" id="curLabel">${setStr(en.cur)}</span><span class="badge">agora</span></div>`;
@@ -91,6 +92,9 @@ function render() {
       <button class="btn block" data-act="wUnskip">Fazer mesmo assim</button></div>`;
   } else if (logging) {
     body = `<div class="log">
+      ${p.first && !p.w && !ex.bw && !en.sets.length ? `<h3>Carga de hoje (kg)</h3>
+      <div class="chips">${[5, 10, 15, 20, 30, 40, 50, 60, 80, 100].map(v =>
+        `<button class="chip${en.cur.w === v ? ' on' : ''}" data-act="wSetW" data-w="${v}" aria-pressed="${en.cur.w === v}">${v}</button>`).join('')}</div>` : ''}
       <div class="two">
         ${stepper('w', en.cur.w, ex.step || 1, ex.bw ? 'Carga extra (kg)' : 'Carga (kg)', 0, 'wCur')}
         ${stepper('r', en.cur.r, 1, 'Repetições', 0, 'wCur')}
@@ -238,6 +242,42 @@ submits.wFailSave = form => {
   closeSheet();
   done();
 };
+actions.wSetW = el => { cur().en.cur.w = Number(el.dataset.w); done(); };
+
+// Corrigir ou excluir uma série já registrada neste treino
+actions.wEditSet = el => {
+  const { en, ex } = cur();
+  const i = Number(el.dataset.i);
+  const s = en.sets[i];
+  if (!s) return;
+  sheet(`<h2>Corrigir série ${i + 1}</h2>
+    <form class="stack" data-submit="wEditSave" data-i="${i}">
+      <div class="two">
+        ${stepper('w', s.w, ex.step || 1, ex.bw ? 'Carga extra (kg)' : 'Carga (kg)')}
+        ${stepper('r', s.r, 1, 'Repetições')}
+      </div>
+      <label class="check"><input type="checkbox" name="fail"${s.t ? ' checked' : ''}>Falhei nesta série</label>
+      <button class="btn primary big">Salvar</button>
+      <button type="button" class="btn ghost danger block" data-act="wDelSet" data-i="${i}">Excluir série</button>
+    </form>`);
+};
+submits.wEditSave = form => {
+  const { en } = cur();
+  const w = Math.max(0, Number(form.w.value) || 0);
+  const r = Math.max(0, Math.round(Number(form.r.value) || 0));
+  en.sets[Number(form.dataset.i)] = form.fail.checked ? { w, r, t: 'F' } : { w, r };
+  closeSheet();
+  done();
+};
+actions.wDelSet = el => {
+  const { en } = cur();
+  en.sets.splice(Number(el.dataset.i), 1);
+  const pr = en.plan.reps;
+  if (!en.plan.first) en.cur.r = pr[en.sets.length] ?? pr.at(-1) ?? en.cur.r;
+  closeSheet();
+  done();
+};
+
 actions.wAll = () => {
   const { en, ex } = cur();
   while (en.sets.length < ex.sets) logSet(en, en.cur.w, en.cur.r);

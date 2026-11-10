@@ -7,6 +7,7 @@ Funciona no navegador do celular, pode ser instalado na tela inicial e roda sem 
 ## O que ele faz
 
 - **Registro rápido de séries**: um botão grande confirma a série como planejada. Se foi diferente, há botões de cenário (+1 rep, −2 reps, falhei nesta, todas como a meta, pular exercício) e, no fim do exercício, como foi (fácil, na medida, pesado, até a falha) e o que aconteceu (dor, troca de aparelho, execução ruim, sem tempo).
+- **Cargas iniciais e correções**: informe de uma vez a carga que você já usa em cada exercício, ou escolha em um toque no primeiro treino. Errou um número? Toque na série para corrigir, durante o treino ou depois, no histórico.
 - **Voz**: toque no microfone e fale "40 quilos, 12 repetições", "três séries de dez com cinquenta", "bati a meta", "mais uma", "estava pesado", "desfazer", "próximo".
 - **Progressão automática** (dupla progressão): o app sugere a carga e as reps de cada série do próximo treino. Primeiro você ganha repetições dentro da faixa; quando bate o topo em todas as séries, ele manda subir a carga. Duas sessões abaixo da faixa geram uma redução de cerca de 10%.
 - **Metas em formato de planilha**: séries por semana e por mês para cada grupamento, e meta de carga do mês para cada exercício, com a meta de cada semana calculada em degraus até lá.

@@ -1,6 +1,6 @@
 // Progresso: números do período, séries por semana, evolução por exercício e histórico.
 import { state, save } from '../store.js';
-import { $, esc, fmt, setStr, compact, icon, actions, changes, sheet, closeSheet, fmtDate } from '../ui.js';
+import { $, esc, fmt, setStr, compact, icon, actions, changes, submits, sheet, closeSheet, fmtDate } from '../ui.js';
 import { route, rerender } from '../router.js';
 import { GROUPS } from '../data.js';
 import {
@@ -92,13 +92,82 @@ function render() {
 
 changes.selEx = el => { selEx = el.value; rerender(); };
 
+function sessionSheet(s) {
+  sheet(`<h2>${esc(s.name)}</h2><p class="muted">${fmtDate(s.date)} · ${s.dur || '?'} min · toque em um exercício para corrigir</p>
+    <div class="card flat"><div class="list">${s.entries.map((e, i) => `<button class="item" data-act="editEntry" data-s="${s.id}" data-e="${i}">
+      <span class="grow"><span class="t">${esc(state.exercises[e.exId]?.name || 'Exercício removido')}</span><br>
+        <span class="d num">${e.skipped ? 'pulado' : e.sets.map(x => (x.w > 0 ? `${fmt(x.w)}×${x.r}` : x.r)).join(' · ')}</span></span>
+      ${icon.edit}</button>`).join('')}</div></div>
+    <button class="btn ghost danger block" data-act="delSessionAsk" data-id="${s.id}">${icon.trash}Excluir treino</button>`);
+}
 actions.openSession = el => {
   const s = state.sessions.find(x => x.id === el.dataset.id);
-  if (!s) return;
-  sheet(`<h2>${esc(s.name)}</h2><p class="muted">${fmtDate(s.date)} · ${s.dur || '?'} min</p>
-    <div>${s.entries.map(e => `<div class="plan-line"><span class="n">${esc(state.exercises[e.exId]?.name || 'Exercício removido')}</span>
-      <span class="v num">${e.skipped ? 'pulado' : e.sets.map(x => (x.w > 0 ? `${fmt(x.w)}×${x.r}` : x.r)).join(' · ')}</span></div>`).join('')}</div>
-    <button class="btn ghost danger block" data-act="delSessionAsk" data-id="${s.id}">${icon.trash}Excluir treino</button>`);
+  if (s) sessionSheet(s);
+};
+
+// ---------- Corrigir um exercício de um treino já salvo ----------
+
+let draft = null; // { sid, ei, sets: [{ w, r, t? }] }
+
+function entrySheet() {
+  const s = state.sessions.find(x => x.id === draft.sid);
+  const ex = state.exercises[s.entries[draft.ei].exId];
+  sheet(`<h2>${esc(ex?.name || 'Exercício removido')}</h2><p class="muted">${esc(s.name)} · ${fmtDate(s.date)}</p>
+    <form class="stack" data-submit="saveEntry">
+      ${draft.sets.map((x, i) => `<div class="set-edit">
+        <span class="i">${i + 1}</span>
+        <input type="number" inputmode="decimal" step="any" min="0" name="w${i}" value="${x.w}" aria-label="Carga da série ${i + 1} em kg">
+        <span class="muted">kg ×</span>
+        <input type="number" inputmode="numeric" step="1" min="0" name="r${i}" value="${x.r}" aria-label="Repetições da série ${i + 1}">
+        <button type="button" class="icon-btn" data-act="entryDelSet" data-i="${i}" aria-label="Excluir série ${i + 1}">${icon.x}</button>
+      </div>`).join('') || '<p class="muted">Sem séries. Salvar assim tira o exercício deste treino.</p>'}
+      <button type="button" class="btn block" data-act="entryAddSet">${icon.plus}Adicionar série</button>
+      <button class="btn primary big">Salvar</button>
+      <button type="button" class="btn block" data-act="entryCancel">Cancelar</button>
+    </form>`);
+}
+/** Guarda no rascunho o que está digitado antes de redesenhar a folha. */
+function readDraft() {
+  const f = $('#sheet form');
+  draft.sets.forEach((x, i) => {
+    x.w = Math.max(0, Number(f[`w${i}`].value) || 0);
+    x.r = Math.max(0, Math.round(Number(f[`r${i}`].value) || 0));
+  });
+}
+actions.editEntry = el => {
+  const s = state.sessions.find(x => x.id === el.dataset.s);
+  const e = s?.entries[Number(el.dataset.e)];
+  if (!e) return;
+  draft = { sid: s.id, ei: Number(el.dataset.e), sets: e.sets.map(x => ({ ...x })) };
+  entrySheet();
+};
+actions.entryAddSet = () => {
+  readDraft();
+  const last = draft.sets.at(-1);
+  draft.sets.push(last ? { w: last.w, r: last.r } : { w: 0, r: 0 });
+  entrySheet();
+};
+actions.entryDelSet = el => { readDraft(); draft.sets.splice(Number(el.dataset.i), 1); entrySheet(); };
+actions.entryCancel = () => {
+  const s = state.sessions.find(x => x.id === draft.sid);
+  draft = null;
+  if (s) sessionSheet(s); else closeSheet();
+};
+submits.saveEntry = () => {
+  readDraft();
+  const s = state.sessions.find(x => x.id === draft.sid);
+  const sets = draft.sets.filter(x => x.r > 0);
+  if (sets.length) {
+    s.entries[draft.ei].sets = sets;
+    s.entries[draft.ei].skipped = false;
+  } else {
+    s.entries.splice(draft.ei, 1);
+    if (!s.entries.length) state.sessions = state.sessions.filter(x => x.id !== s.id);
+  }
+  draft = null;
+  save();
+  rerender();
+  if (state.sessions.includes(s)) sessionSheet(s); else closeSheet();
 };
 actions.delSessionAsk = el => {
   sheet(`<h2>Excluir este treino?</h2><p class="muted">Ele sai do histórico, das metas e dos gráficos. Esta ação não pode ser desfeita.</p>

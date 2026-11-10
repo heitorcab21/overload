@@ -54,6 +54,7 @@ const sess = (d, sets, extra = {}) => ({ id: `s${d}`, date: day(d), name: 'A', e
 
 state.sessions = [];
 eq(planFor(ex).first, true);
+eq(planFor({ ...ex, startW: 42.5 }).w, 42.5, 'carga inicial informada vira a sugestão do primeiro treino');
 
 state.sessions = [sess(2, [{ w: 40, r: 12 }, { w: 40, r: 10 }, { w: 40, r: 8 }])];
 eq([planFor(ex).w, planFor(ex).reps], [40, [12, 10, 9]], '+1 rep na série mais fraca');
