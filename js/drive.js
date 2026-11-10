@@ -197,6 +197,19 @@ async function doSync() {
   }
 }
 
+/**
+ * Renova a autorização do Google aproveitando um toque que a pessoa já dá (Começar ou Finalizar treino).
+ * Como o app já foi autorizado antes, a janela do Google abre e fecha sozinha, sem perguntar nada.
+ * Precisa ser chamada direto do toque, antes de qualquer espera, senão o navegador bloqueia a janela.
+ * Resolve true quando há autorização válida.
+ */
+export function refreshIfNeeded() {
+  if (!driveConnected()) return Promise.resolve(false);
+  if (hasToken()) return Promise.resolve(true);
+  if (!googleReady()) { loadGoogle().catch(() => {}); return Promise.resolve(false); }
+  return requestToken('').then(() => true, () => false);
+}
+
 /** Entrar com o Google (a partir de um toque) e sincronizar. */
 export async function connect() {
   if (!googleReady()) {

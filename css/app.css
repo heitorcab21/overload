@@ -155,6 +155,7 @@ body.no-tabs #view { padding-bottom: calc(170px + var(--safe-b)); }
   background: var(--surface-2); color: var(--ink-2);
 }
 .badge .ic { width: 14px; height: 14px; }
+.hero .badge { white-space: normal; font-size: 13px; padding: 4px 10px; }
 .badge.good { color: var(--good-ink); background: color-mix(in srgb, var(--good) 14%, transparent); }
 .badge.up { color: var(--ink); background: color-mix(in srgb, var(--accent) 22%, transparent); }
 .badge.warn { color: var(--crit); background: color-mix(in srgb, var(--crit) 14%, transparent); }

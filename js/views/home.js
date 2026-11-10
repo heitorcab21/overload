@@ -254,7 +254,9 @@ function renderSummary(id) {
     else if (st && !st.expired && st.weekDone) hit.push(`${ex.name}: meta da semana batida`);
   }
   $('#view').innerHTML = `
-    <div class="hero"><h1>Treino concluído</h1><p class="muted">${esc(s.name)} · ${fmtDate(s.date)}</p></div>
+    <div class="hero"><h1>Treino concluído</h1><p class="muted">${esc(s.name)} · ${fmtDate(s.date)}</p>
+      ${driveConnected() ? `<div><span class="badge${driveDirty() ? '' : ' good'}" id="syncNote">${driveDirty() ? 'Salvando no seu Google Drive…' : `${icon.check}Salvo no seu Google Drive`}</span></div>` : ''}
+    </div>
     <div class="stack">
       <div class="tiles">
         <div class="tile"><span class="l">Séries</span><span class="v">${sets}</span></div>

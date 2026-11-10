@@ -6,6 +6,7 @@ import { LIB_BY_ID } from '../data.js';
 import { planFor } from '../logic.js';
 import { parseUtterance, voiceSupported, listen, stopListening, abortListening } from '../voice.js';
 import { aiEnabled, aiParseVoice } from '../ai.js';
+import { refreshIfNeeded, sync, driveConnected } from '../drive.js';
 
 const FEEL = { easy: 'Fácil', ok: 'Na medida', hard: 'Pesado', fail: 'Até a falha' };
 const FLAGS = { dor: 'Dor ou desconforto', troca: 'Troquei o aparelho', execucao: 'Execução ruim', tempo: 'Sem tempo' };
@@ -22,6 +23,8 @@ export function startWorkout(routineId) {
     return { exId: ex.id, plan, sets: [], cur: { w: plan.w, r: plan.reps[0] }, feel: null, flags: [], skipped: false };
   });
   if (!entries.length) { toast('Este treino não tem exercícios.'); return; }
+  // Renova a autorização do Google agora, no toque de "Começar": ela cobre o treino inteiro
+  refreshIfNeeded();
   state.active = { id: uid(), routineId: r.id, name: r.name, startedAt: Date.now(), idx: 0, restEnd: 0, entries };
   save();
   go('#/treino');
@@ -358,6 +361,8 @@ actions.wDiscardAsk = () => {
 actions.wDiscard = () => { state.active = null; save(); closeSheet(); releaseAwake(); go('#/hoje'); };
 
 function finish() {
+  // No toque de "Finalizar": se a autorização venceu durante o treino, renova sem perguntar nada
+  const ready = refreshIfNeeded();
   const a = state.active;
   const entries = a.entries.filter(e => e.sets.length || e.skipped)
     .map(({ exId, sets, feel, flags, skipped }) => ({ exId, sets, feel, flags, skipped: skipped && !sets.length }));
@@ -372,6 +377,16 @@ function finish() {
   releaseAwake();
   clearInterval(restTimer);
   go(`#/resumo/${a.id}`);
+  if (driveConnected()) {
+    // Envia o treino ao Drive e mostra o resultado no resumo
+    ready.then(ok => (ok ? sync() : false)).then(ok => ok, () => false).then(ok => {
+      const note = $('#syncNote');
+      if (!note) return;
+      note.className = `badge ${ok ? 'good' : 'warn'}`;
+      note.innerHTML = ok ? `${icon.check}Salvo no seu Google Drive`
+        : 'Não deu para salvar no Drive agora. Toque em Sincronizar na tela Hoje.';
+    });
+  }
 }
 
 // ---------- Voz ----------

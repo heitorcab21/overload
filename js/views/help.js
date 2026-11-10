@@ -68,7 +68,8 @@ const TOPICS = [
   ['Seus dados, Google Drive e backup', 'Onde tudo fica salvo', `
     <p>Com a conta Google conectada, o app salva sozinho no seu Drive, numa pasta <b>Overload</b>, alguns segundos depois de cada alteração. Em outro aparelho, é só entrar com a mesma conta.</p>
     <ul class="errs">
-      <li>A autorização do Google dura cerca de 1 hora. Depois disso, se houver algo para enviar, aparece um botão <b>Sincronizar</b> na tela Hoje: um toque resolve.</li>
+      <li>Todo treino é salvo no Drive ao tocar em <b>Finalizar</b>; o resumo mostra "Salvo no seu Google Drive". Pode aparecer uma janela do Google abrindo e fechando sozinha: é o app renovando a autorização.</li>
+      <li>Se você mudar algo fora do treino e a autorização tiver vencido, aparece um botão <b>Sincronizar</b> na tela Hoje: um toque resolve.</li>
       <li>Sem internet, o app funciona normal e envia depois.</li>
       <li>Sem conta Google, use <b>Ajustes &gt; Salvar backup completo</b> de vez em quando e guarde o arquivo fora do celular.</li>
     </ul>`],

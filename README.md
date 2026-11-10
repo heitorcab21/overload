@@ -46,7 +46,7 @@ Em **Ajustes > Treinador IA**, cole uma chave criada no Console da Anthropic (pl
 
 Com o Drive configurado, cada pessoa entra com a própria conta Google e o app guarda sozinho uma cópia dos dados no Drive dela, num arquivo `overload-dados.json` dentro da pasta "Overload". Em outro celular ou no computador, basta entrar com a mesma conta para recuperar tudo. O app só tem acesso aos arquivos que ele mesmo cria (permissão `drive.file`).
 
-Como não existe servidor, a autorização do Google vale cerca de 1 hora. Depois disso, o app mostra um botão "Sincronizar" e um toque confirma a conta. Se dois aparelhos mudarem os dados sem internet, os treinos dos dois são somados e, no resto, vale a versão mais recente.
+Como não existe servidor, a autorização do Google vale cerca de 1 hora. O app a renova sozinho nos toques de **Começar treino** e **Finalizar** (a janela do Google abre e fecha sem perguntar nada), então todo treino é salvo no Drive ao terminar. Para alterações fora do treino, se a autorização tiver vencido, aparece um botão "Sincronizar" na tela Hoje. Se dois aparelhos mudarem os dados sem internet, os treinos dos dois são somados e, no resto, vale a versão mais recente.
 
 ### Configurar (uma vez, pelo dono do app)
 
