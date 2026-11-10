@@ -1,30 +1,96 @@
-// Registro por voz: reconhecimento do navegador + interpretador de frases em português.
+// Registro por voz: reconhecimento do navegador + interpretador de frases em português, inglês e espanhol.
+import { lang, locale } from './i18n.js';
 
-const UNITS = {
-  zero: 0, um: 1, uma: 1, dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5, seis: 6, sete: 7, oito: 8, nove: 9,
-  dez: 10, onze: 11, doze: 12, treze: 13, catorze: 14, quatorze: 14, quinze: 15, dezesseis: 16,
-  dezessete: 17, dezoito: 18, dezenove: 19,
+const RANGE = (words, start = 0) => Object.fromEntries(words.map((w, i) => [w, start + i]));
+
+// Vocabulário de cada idioma (sem acentos: o texto é normalizado antes)
+const VOCAB = {
+  pt: {
+    units: {
+      zero: 0, um: 1, uma: 1, dois: 2, duas: 2, tres: 3, quatro: 4, cinco: 5, seis: 6, sete: 7, oito: 8, nove: 9,
+      dez: 10, onze: 11, doze: 12, treze: 13, catorze: 14, quatorze: 14, quinze: 15, dezesseis: 16,
+      dezessete: 17, dezoito: 18, dezenove: 19,
+    },
+    tens: { vinte: 20, trinta: 30, quarenta: 40, cinquenta: 50, sessenta: 60, setenta: 70, oitenta: 80, noventa: 90 },
+    hundreds: { cem: 100, cento: 100, duzentos: 200, trezentos: 300 },
+    and: ['e'], half: /^mei[oa]$/, joinWithoutAnd: false,
+    kg: 'kg|quilos?|kilos?', sets: 'series?|sets?', reps: 'rep|reps|repeticao|repeticoes|vezes', weightBefore: 'com|carga',
+    setsOf: /\b\d+ (vezes|series) de \d+/,
+    undo: /\b(desfaz|desfazer|apaga|apagar|errei|cancela|cancelar|corrige)\b/,
+    skip: /\b(pula|pular|pulei)\b/,
+    upW: 'mais|subi|aumentei', downW: 'menos|baixei|diminui',
+    moreReps: /\b(mais|menos)\s+(\d+)\b/, moreRepsNeg: 'menos',
+    fail: /\b(falhei|falha)\b/,
+    planned: /\b(bati|meta|planejado|igual|feito|feita|mesma coisa|completei|consegui|fiz)\b/,
+    all: /\b(tudo|todas|todos|completo|inteiro)\b/,
+    feel: [[/\b(facil|leve|tranquilo|sobrou)\b/, 'easy'], [/\b(na medida|normal|ok|bom|certinho)\b/, 'ok'],
+      [/\b(pesado|dificil|sofrido|puxado)\b/, 'hard'], [/\b(ate a falha|falhei|falha)\b/, 'fail']],
+    next: /\bproximo\b/,
+  },
+  en: {
+    units: {
+      ...RANGE(['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
+        'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen']),
+    },
+    tens: { twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90 },
+    hundreds: {},
+    and: ['and'], half: /^half$/, joinWithoutAnd: true,
+    kg: 'kg|kgs|kilos?|kilograms?', sets: 'sets?', reps: 'reps?|repetitions?|times', weightBefore: 'with|at',
+    setsOf: /\b\d+ sets of \d+/,
+    undo: /\b(undo|delete|cancel|wrong|oops)\b/,
+    skip: /\b(skip|skipped)\b/,
+    upW: 'plus|add|added|up', downW: 'minus|less|down|drop',
+    moreReps: /\b(plus|minus)\s+(\d+)\b|\b(\d+)\s+(more|less|fewer)\b/, moreRepsNeg: 'minus|less|fewer',
+    fail: /\b(failed|fail)\b/,
+    planned: /\b(hit|target|goal|planned|same|done|did it|completed|nailed)\b/,
+    all: /\b(all|everything)\b/,
+    feel: [[/\b(easy|light)\b/, 'easy'], [/\b(ok|okay|fine|good|normal)\b/, 'ok'],
+      [/\b(hard|heavy|tough)\b/, 'hard'], [/\b(to failure|failed|failure)\b/, 'fail']],
+    next: /\bnext\b/,
+  },
+  es: {
+    units: {
+      cero: 0, uno: 1, una: 1, un: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7, ocho: 8, nueve: 9,
+      diez: 10, once: 11, doce: 12, trece: 13, catorce: 14, quince: 15, dieciseis: 16, diecisiete: 17, dieciocho: 18,
+      diecinueve: 19, veintiuno: 21, veintidos: 22, veintitres: 23, veinticuatro: 24, veinticinco: 25, veintiseis: 26,
+      veintisiete: 27, veintiocho: 28, veintinueve: 29,
+    },
+    tens: { veinte: 20, treinta: 30, cuarenta: 40, cincuenta: 50, sesenta: 60, setenta: 70, ochenta: 80, noventa: 90 },
+    hundreds: { cien: 100, ciento: 100, doscientos: 200, trescientos: 300 },
+    and: ['y'], half: /^medi[oa]$/, joinWithoutAnd: false,
+    kg: 'kg|kilos?|kilogramos?', sets: 'series?|sets?', reps: 'rep|reps|repeticion|repeticiones|veces', weightBefore: 'con|carga',
+    setsOf: /\b\d+ (veces|series) de \d+/,
+    undo: /\b(deshacer|deshaz|borrar|borra|cancelar|cancela|me equivoque)\b/,
+    skip: /\b(saltar|salta|salte|omitir)\b/,
+    upW: 'mas|subi|aumente', downW: 'menos|baje',
+    moreReps: /\b(mas|menos)\s+(\d+)\b|\b(\d+)\s+(mas|menos)\b/, moreRepsNeg: 'menos',
+    fail: /\b(falle|fallo)\b/,
+    planned: /\b(cumpli|meta|objetivo|planeado|igual|hecho|hecha|lo hice|complete|logre)\b/,
+    all: /\b(todo|todas|todos|completo)\b/,
+    feel: [[/\b(facil|ligero|tranquilo)\b/, 'easy'], [/\b(bien|normal|ok|justo)\b/, 'ok'],
+      [/\b(pesado|dificil|duro)\b/, 'hard'], [/\b(al fallo|falle)\b/, 'fail']],
+    next: /\bsiguiente\b/,
+  },
 };
-const TENS = { vinte: 20, trinta: 30, quarenta: 40, cinquenta: 50, sessenta: 60, setenta: 70, oitenta: 80, noventa: 90 };
-const HUNDREDS = { cem: 100, cento: 100, duzentos: 200, trezentos: 300 };
 
 const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
   .replace(/(\d),(\d)/g, '$1.$2')
-  .replace(/(\d)\s*(kg|kilos?|quilos?)\b/g, '$1 kg')
+  .replace(/(\d)\s*(kg|kgs|kilos?|quilos?)\b/g, '$1 kg')
   .replace(/[×*]/g, ' x ')
   .replace(/(\d)x(\d)/g, '$1 x $2')
   .replace(/[^a-z0-9. ]/g, ' ')
   .replace(/\.(?!\d)/g, ' ')
   .replace(/\s+/g, ' ').trim();
 
-/** Troca números por extenso por dígitos: "quarenta e dois e meio" -> "42.5". */
-export function wordsToDigits(text) {
+/** Troca números por extenso por dígitos: "quarenta e dois e meio" / "forty two and a half" -> "42.5". */
+export function wordsToDigits(text, l = lang()) {
+  const V = VOCAB[l] || VOCAB.pt;
   const tk = norm(text).split(' ');
   const out = [];
   let i = 0;
-  const value = t => UNITS[t] ?? TENS[t] ?? HUNDREDS[t];
-  // ordem de grandeza: 3 = centenas, 2 = dezenas, 1 = unidades e "dez a dezenove"
-  const cat = t => (t in HUNDREDS ? 3 : t in TENS ? 2 : t in UNITS ? 1 : 0);
+  const value = w => V.units[w] ?? V.tens[w] ?? V.hundreds[w];
+  // ordem de grandeza: 3 = centenas, 2 = dezenas, 1 = unidades (inclui "dez a dezenove")
+  const cat = w => (w in V.hundreds ? 3 : w in V.tens ? 2 : w in V.units ? 1 : 0);
   while (i < tk.length) {
     const c = cat(tk[i]);
     const isDigit = /^\d+(\.\d+)?$/.test(tk[i]);
@@ -32,63 +98,74 @@ export function wordsToDigits(text) {
     let total = c ? value(tk[i]) : Number(tk[i]);
     let level = c;
     i++;
-    // "cento e vinte e dois": só soma partes de ordem menor ligadas por "e"
-    while (level >= 2 && tk[i] === 'e' && cat(tk[i + 1]) && cat(tk[i + 1]) < level) {
-      level = cat(tk[i + 1]);
-      total += value(tk[i + 1]);
-      i += 2;
+    // inglês: "one hundred twenty"
+    if (tk[i] === 'hundred' && c === 1) { total *= 100; level = 3; i++; }
+    // partes de ordem menor: "cento e vinte e dois", "treinta y dos", "twenty two"
+    for (;;) {
+      if (level < 2) break;
+      if (V.and.includes(tk[i]) && cat(tk[i + 1]) && cat(tk[i + 1]) < level) {
+        level = cat(tk[i + 1]); total += value(tk[i + 1]); i += 2; continue;
+      }
+      if (V.joinWithoutAnd && cat(tk[i]) && cat(tk[i]) < level) {
+        level = cat(tk[i]); total += value(tk[i]); i++; continue;
+      }
+      break;
     }
-    if (tk[i] === 'e' && /^mei[oa]$/.test(tk[i + 1] || '')) { total += 0.5; i += 2; }
+    // "e meio" / "y medio" / "and a half"
+    if (V.and.includes(tk[i]) && V.half.test(tk[i + 1] || '')) { total += 0.5; i += 2; }
+    else if (V.and.includes(tk[i]) && tk[i + 1] === 'a' && V.half.test(tk[i + 2] || '')) { total += 0.5; i += 3; }
+    else if (tk[i] === 'point' && cat(tk[i + 1]) === 1 && value(tk[i + 1]) < 10) { total += value(tk[i + 1]) / 10; i += 2; }
     out.push(String(total));
   }
   return out.join(' ');
 }
-
-const FEEL = [
-  [/\b(facil|leve|tranquilo|sobrou)\b/, 'easy'],
-  [/\b(na medida|normal|ok|bom|certinho)\b/, 'ok'],
-  [/\b(pesado|dificil|sofrido|puxado)\b/, 'hard'],
-  [/\b(ate a falha|falhei|falha)\b/, 'fail'],
-];
 
 /**
  * Interpreta o que foi dito e devolve uma lista de ações:
  *  { type:'set', w?, r?, fail? }  { type:'planned', all? }  { type:'delta', dr? , dw? }
  *  { type:'feel', v }  { type:'skip' }  { type:'next' }  { type:'undo' }
  */
-export function parseUtterance(raw) {
-  const t = wordsToDigits(raw);
+export function parseUtterance(raw, l = lang()) {
+  const V = VOCAB[l] || VOCAB.pt;
+  const txt = wordsToDigits(raw, l);
   const acts = [];
-  if (!t) return acts;
+  if (!txt) return acts;
 
-  if (/\b(desfaz|desfazer|apaga|apagar|errei|cancela|cancelar|corrige)\b/.test(t)) return [{ type: 'undo' }];
-  if (/\b(pula|pular|pulei)\b/.test(t)) return [{ type: 'skip' }];
+  if (V.undo.test(txt)) return [{ type: 'undo' }];
+  if (V.skip.test(txt)) return [{ type: 'skip' }];
 
-  const kgWord = '(?:kg|quilos?|kilos?)';
-  // "mais 5 quilos" / "menos 2.5 kg": muda a carga da próxima série
-  let m = t.match(new RegExp(`\\b(mais|menos|subi|baixei|aumentei|diminui)\\s+(\\d+(?:\\.\\d+)?)\\s*${kgWord}`));
+  // "mais 5 quilos" / "plus 5 kilos" / "más 5 kilos": muda a carga da próxima série
+  let m = txt.match(new RegExp(`\\b(${V.upW}|${V.downW})\\s+(\\d+(?:\\.\\d+)?)\\s*(?:${V.kg})\\b`));
   if (m) {
-    const neg = /menos|baixei|diminui/.test(m[1]);
+    const neg = new RegExp(`^(${V.downW})$`).test(m[1]);
     acts.push({ type: 'delta', dw: (neg ? -1 : 1) * Number(m[2]) });
-  } else if ((m = t.match(/\b(mais|menos)\s+(\d+)\b/))) {
-    // "mais uma", "menos duas reps": a meta com reps a mais ou a menos
-    acts.push({ type: 'delta', dr: (m[1] === 'menos' ? -1 : 1) * Number(m[2]) });
+  } else if ((m = txt.match(V.moreReps))) {
+    // "mais uma" / "one more" / "menos dos": a meta com reps a mais ou a menos
+    const word = m[1] || m[4];
+    const n = Number(m[2] || m[3]);
+    const neg = new RegExp(`^(${V.moreRepsNeg})$`).test(word);
+    acts.push({ type: 'delta', dr: (neg ? -1 : 1) * n });
   } else {
     // números com o papel de cada um
-    const tk = t.split(' ');
+    const tk = txt.split(' ');
     const nums = [];
     tk.forEach((x, i) => {
       if (!/^\d+(\.\d+)?$/.test(x)) return;
       const nx = tk[i + 1] || '', pv = tk[i - 1] || '';
       let role = null;
-      if (/^(kg|quilos?|kilos?)$/.test(nx)) role = 'w';
-      else if (/^(series?|sets?)$/.test(nx)) role = 'n';
-      else if (/^(rep|reps|repeticao|repeticoes|vezes)$/.test(nx) && !/^(series?)$/.test(tk[i + 2] || '')) role = 'r';
-      else if (/^(com|carga)$/.test(pv)) role = 'w';
+      if (new RegExp(`^(${V.kg})$`).test(nx)) role = 'w';
+      else if (new RegExp(`^(${V.sets})$`).test(nx)) role = 'n';
+      else if (new RegExp(`^(${V.reps})$`).test(nx) && !new RegExp(`^(${V.sets})$`).test(tk[i + 2] || '')) role = 'r';
+      else if (new RegExp(`^(${V.weightBefore})$`).test(pv)) role = 'w';
       nums.push({ v: Number(x), role });
     });
     // "3 vezes de 10": o primeiro é o número de séries
-    if (/\b\d+ vezes de \d+/.test(t)) { const f = nums.find(n => n.role === 'r'); if (f) f.role = 'n'; }
+    if (V.setsOf.test(txt)) {
+      const f = nums.find(n => n.role === 'r' || n.role === 'n');
+      if (f) f.role = 'n';
+      const second = nums.find(n => n !== f && n.role !== 'w');
+      if (second && second.role === null) second.role = 'r';
+    }
 
     if (nums.length) {
       let nSets = nums.find(n => n.role === 'n')?.v;
@@ -96,10 +173,10 @@ export function parseUtterance(raw) {
       const reps = nums.filter(n => n.role === 'r').map(n => n.v);
       const free = nums.filter(n => n.role === null).map(n => n.v);
       // "3 x 10 com 50": séries x reps quando a carga já foi dita à parte
-      if (w !== undefined && nSets === undefined && free.length === 2 && !reps.length && /\d x \d/.test(t)) nSets = free.shift();
+      if (w !== undefined && nSets === undefined && free.length === 2 && !reps.length && /\d x \d/.test(txt)) nSets = free.shift();
       if (w === undefined && free.length + reps.length >= 2 && free.length) w = free.shift();
       reps.push(...free);
-      const fail = /\b(falhei|falha)\b/.test(t);
+      const fail = V.fail.test(txt);
       const list = reps.length ? reps : [undefined];
       const times = reps.length <= 1 && nSets ? Math.min(nSets, 10) : 1;
       for (let k = 0; k < times; k++) {
@@ -111,20 +188,20 @@ export function parseUtterance(raw) {
           acts.push(a);
         }
       }
-    } else if (/\b(bati|meta|planejado|igual|feito|feita|mesma coisa|completei|consegui|fiz)\b/.test(t)) {
-      acts.push({ type: 'planned', all: /\b(tudo|todas|todos|completo|inteiro)\b/.test(t) });
+    } else if (V.planned.test(txt)) {
+      acts.push({ type: 'planned', all: V.all.test(txt) });
     }
   }
 
-  for (const [re, v] of FEEL) {
-    if (re.test(t)) {
+  for (const [re, v] of V.feel) {
+    if (re.test(txt)) {
       // "falhei" junto de números já marcou a série; só vira sensação se vier sozinho
       if (v === 'fail' && acts.some(a => a.type === 'set')) break;
       acts.push({ type: 'feel', v });
       break;
     }
   }
-  if (/\bproximo\b/.test(t)) acts.push({ type: 'next' });
+  if (V.next.test(txt)) acts.push({ type: 'next' });
   return acts;
 }
 
@@ -137,7 +214,7 @@ let rec = null;
 export function listen(onInterim) {
   return new Promise((resolve, reject) => {
     rec = new SR();
-    rec.lang = 'pt-BR';
+    rec.lang = locale();
     rec.interimResults = true;
     rec.maxAlternatives = 1;
     let text = '';

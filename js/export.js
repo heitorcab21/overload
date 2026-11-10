@@ -1,28 +1,32 @@
-// Exportação em CSV para abrir no Excel ou no Google Planilhas (separador ";" e vírgula decimal).
+// Exportação em CSV para abrir no Excel ou no Google Planilhas.
+// Português e espanhol: separador ";" e vírgula decimal. Inglês: separador "," e ponto decimal.
 import { state } from './store.js';
-import { GROUPS } from './data.js';
+import { GROUPS, exName, tg } from './data.js';
 import { groupGoalStatus, exGoalStatus, setExGoal, setWeekOverride, daysInMonth } from './logic.js';
+import { t, lang, locale, allLangs, exNamesAll } from './i18n.js';
 
-const BOM = '﻿';
+const BOM = '\ufeff';
+const dec = () => (lang() === 'en' ? '.' : ',');
+const sepChar = () => (lang() === 'en' ? ',' : ';');
+const num = v => String(v).replace('.', dec());
 const cell = v => {
-  const s = typeof v === 'number' ? String(v).replace('.', ',') : String(v ?? '');
-  return /[";\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  const s = typeof v === 'number' ? num(v) : String(v ?? '');
+  return /[";,\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 };
-const csv = rows => BOM + rows.map(r => r.map(cell).join(';')).join('\r\n');
-
-const FEEL = { easy: 'fácil', ok: 'na medida', hard: 'pesado', fail: 'até a falha' };
-const FLAG = { dor: 'dor ou desconforto', troca: 'trocou o aparelho', execucao: 'execução ruim', tempo: 'sem tempo' };
+const csv = rows => BOM + rows.map(r => r.map(cell).join(sepChar())).join('\r\n');
 
 export function sessionsCSV() {
-  const rows = [['Data', 'Treino', 'Exercício', 'Grupamento', 'Série', 'Carga (kg)', 'Repetições', 'Falhou', 'Sensação', 'Observações']];
+  const FEEL = { easy: t('fácil'), ok: t('na medida'), hard: t('pesado'), fail: t('até a falha') };
+  const FLAG = { dor: t('dor ou desconforto'), troca: t('trocou o aparelho'), execucao: t('execução ruim'), tempo: t('sem tempo') };
+  const rows = [[t('Data'), t('Treino'), t('Exercício'), t('Grupamento'), t('Série'), t('Carga total (kg)'), t('Repetições'), t('Falhou'), t('Sensação'), t('Observações')]];
   for (const s of state.sessions) {
-    const date = new Date(s.date).toLocaleDateString('pt-BR');
+    const date = new Date(s.date).toLocaleDateString(locale());
     for (const e of s.entries) {
       const ex = state.exercises[e.exId];
-      const name = ex?.name || e.exId, group = ex?.group || '';
+      const name = ex ? exName(ex) : e.exId, group = ex ? tg(ex.group) : '';
       const obs = (e.flags || []).map(f => FLAG[f]).filter(Boolean).join(', ');
-      if (e.skipped) { rows.push([date, s.name, name, group, '', '', '', '', '', 'pulado']); continue; }
-      e.sets.forEach((x, i) => rows.push([date, s.name, name, group, i + 1, x.w, x.r, x.t ? 'sim' : '', FEEL[e.feel] || '', obs]));
+      if (e.skipped) { rows.push([date, s.name, name, group, '', '', '', '', '', t('pulado')]); continue; }
+      e.sets.forEach((x, i) => rows.push([date, s.name, name, group, i + 1, x.w, x.r, x.t ? t('sim') : '', FEEL[e.feel] || '', obs]));
     }
   }
   return csv(rows);
@@ -30,18 +34,19 @@ export function sessionsCSV() {
 
 export function goalsCSV() {
   const now = new Date();
-  const rows = [['Tipo', 'Nome', 'Grupamento', 'Meta da semana', 'Feito na semana', 'Meta do mês', 'Feito no mês', 'Situação']];
+  const rows = [[t('Tipo'), t('Nome'), t('Grupamento'), t('Meta da semana'), t('Feito na semana'), t('Meta do mês'), t('Feito no mês'), t('Situação')]];
+  const series = n => t('{n} séries', { n });
+  const status = (month, week) => (month ? t('mês batido') : week ? t('semana batida') : t('em andamento'));
   for (const g of groupGoalStatus(now)) {
-    rows.push(['Grupamento', g.group, g.group, `${g.weekGoal} séries`, `${g.weekDone} séries`, `${g.monthGoal} séries`, `${g.monthDone} séries`,
-      g.monthGoal && g.monthDone >= g.monthGoal ? 'mês batido' : g.weekGoal && g.weekDone >= g.weekGoal ? 'semana batida' : 'em andamento']);
+    rows.push([t('Grupamento'), tg(g.group), tg(g.group), series(g.weekGoal), series(g.weekDone), series(g.monthGoal), series(g.monthDone),
+      status(g.monthGoal && g.monthDone >= g.monthGoal, g.weekGoal && g.weekDone >= g.weekGoal)]);
   }
-  const f = s => (s ? (s.w > 0 ? `${String(s.w).replace('.', ',')} kg x ${s.r}` : `${s.r} reps`) : '');
+  const f = s => (s ? (s.w > 0 ? `${num(s.w)} kg x ${s.r}` : `${s.r} reps`) : '');
   // a coluna "Meta da semana" de exercício também aceita edição e volta na importação
   for (const ex of Object.values(state.exercises)) {
     const st = exGoalStatus(ex, now);
-    if (!st || st.expired) { rows.push(['Exercício', ex.name, ex.group, '', '', '', '', 'sem meta']); continue; }
-    rows.push(['Exercício', ex.name, ex.group, f(st.weekSet), f(st.weekBest), f(st.goal), f(st.monthBest),
-      st.monthDone ? 'mês batido' : st.weekDone ? 'semana batida' : 'em andamento']);
+    if (!st || st.expired) { rows.push([t('Exercício'), exName(ex), tg(ex.group), '', '', '', '', t('sem meta')]); continue; }
+    rows.push([t('Exercício'), exName(ex), tg(ex.group), f(st.weekSet), f(st.weekBest), f(st.goal), f(st.monthBest), status(st.monthDone, st.weekDone)]);
   }
   return csv(rows);
 }
@@ -90,18 +95,26 @@ const parseCount = s => { const m = norm(s).match(/^(\d+)/); return m ? Number(m
  */
 export function importGoalsCSV(text, now = new Date()) {
   const rows = parseCSV(text);
-  if (rows.length < 2) throw new Error('A planilha está vazia.');
+  if (rows.length < 2) throw new Error(t('A planilha está vazia.'));
   const h = rows[0].map(norm);
   const col = (...names) => h.findIndex(x => names.some(n => x.startsWith(n)));
-  const cTipo = col('tipo');
-  const cNome = col('nome', 'exercicio');
-  const cWeek = col('meta da semana', 'meta semana', 'semana');
-  const cMonth = col('meta do mes', 'meta mes', 'mes');
+  // cabeçalhos aceitos em português, inglês e espanhol
+  const names = (...keys) => keys.flatMap(k => allLangs(k)).map(norm);
+  const cTipo = col(...names('Tipo'));
+  const cNome = col(...names('Nome', 'Exercício'));
+  const cWeek = col(...names('Meta da semana'), 'meta semana', 'semana', 'week');
+  const cMonth = col(...names('Meta do mês'), 'meta mes', 'mes', 'month');
   if (cNome < 0 || (cWeek < 0 && cMonth < 0)) {
-    throw new Error('Não reconheci as colunas. Exporte as metas pelo app e use esse arquivo como modelo.');
+    throw new Error(t('Não reconheci as colunas. Exporte as metas pelo app e use esse arquivo como modelo.'));
   }
-  const exByName = Object.fromEntries(Object.values(state.exercises).map(e => [norm(e.name), e]));
-  const groupByName = Object.fromEntries(GROUPS.map(g => [norm(g), g]));
+  // nomes de exercícios e grupamentos em qualquer um dos três idiomas
+  const exByName = {};
+  for (const e of Object.values(state.exercises)) {
+    for (const n of [e.name, exName(e), ...(e.lib ? exNamesAll(e.lib) : [])]) exByName[norm(n)] = e;
+  }
+  const groupByName = {};
+  for (const g of GROUPS) for (const n of allLangs(g)) groupByName[norm(n)] = g;
+  const groupWords = names('Grupamento');
   const res = { groups: 0, ex: 0, weeks: 0, unknown: [] };
 
   for (const r of rows.slice(1)) {
@@ -111,7 +124,7 @@ export function importGoalsCSV(text, now = new Date()) {
     const tipo = cTipo >= 0 ? norm(r[cTipo]) : '';
     const wk = cWeek >= 0 ? r[cWeek] : '';
     const mo = cMonth >= 0 ? r[cMonth] : '';
-    const isGroup = tipo ? tipo.startsWith('grup') : !exByName[name] && !!groupByName[name];
+    const isGroup = tipo ? groupWords.some(w => tipo.startsWith(w.slice(0, 5))) : !exByName[name] && !!groupByName[name];
 
     if (isGroup) {
       const g = groupByName[name];

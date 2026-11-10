@@ -1,5 +1,6 @@
 // Gráficos em SVG: colunas (séries por semana) e linha (evolução de um exercício).
 import { esc, fmt } from './ui.js';
+import { t } from './i18n.js';
 
 /** Passos "redondos" para o eixo Y. */
 function niceTicks(min, max, count = 4) {
@@ -55,7 +56,7 @@ export function columnChart(box, data, { unit = '' } = {}) {
       <rect class="hit" data-i="${i}" x="${L + band * i}" y="${T}" width="${band}" height="${ph + B}" tabindex="0" role="img" aria-label="${esc(d.tip)}"/>`;
   }).join('');
 
-  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfico de colunas">
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${t('Gráfico de colunas')}">
     ${ticks.map(t => `<line class="${t === 0 ? 'axis' : 'grid'}" x1="${L}" x2="${W - R}" y1="${y(t)}" y2="${y(t)}"/>
       <text x="${L - 6}" y="${y(t) + 4}" text-anchor="end">${fmt(t)}</text>`).join('')}
     ${bars}</svg>`;
@@ -78,7 +79,7 @@ export function columnChart(box, data, { unit = '' } = {}) {
 /**
  * Linha de série única. points: [{ label, value, tip }]; goal: valor de referência (opcional).
  */
-export function lineChart(box, points, { goal = null, goalLabel = 'Meta', unit = '' } = {}) {
+export function lineChart(box, points, { goal = null, goalLabel = t('Meta'), unit = '' } = {}) {
   const W = 340, H = 200, L = 30, R = 38, T = 16, B = 24;
   const vals = points.map(p => p.value).concat(goal ?? []);
   const lo = Math.min(...vals), hi = Math.max(...vals);
@@ -94,7 +95,7 @@ export function lineChart(box, points, { goal = null, goalLabel = 'Meta', unit =
   // rótulos do eixo X: primeiro, meio e último, sem sobrepor
   const xl = [...new Set([0, Math.floor(lastI / 2), lastI])];
 
-  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfico de evolução">
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${t('Gráfico de evolução')}">
     ${ticks.map(t => `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(t)}" y2="${y(t)}"/>
       <text x="${L - 6}" y="${y(t) + 4}" text-anchor="end">${fmt(t)}</text>`).join('')}
     ${goal != null ? `<line class="goal" x1="${L}" x2="${W - R}" y1="${y(goal)}" y2="${y(goal)}"/>
@@ -105,7 +106,7 @@ export function lineChart(box, points, { goal = null, goalLabel = 'Meta', unit =
     <circle class="dot hover" r="4.5" visibility="hidden"/>
     ${goal == null || Math.abs(y(goal) - y(lp.value)) > 14 ? `<text class="val" x="${x(lastI) + 8}" y="${y(lp.value) + 4}">${fmt(lp.value)}</text>` : ''}
     ${xl.map(i => `<text x="${x(i)}" y="${H - 6}" text-anchor="${i === 0 ? 'start' : i === lastI ? 'end' : 'middle'}">${esc(points[i].label)}</text>`).join('')}
-    <rect class="hit" x="${L - 10}" y="${T}" width="${pw + 20}" height="${ph + B}" tabindex="0" aria-label="Passe o dedo para ver cada treino"/>
+    <rect class="hit" x="${L - 10}" y="${T}" width="${pw + 20}" height="${ph + B}" tabindex="0" aria-label="${t('Passe o dedo para ver cada treino')}"/>
   </svg>`;
 
   const svg = box.querySelector('svg');

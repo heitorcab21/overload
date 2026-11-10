@@ -8,7 +8,8 @@ import './views/goals.js';
 import './views/progress.js';
 import './views/library.js';
 import './views/help.js';
-import { applyTheme } from './views/settings.js';
+import { applyTheme, applyLang } from './views/settings.js';
+import { migrateLoadSteps } from './views/home.js';
 import { initDrive } from './drive.js';
 import { initInstall } from './install.js';
 
@@ -48,6 +49,8 @@ document.addEventListener('submit', ev => {
 
 initInstall();
 applyTheme();
+applyLang();
+migrateLoadSteps();
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
 
 if (!location.hash) location.hash = state.onboarded ? '#/hoje' : '#/inicio';

@@ -1,23 +1,25 @@
 // Metas semanais e mensais por grupamento e por exercício, em formato de planilha.
 import { state, save } from '../store.js';
-import { $, esc, setStr, compact, icon, actions, changes, submits, toast, sheet, closeSheet, meter, stepper, fmtDate, MONTHS, shareFile } from '../ui.js';
+import { $, esc, setStr, compact, icon, actions, changes, submits, toast, sheet, closeSheet, meter, stepper, fmtDate, monthName, shareFile } from '../ui.js';
 import { route, rerender } from '../router.js';
-import { GROUPS } from '../data.js';
+import { GROUPS, exName, tg, loadLabel, loadHint } from '../data.js';
 import {
   groupGoalStatus, exGoalStatus, suggestGoal, weekStart, addDays, monthKey, daysInMonth, entriesFor,
   setExGoal, setWeekOverride, autoWeekSet, routineGroupSets,
 } from '../logic.js';
 import { goalsCSV, importGoalsCSV } from '../export.js';
+import { t, tn } from '../i18n.js';
 
 let mode = 'week';
+const cap = s => s[0].toUpperCase() + s.slice(1);
 
 function render() {
   const now = new Date();
   const ws = weekStart(now);
   const isWeek = mode === 'week';
   const period = isWeek
-    ? `Semana de ${fmtDate(ws, false)} a ${fmtDate(addDays(ws, 6), false)}`
-    : `${MONTHS[now.getMonth()][0].toUpperCase()}${MONTHS[now.getMonth()].slice(1)} de ${now.getFullYear()}`;
+    ? t('Semana de {a} a {b}', { a: fmtDate(ws, false), b: fmtDate(addDays(ws, 6), false) })
+    : t('{mes} de {ano}', { mes: cap(monthName(now.getMonth())), ano: now.getFullYear() });
 
   const gs = groupGoalStatus(now).sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group));
   const groupRows = gs.map(g => {
@@ -25,73 +27,73 @@ function render() {
     const goal = isWeek ? g.weekGoal : g.monthGoal;
     const manual = state.goals.groups[g.group]?.auto === false;
     return `<tr data-act="editGroupGoal" data-g="${esc(g.group)}" tabindex="0">
-      <td class="n">${esc(g.group)}${!isWeek && g.monthTon ? `<span class="sub">${compact(g.monthTon)} no mês</span>` : ''}
-        ${manual ? '<span class="sub">definida por você</span>' : ''}
+      <td class="n">${esc(tg(g.group))}${!isWeek && g.monthTon ? `<span class="sub">${t('{v} no mês', { v: compact(g.monthTon) })}</span>` : ''}
+        ${manual ? `<span class="sub">${t('definida por você')}</span>` : ''}
         ${goal ? meter(done / goal, done >= goal) : ''}</td>
-      <td class="v">${goal ? `${done} / ${goal}` : `${done} <span class="muted">sem meta</span>`}</td>
+      <td class="v">${goal ? `${done} / ${goal}` : `${done} <span class="muted">${t('sem meta')}</span>`}</td>
     </tr>`;
   }).join('');
 
   const exs = Object.values(state.exercises)
-    .sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group) || a.name.localeCompare(b.name));
+    .sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group) || exName(a).localeCompare(exName(b)));
   const exRows = exs.map(ex => {
     const st = exGoalStatus(ex, now);
     if (!st) {
       return `<tr data-act="editExGoal" data-id="${esc(ex.id)}" tabindex="0">
-        <td class="n">${esc(ex.name)}<span class="sub">${esc(ex.group)}</span></td>
-        <td class="v muted">definir meta</td></tr>`;
+        <td class="n">${esc(exName(ex))}<span class="sub">${esc(tg(ex.group))}</span></td>
+        <td class="v muted">${t('definir meta')}</td></tr>`;
     }
     if (st.expired) {
       const [, m] = st.goal.month.split('-').map(Number);
       return `<tr data-act="editExGoal" data-id="${esc(ex.id)}" tabindex="0">
-        <td class="n">${esc(ex.name)}<span class="sub">Meta de ${MONTHS[m - 1]}: ${setStr(st.goal)} · ${st.monthDone ? 'batida' : 'não batida'}</span></td>
-        <td class="v"><span class="badge up">renovar</span></td></tr>`;
+        <td class="n">${esc(exName(ex))}<span class="sub">${t('Meta de {mes}: {set} · {status}', { mes: monthName(m - 1), set: setStr(st.goal), status: st.monthDone ? t('batida') : t('não batida') })}</span></td>
+        <td class="v"><span class="badge up">${t('renovar')}</span></td></tr>`;
     }
     const target = isWeek ? st.weekSet : st.goal;
     const best = isWeek ? st.weekBest : st.monthBest;
     const pct = isWeek ? st.weekPct : st.monthPct;
     const ok = isWeek ? st.weekDone : st.monthDone;
-    const info = isWeek ? (st.weekManual ? ' · definida por você' : ` · semana ${st.week} de ${st.weeks}`) : '';
+    const info = isWeek ? (st.weekManual ? ` · ${t('definida por você')}` : ` · ${t('semana {k} de {n}', { k: st.week, n: st.weeks })}`) : '';
     return `<tr data-act="editExGoal" data-id="${esc(ex.id)}" tabindex="0">
-      <td class="n">${esc(ex.name)}
-        <span class="sub">${best ? `Melhor: ${setStr(best)}` : isWeek ? 'Ainda não treinou nesta semana' : 'Sem registro neste mês'}${info}</span>
+      <td class="n">${esc(exName(ex))}
+        <span class="sub">${best ? t('Melhor: {set}', { set: setStr(best) }) : isWeek ? t('Ainda não treinou nesta semana') : t('Sem registro neste mês')}${info}</span>
         ${meter(pct, ok)}</td>
-      <td class="v">${setStr(target)}${ok ? `<br><span class="badge good">${icon.check}batida</span>` : ''}</td>
+      <td class="v">${setStr(target)}${ok ? `<br><span class="badge good">${icon.check}${t('batida')}</span>` : ''}</td>
     </tr>`;
   }).join('');
 
   const noGoal = exs.filter(ex => { const st = exGoalStatus(ex, now); return (!st || st.expired) && entriesFor(ex.id).length; }).length;
 
   $('#view').innerHTML = `
-    <div class="head"><div class="grow"><h1>Metas</h1><p class="sub">${period}</p></div></div>
+    <div class="head"><div class="grow"><h1>${t('Metas')}</h1><p class="sub">${period}</p></div></div>
     <div class="stack">
       <div class="seg" role="tablist">
-        <button role="tab" aria-selected="${isWeek}" class="${isWeek ? 'on' : ''}" data-act="goalMode" data-m="week">Semana</button>
-        <button role="tab" aria-selected="${!isWeek}" class="${!isWeek ? 'on' : ''}" data-act="goalMode" data-m="month">Mês</button>
+        <button role="tab" aria-selected="${isWeek}" class="${isWeek ? 'on' : ''}" data-act="goalMode" data-m="week">${t('Semana')}</button>
+        <button role="tab" aria-selected="${!isWeek}" class="${!isWeek ? 'on' : ''}" data-act="goalMode" data-m="month">${t('Mês')}</button>
       </div>
 
       <div class="card flat">
         <table class="sheet-table">
-          <thead><tr><th>Grupamento</th><th class="v">Séries</th></tr></thead>
-          <tbody>${groupRows || `<tr><td colspan="2" class="empty">Adicione exercícios em Treinos para criar metas.</td></tr>`}</tbody>
+          <thead><tr><th>${t('Grupamento')}</th><th class="v">${t('Séries')}</th></tr></thead>
+          <tbody>${groupRows || `<tr><td colspan="2" class="empty">${t('Adicione exercícios em Treinos para criar metas.')}</td></tr>`}</tbody>
         </table>
       </div>
 
       <div class="card flat">
         <table class="sheet-table">
-          <thead><tr><th>Exercício</th><th class="v">${isWeek ? 'Meta da semana' : 'Meta do mês'}</th></tr></thead>
-          <tbody>${exRows || `<tr><td colspan="2" class="empty">Nenhum exercício cadastrado.</td></tr>`}</tbody>
+          <thead><tr><th>${t('Exercício')}</th><th class="v">${isWeek ? t('Meta da semana') : t('Meta do mês')}</th></tr></thead>
+          <tbody>${exRows || `<tr><td colspan="2" class="empty">${t('Nenhum exercício cadastrado.')}</td></tr>`}</tbody>
         </table>
       </div>
-      <p class="small muted">A meta da semana é calculada sozinha, em degraus até a meta do mês, e você pode trocá-la quando quiser. Toque em uma linha para editar.</p>
+      <p class="small muted">${t('A meta da semana é calculada sozinha, em degraus até a meta do mês, e você pode trocá-la quando quiser. Toque em uma linha para editar.')}</p>
 
-      ${noGoal ? `<button class="btn block" data-act="suggestAll">${icon.spark}Sugerir metas para ${noGoal} exercício${noGoal > 1 ? 's' : ''}</button>` : ''}
+      ${noGoal ? `<button class="btn block" data-act="suggestAll">${icon.spark}${tn(noGoal, 'Sugerir metas para {n} exercício', 'Sugerir metas para {n} exercícios')}</button>` : ''}
 
       <div class="card stack">
-        <h3>Planilha de metas</h3>
-        <p class="small muted">Exporte, edite no Excel ou no Google Planilhas e importe de volta. Nos grupamentos, escreva séries ("12 séries"); nos exercícios, carga e repetições ("42,5 kg x 10"). As colunas "Feito" e "Situação" são ignoradas.</p>
-        <button class="btn block" data-act="exportGoals">Exportar metas (CSV)</button>
-        <label class="btn block">Importar metas (CSV)<input type="file" accept=".csv,text/csv,text/plain" data-change="importGoals" class="sr"></label>
+        <h3>${t('Planilha de metas')}</h3>
+        <p class="small muted">${t('Exporte, edite no Excel ou no Google Planilhas e importe de volta. Nos grupamentos, escreva séries ("12 séries"); nos exercícios, carga e repetições ("42,5 kg x 10"). As colunas "Feito" e "Situação" são ignoradas.')}</p>
+        <button class="btn block" data-act="exportGoals">${t('Exportar metas (CSV)')}</button>
+        <label class="btn block">${t('Importar metas (CSV)')}<input type="file" accept=".csv,text/csv,text/plain" data-change="importGoals" class="sr"></label>
       </div>
     </div>`;
 }
@@ -104,19 +106,19 @@ actions.editGroupGoal = el => {
   const g = el.dataset.g;
   const cur = state.goals.groups[g] || {};
   const fromRoutine = routineGroupSets()[g];
-  sheet(`<h2>Meta de ${esc(g)}</h2>
-    <p class="muted">Quantas séries você quer fazer para este grupamento.</p>
+  sheet(`<h2>${t('Meta de {g}', { g: esc(tg(g)) })}</h2>
+    <p class="muted">${t('Quantas séries você quer fazer para este grupamento.')}</p>
     <form class="stack" data-submit="saveGroupGoal" data-g="${esc(g)}">
       <div class="two">
-        ${stepper('week', cur.week || 0, 1, 'Séries por semana')}
-        ${stepper('month', cur.month || 0, 1, 'Séries no mês')}
+        ${stepper('week', cur.week || 0, 1, t('Séries por semana'))}
+        ${stepper('month', cur.month || 0, 1, t('Séries no mês'))}
       </div>
       <p class="small muted">${cur.auto === false
-        ? 'Definida por você: não muda quando você altera os treinos.'
-        : 'Hoje esta meta segue a sua rotina e se ajusta sozinha quando você muda os exercícios. Se salvar um valor, ela passa a ser fixa.'}
-        Deixe o mês em 0 para calcular a partir da semana.</p>
-      <button class="btn primary big">Salvar</button>
-      ${fromRoutine && cur.auto === false ? `<button type="button" class="btn ghost block" data-act="groupAuto" data-g="${esc(g)}">Seguir a rotina (${fromRoutine} séries por semana)</button>` : ''}
+        ? t('Definida por você: não muda quando você altera os treinos.')
+        : t('Hoje esta meta segue a sua rotina e se ajusta sozinha quando você muda os exercícios. Se salvar um valor, ela passa a ser fixa.')}
+        ${t('Deixe o mês em 0 para calcular a partir da semana.')}</p>
+      <button class="btn primary big">${t('Salvar')}</button>
+      ${fromRoutine && cur.auto === false ? `<button type="button" class="btn ghost block" data-act="groupAuto" data-g="${esc(g)}">${t('Seguir a rotina ({n} séries por semana)', { n: fromRoutine })}</button>` : ''}
     </form>`);
 };
 submits.saveGroupGoal = form => {
@@ -146,29 +148,30 @@ actions.editExGoal = el => {
   const sug = suggestGoal(ex);
   const start = active ? st.goal : sug || { w: ex.startW || 0, r: ex.repMax };
   const auto = active ? autoWeekSet(ex) : null;
-  const wLabel = ex.bw ? 'Carga extra (kg)' : 'Carga (kg)';
+  const wLabel = loadLabel(ex);
   const now = new Date();
-  sheet(`<h2>${esc(ex.name)}</h2>
+  sheet(`<h2>${esc(exName(ex))}</h2>
     <form class="stack" data-submit="saveExGoal" data-id="${esc(ex.id)}"
       data-week0="${active ? `${st.weekSet.w}|${st.weekSet.r}` : ''}">
-      <h3>Meta do mês (até o fim de ${MONTHS[now.getMonth()]})</h3>
+      <h3>${t('Meta do mês (até o fim de {mes})', { mes: monthName(now.getMonth()) })}</h3>
       <div class="two">
         ${stepper('w', start.w, ex.step || 1, wLabel)}
-        ${stepper('r', start.r, 1, 'Repetições', 1)}
+        ${stepper('r', start.r, 1, t('Repetições'), 1)}
       </div>
-      ${sug ? `<p class="small muted">Sugestão do app (cerca de 5% acima do seu melhor recente): <b>${setStr(sug)}</b></p>`
-            : `<p class="small muted">Sem histórico ainda: defina uma meta realista e ajuste depois do primeiro treino.</p>`}
-      ${active ? `<h3>Meta desta semana</h3>
+      <p class="small muted">${esc(loadHint(ex))}</p>
+      ${sug ? `<p class="small muted">${t('Sugestão do app (cerca de 5% acima do seu melhor recente): <b>{set}</b>', { set: setStr(sug) })}</p>`
+            : `<p class="small muted">${t('Sem histórico ainda: defina uma meta realista e ajuste depois do primeiro treino.')}</p>`}
+      ${active ? `<h3>${t('Meta desta semana')}</h3>
       <div class="two">
         ${stepper('ww', st.weekSet.w, ex.step || 1, wLabel)}
-        ${stepper('wr', st.weekSet.r, 1, 'Repetições', 1)}
+        ${stepper('wr', st.weekSet.r, 1, t('Repetições'), 1)}
       </div>
       <p class="small muted">${st.weekManual
-        ? `Definida por você. O cálculo automático daria ${setStr(auto)}.`
-        : 'Calculada sozinha, em degraus até a meta do mês. Mude se quiser outra meta só nesta semana.'}</p>
-      ${st.weekManual ? `<button type="button" class="btn ghost block" data-act="weekAuto" data-id="${esc(ex.id)}">Voltar ao cálculo automático</button>` : ''}` : ''}
-      <button class="btn primary big">Salvar meta</button>
-      ${st ? `<button type="button" class="btn ghost danger block" data-act="delExGoal" data-id="${esc(ex.id)}">Remover meta</button>` : ''}
+        ? t('Definida por você. O cálculo automático daria {set}.', { set: setStr(auto) })
+        : t('Calculada sozinha, em degraus até a meta do mês. Mude se quiser outra meta só nesta semana.')}</p>
+      ${st.weekManual ? `<button type="button" class="btn ghost block" data-act="weekAuto" data-id="${esc(ex.id)}">${t('Voltar ao cálculo automático')}</button>` : ''}` : ''}
+      <button class="btn primary big">${t('Salvar meta')}</button>
+      ${st ? `<button type="button" class="btn ghost danger block" data-act="delExGoal" data-id="${esc(ex.id)}">${t('Remover meta')}</button>` : ''}
     </form>`);
 };
 submits.saveExGoal = form => {
@@ -202,12 +205,12 @@ actions.suggestAll = () => {
     if (sug) { setExGoal(ex, sug.w, sug.r); n++; }
   }
   save(); rerender();
-  toast(n ? `${n} meta${n > 1 ? 's' : ''} criada${n > 1 ? 's' : ''} para este mês.` : 'Registre treinos para o app sugerir metas.');
+  toast(n ? tn(n, '{n} meta criada para este mês.', '{n} metas criadas para este mês.') : t('Registre treinos para o app sugerir metas.'));
 };
 
 // ---------- Planilha ----------
 
-actions.exportGoals = () => shareFile(`overload-metas-${monthKey()}.csv`, goalsCSV(), 'text/csv');
+actions.exportGoals = () => shareFile(`overload-${t('metas')}-${monthKey()}.csv`, goalsCSV(), 'text/csv');
 
 changes.importGoals = async el => {
   const file = el.files?.[0];
@@ -217,14 +220,14 @@ changes.importGoals = async el => {
     save();
     rerender();
     const parts = [];
-    if (r.groups) parts.push(`${r.groups} grupamento${r.groups > 1 ? 's' : ''}`);
-    if (r.ex) parts.push(`${r.ex} meta${r.ex > 1 ? 's' : ''} do mês`);
-    if (r.weeks) parts.push(`${r.weeks} meta${r.weeks > 1 ? 's' : ''} da semana`);
-    let msg = parts.length ? `Atualizado: ${parts.join(', ')}.` : 'Nenhuma meta mudou.';
-    if (r.unknown.length) msg += ` Não encontrei: ${r.unknown.slice(0, 3).join(', ')}${r.unknown.length > 3 ? '…' : ''}.`;
+    if (r.groups) parts.push(tn(r.groups, '{n} grupamento', '{n} grupamentos'));
+    if (r.ex) parts.push(tn(r.ex, '{n} meta do mês', '{n} metas do mês'));
+    if (r.weeks) parts.push(tn(r.weeks, '{n} meta da semana', '{n} metas da semana'));
+    let msg = parts.length ? t('Atualizado: {lista}.', { lista: parts.join(', ') }) : t('Nenhuma meta mudou.');
+    if (r.unknown.length) msg += ` ${t('Não encontrei: {lista}.', { lista: r.unknown.slice(0, 3).join(', ') + (r.unknown.length > 3 ? '…' : '') })}`;
     toast(msg, 6000);
   } catch (e) {
-    toast(e.message || 'Não consegui ler esta planilha.', 6000);
+    toast(e.message || t('Não consegui ler esta planilha.'), 6000);
   }
   el.value = '';
 };

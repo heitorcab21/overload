@@ -14,6 +14,8 @@ Funciona no navegador do celular, pode ser instalado na tela inicial e roda sem 
 - **Execução ideal** de cada movimento: passo a passo, erros comuns e uma dica para 41 exercícios, acessível durante o treino.
 - **Progresso**: séries por semana, evolução da força estimada por exercício, recordes e histórico.
 - **Planilhas**: exporta treinos e metas em CSV (abre no Excel e no Google Planilhas) e faz backup completo em JSON.
+- **Português, inglês e espanhol**: escolha o idioma em Ajustes (o inicial segue o do celular). Telas, exercícios, tutoriais, planilhas, respostas da IA e o registro por voz mudam junto.
+- **Carga total**: toda carga anotada é a total levantada. Cada exercício mostra como somar: barra + anilhas dos dois lados, os dois halteres somados, um halter só, o valor do aparelho ou da polia, ou só o peso extra.
 - **Login com Google e Ajuda**: na primeira abertura o app pede para entrar com a conta Google (com a opção de usar sem conta), e a aba Ajuda tem tutoriais de cada parte do app.
 - **Treinador IA (opcional)**: com uma chave da API do Claude, entende frases de voz mais livres, analisa a semana, tira dúvidas de execução e gera orientações para exercícios personalizados.
 
@@ -84,7 +86,8 @@ O servidor abre em `http://localhost:5173`. Em localhost o service worker fica d
 | `js/logic.js` | Progressão de carga, metas e estatísticas |
 | `js/voice.js` | Reconhecimento de voz e interpretador de frases em português |
 | `js/ai.js` | Chamadas opcionais à API do Claude |
-| `js/views/` | Telas: hoje, treino, metas, progresso, treinos e ajustes |
+| `js/views/` | Telas: hoje, treino, metas, progresso, treinos, ajuda e ajustes |
+| `js/i18n.js`, `js/locales/` | Tradução: o texto em português no código é a chave; `en.js` e `es.js` trazem as traduções, os tutoriais e os exercícios |
 | `js/charts.js` | Gráficos em SVG |
 | `sw.js` | Cache para uso offline |
 

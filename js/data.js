@@ -1,4 +1,6 @@
 // Biblioteca de exercícios (com execução ideal) e modelos de rotina.
+// Os textos aqui estão em português; as traduções ficam em js/locales/.
+import { t, exPack } from './i18n.js';
 
 export const GROUPS = [
   'Peito', 'Costas', 'Ombros', 'Bíceps', 'Tríceps',
@@ -17,13 +19,13 @@ export const LIB = [
      'Empurre a barra para cima e levemente para trás até estender os braços, sem perder a posição das escápulas.'],
     ['Quicar a barra no peito ou tirar o quadril do banco.', 'Abrir os cotovelos a 90°, sobrecarregando o ombro.'],
     'Pense em "dobrar a barra" para ativar as costas e estabilizar os ombros.'),
-  x('supino-inclinado-halteres', 'Supino inclinado com halteres', 'Peito', [3, 8, 12], 2,
+  x('supino-inclinado-halteres', 'Supino inclinado com halteres', 'Peito', [3, 8, 12], 4,
     ['Banco entre 30° e 45°. Halteres na linha do peito superior, punhos neutros sobre os cotovelos.',
      'Desça até sentir o peito alongar, com os antebraços sempre verticais.',
      'Suba aproximando os halteres sem batê-los, mantendo o peito aberto.'],
     ['Inclinar demais o banco e transformar em exercício de ombro.', 'Encurtar a descida para usar mais carga.'],
     'Mantenha as escápulas "no bolso de trás" durante toda a série.'),
-  x('supino-reto-halteres', 'Supino reto com halteres', 'Peito', [3, 8, 12], 2,
+  x('supino-reto-halteres', 'Supino reto com halteres', 'Peito', [3, 8, 12], 4,
     ['Deitado, halteres ao lado do peito, pés firmes e escápulas retraídas.',
      'Desça em arco até os halteres ficarem na altura do peito, com alongamento confortável.',
      'Empurre para cima convergindo levemente, sem travar com força os cotovelos.'],
@@ -60,7 +62,7 @@ export const LIB = [
      'Puxe levando o peito em direção à barra até o queixo passar dela.',
      'Desça controlando até estender totalmente os braços.'],
     ['Usar balanço das pernas (kipping) sem querer.', 'Não estender os braços embaixo.'],
-    'Sem carga, o peso é o corporal; a carga registrada é o peso extra na cintura.', { bw: true }),
+    'Sem peso extra, anote 0. Com cinto de carga, anote só o peso extra.', { bw: true }),
   x('remada-curvada', 'Remada curvada com barra', 'Costas', [3, 6, 10], 2.5,
     ['Pés na largura do quadril, joelhos levemente flexionados e tronco inclinado a ~45°, coluna neutra.',
      'Puxe a barra em direção ao umbigo, cotovelos próximos do corpo.',
@@ -78,7 +80,7 @@ export const LIB = [
      'Puxe o halter em direção ao quadril, cotovelo rente ao corpo.',
      'Desça até o braço estender e a escápula alongar, sem girar o tronco.'],
     ['Girar o tronco para subir o halter.', 'Puxar em direção ao ombro em vez do quadril.'],
-    'Registre a carga de um halter.'),
+    'Anote o peso do halter usado e faça as reps de cada lado.'),
   x('pulldown-braco-reto', 'Pulldown com braços estendidos', 'Costas', [3, 10, 15], 2.5,
     ['Em pé de frente para a polia alta, tronco levemente inclinado, braços quase estendidos.',
      'Leve a barra em arco até as coxas usando só os ombros.',
@@ -87,19 +89,19 @@ export const LIB = [
     'Ótimo para sentir o dorsal antes das puxadas.'),
 
   // ---------- Ombros ----------
-  x('desenvolvimento-halteres', 'Desenvolvimento com halteres', 'Ombros', [3, 8, 12], 2,
+  x('desenvolvimento-halteres', 'Desenvolvimento com halteres', 'Ombros', [3, 8, 12], 4,
     ['Sentado com encosto quase vertical, halteres na altura das orelhas, cotovelos sob os punhos.',
      'Empurre para cima até quase estender os braços, sem bater os halteres.',
      'Desça controlando até os cotovelos ficarem pouco abaixo da linha dos ombros.'],
     ['Arquear demais a lombar.', 'Descer pouco para usar mais carga.'],
     'Cotovelos levemente à frente do corpo protegem o ombro.'),
-  x('elevacao-lateral', 'Elevação lateral', 'Ombros', [3, 10, 15], 1,
+  x('elevacao-lateral', 'Elevação lateral', 'Ombros', [3, 10, 15], 2,
     ['Em pé, halteres ao lado do corpo, tronco levemente inclinado à frente.',
      'Eleve os braços para os lados até a altura dos ombros, cotovelos levemente flexionados.',
      'Desça devagar, sem deixar os halteres encostarem no corpo.'],
     ['Encolher os ombros e usar o trapézio.', 'Dar impulso com o tronco.'],
     'Pense em afastar os halteres para longe, não em levantá-los.'),
-  x('crucifixo-inverso', 'Crucifixo inverso', 'Ombros', [3, 10, 15], 1,
+  x('crucifixo-inverso', 'Crucifixo inverso', 'Ombros', [3, 10, 15], 2,
     ['Na máquina ou inclinado com halteres, peito apoiado e braços à frente.',
      'Abra os braços para os lados até a linha dos ombros.',
      'Volte devagar sem deixar a carga encostar.'],
@@ -119,13 +121,13 @@ export const LIB = [
      'Desça devagar até estender quase totalmente.'],
     ['Balançar o tronco.', 'Levar os cotovelos para a frente.'],
     'Encoste as costas na parede para tirar o impulso.'),
-  x('rosca-alternada', 'Rosca alternada com halteres', 'Bíceps', [3, 8, 12], 1,
+  x('rosca-alternada', 'Rosca alternada com halteres', 'Bíceps', [3, 8, 12], 4,
     ['Em pé ou sentado, halteres ao lado do corpo com as palmas voltadas para dentro.',
      'Suba um halter girando a palma para cima durante o movimento.',
      'Desça controlando e só então comece o outro lado.'],
     ['Subir os dois com pressa e perder o controle.', 'Deixar o cotovelo ir para trás.'],
-    'Registre a carga de um halter.'),
-  x('rosca-martelo', 'Rosca martelo', 'Bíceps', [3, 8, 12], 1,
+    'Anote os dois halteres somados (ex.: 12 kg em cada mão = 24 kg).'),
+  x('rosca-martelo', 'Rosca martelo', 'Bíceps', [3, 8, 12], 4,
     ['Halteres com pegada neutra (palmas voltadas para o corpo).',
      'Flexione os cotovelos mantendo a pegada neutra até o halter chegar perto do ombro.',
      'Desça devagar com os cotovelos parados.'],
@@ -162,7 +164,7 @@ export const LIB = [
      'Desça flexionando os cotovelos até os ombros ficarem na altura deles.',
      'Empurre até estender. Tronco mais ereto foca o tríceps; inclinado foca o peito.'],
     ['Descer demais sem mobilidade de ombro.', 'Encolher os ombros.'],
-    'A carga registrada é o peso extra na cintura.', { bw: true }),
+    'Sem peso extra, anote 0. Com cinto de carga, anote só o peso extra.', { bw: true }),
 
   // ---------- Quadríceps ----------
   x('agachamento-livre', 'Agachamento livre', 'Quadríceps', [3, 5, 10], 5,
@@ -183,12 +185,12 @@ export const LIB = [
      'Desça devagar, sem deixar a carga bater.'],
     ['Tirar o quadril do banco.', 'Usar impulso no início.'],
     'Segure nas alças para manter o quadril fixo.'),
-  x('agachamento-bulgaro', 'Agachamento búlgaro', 'Quadríceps', [3, 8, 12], 2,
+  x('agachamento-bulgaro', 'Agachamento búlgaro', 'Quadríceps', [3, 8, 12], 4,
     ['Peito do pé de trás apoiado no banco, pé da frente um passo largo adiante.',
      'Desça verticalmente até a coxa da frente ficar paralela ao chão.',
      'Suba empurrando o chão com o pé da frente.'],
     ['Pé da frente perto demais do banco.', 'Joelho caindo para dentro.'],
-    'Registre a carga de um halter e as reps de cada perna.'),
+    'Anote os dois halteres somados e as reps de cada perna.'),
   x('hack', 'Agachamento hack', 'Quadríceps', [3, 8, 12], 10,
     ['Costas apoiadas, pés na largura dos ombros no meio ou na parte baixa da plataforma.',
      'Desça controlando o mais fundo que conseguir mantendo os calcanhares apoiados.',
@@ -278,6 +280,82 @@ export const LIB = [
 ];
 
 export const LIB_BY_ID = Object.fromEntries(LIB.map(e => [e.id, e]));
+
+// ---------- Como anotar a carga ----------
+// A carga anotada é sempre a CARGA TOTAL levantada. Cada exercício diz como somar.
+const LOAD_OF = {
+  bar: ['supino-reto', 'remada-curvada', 'rosca-direta', 'rosca-scott', 'triceps-testa', 'agachamento-livre', 'stiff', 'levantamento-terra', 'elevacao-pelvica'],
+  db2: ['supino-inclinado-halteres', 'supino-reto-halteres', 'desenvolvimento-halteres', 'elevacao-lateral', 'rosca-alternada', 'rosca-martelo', 'agachamento-bulgaro'],
+  db1: ['remada-unilateral', 'triceps-frances'],
+  cable: ['puxada-frente', 'remada-baixa', 'pulldown-braco-reto', 'face-pull', 'triceps-corda', 'gluteo-polia', 'abdominal-polia'],
+  cable2: ['crossover'],
+  machine: ['peck-deck', 'cadeira-extensora', 'mesa-flexora', 'cadeira-flexora', 'cadeira-abdutora', 'panturrilha-em-pe', 'panturrilha-sentado'],
+  plate: ['leg-press', 'hack'],
+  mixed: ['crucifixo-inverso'],
+  bw: ['flexao', 'barra-fixa', 'mergulho', 'prancha', 'elevacao-pernas'],
+};
+export const LOAD_TYPE = Object.fromEntries(Object.entries(LOAD_OF).flatMap(([k, ids]) => ids.map(id => [id, k])));
+
+/** Passos de aumento antigos (antes da carga total), para atualizar quem já tinha o exercício. */
+export const OLD_STEP = {
+  'supino-inclinado-halteres': 2, 'supino-reto-halteres': 2, 'desenvolvimento-halteres': 2, 'elevacao-lateral': 1,
+  'crucifixo-inverso': 1, 'rosca-alternada': 1, 'rosca-martelo': 1, 'agachamento-bulgaro': 2,
+};
+
+
+// ---------- Textos no idioma escolhido ----------
+
+/** Nome do grupamento no idioma atual (o código guarda sempre em português). */
+export const tg = g => t(g);
+
+/** Nome do exercício no idioma atual. Se a pessoa renomeou, vale o nome dela. */
+export function exName(ex) {
+  if (!ex) return '';
+  const l = ex.lib && LIB_BY_ID[ex.lib];
+  if (l && ex.name === l.name) return exPack(ex.lib)?.name ?? ex.name;
+  return ex.name;
+}
+
+/** Tipo de carga: barra, halteres, polia, aparelho, peso corporal... (null em exercício próprio). */
+export const loadType = ex => (ex?.lib && LOAD_TYPE[ex.lib]) || (ex?.bw ? 'bw' : null);
+
+/** Como somar a carga total deste exercício, com exemplo. */
+export function loadHint(ex) {
+  const k = loadType(ex);
+  const H = {
+    bar: t('Carga total = barra + anilhas dos dois lados. Ex.: barra de 20 kg com 30 kg de cada lado = 80 kg. Barras W e barras curtas costumam pesar 10 kg.'),
+    db2: t('Carga total = os dois halteres somados. Ex.: 20 kg em cada mão = 40 kg.'),
+    db1: t('Um halter só: anote o peso dele. Ex.: halter de 20 kg = 20 kg.'),
+    cable: t('Anote o número marcado na pilha de placas da polia.'),
+    cable2: t('Some as duas polias. Ex.: 15 kg de cada lado = 30 kg.'),
+    machine: t('Anote o valor marcado no aparelho. Se ele usa anilhas, some as anilhas dos dois lados.'),
+    plate: t('Some as anilhas dos dois lados, sem contar o peso do aparelho. Ex.: 2 anilhas de 20 kg de cada lado = 80 kg.'),
+    mixed: t('Na máquina: o valor marcado no aparelho. Com halteres: os dois somados (ex.: 5 kg em cada mão = 10 kg).'),
+    bw: t('Sem peso extra, deixe 0. Com cinto ou colete de carga, anote só o peso extra.'),
+  };
+  return H[k] ?? t('Anote sempre a carga total levantada: barra + anilhas dos dois lados, os dois halteres somados ou o valor do aparelho.');
+}
+
+/** Versão curta, para listas. */
+export function loadShort(ex) {
+  const S = {
+    bar: t('barra + anilhas'), db2: t('2 halteres somados'), db1: t('1 halter'), cable: t('número da polia'),
+    cable2: t('2 polias somadas'), machine: t('valor do aparelho'), plate: t('anilhas, sem o aparelho'),
+    mixed: t('aparelho ou 2 halteres'), bw: t('só o peso extra'),
+  };
+  return S[loadType(ex)] ?? t('carga total');
+}
+
+/** Rótulo do campo de carga. */
+export const loadLabel = ex => (ex?.bw ? t('Carga extra (kg)') : t('Carga total (kg)'));
+
+/** Execução ideal do exercício no idioma atual (biblioteca) ou a gerada para exercício próprio. */
+export function exCues(ex) {
+  if (!ex) return null;
+  const l = ex.lib && LIB_BY_ID[ex.lib];
+  if (l) return exPack(ex.lib) ?? l;
+  return ex.cues ?? null;
+}
 
 export const TEMPLATES = [
   {

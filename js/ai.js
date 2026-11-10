@@ -1,6 +1,10 @@
 // IA opcional (Claude). Só é usada se houver uma chave da API nas configurações.
 // A chave fica salva apenas neste aparelho e as chamadas vão direto do navegador para a Anthropic.
 import { state } from './store.js';
+import { t, lang } from './i18n.js';
+
+// Idioma em que a IA deve responder
+const REPLY = () => ({ pt: 'português do Brasil', en: 'inglês (English)', es: 'espanhol (español)' }[lang()]);
 
 const SDK_URL = 'https://esm.sh/@anthropic-ai/sdk@1.8.0';
 const DEFAULT_MODEL = 'claude-opus-5-5';
@@ -11,11 +15,11 @@ export const aiEnabled = () => !!state.settings.apiKey;
 
 let Anthropic = null;
 async function getClient() {
-  if (!navigator.onLine) throw new Error('Sem internet: a IA precisa de conexão.');
+  if (!navigator.onLine) throw new Error(t('Sem internet: a IA precisa de conexão.'));
   try {
     Anthropic ??= (await import(SDK_URL)).default;
   } catch {
-    throw new Error('Não foi possível carregar a biblioteca da IA. Verifique a conexão.');
+    throw new Error(t('Não foi possível carregar a biblioteca da IA. Verifique a conexão.'));
   }
   return new Anthropic({ apiKey: state.settings.apiKey, dangerouslyAllowBrowser: true });
 }
@@ -36,18 +40,18 @@ async function ask({ system, user, effort = 'medium', schema }) {
       ? await client.beta.messages.create({ ...params, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default' })
       : await client.messages.create(params);
   } catch (err) {
-    if (err instanceof Anthropic.AuthenticationError) throw new Error('Chave da API inválida. Confira em Ajustes.');
-    if (err instanceof Anthropic.PermissionDeniedError) throw new Error('Sua chave não tem permissão para este modelo.');
-    if (err instanceof Anthropic.NotFoundError) throw new Error('Modelo não encontrado. Escolha outro em Ajustes.');
-    if (err instanceof Anthropic.RateLimitError) throw new Error('Limite de uso atingido. Tente de novo em instantes.');
-    if (err instanceof Anthropic.BadRequestError) throw new Error(`A IA rejeitou o pedido: ${err.message}`);
-    if (err instanceof Anthropic.APIConnectionError) throw new Error('Falha de conexão com a IA.');
-    if (err instanceof Anthropic.APIError) throw new Error(`Erro da IA (${err.status}). Tente mais tarde.`);
+    if (err instanceof Anthropic.AuthenticationError) throw new Error(t('Chave da API inválida. Confira em Ajustes.'));
+    if (err instanceof Anthropic.PermissionDeniedError) throw new Error(t('Sua chave não tem permissão para este modelo.'));
+    if (err instanceof Anthropic.NotFoundError) throw new Error(t('Modelo não encontrado. Escolha outro em Ajustes.'));
+    if (err instanceof Anthropic.RateLimitError) throw new Error(t('Limite de uso atingido. Tente de novo em instantes.'));
+    if (err instanceof Anthropic.BadRequestError) throw new Error(t('A IA rejeitou o pedido: {msg}', { msg: err.message }));
+    if (err instanceof Anthropic.APIConnectionError) throw new Error(t('Falha de conexão com a IA.'));
+    if (err instanceof Anthropic.APIError) throw new Error(t('Erro da IA ({n}). Tente mais tarde.', { n: err.status }));
     throw err;
   }
-  if (res.stop_reason === 'refusal') throw new Error('A IA não pôde responder a este pedido.');
+  if (res.stop_reason === 'refusal') throw new Error(t('A IA não pôde responder a este pedido.'));
   const text = res.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
-  if (res.stop_reason === 'max_tokens' && schema) throw new Error('A resposta da IA veio incompleta. Tente de novo.');
+  if (res.stop_reason === 'max_tokens' && schema) throw new Error(t('A resposta da IA veio incompleta. Tente de novo.'));
   return text;
 }
 
@@ -80,7 +84,7 @@ export async function aiParseVoice(transcript, ctx) {
     effort: 'low',
     schema: ACTIONS_SCHEMA,
     system: `Você converte o que uma pessoa falou durante um treino de musculação em ações estruturadas.
-A fala vem de reconhecimento de voz em português do Brasil e pode ter erros de transcrição.
+A fala vem de reconhecimento de voz em ${REPLY()} e pode ter erros de transcrição.
 Tipos de ação:
 - "set": uma série feita. Uma ação por série (se a pessoa disse "três séries de dez com cinquenta", devolva três ações).
 - "planned": a pessoa fez a próxima série exatamente como a meta. "planned_all": fez todas as séries restantes como a meta.
@@ -110,17 +114,18 @@ O que a pessoa disse: "${transcript}"`,
   }).filter(Boolean);
 }
 
-const COACH = `Você é um treinador de musculação experiente e direto, especialista em sobrecarga progressiva.
-Responda em português do Brasil, em texto simples, sem markdown, sem tabelas e sem emojis.
+const COACH = () => `Você é um treinador de musculação experiente e direto, especialista em sobrecarga progressiva.
+Responda em ${REPLY()}, em texto simples, sem markdown, sem tabelas e sem emojis.
+As cargas anotadas são a carga total levantada (barra + anilhas, ou os dois halteres somados).
 Baseie-se apenas nos dados fornecidos. Não dê diagnóstico médico: se houver relato de dor persistente, recomende procurar um profissional de saúde.`;
 
 /** Análise da semana a partir do resumo dos treinos e das metas. */
 export function aiWeeklyAnalysis(summary) {
   return ask({
     effort: 'medium',
-    system: `${COACH}
+    system: `${COACH()}
 Escreva uma análise curta (no máximo 180 palavras) com três partes, cada uma em um parágrafo iniciado pelo título seguido de dois-pontos:
-"O que foi bem", "O que ajustar" e "Foco da próxima semana". Cite exercícios e números concretos dos dados.`,
+${t('"O que foi bem", "O que ajustar" e "Foco da próxima semana"')}. Cite exercícios e números concretos dos dados.`,
     user: summary,
   });
 }
@@ -129,7 +134,7 @@ Escreva uma análise curta (no máximo 180 palavras) com três partes, cada uma 
 export function aiAskExecution(exerciseName, cues, question) {
   return ask({
     effort: 'low',
-    system: `${COACH}
+    system: `${COACH()}
 A pessoa está na academia, com o celular na mão. Responda em no máximo 120 palavras, com orientação prática de execução.`,
     user: `Exercício: ${exerciseName}
 ${cues ? `Orientações que o app já mostra:\n${cues}\n` : ''}
@@ -151,7 +156,7 @@ export async function aiCuesFor(exerciseName, group) {
         tip: { type: 'string', description: 'Uma dica prática curta.' },
       },
     },
-    system: `${COACH}
+    system: `${COACH()}
 Descreva a execução ideal do exercício pedido: três passos objetivos (posição inicial, movimento, retorno), dois erros comuns e uma dica. Frases curtas.`,
     user: `Exercício: ${exerciseName} (grupamento: ${group})`,
   });

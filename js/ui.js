@@ -1,4 +1,5 @@
 // Utilitários de interface: formatação, ícones, toast e folha modal.
+import { t, lang, locale } from './i18n.js';
 
 export const $ = (s, r = document) => r.querySelector(s);
 export const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -6,18 +7,33 @@ export const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 export const esc = s => String(s ?? '').replace(/[&<>"']/g,
   c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-export const fmt = n => (Math.round(n * 100) / 100).toLocaleString('pt-BR');
-export const kg = w => (w > 0 ? `${fmt(w)} kg` : 'peso corporal');
+export const fmt = n => (Math.round(n * 100) / 100).toLocaleString(locale());
+export const kg = w => (w > 0 ? `${fmt(w)} kg` : t('peso corporal'));
 export const setStr = s => (s.w > 0 ? `${fmt(s.w)} kg × ${s.r}` : `${s.r} reps`);
 export const compact = n => (n >= 10000 ? `${fmt(Math.round(n / 100) / 10)} t` : `${fmt(Math.round(n))} kg`);
 
-const WD = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+const WD = {
+  pt: ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'],
+  en: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+  es: ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'],
+};
+const MONTH_NAMES = {
+  pt: ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'],
+  en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+  es: ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'],
+};
+/** Letras dos dias da semana, começando na segunda. */
+export const weekLetters = () => ({ pt: 'STQQSSD', en: 'MTWTFSS', es: 'LMXJVSD' }[lang()].split(''));
+export const monthName = i => MONTH_NAMES[lang()][i];
+
 export function fmtDate(d, withWeekday = true) {
   const x = new Date(d);
-  const dm = `${String(x.getDate()).padStart(2, '0')}/${String(x.getMonth() + 1).padStart(2, '0')}`;
-  return withWeekday ? `${WD[x.getDay()]} ${dm}` : dm;
+  const dd = String(x.getDate()).padStart(2, '0');
+  const mm = String(x.getMonth() + 1).padStart(2, '0');
+  const dm = lang() === 'en' ? `${mm}/${dd}` : `${dd}/${mm}`;
+  return withWeekday ? `${WD[lang()][x.getDay()]} ${dm}` : dm;
 }
-export const MONTHS = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+export const fmtTime = d => new Date(d).toLocaleTimeString(locale(), { hour: '2-digit', minute: '2-digit' });
 
 const I = p => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
 export const icon = {
@@ -66,7 +82,7 @@ export function toast(msg, ms = 2800) {
 export function sheet(html) {
   const s = $('#sheet');
   s.innerHTML = `<div class="sheet-card" role="dialog" aria-modal="true">
-    <button class="icon-btn sheet-x" data-act="closeSheet" aria-label="Fechar">${icon.x}</button>${html}</div>`;
+    <button class="icon-btn sheet-x" data-act="closeSheet" aria-label="${t('Fechar')}">${icon.x}</button>${html}</div>`;
   s.hidden = false;
   document.body.classList.add('no-scroll');
 }
@@ -91,9 +107,9 @@ export const badgeDone = label => `<span class="badge good">${icon.check}${esc(l
 export function stepper(name, value, step, label, min = 0, change = '') {
   return `<div class="stepper" data-name="${name}" data-step="${step}" data-min="${min}">
     <span class="stepper-label">${esc(label)}</span>
-    <button type="button" class="icon-btn" data-act="stepDown" aria-label="Diminuir ${esc(label)}">${icon.minus}</button>
+    <button type="button" class="icon-btn" data-act="stepDown" aria-label="${esc(t('Diminuir {x}', { x: label }))}">${icon.minus}</button>
     <input type="number" inputmode="decimal" name="${name}" value="${value}" step="any" min="${min}" aria-label="${esc(label)}"${change ? ` data-change="${change}"` : ''}>
-    <button type="button" class="icon-btn" data-act="stepUp" aria-label="Aumentar ${esc(label)}">${icon.plus}</button>
+    <button type="button" class="icon-btn" data-act="stepUp" aria-label="${esc(t('Aumentar {x}', { x: label }))}">${icon.plus}</button>
   </div>`;
 }
 function bump(el, dir) {

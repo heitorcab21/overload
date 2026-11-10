@@ -1,5 +1,6 @@
 // Regras de progressão de carga, metas e estatísticas.
 import { state } from './store.js';
+import { t as tr, locale } from './i18n.js';
 
 export const DAY = 864e5;
 
@@ -67,7 +68,7 @@ export function planFor(ex) {
   if (!last) {
     return {
       w: ex.startW ?? 0, reps: Array(n).fill(ex.repMin), first: true,
-      note: 'Primeira vez: ajuste a carga na primeira série e ela fica salva para os próximos treinos.',
+      note: tr('Primeira vez: ajuste a carga na primeira série e ela fica salva para os próximos treinos.'),
     };
   }
   const w = workWeight(last.sets);
@@ -76,16 +77,16 @@ export function planFor(ex) {
   const out = (w2, reps, note, kind) => ({ w: w2, reps, note, kind, last: lastTxt });
 
   if ((last.flags || []).includes('dor')) {
-    return out(w, lr, 'Você marcou dor ou desconforto da última vez: repita a carga e priorize a execução.', 'hold');
+    return out(w, lr, tr('Você marcou dor ou desconforto da última vez: repita a carga e priorize a execução.'), 'hold');
   }
   const allTop = last.sets.length >= n && lr.every(r => r >= ex.repMax);
   if (allTop) {
     if (ex.step > 0) {
       const w2 = w + ex.step;
       return out(w2, Array(n).fill(ex.repMin),
-        `Você fez ${ex.repMax} reps em todas as séries: hora de subir para ${w2.toLocaleString('pt-BR')} kg.`, 'up');
+        tr('Você fez {n} reps em todas as séries: hora de subir para {w} kg.', { n: ex.repMax, w: w2.toLocaleString(locale()) }), 'up');
     }
-    return out(w, lr.map(r => r + 1), 'Topo da faixa em todas as séries: tente mais uma rep ou adicione carga.', 'up');
+    return out(w, lr.map(r => r + 1), tr('Topo da faixa em todas as séries: tente mais uma rep ou adicione carga.'), 'up');
   }
   const below = lr.every(r => r < ex.repMin);
   if (below) {
@@ -94,20 +95,20 @@ export function planFor(ex) {
     if (prevBelow && w > 0) {
       const w2 = Math.max(0, roundStep(w * 0.9, ex.step));
       return out(w2, Array(n).fill(Math.round((ex.repMin + ex.repMax) / 2)),
-        'Duas sessões abaixo da faixa de reps: reduza cerca de 10% e reconstrua com boa execução.', 'down');
+        tr('Duas sessões abaixo da faixa de reps: reduza cerca de 10% e reconstrua com boa execução.'), 'down');
     }
-    return out(w, lr.map(r => r + 1), 'Abaixo da faixa: ganhe 1 rep por série antes de mexer na carga.', 'hold');
+    return out(w, lr.map(r => r + 1), tr('Abaixo da faixa: ganhe 1 rep por série antes de mexer na carga.'), 'hold');
   }
   if (last.feel === 'fail') {
-    return out(w, lr, 'Você foi até a falha da última vez: repita os mesmos números com mais folga.', 'hold');
+    return out(w, lr, tr('Você foi até a falha da última vez: repita os mesmos números com mais folga.'), 'hold');
   }
   if (last.feel === 'easy') {
-    return out(w, lr.map(r => Math.min(ex.repMax, r + 1)), 'Estava fácil: +1 rep em todas as séries.', 'reps');
+    return out(w, lr.map(r => Math.min(ex.repMax, r + 1)), tr('Estava fácil: +1 rep em todas as séries.'), 'reps');
   }
   const min = Math.min(...lr);
   const i = lr.indexOf(min);
   const reps = lr.map((r, j) => (j === i ? Math.min(ex.repMax, r + 1) : r));
-  return out(w, reps, `Mesma carga, +1 rep na ${i + 1}ª série.`, 'reps');
+  return out(w, reps, tr('Mesma carga, +1 rep na {n}ª série.', { n: i + 1 }), 'reps');
 }
 
 // ---------- Metas por exercício ----------

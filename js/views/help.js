@@ -1,6 +1,7 @@
 // Ajuda: tutoriais de uso do app.
 import { $, esc, icon } from '../ui.js';
 import { route } from '../router.js';
+import { t, helpPack } from '../i18n.js';
 
 // Cada tópico: [título, resumo de uma linha, conteúdo em HTML]
 const TOPICS = [
@@ -23,6 +24,19 @@ const TOPICS = [
       <li>Toque em <b>Próximo</b> e, no último exercício, em <b>Finalizar</b>.</li>
     </ol>
     <p class="tip">Errou um número? Toque na série já registrada para corrigir ou excluir. O ícone de lista no topo mostra todos os exercícios do treino.</p>`],
+
+  ['Como anotar a carga', 'Sempre a carga total', `
+    <p>Anote sempre a <b>carga total levantada</b>, e não só o que está de um lado. Cada exercício mostra a regra dele no treino e na tela do exercício.</p>
+    <ul class="errs">
+      <li><b>Barra</b> (supino, agachamento, remada, terra): barra + anilhas dos dois lados. Barra de 20 kg com 30 kg de cada lado = <b>80 kg</b>. Barras W e barras curtas costumam pesar 10 kg.</li>
+      <li><b>Dois halteres</b> (supino com halteres, desenvolvimento, rosca alternada): some os dois. 20 kg em cada mão = <b>40 kg</b>.</li>
+      <li><b>Um halter só</b> (serrote, tríceps francês): o peso desse halter. Halter de 20 kg = <b>20 kg</b>.</li>
+      <li><b>Aparelho com pilha de placas</b> (cadeira extensora, mesa flexora, peck deck): o número marcado no aparelho.</li>
+      <li><b>Polia</b>: o número da pilha. No crossover, que usa duas polias, some os dois lados: 15 kg de cada lado = <b>30 kg</b>.</li>
+      <li><b>Leg press e hack</b>: as anilhas dos dois lados, sem o peso do aparelho. 2 anilhas de 20 kg de cada lado = <b>80 kg</b>.</li>
+      <li><b>Peso corporal</b> (barra fixa, mergulho, flexão): deixe 0. Com cinto ou colete de carga, anote só o peso extra.</li>
+    </ul>
+    <p class="tip">O mais importante é anotar sempre do mesmo jeito: é assim que o app compara um treino com o outro e sugere a próxima carga.</p>`],
 
   ['Registrar por voz', 'Fale em vez de tocar', `
     <p>Toque no <b>microfone azul</b> embaixo e fale. Exemplos:</p>
@@ -112,9 +126,9 @@ const TOPICS = [
 
 function render() {
   $('#view').innerHTML = `
-    <div class="head"><div class="grow"><h1>Ajuda</h1><p class="sub">Como usar o Overload</p></div></div>
+    <div class="head"><div class="grow"><h1>${t('Ajuda')}</h1><p class="sub">${t('Como usar o Overload')}</p></div></div>
     <div class="stack">
-      ${TOPICS.map(([title, sub, body], i) => `<details class="card help"${i === 0 ? ' open' : ''}>
+      ${(helpPack() || TOPICS).map(([title, sub, body], i) => `<details class="card help"${i === 0 ? ' open' : ''}>
         <summary><span class="grow"><b>${esc(title)}</b><br><span class="small muted">${esc(sub)}</span></span>${icon.down}</summary>
         <div class="help-body">${body}</div>
       </details>`).join('')}

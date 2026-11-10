@@ -5,6 +5,7 @@
 import { state, save, onSave, exportData, applyRemote, mergeRemote, resetAll } from './store.js';
 import { GOOGLE_CLIENT_ID } from './config.js';
 import { rerender } from './router.js';
+import { t } from './i18n.js';
 
 const SCOPE = 'https://www.googleapis.com/auth/drive.file';
 const FILE = 'overload-dados.json';
@@ -19,7 +20,7 @@ export const driveConnected = () => !!state.sync?.connected;
 export const driveDirty = () => driveConnected() && (state.updatedAt || 0) > (state.sync?.syncedAt || 0);
 
 class NeedLogin extends Error {
-  constructor() { super('Entre de novo com o Google para sincronizar.'); this.needLogin = true; }
+  constructor() { super(t('Entre de novo com o Google para sincronizar.')); this.needLogin = true; }
 }
 
 // ---------- Login (Google Identity Services) ----------
@@ -32,7 +33,7 @@ export function loadGoogle() {
     s.src = 'https://accounts.google.com/gsi/client';
     s.async = true;
     s.onload = resolve;
-    s.onerror = () => { gisPromise = null; reject(new Error('Não foi possível falar com o Google. Verifique a internet.')); };
+    s.onerror = () => { gisPromise = null; reject(new Error(t('Não foi possível falar com o Google. Verifique a internet.'))); };
     document.head.appendChild(s);
   });
   return gisPromise;
@@ -58,21 +59,21 @@ function requestToken(prompt) {
       callback: r => {
         if (r.error) {
           reject(new Error(r.error === 'access_denied'
-            ? 'O Google não liberou o acesso. Se apareceu que o app está em teste, peça ao dono do app para adicionar seu e-mail à lista.'
-            : 'Falha ao entrar com o Google.'));
+            ? t('O Google não liberou o acesso. Se apareceu que o app está em teste, peça ao dono do app para adicionar seu e-mail à lista.')
+            : t('Falha ao entrar com o Google.')));
           return;
         }
         if (!window.google.accounts.oauth2.hasGrantedAllScopes(r, SCOPE)) {
-          reject(new Error('Marque a permissão do Google Drive para sincronizar.'));
+          reject(new Error(t('Marque a permissão do Google Drive para sincronizar.')));
           return;
         }
         try { localStorage.setItem(TOKEN_KEY, JSON.stringify({ token: r.access_token, exp: Date.now() + r.expires_in * 1000 })); } catch { /* ok */ }
         resolve(r.access_token);
       },
       error_callback: e => reject(new Error(
-        e.type === 'popup_closed' ? 'Login cancelado.'
-          : e.type === 'popup_failed_to_open' ? 'O navegador bloqueou a janela do Google. Permita pop-ups para este site e tente de novo.'
-            : 'Falha ao entrar com o Google.')),
+        e.type === 'popup_closed' ? t('Login cancelado.')
+          : e.type === 'popup_failed_to_open' ? t('O navegador bloqueou a janela do Google. Permita pop-ups para este site e tente de novo.')
+            : t('Falha ao entrar com o Google.'))),
     });
     client.requestAccessToken({ prompt });
   });
@@ -87,12 +88,12 @@ async function api(url, opts = {}) {
   try {
     res = await fetch(url, { ...opts, headers: { Authorization: `Bearer ${token}`, ...(opts.headers || {}) } });
   } catch {
-    throw new Error('Sem conexão com o Google Drive.');
+    throw new Error(t('Sem conexão com o Google Drive.'));
   }
   if (res.status === 401) { localStorage.removeItem(TOKEN_KEY); throw new NeedLogin(); }
-  if (res.status === 404) { const e = new Error('Arquivo não encontrado no Drive.'); e.notFound = true; throw e; }
-  if (res.status === 403) throw new Error('O Google recusou o acesso. Confira se seu e-mail está na lista de testadores do app.');
-  if (!res.ok) throw new Error(`Erro do Google Drive (${res.status}). Tente mais tarde.`);
+  if (res.status === 404) { const e = new Error(t('Arquivo não encontrado no Drive.')); e.notFound = true; throw e; }
+  if (res.status === 403) throw new Error(t('O Google recusou o acesso. Confira se seu e-mail está na lista de testadores do app.'));
+  if (!res.ok) throw new Error(t('Erro do Google Drive ({n}). Tente mais tarde.', { n: res.status }));
   return res;
 }
 
@@ -214,7 +215,7 @@ export function refreshIfNeeded() {
 export async function connect() {
   if (!googleReady()) {
     loadGoogle().catch(() => {});
-    throw new Error('Carregando o Google… toque de novo em alguns segundos.');
+    throw new Error(t('Carregando o Google… toque de novo em alguns segundos.'));
   }
   const first = !state.sync?.email;
   await requestToken(first ? 'select_account' : '');

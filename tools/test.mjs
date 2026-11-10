@@ -8,6 +8,8 @@ globalThis.localStorage = { getItem: k => mem[k] ?? null, setItem: (k, v) => { m
 const { parseUtterance, wordsToDigits } = await import('../js/voice.js');
 const { state } = await import('../js/store.js');
 const { planFor, exGoalStatus, groupGoalStatus, e1rm, toSet, sessionPRs } = await import('../js/logic.js');
+// os testes abaixo usam o português; os outros idiomas são testados no fim
+state.settings.lang = 'pt';
 
 let n = 0;
 const eq = (a, b, msg) => { assert.deepEqual(a, b, msg); n++; };
@@ -176,5 +178,41 @@ store.applyRemote({ ...remote, sessions: [], updatedAt: 5 });
 eq([S().sessions.length, S().updatedAt, S().settings.apiKey], [0, 5, 'chave-local'], 'aplicar o Drive não conta como alteração local');
 assert.throws(() => store.applyRemote({ foo: 1 }), /corrompido/);
 n++;
+
+// ---- idiomas ----
+const i18n = await import('../js/i18n.js');
+const { collectKeys } = await import('./i18n-keys.mjs');
+const keys = collectKeys();
+for (const l of ['en', 'es']) {
+  const pack = i18n.PACKS_FOR_TEST[l];
+  eq(keys.filter(k => !(k in pack.ui)), [], `todo texto tem tradução em ${l}`);
+  // as variáveis {x} de cada texto existem também na tradução
+  const vars = s => (s.match(/\{\w+\}/g) || []).sort().join();
+  eq(keys.filter(k => k in pack.ui && vars(k) !== vars(pack.ui[k])), [], `variáveis iguais em ${l}`);
+}
+const { LIB, exName: nameOf, loadHint, loadType } = await import('../js/data.js');
+S().settings.lang = 'en';
+eq(i18n.t('Começar treino'), 'Start workout');
+eq(i18n.t('Você fez {n} reps em todas as séries: hora de subir para {w} kg.', { n: 12, w: 42.5 }), 'You did 12 reps on every set: time to move up to 42.5 kg.');
+eq(nameOf({ lib: 'supino-reto', name: 'Supino reto com barra' }), 'Barbell bench press', 'nome do exercício traduzido');
+eq(nameOf({ lib: 'supino-reto', name: 'Meu supino' }), 'Meu supino', 'nome editado pela pessoa é mantido');
+eq(LIB.every(l => loadType({ lib: l.id })), true, 'todo exercício da biblioteca tem regra de carga');
+eq(loadHint({ lib: 'supino-reto-halteres' }).includes('40 kg'), true, 'halteres: os dois somados');
+eq(parseUtterance('forty kilos twelve reps'), [set(40, 12)]);
+eq(parseUtterance('three sets of ten at fifty'), [set(50, 10), set(50, 10), set(50, 10)]);
+eq(parseUtterance('one more'), [{ type: 'delta', dr: 1 }]);
+eq(parseUtterance('forty two and a half kilos'), [set(42.5)]);
+eq(parseUtterance('it was hard'), [{ type: 'feel', v: 'hard' }]);
+S().settings.lang = 'es';
+eq(i18n.t('Começar treino'), 'Empezar entrenamiento');
+eq(parseUtterance('cuarenta kilos doce repeticiones'), [set(40, 12)]);
+eq(parseUtterance('tres series de diez con cincuenta'), [set(50, 10), set(50, 10), set(50, 10)]);
+eq(parseUtterance('una más'), [{ type: 'delta', dr: 1 }]);
+eq(parseUtterance('cuarenta y dos y medio kilos'), [set(42.5)]);
+// planilha exportada em espanhol volta ao app mesmo com o app em português
+const esSheet = 'Tipo;Nombre;Grupo muscular;Meta semanal;Hecho en la semana;Meta mensual;Hecho en el mes;Estado\nGrupo muscular;Pecho;Pecho;11 series;;44 series;;';
+S().settings.lang = 'pt';
+eq(importGoalsCSV(esSheet, now).groups, 1, 'importa planilha em espanhol');
+eq(S().goals.groups.Peito, { week: 11, month: 44, auto: false });
 
 console.log(`ok: ${n} verificações passaram`);
