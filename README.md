@@ -10,7 +10,7 @@ Funciona no navegador do celular, pode ser instalado na tela inicial e roda sem 
 - **Cargas iniciais e correções**: informe de uma vez a carga que você já usa em cada exercício, ou escolha em um toque no primeiro treino. Errou um número? Toque na série para corrigir, durante o treino ou depois, no histórico.
 - **Voz**: toque no microfone e fale "40 quilos, 12 repetições", "três séries de dez com cinquenta", "bati a meta", "mais uma", "estava pesado", "desfazer", "próximo".
 - **Progressão automática** (dupla progressão): o app sugere a carga e as reps de cada série do próximo treino. Primeiro você ganha repetições dentro da faixa; quando bate o topo em todas as séries, ele manda subir a carga. Duas sessões abaixo da faixa geram uma redução de cerca de 10%.
-- **Metas em formato de planilha**: séries por semana e por mês para cada grupamento, e meta de carga do mês para cada exercício, com a meta de cada semana calculada em degraus até lá.
+- **Metas em formato de planilha**: séries por semana e por mês para cada grupamento, e meta de carga do mês para cada exercício, com a meta de cada semana calculada em degraus até lá (e editável à mão). As metas de grupamento acompanham a rotina sozinhas até você editá-las. Exporte em CSV, edite no Excel ou no Google Planilhas e importe de volta.
 - **Execução ideal** de cada movimento: passo a passo, erros comuns e uma dica para 41 exercícios, acessível durante o treino.
 - **Progresso**: séries por semana, evolução da força estimada por exercício, recordes e histórico.
 - **Planilhas**: exporta treinos e metas em CSV (abre no Excel e no Google Planilhas) e faz backup completo em JSON.
@@ -43,7 +43,7 @@ Em **Ajustes > Treinador IA**, cole uma chave criada no Console da Anthropic (pl
 
 ## Seus dados
 
-Tudo fica no armazenamento do navegador do aparelho. Limpar os dados do navegador ou desinstalar o app apaga o histórico, então salve um backup de vez em quando em **Ajustes > Seus dados**.
+Tudo fica no armazenamento do navegador do aparelho. Limpar os dados do navegador ou desinstalar o app apaga o histórico. Por isso o app lembra de fazer backup a cada 7 dias na tela Hoje; o botão abre o menu de compartilhar do celular quando possível (Google Drive, WhatsApp, e-mail) ou baixa o arquivo. Para restaurar, use **Ajustes > Seus dados > Restaurar backup**.
 
 ## Desenvolvimento
 

@@ -4,7 +4,7 @@ import { $, esc, fmt, kg, setStr, compact, icon, actions, toast, sheet, closeShe
 import { route, go, rerender } from '../router.js';
 import { TEMPLATES, LIB_BY_ID } from '../data.js';
 import {
-  planFor, weekStart, addDays, sessionsIn, groupGoalStatus, routineGroupSets, daysInMonth,
+  planFor, weekStart, addDays, sessionsIn, groupGoalStatus, defaultGroupGoals, DAY,
   sessionPRs, tonnage, exGoalStatus, entriesFor,
 } from '../logic.js';
 import { startWorkout } from './workout.js';
@@ -19,15 +19,6 @@ export function ensureExercise(libId) {
     sets: l.sets, repMin: l.repMin, repMax: l.repMax, step: l.step, bw: !!l.bw,
   };
   return state.exercises[libId];
-}
-
-/** Metas de grupamento que acompanham a rotina: cumprir o plano = bater a meta. */
-export function defaultGroupGoals(overwrite = false) {
-  const per = routineGroupSets();
-  for (const [g, n] of Object.entries(per)) {
-    if (!overwrite && state.goals.groups[g]) continue;
-    state.goals.groups[g] = { week: n, month: Math.round(n * daysInMonth() / 7) };
-  }
 }
 
 export const planStr = p => (p.first && !p.w ? 'definir carga' : `${kg(p.w)} × ${p.reps.join(' · ')}`);
@@ -125,6 +116,16 @@ function renderHome() {
       </div>`).join('')}
     </div>` : '';
 
+  // Lembrete de backup: os dados só existem neste aparelho
+  const lb = state.lastBackup ? new Date(state.lastBackup) : null;
+  const daysSince = lb ? Math.floor((now - lb) / DAY) : null;
+  const backup = state.sessions.length >= 3 && (!lb || daysSince >= 7) ? `<div class="card stack">
+      <h3>Backup</h3>
+      <p class="muted">${lb ? `Seu último backup foi há ${daysSince} dias.` : `Você já tem ${state.sessions.length} treinos e nenhum backup.`}
+        Os dados ficam só neste aparelho: trocar de celular ou limpar o navegador apaga tudo.</p>
+      <button class="btn primary block" data-act="backupNow">Salvar backup agora</button>
+    </div>` : '';
+
   const la = state.lastAnalysis;
   const ai = `<div class="card stack">
     <div class="row between"><h3>Treinador IA</h3>${la ? `<span class="small muted">${fmtDate(la.date)}</span>` : ''}</div>
@@ -138,7 +139,7 @@ function renderHome() {
 
   $('#view').innerHTML = `
     <div class="head"><div class="brand grow"><b>Overload</b><span class="muted small">${fmtDate(now)}</span></div></div>
-    <div class="stack">${week}${main}${goals}${ai}</div>`;
+    <div class="stack">${week}${main}${backup}${goals}${ai}</div>`;
 }
 
 actions.start = el => startWorkout(el.dataset.id);

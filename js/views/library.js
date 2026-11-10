@@ -3,8 +3,8 @@ import { state, save, uid } from '../store.js';
 import { $, esc, kg, setStr, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, meter } from '../ui.js';
 import { route, go, rerender } from '../router.js';
 import { GROUPS, LIB, LIB_BY_ID } from '../data.js';
-import { planFor, exGoalStatus, entriesFor } from '../logic.js';
-import { ensureExercise, defaultGroupGoals, planStr } from './home.js';
+import { planFor, exGoalStatus, entriesFor, defaultGroupGoals } from '../logic.js';
+import { ensureExercise, planStr } from './home.js';
 import { exerciseProgress } from './progress.js';
 import { aiEnabled, aiAskExecution, aiCuesFor } from '../ai.js';
 
@@ -75,6 +75,7 @@ actions.delRoutineAsk = el => {
 actions.delRoutine = el => {
   state.routines = state.routines.filter(x => x.id !== el.dataset.id);
   state.next = 0;
+  defaultGroupGoals();
   save(); closeSheet(); rerender();
 };
 actions.moveEx = el => {
@@ -83,6 +84,7 @@ actions.moveEx = el => {
 };
 actions.removeEx = el => {
   state.routines[Number(el.dataset.r)].ex.splice(Number(el.dataset.i), 1);
+  defaultGroupGoals();
   save(); rerender();
 };
 
@@ -266,6 +268,7 @@ actions.delExercise = el => {
   delete state.exercises[id];
   delete state.goals.ex[id];
   for (const r of state.routines) r.ex = r.ex.filter(x => x !== id);
+  defaultGroupGoals();
   save(); closeSheet(); go('#/exercicios');
 };
 

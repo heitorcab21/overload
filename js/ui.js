@@ -106,6 +106,25 @@ function bump(el, dir) {
 actions.stepUp = el => bump(el, 1);
 actions.stepDown = el => bump(el, -1);
 
+/**
+ * Abre o menu de compartilhar do celular (Drive, WhatsApp, e-mail...) quando o
+ * navegador aceita o tipo de arquivo; senão, baixa o arquivo.
+ * Retorna 'shared', 'downloaded' ou 'cancelled'.
+ */
+export async function shareFile(filename, text, type = 'text/plain') {
+  const file = new File([text], filename, { type });
+  if (navigator.canShare?.({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: filename });
+      return 'shared';
+    } catch (e) {
+      if (e.name === 'AbortError') return 'cancelled';
+    }
+  }
+  download(filename, text, type);
+  return 'downloaded';
+}
+
 export function download(filename, text, type = 'text/plain') {
   const url = URL.createObjectURL(new Blob([text], { type }));
   const a = document.createElement('a');

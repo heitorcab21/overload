@@ -141,7 +141,33 @@ export function suggestGoal(ex) {
   return toSet(E, ex, best.w);
 }
 
-export function exGoalStatus(ex, now = new Date()) {
+const pad2 = n => String(n).padStart(2, '0');
+/** Identifica a semana (segunda-feira) como texto, ex.: "2026-11-09". */
+export const weekKey = (d = new Date()) => { const w = weekStart(d); return `${w.getFullYear()}-${pad2(w.getMonth() + 1)}-${pad2(w.getDate())}`; };
+
+/** Cria a meta do mês de um exercício, usando o melhor resultado recente como ponto de partida. */
+export function setExGoal(ex, w, r, now = new Date()) {
+  const best = bestInRange(ex.id, addDays(now, -45), addDays(now, 1));
+  const T = e1rm(w, r);
+  state.goals.ex[ex.id] = {
+    w, r, month: monthKey(now), created: now.toISOString(),
+    base: best ? Math.min(e1rm(best.w, best.r), T) : T * 0.9,
+  };
+}
+
+/** Meta da semana calculada pelo app, ignorando ajuste manual. */
+export const autoWeekSet = (ex, now = new Date()) => exGoalStatus(ex, now, { auto: true })?.weekSet ?? null;
+
+/** Define a meta desta semana à mão. Igual ao cálculo automático = volta ao automático. */
+export function setWeekOverride(ex, w, r, now = new Date()) {
+  const g = state.goals.ex[ex.id];
+  if (!g) return;
+  const a = autoWeekSet(ex, now);
+  if (a && a.w === w && a.r === r) delete g.weekOverride;
+  else g.weekOverride = { week: weekKey(now), w, r };
+}
+
+export function exGoalStatus(ex, now = new Date(), opts = {}) {
   const g = state.goals.ex[ex.id];
   if (!g) return null;
   const T = e1rm(g.w, g.r);
@@ -153,7 +179,8 @@ export function exGoalStatus(ex, now = new Date()) {
   const n = Math.max(1, Math.ceil((me - ws0) / (7 * DAY)));
   const k = Math.min(n, Math.max(1, Math.floor((weekStart(now) - ws0) / (7 * DAY)) + 1));
   const base = g.base ?? 0;
-  const weekE = base + (T - base) * (k / n);
+  const ov = !opts.auto && g.weekOverride?.week === weekKey(now) ? g.weekOverride : null;
+  const weekE = ov ? e1rm(ov.w, ov.r) : base + (T - base) * (k / n);
   const ws = weekStart(now);
   const bw = bestInRange(ex.id, ws, addDays(ws, 7));
   const bm = bestInRange(ex.id, ms, me);
@@ -163,9 +190,9 @@ export function exGoalStatus(ex, now = new Date()) {
     if (target <= base) return b >= target ? 1 : 0;
     return Math.max(0, Math.min(1, (b - base) / (target - base)));
   };
-  const weekSet = k >= n ? { w: g.w, r: g.r } : toSet(weekE, ex, currentWeight(ex) || g.w);
+  const weekSet = ov ? { w: ov.w, r: ov.r } : k >= n ? { w: g.w, r: g.r } : toSet(weekE, ex, currentWeight(ex) || g.w);
   return {
-    goal: g, expired, week: k, weeks: n,
+    goal: g, expired, week: k, weeks: n, weekManual: !!ov,
     weekSet, weekBest: bw, weekPct: pct(bw, weekE), weekDone: !!bw && e1rm(bw.w, bw.r) >= weekE - 1e-6,
     monthBest: bm, monthPct: pct(bm, T), monthDone: !!bm && e1rm(bm.w, bm.r) >= T - 1e-6,
   };
@@ -207,6 +234,22 @@ export function routineGroupSets() {
     }
   }
   return m;
+}
+
+/**
+ * Metas de grupamento que acompanham a rotina (cumprir o plano = bater a meta).
+ * As automáticas mudam quando a rotina muda; as que você editou ficam como estão.
+ */
+export function defaultGroupGoals(now = new Date()) {
+  const per = routineGroupSets();
+  for (const [g, n] of Object.entries(per)) {
+    const cur = state.goals.groups[g];
+    if (cur && cur.auto === false) continue;
+    state.goals.groups[g] = { week: n, month: Math.round(n * daysInMonth(now) / 7), auto: true };
+  }
+  for (const [g, cur] of Object.entries(state.goals.groups)) {
+    if (cur.auto !== false && !per[g]) delete state.goals.groups[g];
+  }
 }
 
 export function groupGoalStatus(now = new Date()) {

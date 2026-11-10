@@ -1,6 +1,6 @@
 // Ajustes: descanso, tema, IA, dados e instalação.
 import { state, save, exportJSON, importJSON, resetAll } from '../store.js';
-import { $, esc, actions, changes, submits, toast, sheet, closeSheet, stepper, download } from '../ui.js';
+import { $, esc, actions, changes, submits, toast, sheet, closeSheet, stepper, shareFile, fmtDate } from '../ui.js';
 import { route, go, rerender } from '../router.js';
 import { sessionsCSV } from '../export.js';
 import { aiEnabled, aiAskExecution } from '../ai.js';
@@ -54,9 +54,11 @@ function render() {
       <div class="card stack">
         <h3>Seus dados</h3>
         <p class="muted small">${state.sessions.length} treino${state.sessions.length === 1 ? '' : 's'} salvo${state.sessions.length === 1 ? '' : 's'} neste aparelho. Faça backup de vez em quando: limpar os dados do navegador apaga tudo.</p>
+        <p class="small"><b>Último backup:</b> ${state.lastBackup ? fmtDate(state.lastBackup) : 'nunca'}</p>
+        <button class="btn primary block" data-act="backupNow">Salvar backup completo</button>
+        <p class="muted small">No celular, abre o menu de compartilhar para mandar o arquivo ao Google Drive, WhatsApp ou e-mail. Se o navegador não permitir, o arquivo é baixado.</p>
         <button class="btn block" data-act="exportCSV">Exportar treinos (planilha CSV)</button>
-        <button class="btn block" data-act="exportBackup">Salvar backup completo</button>
-        <label class="btn block">Restaurar backup<input type="file" accept="application/json,.json" data-change="importBackup" class="sr"></label>
+        <label class="btn block">Restaurar backup<input type="file" accept="application/json,.json,text/plain,.txt" data-change="importBackup" class="sr"></label>
         <button class="btn ghost danger block" data-act="resetAsk">Apagar todos os dados</button>
       </div>
 
@@ -94,8 +96,16 @@ actions.testAI = async el => {
 };
 
 const stamp = () => new Date().toISOString().slice(0, 10);
-actions.exportCSV = () => download(`overload-treinos-${stamp()}.csv`, sessionsCSV(), 'text/csv');
-actions.exportBackup = () => download(`overload-backup-${stamp()}.json`, exportJSON(), 'application/json');
+actions.exportCSV = () => shareFile(`overload-treinos-${stamp()}.csv`, sessionsCSV(), 'text/csv');
+// Usado em Ajustes e no lembrete da tela Hoje
+actions.backupNow = async () => {
+  const r = await shareFile(`overload-backup-${stamp()}.json`, exportJSON(), 'application/json');
+  if (r === 'cancelled') return;
+  state.lastBackup = new Date().toISOString();
+  save();
+  toast(r === 'shared' ? 'Backup enviado.' : 'Arquivo de backup gerado. Guarde-o fora do celular.', 4000);
+  rerender();
+};
 changes.importBackup = async el => {
   const file = el.files?.[0];
   if (!file) return;

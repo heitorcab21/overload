@@ -12,6 +12,7 @@ const defaults = () => ({
   sessions: [],    // { id, date, routineId, name, dur, entries: [{ exId, sets:[{w,r,t?}], feel, flags, skipped }] }
   active: null,    // treino em andamento
   goals: { ex: {}, groups: {} },
+  lastBackup: null, // data do último backup salvo ou compartilhado
 });
 
 function merge(raw) {

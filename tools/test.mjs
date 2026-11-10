@@ -101,4 +101,55 @@ state.goals.groups.Peito = { week: 6, month: 26 };
 const g = groupGoalStatus(now).find(x => x.group === 'Peito');
 eq([g.weekDone, g.weekGoal, g.monthDone], [3, 6, 6]);
 
+// ---- metas de grupamento seguem a rotina ----
+const { defaultGroupGoals, setWeekOverride, autoWeekSet } = await import('../js/logic.js');
+state.goals.groups = {};
+state.routines = [{ id: 'r', name: 'A', ex: ['x'] }];
+defaultGroupGoals(now);
+eq(state.goals.groups.Peito, { week: 3, month: 13, auto: true }, 'meta criada pela rotina');
+state.exercises.y = { id: 'y', name: 'Crucifixo', group: 'Peito', sets: 4, repMin: 10, repMax: 15, step: 5 };
+state.exercises.z = { id: 'z', name: 'Remada', group: 'Costas', sets: 3, repMin: 8, repMax: 12, step: 2.5 };
+state.routines[0].ex.push('y', 'z');
+defaultGroupGoals(now);
+eq([state.goals.groups.Peito.week, state.goals.groups.Costas.week], [7, 3], 'rotina mudou: metas automáticas acompanham');
+state.goals.groups.Costas = { week: 10, month: 40, auto: false };
+state.routines[0].ex = ['x'];
+defaultGroupGoals(now);
+eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [3, { week: 10, month: 40, auto: false }], 'meta editada fica; automática ajusta');
+
+// ---- meta da semana à mão ----
+const auto = autoWeekSet(ex, now);
+setWeekOverride(ex, 44, 9, now);
+eq([exGoalStatus(ex, now).weekSet, exGoalStatus(ex, now).weekManual], [{ w: 44, r: 9 }, true]);
+eq(exGoalStatus(ex, new Date(2026, 10, 17, 12)).weekManual, false, 'ajuste vale só para aquela semana');
+setWeekOverride(ex, auto.w, auto.r, now);
+eq(exGoalStatus(ex, now).weekManual, false, 'igual ao automático volta ao automático');
+
+// ---- planilha de metas ----
+const { goalsCSV, importGoalsCSV, parseCSV, parseSet } = await import('../js/export.js');
+eq(parseSet('42,5 kg x 10'), { w: 42.5, r: 10 });
+eq(parseSet('42.5×10'), { w: 42.5, r: 10 });
+eq(parseSet('12 reps'), { w: 0, r: 12 });
+eq(parseCSV('a,b\n"1,5",x'), [['a', 'b'], ['1,5', 'x']], 'CSV com vírgula e aspas');
+
+const before = JSON.stringify(state.goals);
+eq(importGoalsCSV(goalsCSV(), now), { groups: 0, ex: 0, weeks: 0, unknown: [] }, 'exportar e importar sem mudar nada não altera metas');
+eq(JSON.stringify(state.goals), before);
+
+const sheetTxt = `Tipo;Nome;Grupamento;Meta da semana;Feito na semana;Meta do mês;Feito no mês;Situação
+Grupamento;Peito;Peito;10 séries;;40 séries;;
+Exercício;supino;Peito;46 kg x 8;;"47,5 kg x 10";;
+Exercício;Agachamento Inexistente;;;;50 kg x 5;;`;
+const res = importGoalsCSV(sheetTxt, now);
+eq(res, { groups: 1, ex: 1, weeks: 1, unknown: ['Agachamento Inexistente'] });
+eq(state.goals.groups.Peito, { week: 10, month: 40, auto: false });
+eq([state.goals.ex.x.w, state.goals.ex.x.r], [47.5, 10]);
+eq(exGoalStatus(ex, now).weekSet, { w: 46, r: 8 });
+
+const commaTxt = 'Tipo,Nome,Meta da semana,Meta do mês\nGrupamento,Costas,12 séries,\n';
+importGoalsCSV(commaTxt, now);
+eq(state.goals.groups.Costas, { week: 12, month: 51, auto: false }, 'CSV com vírgula, mês calculado pela semana');
+assert.throws(() => importGoalsCSV('a;b\n1;2', now), /colunas/);
+n++;
+
 console.log(`ok: ${n} verificações passaram`);
