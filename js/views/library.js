@@ -2,7 +2,7 @@
 import { state, save, uid } from '../store.js';
 import { $, esc, kg, fmt, fmtDate, setStr, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, meter } from '../ui.js';
 import { route, go, rerender } from '../router.js';
-import { GROUPS, LIB, exName, exCues, tg, loadHint, loadShort, routineName } from '../data.js';
+import { exPhotos, GROUPS, LIB, exName, exCues, tg, loadHint, loadShort, routineName } from '../data.js';
 import { t, tn, exPack } from '../i18n.js';
 import { planFor, exGoalStatus, entriesFor, defaultGroupGoals } from '../logic.js';
 import { ensureExercise, planStr } from './home.js';
@@ -214,6 +214,7 @@ function renderExercise(id) {
 
       <div class="card stack">
         <h3>${t('Execução ideal')}</h3>
+        ${exPhotos(ex)}
         ${c ? `<ol class="steps">${c.how.map(s => `<li>${esc(s)}</li>`).join('')}</ol>
           <h3>${t('Erros comuns')}</h3><ul class="errs">${c.errs.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
           ${c.tip ? `<p class="tip">${esc(c.tip)}</p>` : ''}`

@@ -2,7 +2,7 @@
 import { state, save, uid } from '../store.js';
 import { $, esc, kg, setStr, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, fmtDate } from '../ui.js';
 import { route, go, current } from '../router.js';
-import { exName, exCues, tg, loadLabel, loadHint, routineName, GROUPS, LIB, ensureExercise, restOf } from '../data.js';
+import { exPhotos, exName, exCues, tg, loadLabel, loadHint, routineName, GROUPS, LIB, ensureExercise, restOf } from '../data.js';
 import { planFor, defaultGroupGoals } from '../logic.js';
 import { parseUtterance, voiceSupported, listen, stopListening, abortListening } from '../voice.js';
 import { aiEnabled, aiParseVoice } from '../ai.js';
@@ -169,7 +169,7 @@ function render() {
       ${cues ? `<button class="how-btn" data-act="wHow" aria-label="${t('Como executar')}">${icon.info}<span>${t('Tutorial')}</span></button>` : ''}
     </div>
     <p class="muted">${esc(tg(ex.group))} · ${ex.sets} × ${ex.repMin}–${ex.repMax} reps · ${t('descanso {s} s', { s: restOf(ex) })}</p>
-    <div class="row wrap ex-actions">
+    <div class="ex-actions">
       <button class="btn sm ghost" data-act="wSwap">${icon.sync}${t('Trocar exercício')}</button>
       <button class="btn sm ghost" data-act="wAdd">${icon.plus}${t('Adicionar exercício')}</button>
     </div>
@@ -362,6 +362,7 @@ actions.wHow = () => {
   const c = exCues(ex);
   if (!c) return;
   sheet(`<h2>${esc(exName(ex))}</h2>
+    ${exPhotos(ex)}
     <h3>${t('Execução')}</h3><ol class="steps">${c.how.map(s => `<li>${esc(s)}</li>`).join('')}</ol>
     <h3>${t('Erros comuns')}</h3><ul class="errs">${c.errs.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
     ${c.tip ? `<p class="tip">${esc(c.tip)}</p>` : ''}

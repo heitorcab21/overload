@@ -12,7 +12,7 @@ Funciona no navegador do celular, pode ser instalado na tela inicial e roda sem 
 - **Voz**: toque no microfone e fale "40 quilos, 12 repetições", "três séries de dez com cinquenta", "bati a meta", "mais uma", "estava pesado", "desfazer", "próximo".
 - **Progressão automática** (dupla progressão): o app sugere a carga e as reps de cada série do próximo treino. Primeiro você ganha repetições dentro da faixa; quando bate o topo em todas as séries, ele manda subir a carga. Duas sessões abaixo da faixa geram uma redução de cerca de 10%.
 - **Metas em formato de planilha**: séries por semana e por mês para cada grupamento, e meta de carga do mês para cada exercício, com a meta de cada semana calculada em degraus até lá (e editável à mão). As metas de grupamento acompanham a rotina sozinhas até você editá-las. Exporte em CSV, edite no Excel ou no Google Planilhas e importe de volta.
-- **Execução ideal** de cada movimento: passo a passo, erros comuns e uma dica para 41 exercícios, acessível durante o treino.
+- **Execução ideal** de cada movimento: fotos do início e do fim do movimento, passo a passo, erros comuns e uma dica para 73 exercícios, acessível durante o treino.
 - **Progresso**: séries por semana, evolução da força estimada por exercício, recordes e histórico.
 - **Força com transparência**: o top de força mostra de qual série saiu o 1RM e a fórmula usada. Um **teste de força** (uma série até a falha) deixa o número mais confiável sem mexer na progressão. O **peso corporal** tem registro rápido e gráfico.
 - **Planilhas**: exporta treinos e metas em CSV (abre no Excel e no Google Planilhas) e faz backup completo em JSON.
@@ -92,6 +92,10 @@ O servidor abre em `http://localhost:5173`. Em localhost o service worker fica d
 | `js/i18n.js`, `js/locales/` | Tradução: o texto em português no código é a chave; `en.js` e `es.js` trazem as traduções, os tutoriais e os exercícios |
 | `js/charts.js` | Gráficos em SVG |
 | `sw.js` | Cache para uso offline |
+
+## Créditos
+
+As fotos dos exercícios vêm do [free-exercise-db](https://github.com/yuhonas/free-exercise-db), em domínio público (Unlicense).
 
 ## Aviso
 

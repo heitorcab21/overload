@@ -65,6 +65,11 @@ export const STRENGTH_LIFTS = {
   'elevacao-pelvica': ['hipthrust', 1.0],
   'barra-fixa': ['pullup', 1.0, true],
   'mergulho': ['dip', 1.0, true],
+  'supino-inclinado-barra': ['bench', 0.85],
+  'supino-declinado': ['bench', 1.0],
+  'supino-fechado': ['bench', 0.9],
+  'desenvolvimento-barra': ['ohp', 1.0],
+  'terra-sumo': ['deadlift', 1.0],
 };
 
 /** Força cai depois dos 40 e ainda não chegou ao pico na adolescência. */

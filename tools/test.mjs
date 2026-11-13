@@ -205,6 +205,10 @@ eq(i18n.t('Você fez {n} reps em todas as séries: hora de subir para {w} kg.', 
 eq(nameOf({ lib: 'supino-reto', name: 'Supino reto com barra' }), 'Barbell bench press', 'nome do exercício traduzido');
 eq(nameOf({ lib: 'supino-reto', name: 'Meu supino' }), 'Meu supino', 'nome editado pela pessoa é mantido');
 eq(LIB.every(l => loadType({ lib: l.id })), true, 'todo exercício da biblioteca tem regra de carga');
+const { IMG } = await import('../js/data.js');
+const { existsSync } = await import('node:fs');
+eq(LIB.filter(l => !IMG[l.id] || ![0, 1].every(n => existsSync(new URL(`../img/ex/${l.id}-${n}.jpg`, import.meta.url)))).map(l => l.id), [], 'todo exercício da biblioteca tem as duas fotos');
+eq(new Set(LIB.map(l => l.id)).size, LIB.length, 'ids de exercício não se repetem');
 eq(loadHint({ lib: 'supino-reto-halteres' }).includes('40 kg'), true, 'halteres: os dois somados');
 eq(parseUtterance('forty kilos twelve reps'), [set(40, 12)]);
 eq(parseUtterance('three sets of ten at fifty'), [set(50, 10), set(50, 10), set(50, 10)]);
