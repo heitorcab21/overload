@@ -17,7 +17,7 @@ Funciona no navegador do celular, pode ser instalado na tela inicial e roda sem 
 - **Português, inglês e espanhol**: escolha o idioma em Ajustes (o inicial segue o do celular). Telas, exercícios, tutoriais, planilhas, respostas da IA e o registro por voz mudam junto.
 - **Carga total**: toda carga anotada é a total levantada. Cada exercício mostra como somar: barra + anilhas dos dois lados, os dois halteres somados, um halter só, o valor do aparelho ou da polia, ou só o peso extra.
 - **Login com Google e Ajuda**: na primeira abertura o app pede para entrar com a conta Google (com a opção de usar sem conta), e a aba Ajuda tem tutoriais de cada parte do app.
-- **Treinador IA (opcional)**: com uma chave da API do Claude, entende frases de voz mais livres, analisa a semana, tira dúvidas de execução e gera orientações para exercícios personalizados.
+- **Treinador IA (opcional)**: com uma chave de API do Claude, do ChatGPT ou do Gemini (este com uso gratuito), entende frases de voz mais livres, analisa a semana, tira dúvidas de execução e gera orientações para exercícios personalizados.
 
 ## Instalar no celular
 
