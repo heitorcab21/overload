@@ -7,7 +7,7 @@ import { GROUPS, LIB, LIB_BY_ID, exName, routineName, loadHint } from '../data.j
 import { exPack } from '../i18n.js';
 import { t, tn, locale } from '../i18n.js';
 import {
-  weekSeries, sessionsIn, monthStart, monthEnd, monthPRCount, entriesFor, bestOf, e1rm, exGoalStatus, tonnage, workSets, addDays,
+  weekSeries, sessionsIn, monthStart, monthEnd, monthPRCount, entriesFor, bestOf, e1rm, exGoalStatus, tonnage, workSets, addDays, overview,
 } from '../logic.js';
 import { columnChart, lineChart } from '../charts.js';
 
@@ -75,6 +75,31 @@ export function exerciseProgress(ex, { box = 'exChart', table = true } = {}) {
   };
 }
 
+// ---------- Resumo geral ----------
+
+function overviewCard() {
+  const o = overview();
+  if (!o) return '';
+  const pct = v => `${v > 0 ? '+' : ''}${Math.round(v)}%`;
+  const lines = [];
+  lines.push(t('<b>{n}</b> treinos desde {d}, média de <b>{w}</b> por semana nas últimas 8 semanas.', { n: o.workouts, d: fmtDate(o.first, false), w: fmt(Math.round(o.perWeek * 10) / 10) }));
+  if (o.streak >= 2) lines.push(t('<b>{n} semanas seguidas</b> treinando. Não quebre a sequência!', { n: o.streak }));
+  if (o.avgGain != null) lines.push(t('Sua força subiu em média <b>{p}</b> nos {n} exercícios que você repete.', { p: pct(o.avgGain), n: o.nGains }));
+  if (o.best && o.best.pct > 0) lines.push(t('Maior evolução: <b>{x}</b> ({p}).', { x: esc(exName(o.best.ex)), p: pct(o.best.pct) }));
+  if (o.goals) lines.push(t('Metas da semana: <b>{a} de {b}</b> grupamentos já batidos.', { a: o.goals.onTrack, b: o.goals.total }));
+  if (o.yearPRs) lines.push(tn(o.yearPRs, '<b>{n}</b> recorde neste ano.', '<b>{n}</b> recordes neste ano.'));
+  if (o.stalled.length) lines.push(t('Atenção: <b>{x}</b> está há {n} treinos sem superar seu melhor.', { x: esc(exName(o.stalled[0].ex)), n: o.stalled[0].n }));
+  return `<div class="card stack overview-card">
+    <h3>${t('Resumo geral')}</h3>
+    <div class="ov-big">
+      <div><span class="v">${o.workouts}</span><span class="l">${t('treinos')}</span></div>
+      <div><span class="v">${o.avgGain != null ? pct(o.avgGain) : '—'}</span><span class="l">${t('força média')}</span></div>
+      <div><span class="v">${o.streak}</span><span class="l">${t('semanas seguidas')}</span></div>
+    </div>
+    <ul class="ov-list">${lines.map(l => `<li>${l}</li>`).join('')}</ul>
+  </div>`;
+}
+
 // ---------- Este mês x mês passado (mesmo número de dias) ----------
 
 export function monthCompare(now = new Date()) {
@@ -112,6 +137,7 @@ function render() {
   $('#view').innerHTML = `
     <div class="head"><h1>${t('Progresso')}</h1></div>
     <div class="stack">
+      ${overviewCard()}
       ${strengthOverview()}
       ${bodyCard()}
       <div class="card stack">

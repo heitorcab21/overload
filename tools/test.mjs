@@ -364,6 +364,21 @@ eq(body.quickLevel('peck-deck', 50, 10), null, 'aparelho não entra');
 eq(body.quickLevel('barra-fixa', 0, 10).top > 0, true, 'peso corporal usa o peso do perfil');
 S().profile = null;
 
+// ---- resumo geral ----
+{
+  const lg = await import('../js/logic.js');
+  const keep = S().sessions;
+  S().exercises.ov = { id: 'ov', name: 'Teste', group: 'Peito', sets: 2, repMin: 8, repMax: 12, step: 2.5 };
+  const d = n => new Date(Date.now() - n * 864e5).toISOString();
+  S().sessions = [[21, 50], [14, 55], [7, 57.5], [0, 60]].map(([n, w], i) => ({ id: 'ov' + i, date: d(n), entries: [{ exId: 'ov', sets: [{ w, r: 8 }] }] }));
+  const o = lg.overview();
+  eq([o.workouts, Math.round(o.avgGain), o.best.ex.id, o.streak >= 3], [4, 20, 'ov', true], 'resumo: treinos, ganho médio, destaque e sequência');
+  S().sessions = [];
+  eq(lg.overview(), null, 'sem treinos, sem resumo');
+  S().sessions = keep;
+  delete S().exercises.ov;
+}
+
 // ---- todos os arquivos carregam sem erro de sintaxe (inclusive telas que os testes não usam) ----
 {
   const { readdirSync } = await import('node:fs');

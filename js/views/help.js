@@ -132,7 +132,8 @@ const TOPICS = [
 
   ['Progresso e histórico', 'Gráficos e treinos antigos', `
     <ul class="errs">
-      <li>A aba <b>Progresso</b> mostra o seu nível de força, o seu corpo, séries por semana e um gráfico para cada exercício: escolha <b>Força</b> ou <b>Volume</b>, <b>Por treino</b> ou <b>Por mês</b>. O cartão <b>Este mês</b> compara treinos, séries e volume com o mesmo período do mês passado.</li>
+      <li>No topo da aba <b>Progresso</b>, o <b>Resumo geral</b> junta tudo, atualizado a cada treino: total de treinos, frequência, semanas seguidas, quanto a força subiu, metas e recordes.</li>
+      <li>A aba <b>Progresso</b> mostra também o seu nível de força, o seu corpo, séries por semana e um gráfico para cada exercício: escolha <b>Força</b> ou <b>Volume</b>, <b>Por treino</b> ou <b>Por mês</b>. O cartão <b>Este mês</b> compara treinos, séries e volume com o mesmo período do mês passado.</li>
       <li>Na tela Hoje, o aviso <b>Exercícios parados</b> aparece quando um exercício passa 3 treinos sem superar seu melhor, com sugestões do que fazer.</li>
       <li>No <b>histórico</b>, toque em um treino e depois em um exercício para corrigir séries antigas.</li>
     </ul>`],

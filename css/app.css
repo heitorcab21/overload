@@ -569,3 +569,11 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
   .ex-photos img:nth-of-type(2) { animation: exSwap 2.6s ease-in-out infinite; }
   @keyframes exSwap { 0%, 38% { opacity: 0; } 50%, 88% { opacity: 1; } 100% { opacity: 0; } }
 }
+
+/* resumo geral */
+.overview-card { background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 14%, var(--surface)), var(--surface) 60%); }
+.ov-big { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.ov-big div { display: grid; gap: 2px; }
+.ov-big .v { font-size: 26px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.ov-big .l { font-size: 12px; color: var(--muted); }
+.ov-list { margin: 0; padding-left: 18px; display: grid; gap: 6px; color: var(--ink-2); font-size: 15px; }

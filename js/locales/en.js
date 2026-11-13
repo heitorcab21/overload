@@ -745,6 +745,17 @@ const ui = {
   "igual": "same",
   "Este mês": "This month",
   "comparado ao mesmo período do mês passado": "compared with the same days last month",
+  "<b>{n}</b> treinos desde {d}, média de <b>{w}</b> por semana nas últimas 8 semanas.": "<b>{n}</b> workouts since {d}, an average of <b>{w}</b> a week over the last 8 weeks.",
+  "<b>{n} semanas seguidas</b> treinando. Não quebre a sequência!": "<b>{n} weeks in a row</b> training. Don't break the streak!",
+  "Sua força subiu em média <b>{p}</b> nos {n} exercícios que você repete.": "Your strength went up <b>{p}</b> on average across the {n} exercises you repeat.",
+  "Maior evolução: <b>{x}</b> ({p}).": "Biggest gain: <b>{x}</b> ({p}).",
+  "Metas da semana: <b>{a} de {b}</b> grupamentos já batidos.": "Weekly goals: <b>{a} of {b}</b> muscle groups already hit.",
+  "Atenção: <b>{x}</b> está há {n} treinos sem superar seu melhor.": "Heads up: <b>{x}</b> has gone {n} workouts without beating your best.",
+  "Resumo geral": "Overview",
+  "força média": "avg. strength",
+  "semanas seguidas": "weeks in a row",
+  "<b>{n}</b> recorde neste ano.": "<b>{n}</b> record this year.",
+  "<b>{n}</b> recordes neste ano.": "<b>{n}</b> records this year.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -866,7 +877,8 @@ const help = [
     </ul>`],
   ['Progress and history', 'Charts and past workouts', `
     <ul class="errs">
-      <li>The <b>Progress</b> tab shows your strength level, your body, sets per week and a chart for each exercise: choose <b>Strength</b> or <b>Volume</b>, <b>Per workout</b> or <b>Per month</b>. The <b>This month</b> card compares workouts, sets and volume with the same days last month.</li>
+      <li>At the top of the <b>Progress</b> tab, the <b>Overview</b> pulls everything together, updated after every workout: total workouts, frequency, weeks in a row, how much stronger you got, goals and records.</li>
+      <li>The <b>Progress</b> tab also shows your strength level, your body, sets per week and a chart for each exercise: choose <b>Strength</b> or <b>Volume</b>, <b>Per workout</b> or <b>Per month</b>. The <b>This month</b> card compares workouts, sets and volume with the same days last month.</li>
       <li>On the Today screen, the <b>Stalled exercises</b> notice shows up when an exercise goes 3 workouts without beating your best, with tips on what to do.</li>
       <li>In the <b>history</b>, tap a workout and then an exercise to correct past sets.</li>
     </ul>`],

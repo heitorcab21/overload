@@ -745,6 +745,17 @@ const ui = {
   "igual": "igual",
   "Este mês": "Este mes",
   "comparado ao mesmo período do mês passado": "comparado con el mismo período del mes pasado",
+  "<b>{n}</b> treinos desde {d}, média de <b>{w}</b> por semana nas últimas 8 semanas.": "<b>{n}</b> entrenamientos desde el {d}, un promedio de <b>{w}</b> por semana en las últimas 8 semanas.",
+  "<b>{n} semanas seguidas</b> treinando. Não quebre a sequência!": "<b>{n} semanas seguidas</b> entrenando. ¡No rompas la racha!",
+  "Sua força subiu em média <b>{p}</b> nos {n} exercícios que você repete.": "Tu fuerza subió en promedio <b>{p}</b> en los {n} ejercicios que repites.",
+  "Maior evolução: <b>{x}</b> ({p}).": "Mayor evolución: <b>{x}</b> ({p}).",
+  "Metas da semana: <b>{a} de {b}</b> grupamentos já batidos.": "Metas de la semana: <b>{a} de {b}</b> grupos musculares ya cumplidos.",
+  "Atenção: <b>{x}</b> está há {n} treinos sem superar seu melhor.": "Atención: <b>{x}</b> lleva {n} entrenamientos sin superar tu mejor marca.",
+  "Resumo geral": "Resumen general",
+  "força média": "fuerza media",
+  "semanas seguidas": "semanas seguidas",
+  "<b>{n}</b> recorde neste ano.": "<b>{n}</b> récord este año.",
+  "<b>{n}</b> recordes neste ano.": "<b>{n}</b> récords este año.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -866,7 +877,8 @@ const help = [
     </ul>`],
   ['Progreso e historial', 'Gráficos y entrenamientos anteriores', `
     <ul class="errs">
-      <li>La pestaña <b>Progreso</b> muestra tu nivel de fuerza, tu cuerpo, series por semana y un gráfico por ejercicio: elige <b>Fuerza</b> o <b>Volumen</b>, <b>Por entrenamiento</b> o <b>Por mes</b>. La tarjeta <b>Este mes</b> compara entrenamientos, series y volumen con el mismo período del mes pasado.</li>
+      <li>Arriba en la pestaña <b>Progreso</b>, el <b>Resumen general</b> reúne todo, actualizado en cada entrenamiento: total de entrenamientos, frecuencia, semanas seguidas, cuánto subió tu fuerza, metas y récords.</li>
+      <li>La pestaña <b>Progreso</b> muestra también tu nivel de fuerza, tu cuerpo, series por semana y un gráfico por ejercicio: elige <b>Fuerza</b> o <b>Volumen</b>, <b>Por entrenamiento</b> o <b>Por mes</b>. La tarjeta <b>Este mes</b> compara entrenamientos, series y volumen con el mismo período del mes pasado.</li>
       <li>En la pantalla Hoy, el aviso <b>Ejercicios estancados</b> aparece cuando un ejercicio pasa 3 entrenamientos sin superar tu mejor marca, con sugerencias.</li>
       <li>En el <b>historial</b>, toca un entrenamiento y luego un ejercicio para corregir series anteriores.</li>
     </ul>`],
