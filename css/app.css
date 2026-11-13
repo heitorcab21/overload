@@ -498,7 +498,7 @@ details.help .help-body b { color: var(--ink); }
 .imp-item:first-of-type { border-top: 0; }
 #impText { min-height: 220px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 16px; }
 a.tpl { text-decoration: none; color: inherit; display: grid; }
-.tpl-import { border-style: dashed; }
+.tpl-import { border: 2px solid var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
 .tpl-import b { display: inline-flex; align-items: center; gap: 6px; }
 .tpl-import .ic { width: 18px; height: 18px; color: var(--accent); }
 

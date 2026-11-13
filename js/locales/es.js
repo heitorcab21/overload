@@ -705,6 +705,7 @@ const ui = {
   "Informe a carga e as repetições.": "Indica la carga y las repeticiones.",
   "Pelos seus treinos": "Según tus entrenamientos",
   "Importar treinos de texto (bloco de notas, WhatsApp)": "Importar entrenamientos de texto (notas, WhatsApp)",
+  "Ou escolha um treino pronto": "O elige una rutina lista",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

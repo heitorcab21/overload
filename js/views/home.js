@@ -70,7 +70,10 @@ function renderOnboarding() {
   $('#view').innerHTML = `${hero}
     <div class="stack">
       ${driveConnected() ? `<p class="small">${t('Conectado como <b>{email}</b>. Agora escolha seus treinos.', { email: esc(state.sync.email) })}</p>` : ''}
-      <h3>${t('Escolha um ponto de partida')}</h3>
+      <a class="tpl tpl-import" href="#/importar">
+        <b>${icon.edit}${t('Já anoto meus treinos')}</b><span>${t('Cole o texto do bloco de notas ou do WhatsApp e o app salva todas as suas cargas.')}</span>
+      </a>
+      <h3>${t('Ou escolha um treino pronto')}</h3>
       ${TEMPLATES.map(tp => `
         <button class="tpl" data-act="pickTemplate" data-id="${tp.id}">
           <b>${esc(t(tp.name))}</b><span>${esc(t(tp.desc))}</span>
@@ -78,9 +81,6 @@ function renderOnboarding() {
       <button class="tpl" data-act="pickTemplate" data-id="">
         <b>${t('Começar do zero')}</b><span>${t('Monte seus treinos escolhendo os exercícios.')}</span>
       </button>
-      <a class="tpl tpl-import" href="#/importar">
-        <b>${icon.edit}${t('Já anoto meus treinos')}</b><span>${t('Cole o texto do bloco de notas ou do WhatsApp e o app salva todas as suas cargas.')}</span>
-      </a>
       <p class="small muted">${t('Tudo pode ser editado depois em Treinos.')}${driveConnected() ? '' : ` ${t('Seus dados ficam salvos só neste aparelho.')}`}</p>
     </div>`;
 }
