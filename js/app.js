@@ -67,5 +67,18 @@ navigator.storage?.persist?.().catch(() => {});
 // (use ?sw=1 para testar) para não servir arquivos antigos durante o desenvolvimento.
 const local = ['localhost', '127.0.0.1'].includes(location.hostname);
 if ('serviceWorker' in navigator && (!local || new URLSearchParams(location.search).has('sw'))) {
-  navigator.serviceWorker.register('sw.js').catch(() => { /* sem modo offline */ });
+  navigator.serviceWorker.register('sw.js').then(reg => {
+    // procura versão nova ao abrir o app e sempre que ele volta para a tela (o app instalado fica "dormindo")
+    const check = () => reg.update().catch(() => {});
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(); });
+    setInterval(check, 30 * 60 * 1000);
+  }).catch(() => { /* sem modo offline */ });
+  // versão nova instalada: recarrega uma vez para já usar (os dados ficam salvos no aparelho)
+  let reloading = false;
+  const hadController = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController || reloading) return;
+    reloading = true;
+    location.reload();
+  });
 }

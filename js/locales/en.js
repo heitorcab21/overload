@@ -743,6 +743,8 @@ const ui = {
   "comparado ao mesmo período do mês passado": "compared with the same days last month",
   "Aquecimento": "Warm-up",
   "Carga abaixo de 70% da meta: esta série vai contar como aquecimento. Suba a carga para registrar como série válida.": "Load below 70% of the target: this set will count as a warm-up. Raise the load to log it as a working set.",
+  "versão {v}": "version {v}",
+  "versão de desenvolvimento": "development version",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };

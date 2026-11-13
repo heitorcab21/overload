@@ -105,9 +105,20 @@ function render() {
         <p class="muted small">${driveConnected() ? t('Apaga todos os treinos, exercícios, metas e ajustes, neste aparelho e no seu Google Drive.') : t('Apaga todos os treinos, exercícios, metas e ajustes.')}</p>
         <button class="btn ghost danger block" data-act="wipeAsk">${icon.trash}${t('Apagar tudo e começar do zero')}</button>
       </div>
-      <p class="small muted" style="text-align:center">${t('Overload · feito para uso pessoal')}<br>
+      <p class="small muted" style="text-align:center">${t('Overload · feito para uso pessoal')} · <span id="appVersion"></span><br>
         <a href="sobre.html">${t('Sobre o app')}</a> · <a href="privacidade.html${lang() === 'en' ? '#en' : ''}">${t('Política de privacidade')}</a></p>
     </div>`;
+  showVersion();
+}
+
+/** Mostra a versão instalada (nome do cache do service worker), para conferir se o app atualizou. */
+function showVersion() {
+  if (!window.caches) return;
+  caches.keys().then(keys => {
+    const v = keys.map(k => k.match(/^overload-v(\d+)$/)?.[1]).filter(Boolean).sort((a, b) => b - a)[0];
+    const el = document.getElementById('appVersion');
+    if (el) el.textContent = v ? t('versão {v}', { v }) : t('versão de desenvolvimento');
+  }).catch(() => {});
 }
 
 // ---------- Treinador IA: Claude, ChatGPT ou Gemini ----------
