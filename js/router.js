@@ -16,6 +16,8 @@ export function current() {
   return { name: routes[name] ? name : 'hoje', arg: decodeURIComponent(rest.join('/') || '') };
 }
 
+let enterTimer = 0;
+
 export function rerender() {
   const { name, arg } = current();
   const r = routes[name];
@@ -23,6 +25,14 @@ export function rerender() {
   document.body.classList.toggle('no-tabs', !!r.noTabs);
   for (const a of $$('#tabbar a')) a.classList.toggle('on', a.dataset.tab === (r.tab || name));
   r.fn(arg);
+  if (name !== lastName) {
+    const v = $('#view');
+    v.classList.remove('enter');
+    void v.offsetWidth; // reinicia a animação
+    v.classList.add('enter');
+    clearTimeout(enterTimer);
+    enterTimer = setTimeout(() => v.classList.remove('enter'), 800); // atualizações seguintes não reanimam
+  }
   if (name !== lastName) window.scrollTo(0, 0);
   else if (window.scrollX) window.scrollTo(0, window.scrollY); // nunca fica deslocada para o lado
   lastName = name;

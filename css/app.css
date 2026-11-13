@@ -514,3 +514,42 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 /* card para stories */
 .story-preview { display: block; width: min(100%, 300px); aspect-ratio: 9 / 16; margin: 4px auto 8px; border-radius: 16px; box-shadow: var(--shadow); }
 .story-btn { background: linear-gradient(135deg, #eb6834, #c13584); color: #fff; border: 0; }
+
+/* ---------- Animações sutis (só CSS; desligadas para quem prefere menos movimento) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  @keyframes popIn { 0% { transform: scale(1); } 40% { transform: scale(1.035); } 100% { transform: scale(1); } }
+  @keyframes checkIn { from { transform: scale(0) rotate(-30deg); } to { transform: scale(1) rotate(0); } }
+  @keyframes meterIn { from { transform: scaleX(0); } }
+  @keyframes shine { 0%, 100% { transform: rotate(0) scale(1); } 30% { transform: rotate(-12deg) scale(1.25); } 60% { transform: rotate(8deg) scale(1.1); } }
+  @keyframes sheetUp { from { transform: translateY(24px); opacity: 0; } }
+  @keyframes fadeIn { from { opacity: 0; } }
+
+  /* tela nova: o conteúdo sobe de leve, cartões um após o outro */
+  #view.enter > .head, #view.enter > .hero { animation: fadeUp .22s ease-out both; }
+  #view.enter > .stack > *, #view.enter > .card { animation: fadeUp .28s ease-out both; }
+  #view.enter > .stack > :nth-child(2) { animation-delay: .04s; }
+  #view.enter > .stack > :nth-child(3) { animation-delay: .08s; }
+  #view.enter > .stack > :nth-child(4) { animation-delay: .12s; }
+  #view.enter > .stack > :nth-child(n+5) { animation-delay: .16s; }
+
+  /* barras de progresso enchem ao aparecer */
+  #view.enter .meter i, .quick-out .meter i { transform-origin: left; animation: meterIn .6s cubic-bezier(.2, .8, .2, 1) both; }
+
+  /* série registrada: pulinho e o ✓ entrando */
+  .set.pop { animation: popIn .35s ease-out; }
+  .set.pop .i .ic { animation: checkIn .3s cubic-bezier(.3, 1.6, .5, 1) both; }
+
+  /* recorde: o troféu dá uma balançada */
+  .badge.up .ic { animation: shine 1s ease-in-out .3s 2; }
+
+  /* folhas e avisos */
+  .sheet { animation: fadeIn .18s ease-out; }
+  .sheet-card { animation: sheetUp .24s cubic-bezier(.2, .8, .2, 1); }
+  @keyframes toastIn { from { opacity: 0; transform: translate(-50%, 8px); } }
+  .toast { animation: toastIn .2s ease-out; }
+
+  /* toques respondem um pouco mais */
+  .chip:active, .set:active, .item:active, .tpl:active { transform: scale(.98); }
+  .chip, .set, .item, .tpl { transition: transform .1s, background-color .15s; }
+}

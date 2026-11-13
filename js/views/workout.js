@@ -52,8 +52,11 @@ function cur() {
 
 const isDone = (en, ex) => en.skipped || en.sets.length >= ex.sets;
 
+let popSet = -1; // índice da série recém-registrada, para a animação
+
 function logSet(en, w, r, tag) {
   en.sets.push(tag ? { w, r, t: tag } : { w, r });
+  popSet = en.sets.length - 1;
   en.skipped = false;
   en.extra = false;
   const pr = en.plan.reps;
@@ -91,7 +94,7 @@ function render() {
   const rows = warm + Array.from({ length: total }, (_, i) => {
     if (i < en.sets.length) {
       const s = en.sets[i];
-      return `<button class="set done" data-act="wEditSet" data-i="${i}" aria-label="${t('Corrigir série {n}', { n: i + 1 })}: ${setStr(s)}">
+      return `<button class="set done${i === popSet ? ' pop' : ''}" data-act="wEditSet" data-i="${i}" aria-label="${t('Corrigir série {n}', { n: i + 1 })}: ${setStr(s)}">
         <span class="i">${icon.check}</span><span class="v">${setStr(s)}</span>
         ${s.t ? `<span class="badge warn">${t('falhou')}</span>` : s.rir != null ? `<span class="badge">RIR ${s.rir}${s.rir >= 4 ? '+' : ''}</span>` : ''}<span class="edit-ic">${icon.edit}</span></button>`;
     }
@@ -155,6 +158,7 @@ function render() {
   }
 
   const last = a.idx === a.entries.length - 1;
+  popSet = -1; // anima só uma vez
   $('#view').innerHTML = `
     <div class="w-top">
       <button class="icon-btn" data-act="wHome" aria-label="${t('Voltar ao início')}">${icon.back}</button>
