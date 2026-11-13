@@ -364,4 +364,16 @@ eq(body.quickLevel('peck-deck', 50, 10), null, 'aparelho não entra');
 eq(body.quickLevel('barra-fixa', 0, 10).top > 0, true, 'peso corporal usa o peso do perfil');
 S().profile = null;
 
+// ---- todos os arquivos carregam sem erro de sintaxe (inclusive telas que os testes não usam) ----
+{
+  const { readdirSync } = await import('node:fs');
+  const bad = [];
+  for (const dir of ['js', 'js/views', 'js/locales']) {
+    for (const f of readdirSync(new URL(`../${dir}/`, import.meta.url)).filter(x => x.endsWith('.js'))) {
+      try { await import(`../${dir}/${f}`); } catch (e) { if (e instanceof SyntaxError) bad.push(`${dir}/${f}: ${e.message}`); }
+    }
+  }
+  eq(bad, [], 'sem erro de sintaxe');
+}
+
 console.log(`ok: ${n} verificações passaram`);
