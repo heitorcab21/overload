@@ -1,32 +1,84 @@
-// IA opcional (Claude). Só é usada se houver uma chave da API nas configurações.
-// A chave fica salva apenas neste aparelho e as chamadas vão direto do navegador para a Anthropic.
+// IA opcional: Claude (Anthropic), ChatGPT (OpenAI) ou Gemini (Google), com a chave da própria pessoa.
+// A chave fica salva apenas neste aparelho e as chamadas vão direto do navegador para o provedor escolhido.
 import { state } from './store.js';
 import { t, lang } from './i18n.js';
 
 // Idioma em que a IA deve responder
 const REPLY = () => ({ pt: 'português do Brasil', en: 'inglês (English)', es: 'espanhol (español)' }[lang()]);
 
+export const PROVIDERS = {
+  claude: { name: 'Claude (Anthropic)', keyHint: 'sk-ant-...', keyUrl: 'https://platform.claude.com/settings/keys' },
+  openai: { name: 'ChatGPT (OpenAI)', keyHint: 'sk-...', keyUrl: 'https://platform.openai.com/api-keys' },
+  gemini: { name: 'Gemini (Google)', keyHint: 'AIza...', keyUrl: 'https://aistudio.google.com/apikey' },
+};
+
+// ---------- Configuração (uma chave e um modelo por provedor) ----------
+
+/** Configurações antigas tinham só a chave do Claude em settings.apiKey. */
+function migrate() {
+  const st = state.settings;
+  if (!st.aiKeys) {
+    st.aiKeys = { claude: st.apiKey || '' };
+    st.aiModels = { claude: st.model || 'claude-opus-5-5' };
+    st.aiProvider = 'claude';
+  }
+}
+export const aiProvider = () => { migrate(); return PROVIDERS[state.settings.aiProvider] ? state.settings.aiProvider : 'claude'; };
+export const aiKey = (p = aiProvider()) => { migrate(); return state.settings.aiKeys[p] || ''; };
+export const aiModel = (p = aiProvider()) => { migrate(); return state.settings.aiModels?.[p] || (p === 'claude' ? 'claude-opus-5-5' : ''); };
+export const aiEnabled = () => !!aiKey() && !!aiModel();
+
+export function setAiConfig(provider, key, model) {
+  migrate();
+  const st = state.settings;
+  st.aiProvider = provider;
+  st.aiKeys = { ...st.aiKeys, [provider]: key };
+  st.aiModels = { ...(st.aiModels || {}), [provider]: model };
+  st.apiKey = ''; // formato antigo
+}
+
+// ---------- Erros ----------
+
+function httpError(status, detail) {
+  if (status === 401) return new Error(t('Chave da API inválida. Confira em Ajustes.'));
+  if (status === 403) return new Error(t('Sua chave não tem permissão para este modelo.'));
+  if (status === 404) return new Error(t('Modelo não encontrado. Escolha outro em Ajustes.'));
+  if (status === 429) return new Error(t('Limite de uso atingido. Tente de novo em instantes.'));
+  if (status === 400) {
+    // o Gemini responde 400 para chave inválida
+    if (/api key/i.test(detail || '')) return new Error(t('Chave da API inválida. Confira em Ajustes.'));
+    return new Error(t('A IA rejeitou o pedido: {msg}', { msg: detail || status }));
+  }
+  return new Error(t('Erro da IA ({n}). Tente mais tarde.', { n: status }));
+}
+
+async function http(url, opts) {
+  let res;
+  try { res = await fetch(url, opts); } catch { throw new Error(t('Falha de conexão com a IA.')); }
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw httpError(res.status, body?.error?.message);
+  return body;
+}
+
+// ---------- Claude (SDK oficial da Anthropic) ----------
+
 const SDK_URL = 'https://esm.sh/@anthropic-ai/sdk@1.8.0';
-const DEFAULT_MODEL = 'claude-opus-5-5';
 // Modelos que aceitam o fallback automático do servidor quando um pedido é recusado.
 const FALLBACK_OK = new Set(['claude-opus-5-5', 'claude-opus-5', 'claude-sonnet-5-5', 'claude-fable-5-2', 'claude-fable-5-1']);
-
-export const aiEnabled = () => !!state.settings.apiKey;
-
 let Anthropic = null;
-async function getClient() {
-  if (!navigator.onLine) throw new Error(t('Sem internet: a IA precisa de conexão.'));
+
+async function claudeClient() {
   try {
     Anthropic ??= (await import(SDK_URL)).default;
   } catch {
     throw new Error(t('Não foi possível carregar a biblioteca da IA. Verifique a conexão.'));
   }
-  return new Anthropic({ apiKey: state.settings.apiKey, dangerouslyAllowBrowser: true });
+  return new Anthropic({ apiKey: aiKey('claude'), dangerouslyAllowBrowser: true });
 }
 
-async function ask({ system, user, effort = 'medium', schema }) {
-  const client = await getClient();
-  const model = state.settings.model || DEFAULT_MODEL;
+async function askClaude({ system, user, effort, schema }) {
+  const client = await claudeClient();
+  const model = aiModel('claude');
   const params = {
     model,
     max_tokens: 16000,
@@ -53,6 +105,109 @@ async function ask({ system, user, effort = 'medium', schema }) {
   const text = res.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
   if (res.stop_reason === 'max_tokens' && schema) throw new Error(t('A resposta da IA veio incompleta. Tente de novo.'));
   return text;
+}
+
+// ---------- ChatGPT (API da OpenAI) e Gemini (API do Google) ----------
+// Pedem JSON pelo modo de resposta em JSON de cada provedor, com o formato descrito no texto.
+
+const jsonRule = schema => `\n\nResponda somente com um objeto JSON válido (sem texto antes ou depois) que siga este JSON Schema:\n${JSON.stringify(schema)}`;
+
+async function askOpenAI({ system, user, schema }) {
+  const body = {
+    model: aiModel('openai'),
+    messages: [{ role: 'system', content: system + (schema ? jsonRule(schema) : '') }, { role: 'user', content: user }],
+    ...(schema ? { response_format: { type: 'json_object' } } : {}),
+  };
+  const data = await http('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${aiKey('openai')}` },
+    body: JSON.stringify(body),
+  });
+  const c = data.choices?.[0];
+  if (!c || c.finish_reason === 'content_filter' || c.message?.refusal) throw new Error(t('A IA não pôde responder a este pedido.'));
+  if (c.finish_reason === 'length' && schema) throw new Error(t('A resposta da IA veio incompleta. Tente de novo.'));
+  return (c.message?.content || '').trim();
+}
+
+async function askGemini({ system, user, schema }) {
+  const model = aiModel('gemini');
+  const data = await http(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': aiKey('gemini') },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: system + (schema ? jsonRule(schema) : '') }] },
+      contents: [{ role: 'user', parts: [{ text: user }] }],
+      ...(schema ? { generationConfig: { responseMimeType: 'application/json' } } : {}),
+    }),
+  });
+  const c = data.candidates?.[0];
+  if (!c || data.promptFeedback?.blockReason || /SAFETY|PROHIBITED|BLOCKLIST|RECITATION/.test(c.finishReason || '')) {
+    throw new Error(t('A IA não pôde responder a este pedido.'));
+  }
+  if (c.finishReason === 'MAX_TOKENS' && schema) throw new Error(t('A resposta da IA veio incompleta. Tente de novo.'));
+  return (c.content?.parts || []).map(x => x.text || '').join('').trim();
+}
+
+async function ask(opts) {
+  if (!navigator.onLine) throw new Error(t('Sem internet: a IA precisa de conexão.'));
+  const p = aiProvider();
+  const o = { effort: 'medium', ...opts };
+  if (p === 'openai') return askOpenAI(o);
+  if (p === 'gemini') return askGemini(o);
+  return askClaude(o);
+}
+
+/** Lê o JSON da resposta, mesmo que venha entre crases de bloco de código. */
+export function parseJSON(text) {
+  const s = String(text).replace(/^```(?:json)?\s*|\s*```$/g, '').trim();
+  try { return JSON.parse(s); } catch { /* tenta achar o objeto dentro do texto */ }
+  const a = s.indexOf('{'), b = s.lastIndexOf('}');
+  if (a >= 0 && b > a) return JSON.parse(s.slice(a, b + 1));
+  throw new Error(t('A resposta da IA veio incompleta. Tente de novo.'));
+}
+
+// ---------- Lista de modelos de cada provedor ----------
+
+const versionOf = id => Number((id.match(/(\d+(?:\.\d+)?)/) || [])[1] || 0);
+
+/** Busca os modelos de texto disponíveis na chave e indica um padrão rápido e barato. */
+export async function listModels(provider, key) {
+  if (!navigator.onLine) throw new Error(t('Sem internet: a IA precisa de conexão.'));
+  if (provider === 'openai') {
+    const data = await http('https://api.openai.com/v1/models', { headers: { Authorization: `Bearer ${key}` } });
+    const skip = /(audio|realtime|transcribe|tts|image|search|embedding|instruct|codex|moderation|dall-e|whisper|computer|babbage|davinci)/;
+    const ids = (data.data || []).filter(m => /^(gpt-|o\d|chatgpt-)/.test(m.id) && !skip.test(m.id))
+      .sort((a, b) => (b.created || 0) - (a.created || 0)).map(m => m.id);
+    const pick = ids.find(id => /^gpt-.*mini/.test(id) && !/\d{4}-\d{2}-\d{2}$/.test(id)) || ids.find(id => /^gpt-/.test(id)) || ids[0];
+    return { models: ids, recommended: pick };
+  }
+  if (provider === 'gemini') {
+    const data = await http('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200', { headers: { 'x-goog-api-key': key } });
+    const skip = /(embedding|image|tts|audio|live|vision|aqa|learnlm|gemma)/;
+    const ids = (data.models || [])
+      .filter(m => (m.supportedGenerationMethods || []).includes('generateContent'))
+      .map(m => m.name.replace(/^models\//, ''))
+      .filter(id => id.startsWith('gemini') && !skip.test(id))
+      .sort((a, b) => versionOf(b) - versionOf(a));
+    const stable = ids.filter(id => !/(preview|exp|latest)/.test(id));
+    const pick = stable.find(id => /flash/.test(id) && !/lite/.test(id)) || stable[0] || ids[0];
+    return { models: ids, recommended: pick };
+  }
+  // Claude: lista pelo SDK oficial; o padrão continua sendo o Claude Opus 5.5
+  try {
+    Anthropic ??= (await import(SDK_URL)).default;
+  } catch {
+    throw new Error(t('Não foi possível carregar a biblioteca da IA. Verifique a conexão.'));
+  }
+  const client = new Anthropic({ apiKey: key, dangerouslyAllowBrowser: true });
+  const ids = [];
+  try {
+    for await (const m of client.models.list()) ids.push(m.id);
+  } catch (err) {
+    if (err instanceof Anthropic.AuthenticationError) throw new Error(t('Chave da API inválida. Confira em Ajustes.'));
+    throw new Error(t('Falha de conexão com a IA.'));
+  }
+  return { models: ids, recommended: ids.includes('claude-opus-5-5') ? 'claude-opus-5-5' : ids[0] };
 }
 
 const ACTIONS_SCHEMA = {
@@ -98,7 +253,7 @@ Séries já registradas neste exercício: ${ctx.done || 'nenhuma'}
 O que a pessoa disse: "${transcript}"`,
   });
   let data;
-  try { data = JSON.parse(text); } catch { return []; }
+  try { data = parseJSON(text); } catch { return []; }
   return (data.actions || []).map(a => {
     if (a.type === 'set') {
       const o = { type: 'set' };
@@ -160,5 +315,5 @@ export async function aiCuesFor(exerciseName, group) {
 Descreva a execução ideal do exercício pedido: três passos objetivos (posição inicial, movimento, retorno), dois erros comuns e uma dica. Frases curtas.`,
     user: `Exercício: ${exerciseName} (grupamento: ${group})`,
   });
-  return JSON.parse(text);
+  return parseJSON(text);
 }

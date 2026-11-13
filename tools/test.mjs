@@ -254,4 +254,25 @@ eq(body.strengthLevel(S().exercises['peck-deck']).reason, 'notComparable', 'apar
 S().profile = null;
 eq(body.strengthLevel(S().exercises['supino-reto']).reason, 'noProfile');
 
+
+// ---- IA: três provedores ----
+const ai = await import('../js/ai.js');
+S().settings = { ...S().settings, apiKey: 'sk-ant-antiga', model: 'claude-opus-5-5' };
+delete S().settings.aiKeys; delete S().settings.aiModels; delete S().settings.aiProvider;
+eq([ai.aiProvider(), ai.aiKey(), ai.aiModel(), ai.aiEnabled()], ['claude', 'sk-ant-antiga', 'claude-opus-5-5', true], 'chave antiga do Claude continua valendo');
+ai.setAiConfig('gemini', 'AIza-teste', 'gemini-modelo');
+eq([ai.aiProvider(), ai.aiKey(), ai.aiModel(), ai.aiKey('claude')], ['gemini', 'AIza-teste', 'gemini-modelo', 'sk-ant-antiga'], 'cada provedor guarda a própria chave');
+ai.setAiConfig('openai', 'sk-x', '');
+eq(ai.aiEnabled(), false, 'sem modelo escolhido a IA fica desligada');
+eq(ai.parseJSON('```json\n{"a":1}\n```'), { a: 1 }, 'JSON entre crases');
+eq(ai.parseJSON('Claro! {"a":2} pronto'), { a: 2 }, 'JSON no meio do texto');
+eq(store.exportData().settings.aiKeys, {}, 'chaves de IA não vão para o Drive nem para o backup');
+
+// ---- treino aberto não marca alteração pendente ----
+const before2 = S().updatedAt;
+S().active = { id: 'a1', entries: [] };
+store.save({ touch: false });
+eq(S().updatedAt, before2, 'mexer no treino em andamento não muda a versão a enviar');
+S().active = null;
+
 console.log(`ok: ${n} verificações passaram`);

@@ -571,6 +571,21 @@ const ui = {
   "Confira idade, altura e peso.": `Revisa edad, altura y peso.`,
   'com base em {n} exercício': `con base en {n} ejercicio`,
   'média de {n} exercícios': `media de {n} ejercicios`,
+  "Cobrado por uso na sua conta da Anthropic. Dá para definir um limite de gastos no Console.": `Se cobra por uso en tu cuenta de Anthropic. Puedes definir un límite de gasto en la Consola.`,
+  "Cobrado por uso na sua conta da OpenAI. A assinatura ChatGPT Plus não inclui a API: a chave é criada à parte.": `Se cobra por uso en tu cuenta de OpenAI. La suscripción ChatGPT Plus no incluye la API: la clave se crea aparte.`,
+  "Tem um uso gratuito com limites diários. No plano gratuito, o Google pode usar o que é enviado para melhorar os produtos dele.": `Tiene uso gratuito con límites diarios. En el plan gratuito, Google puede usar lo que se envía para mejorar sus productos.`,
+  "Com uma chave de API da sua IA favorita (Claude, ChatGPT ou Gemini), o app entende frases de voz mais livres, analisa sua semana e tira dúvidas de execução. Sem chave, tudo o mais funciona normalmente, inclusive sem internet.": `Con una clave de API de tu IA favorita (Claude, ChatGPT o Gemini), la app entiende frases de voz más libres, analiza tu semana y resuelve dudas de técnica. Sin clave, todo lo demás funciona normalmente, incluso sin internet.`,
+  "IA": `IA`,
+  "Escolhido ao salvar a chave": `Se elige al guardar la clave`,
+  "Atualizar lista de modelos": `Actualizar lista de modelos`,
+  "A chave fica guardada só neste aparelho e é enviada apenas à empresa da IA escolhida.": `La clave se guarda solo en este dispositivo y se envía únicamente a la empresa de la IA elegida.`,
+  "Criar chave de API: {ia}": `Crear clave de API: {ia}`,
+  "Nenhum modelo de texto encontrado para esta chave.": `No se encontró ningún modelo de texto para esta clave.`,
+  "Buscando modelos…": `Buscando modelos…`,
+  "{n} modelos encontrados.": `{n} modelos encontrados.`,
+  "Salvando…": `Guardando…`,
+  "IA configurada: {ia}, modelo {m}.": `IA configurada: {ia}, modelo {m}.`,
+  "Não foi possível sincronizar agora. Tente de novo.": `No se pudo sincronizar ahora. Inténtalo de nuevo.`,
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -583,7 +598,7 @@ const help = [
       <li><b>Indica las cargas que ya usas</b> en la pantalla de cargas iniciales. Es opcional: lo que quede en blanco lo eliges en el primer entrenamiento.</li>
       <li>En la pestaña <b>Hoy</b>, toca <b>Empezar entrenamiento</b>.</li>
     </ol>
-    <p class="tip">Todo se puede cambiar después en la pestaña Entrenos: ejercicios, orden, series y rango de repeticiones.</p>`],
+    <p class="tip">Todo se puede cambiar después en la pestaña Entrenos: ejercicios, orden, series y rango de repeticiones. Para cambiar el idioma (portugués, inglés o español), ve a <b>Ajustes &gt; Idioma</b>.</p>`],
   ['Registrar un entrenamiento', 'Un toque por serie', `
     <ol class="steps">
       <li>La pantalla muestra la <b>meta de hoy</b> de cada serie, ya calculada por la app.</li>
@@ -656,7 +671,8 @@ const help = [
     <p>Con la cuenta de Google conectada, la app guarda sola en tu Drive, en una carpeta <b>Overload</b>, unos segundos después de cada cambio. En otro dispositivo, basta con iniciar sesión con la misma cuenta.</p>
     <ul class="errs">
       <li>Cada entrenamiento se guarda en Drive al tocar <b>Terminar</b>; el resumen muestra "Guardado en tu Google Drive". Puede abrirse y cerrarse sola una ventana de Google: es la app renovando la autorización.</li>
-      <li>Si cambias algo fuera del entrenamiento y la autorización ha caducado, aparece un botón <b>Sincronizar</b> en la pantalla Hoy: un toque lo resuelve.</li>
+      <li>Arriba de la pantalla, un indicador muestra el estado: <b>rojo (Sincronizar)</b> cuando hay cambios aún no enviados y <b>verde (Sincronizado)</b> cuando todo está en Drive. Toca el indicador rojo para enviar al momento.</li>
+      <li>Un entrenamiento en curso queda en el dispositivo y va a Drive al tocar <b>Terminar</b>.</li>
       <li>Sin internet, la app funciona normalmente y envía los datos después.</li>
       <li>Sin cuenta de Google, usa <b>Ajustes &gt; Guardar copia completa</b> de vez en cuando y guarda el archivo fuera del móvil.</li>
       <li><b>Cambiar de perfil</b>: Ajustes &gt; Cuenta &gt; <b>Cerrar sesión</b> e inicia con otra cuenta de Google. Cada cuenta tiene sus propios entrenamientos; al volver a la primera, todo reaparece.</li>
@@ -674,7 +690,12 @@ const help = [
       <li>En el <b>historial</b>, toca un entrenamiento y luego un ejercicio para corregir series anteriores.</li>
     </ul>`],
   ['Entrenador IA (opcional)', 'Análisis y dudas', `
-    <p>Con una clave de la API de Claude en <b>Ajustes</b>, la app analiza tu semana, responde dudas de técnica y entiende frases de voz más libres. El uso se cobra en tu cuenta de la API. Sin clave, todo lo demás funciona.</p>`],
+    <p>En <b>Ajustes &gt; Entrenador IA</b>, elige tu IA favorita (<b>Claude</b>, <b>ChatGPT</b> o <b>Gemini</b>) y pega una clave de API. Con ella, la app analiza tu semana, responde dudas de técnica y entiende frases de voz más libres. Sin clave, todo lo demás funciona.</p>
+    <ul class="errs">
+      <li><b>Gemini</b>: tiene uso gratuito con límites diarios. En el plan gratuito, Google puede usar lo que se envía para mejorar sus productos.</li>
+      <li><b>Claude</b> y <b>ChatGPT</b>: se cobran por uso en tu cuenta. La suscripción ChatGPT Plus no incluye la API: la clave se crea aparte.</li>
+      <li>El botón <b>Crear clave de API</b>, en Ajustes, lleva a la página correcta de cada empresa.</li>
+    </ul>`],
   ['Instalar y actualizar la app', 'En la pantalla de inicio del móvil', `
     <p>Toca el <b>icono naranja de descarga</b> en la esquina superior derecha de la pantalla. Desaparece cuando la app ya está instalada. Si el navegador no la instala directamente, la app muestra los pasos:</p>
     <ul class="errs">

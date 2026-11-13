@@ -57,6 +57,7 @@ export const uid = () => Date.now().toString(36) + Math.random().toString(36).sl
 export function exportData() {
   const copy = JSON.parse(JSON.stringify(state));
   copy.settings.apiKey = '';
+  copy.settings.aiKeys = {}; // chaves de IA nunca saem do aparelho
   copy.active = null;
   delete copy.sync;
   return copy;
@@ -67,9 +68,10 @@ const valid = raw => raw && typeof raw === 'object' && Array.isArray(raw.session
 
 /** Troca os dados pelos de outro lugar, mantendo o que é só deste aparelho. */
 function replaceWith(raw) {
-  const keep = { apiKey: state.settings.apiKey, active: state.active, sync: state.sync };
+  const keep = { apiKey: state.settings.apiKey, aiKeys: state.settings.aiKeys, active: state.active, sync: state.sync };
   state = merge(raw);
   state.settings.apiKey = keep.apiKey;
+  state.settings.aiKeys = keep.aiKeys;
   state.active = keep.active;
   state.sync = keep.sync;
 }

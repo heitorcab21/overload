@@ -571,6 +571,21 @@ const ui = {
   "Confira idade, altura e peso.": `Check your age, height and weight.`,
   'com base em {n} exercício': `based on {n} exercise`,
   'média de {n} exercícios': `average of {n} exercises`,
+  "Cobrado por uso na sua conta da Anthropic. Dá para definir um limite de gastos no Console.": `Billed per use to your Anthropic account. You can set a spending limit in the Console.`,
+  "Cobrado por uso na sua conta da OpenAI. A assinatura ChatGPT Plus não inclui a API: a chave é criada à parte.": `Billed per use to your OpenAI account. A ChatGPT Plus subscription doesn't include the API: the key is created separately.`,
+  "Tem um uso gratuito com limites diários. No plano gratuito, o Google pode usar o que é enviado para melhorar os produtos dele.": `Has free usage with daily limits. On the free tier, Google may use what you send to improve its products.`,
+  "Com uma chave de API da sua IA favorita (Claude, ChatGPT ou Gemini), o app entende frases de voz mais livres, analisa sua semana e tira dúvidas de execução. Sem chave, tudo o mais funciona normalmente, inclusive sem internet.": `With an API key from your favorite AI (Claude, ChatGPT or Gemini), the app understands freer voice phrases, analyzes your week and answers form questions. Without a key, everything else works normally, even offline.`,
+  "IA": `AI`,
+  "Escolhido ao salvar a chave": `Chosen when you save the key`,
+  "Atualizar lista de modelos": `Refresh model list`,
+  "A chave fica guardada só neste aparelho e é enviada apenas à empresa da IA escolhida.": `The key is stored on this device only and is sent only to the chosen AI company.`,
+  "Criar chave de API: {ia}": `Create API key: {ia}`,
+  "Nenhum modelo de texto encontrado para esta chave.": `No text model found for this key.`,
+  "Buscando modelos…": `Fetching models…`,
+  "{n} modelos encontrados.": `{n} models found.`,
+  "Salvando…": `Saving…`,
+  "IA configurada: {ia}, modelo {m}.": `AI set up: {ia}, model {m}.`,
+  "Não foi possível sincronizar agora. Tente de novo.": `Couldn't sync right now. Try again.`,
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -583,7 +598,7 @@ const help = [
       <li><b>Enter the loads you already use</b> on the starting loads screen. It's optional: anything left blank you choose in your first workout.</li>
       <li>On the <b>Today</b> tab, tap <b>Start workout</b>.</li>
     </ol>
-    <p class="tip">Everything can be changed later in the Workouts tab: exercises, order, sets and rep range.</p>`],
+    <p class="tip">Everything can be changed later in the Workouts tab: exercises, order, sets and rep range. To change the language (Portuguese, English or Spanish), go to <b>Settings &gt; Language</b>.</p>`],
   ['Logging a workout', 'One tap per set', `
     <ol class="steps">
       <li>The screen shows <b>today's target</b> for each set, already calculated by the app.</li>
@@ -656,7 +671,8 @@ const help = [
     <p>With your Google account connected, the app saves to your Drive on its own, in an <b>Overload</b> folder, a few seconds after each change. On another device, just sign in with the same account.</p>
     <ul class="errs">
       <li>Every workout is saved to Drive when you tap <b>Finish</b>; the summary shows "Saved to your Google Drive". A Google window may open and close by itself: that's the app renewing its authorization.</li>
-      <li>If you change something outside a workout and the authorization has expired, a <b>Sync</b> button appears on the Today screen: one tap fixes it.</li>
+      <li>At the top of the screen, a badge shows the status: <b>red (Sync)</b> when there are changes not yet uploaded and <b>green (Synced)</b> when everything is in Drive. Tap the red badge to upload right away.</li>
+      <li>A workout in progress stays on the device and goes to Drive when you tap <b>Finish</b>.</li>
       <li>Without internet, the app works normally and uploads later.</li>
       <li>Without a Google account, use <b>Settings &gt; Save full backup</b> now and then and keep the file somewhere other than your phone.</li>
       <li><b>Switching profiles</b>: Settings &gt; Account &gt; <b>Sign out</b> and sign in with another Google account. Each account has its own workouts; switching back brings everything back.</li>
@@ -674,7 +690,12 @@ const help = [
       <li>In the <b>history</b>, tap a workout and then an exercise to correct past sets.</li>
     </ul>`],
   ['AI coach (optional)', 'Analyses and questions', `
-    <p>With a Claude API key in <b>Settings</b>, the app analyzes your week, answers form questions and understands freer voice phrases. Usage is billed to your API account. Without a key, everything else works.</p>`],
+    <p>In <b>Settings &gt; AI coach</b>, choose your favorite AI (<b>Claude</b>, <b>ChatGPT</b> or <b>Gemini</b>) and paste an API key for it. The app then analyzes your week, answers form questions and understands freer voice phrases. Without a key, everything else works.</p>
+    <ul class="errs">
+      <li><b>Gemini</b>: has free usage with daily limits. On the free tier, Google may use what you send to improve its products.</li>
+      <li><b>Claude</b> and <b>ChatGPT</b>: billed per use to your account. A ChatGPT Plus subscription doesn't include the API: the key is created separately.</li>
+      <li>The <b>Create API key</b> button in Settings takes you to the right page for each company.</li>
+    </ul>`],
   ['Installing and updating the app', 'On your phone\'s home screen', `
     <p>Tap the <b>orange download icon</b> in the top right corner of the screen. It disappears once the app is installed. If the browser can't install it directly, the app shows the steps:</p>
     <ul class="errs">

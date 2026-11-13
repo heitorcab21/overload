@@ -3,7 +3,7 @@ import { state, save, exportJSON, importJSON, emptyData, resetKeepAccount } from
 import { googleBtn, $, $$, esc, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, shareFile, fmtDate, fmtTime } from '../ui.js';
 import { route, go, rerender } from '../router.js';
 import { sessionsCSV } from '../export.js';
-import { aiEnabled, aiAskExecution } from '../ai.js';
+import { aiEnabled, aiAskExecution, PROVIDERS, aiProvider, aiKey, aiModel, setAiConfig, listModels } from '../ai.js';
 import { driveAvailable, driveConnected, driveDirty, connect, sync, hasToken, refreshIfNeeded, logout, wipeRemote } from '../drive.js';
 import { isInstalled } from '../install.js';
 import { syncState, syncLabel, updateSyncBadge } from '../syncbadge.js';
@@ -47,12 +47,6 @@ function accountCard() {
   </div>`;
 }
 
-const MODELS = () => [
-  ['claude-opus-5-5', `Claude Opus 5.5 (${t('recomendado')})`],
-  ['claude-sonnet-5-5', `Claude Sonnet 5.5 (${t('mais rápido')})`],
-  ['claude-haiku-5-5', `Claude Haiku 5.5 (${t('mais barato')})`],
-];
-
 export function applyTheme() {
   const th = state.settings.theme;
   if (th === 'auto') document.documentElement.removeAttribute('data-theme');
@@ -85,21 +79,7 @@ function render() {
           </select></label>
       </div>
 
-      <div class="card stack">
-        <h3>${t('Treinador IA (opcional)')}</h3>
-        <p class="muted small">${t('Com uma chave da API do Claude, o app entende frases de voz mais livres, analisa sua semana e tira dúvidas de execução. Sem chave, tudo o mais funciona normalmente, inclusive sem internet.')}</p>
-        <form class="stack" data-submit="saveKey">
-          <label class="field">${t('Chave da API')}
-            <input type="password" name="key" value="${esc(s.apiKey)}" placeholder="sk-ant-..." autocomplete="off" spellcheck="false"></label>
-          <label class="field">${t('Modelo')}
-            <select name="model">${MODELS().map(([id, name]) => `<option value="${id}"${s.model === id ? ' selected' : ''}>${name}</option>`).join('')}</select></label>
-          <div class="row">
-            <button class="btn primary grow">${t('Salvar')}</button>
-            ${aiEnabled() ? `<button type="button" class="btn" data-act="testAI">${t('Testar')}</button>` : ''}
-          </div>
-        </form>
-        <p class="muted small">${t('A chave fica guardada só neste aparelho e é enviada apenas à Anthropic. O uso é cobrado na sua conta da API. Crie a chave no Console da Anthropic (platform.claude.com) e, se puder, defina um limite de gastos.')}</p>
-      </div>
+      ${aiCard()}
 
       ${accountCard()}
 
@@ -129,6 +109,99 @@ function render() {
     </div>`;
 }
 
+// ---------- Treinador IA: Claude, ChatGPT ou Gemini ----------
+
+const loadedModels = {}; // provedor -> lista de modelos buscada na chave
+
+function aiCard() {
+  const p = aiProvider();
+  const info = PROVIDERS[p];
+  const current = aiModel(p);
+  const models = [...new Set([current, ...(loadedModels[p] || [])].filter(Boolean))];
+  const note = {
+    claude: t('Cobrado por uso na sua conta da Anthropic. Dá para definir um limite de gastos no Console.'),
+    openai: t('Cobrado por uso na sua conta da OpenAI. A assinatura ChatGPT Plus não inclui a API: a chave é criada à parte.'),
+    gemini: t('Tem um uso gratuito com limites diários. No plano gratuito, o Google pode usar o que é enviado para melhorar os produtos dele.'),
+  }[p];
+  return `<div class="card stack">
+    <h3>${t('Treinador IA (opcional)')}</h3>
+    <p class="muted small">${t('Com uma chave de API da sua IA favorita (Claude, ChatGPT ou Gemini), o app entende frases de voz mais livres, analisa sua semana e tira dúvidas de execução. Sem chave, tudo o mais funciona normalmente, inclusive sem internet.')}</p>
+    <form class="stack" data-submit="saveKey">
+      <label class="field">${t('IA')}
+        <select name="provider" data-change="setAiProvider">
+          ${Object.entries(PROVIDERS).map(([id, v]) => `<option value="${id}"${id === p ? ' selected' : ''}>${v.name}</option>`).join('')}
+        </select></label>
+      <label class="field">${t('Chave da API')}
+        <input type="password" name="key" value="${esc(aiKey(p))}" placeholder="${info.keyHint}" autocomplete="off" spellcheck="false"></label>
+      <label class="field">${t('Modelo')}
+        <select name="model">
+          ${models.length ? models.map(m => `<option value="${esc(m)}"${m === current ? ' selected' : ''}>${esc(m)}</option>`).join('')
+            : `<option value="">${t('Escolhido ao salvar a chave')}</option>`}
+        </select></label>
+      ${aiKey(p) ? `<button type="button" class="btn ghost block" data-act="loadModels">${t('Atualizar lista de modelos')}</button>` : ''}
+      <div class="row">
+        <button class="btn primary grow">${t('Salvar')}</button>
+        ${aiEnabled() ? `<button type="button" class="btn" data-act="testAI">${t('Testar')}</button>` : ''}
+      </div>
+    </form>
+    <p class="muted small">${note}</p>
+    <p class="muted small">${t('A chave fica guardada só neste aparelho e é enviada apenas à empresa da IA escolhida.')}</p>
+    <a class="btn block" href="${info.keyUrl}" target="_blank" rel="noopener">${t('Criar chave de API: {ia}', { ia: info.name })}</a>
+  </div>`;
+}
+
+changes.setAiProvider = el => { state.settings.aiProvider = el.value; save(); rerender(); };
+
+/** Busca os modelos da chave e guarda a configuração. Devolve o modelo escolhido. */
+async function fetchModels(p, key, keepModel) {
+  const { models, recommended } = await listModels(p, key);
+  loadedModels[p] = models;
+  const model = keepModel && models.includes(keepModel) ? keepModel : recommended;
+  if (!model) throw new Error(t('Nenhum modelo de texto encontrado para esta chave.'));
+  return model;
+}
+
+actions.loadModels = async el => {
+  const form = el.closest('form');
+  const p = form.provider.value, key = form.key.value.trim();
+  el.disabled = true;
+  el.textContent = t('Buscando modelos…');
+  try {
+    const model = await fetchModels(p, key, form.model.value);
+    setAiConfig(p, key, model);
+    save();
+    toast(t('{n} modelos encontrados.', { n: loadedModels[p].length }));
+  } catch (e) {
+    toast(e.message, 6000);
+  }
+  rerender();
+};
+
+submits.saveKey = async form => {
+  const p = form.provider.value, key = form.key.value.trim();
+  let model = form.model.value;
+  if (!key) {
+    setAiConfig(p, '', model);
+    save(); toast(t('IA desativada.')); rerender();
+    return;
+  }
+  const btn = form.querySelector('button.primary');
+  btn.disabled = true;
+  btn.textContent = t('Salvando…');
+  try {
+    // sem modelo escolhido (ou trocou de provedor): busca a lista e escolhe um padrão bom
+    if (!model || !loadedModels[p]) model = await fetchModels(p, key, model);
+    setAiConfig(p, key, model);
+    save();
+    toast(t('IA configurada: {ia}, modelo {m}.', { ia: PROVIDERS[p].name, m: model }), 4000);
+  } catch (e) {
+    setAiConfig(p, key, model);
+    save();
+    toast(e.message, 6000);
+  }
+  rerender();
+};
+
 changes.setLang = el => {
   state.settings.lang = el.value;
   save();
@@ -138,13 +211,6 @@ changes.setLang = el => {
 changes.setRest = el => { state.settings.rest = Math.max(0, Math.round(Number(el.value) || 0)); save(); };
 changes.setTheme = el => { state.settings.theme = el.value; save(); applyTheme(); };
 
-submits.saveKey = form => {
-  state.settings.apiKey = form.key.value.trim();
-  state.settings.model = form.model.value;
-  save();
-  toast(state.settings.apiKey ? t('IA configurada.') : t('IA desativada.'));
-  rerender();
-};
 actions.testAI = async el => {
   el.disabled = true;
   el.textContent = t('Testando…');
@@ -201,8 +267,9 @@ actions.driveConnect = async el => {
   el.textContent = t('Conectando…');
   const wasNew = !state.onboarded;
   try {
-    if (driveConnected() && hasToken()) await sync();
-    else await connect();
+    if (driveConnected() && hasToken()) {
+      if (!(await sync())) throw new Error(t('Não foi possível sincronizar agora. Tente de novo.'));
+    } else await connect();
     applyLang();
     if (wasNew) {
       if (state.onboarded) { toast(t('Seus dados foram recuperados do Google Drive.'), 4000); go('#/hoje'); return; }
@@ -276,7 +343,7 @@ actions.wipeAsk = () => {
         ? `<li>${t('Também no seu Google Drive (<b>{email}</b>). Outros aparelhos com esta conta ficam vazios na próxima sincronização.', { email: esc(state.sync.email) })}</li>
            <li>${t('Você continua conectado com esta conta e escolhe os treinos de novo.')}</li>`
         : `<li>${t('Apenas neste aparelho. O app volta para a tela inicial.')}</li>`}
-      <li>${state.settings.apiKey ? t('Os ajustes voltam ao padrão e a chave da IA é removida.') : t('Os ajustes voltam ao padrão.')}</li>
+      <li>${Object.values(state.settings.aiKeys || {}).some(Boolean) || state.settings.apiKey ? t('Os ajustes voltam ao padrão e a chave da IA é removida.') : t('Os ajustes voltam ao padrão.')}</li>
       <li><b>${t('Não dá para desfazer.')}</b></li>
     </ul>
     ${n ? `<button class="btn block" data-act="backupNow">${t('Salvar um backup antes')}</button>` : ''}

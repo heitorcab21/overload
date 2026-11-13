@@ -12,7 +12,7 @@ const TOPICS = [
       <li><b>Informe as cargas que você já usa</b> na tela de cargas iniciais. É opcional: o que ficar em branco você escolhe no primeiro treino.</li>
       <li>Na aba <b>Hoje</b>, toque em <b>Começar treino</b>.</li>
     </ol>
-    <p class="tip">Tudo pode ser mudado depois na aba Treinos: exercícios, ordem, séries e faixa de repetições.</p>`],
+    <p class="tip">Tudo pode ser mudado depois na aba Treinos: exercícios, ordem, séries e faixa de repetições. Para trocar o idioma (português, inglês ou espanhol), vá em <b>Ajustes &gt; Idioma</b>.</p>`],
 
   ['Registrar um treino', 'Um toque por série', `
     <ol class="steps">
@@ -93,7 +93,8 @@ const TOPICS = [
     <p>Com a conta Google conectada, o app salva sozinho no seu Drive, numa pasta <b>Overload</b>, alguns segundos depois de cada alteração. Em outro aparelho, é só entrar com a mesma conta.</p>
     <ul class="errs">
       <li>Todo treino é salvo no Drive ao tocar em <b>Finalizar</b>; o resumo mostra "Salvo no seu Google Drive". Pode aparecer uma janela do Google abrindo e fechando sozinha: é o app renovando a autorização.</li>
-      <li>Se você mudar algo fora do treino e a autorização tiver vencido, aparece um botão <b>Sincronizar</b> na tela Hoje: um toque resolve.</li>
+      <li>No topo da tela, um selo mostra a situação: <b>vermelho (Sincronizar)</b> quando há alteração ainda não enviada e <b>verde (Sincronizado)</b> quando está tudo no Drive. Toque no selo vermelho para enviar na hora.</li>
+      <li>Um treino em andamento fica só no aparelho e vai para o Drive ao tocar em <b>Finalizar</b>.</li>
       <li>Sem internet, o app funciona normal e envia depois.</li>
       <li>Sem conta Google, use <b>Ajustes &gt; Salvar backup completo</b> de vez em quando e guarde o arquivo fora do celular.</li>
       <li><b>Trocar de perfil</b>: Ajustes &gt; Conta &gt; <b>Sair da conta</b> e entre com outra conta Google. Cada conta tem os próprios treinos; voltando para a primeira, tudo reaparece.</li>
@@ -114,7 +115,12 @@ const TOPICS = [
     </ul>`],
 
   ['Treinador IA (opcional)', 'Análises e dúvidas', `
-    <p>Com uma chave da API do Claude em <b>Ajustes</b>, o app analisa sua semana, responde dúvidas de execução e entende frases de voz mais livres. O uso é cobrado na sua conta da API. Sem chave, todo o resto funciona.</p>`],
+    <p>Em <b>Ajustes &gt; Treinador IA</b>, escolha a sua IA favorita (<b>Claude</b>, <b>ChatGPT</b> ou <b>Gemini</b>) e cole uma chave de API dela. Com isso, o app analisa sua semana, responde dúvidas de execução e entende frases de voz mais livres. Sem chave, todo o resto funciona.</p>
+    <ul class="errs">
+      <li><b>Gemini</b>: tem uso gratuito com limites diários. No plano gratuito, o Google pode usar o que é enviado para melhorar os produtos dele.</li>
+      <li><b>Claude</b> e <b>ChatGPT</b>: cobrados por uso na sua conta. A assinatura ChatGPT Plus não inclui a API: a chave é criada à parte.</li>
+      <li>O botão <b>Criar chave de API</b>, em Ajustes, leva à página certa de cada empresa.</li>
+    </ul>`],
 
   ['Instalar e atualizar o app', 'Na tela inicial do celular', `
     <p>Toque no <b>ícone laranja de download</b> no canto superior direito da tela. Ele some quando o app já está instalado. Se o navegador não instalar direto, o app mostra os passos:</p>

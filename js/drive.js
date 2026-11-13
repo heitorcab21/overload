@@ -145,9 +145,12 @@ async function upload(data) {
 let running = null;
 let lastTry = 0;
 
-/** Sincroniza agora. Não faz nada durante um treino em andamento (ele sincroniza ao terminar). */
+/**
+ * Sincroniza agora. Pode rodar com um treino aberto: o treino em andamento não vai para o Drive
+ * (ele é enviado ao finalizar) e é mantido ao receber dados de outro aparelho.
+ */
 export function sync() {
-  if (!driveConnected() || state.active) return Promise.resolve(false);
+  if (!driveConnected()) return Promise.resolve(false);
   if (!running) {
     running = doSync().finally(() => { running = null; notify(); });
     notify();
@@ -271,7 +274,7 @@ export function initDrive() {
   let timer;
   const quiet = () => sync().catch(() => rerender());
   onSave(() => {
-    if (!driveConnected() || state.active || !hasToken()) return;
+    if (!driveConnected() || !hasToken()) return;
     clearTimeout(timer);
     timer = setTimeout(quiet, 5000);
   });

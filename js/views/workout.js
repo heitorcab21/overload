@@ -27,7 +27,7 @@ export function startWorkout(routineId) {
   // Renova a autorização do Google agora, no toque de "Começar": ela cobre o treino inteiro
   refreshIfNeeded();
   state.active = { id: uid(), routineId: r.id, name: r.name, tpl: !!r.tpl, startedAt: Date.now(), idx: 0, restEnd: 0, entries };
-  save();
+  save({ touch: false });
   go('#/treino');
 }
 
@@ -64,7 +64,7 @@ function render() {
   const a = state.active;
   if (!a) { go('#/hoje'); return; }
   const { en, ex } = cur();
-  if (!ex) { a.entries.splice(a.idx, 1); a.idx = Math.max(0, a.idx - 1); save(); if (!a.entries.length) { state.active = null; save(); } render(); return; }
+  if (!ex) { a.entries.splice(a.idx, 1); a.idx = Math.max(0, a.idx - 1); save({ touch: false }); if (!a.entries.length) { state.active = null; save({ touch: false }); } render(); return; }
   const cues = exCues(ex);
   const logging = !en.skipped && (en.sets.length < ex.sets || en.extra);
   const total = Math.max(ex.sets, en.sets.length + (en.extra ? 1 : 0));
@@ -213,7 +213,9 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible' && state.active && current().name === 'treino') keepAwake();
 });
 
-const done = () => { save(); render(); };
+// O treino em andamento fica só neste aparelho até ser finalizado: mexer nele não conta
+// como alteração a enviar ao Drive (senão o selo ficaria vermelho o treino inteiro).
+const done = () => { save({ touch: false }); render(); };
 
 // ---------- Ações de toque ----------
 
@@ -221,7 +223,7 @@ changes.wCur = el => {
   const { en } = cur();
   const v = Math.max(0, Number(el.value) || 0);
   if (el.name === 'w') en.cur.w = v; else en.cur.r = Math.round(v);
-  save();
+  save({ touch: false });
   const label = setStr(en.cur);
   if ($('#curLabel')) $('#curLabel').textContent = label;
   if ($('#doneLabel')) $('#doneLabel').textContent = `${t('Feito')} · ${label}`;
@@ -290,7 +292,7 @@ actions.wAll = () => {
   done();
 };
 actions.wUndo = () => { const { en } = cur(); if (undo(en)) done(); };
-actions.wSkip = () => { const { en } = cur(); en.skipped = true; save(); nextExercise(); };
+actions.wSkip = () => { const { en } = cur(); en.skipped = true; save({ touch: false }); nextExercise(); };
 actions.wUnskip = () => { cur().en.skipped = false; done(); };
 actions.wExtra = () => { cur().en.extra = true; done(); };
 actions.wFeel = el => { const { en } = cur(); en.feel = en.feel === el.dataset.v ? null : el.dataset.v; done(); };
@@ -300,17 +302,17 @@ actions.wFlag = el => {
   en.flags = en.flags.includes(k) ? en.flags.filter(f => f !== k) : [...en.flags, k];
   done();
 };
-actions.restAdd = el => { state.active.restEnd = Math.max(Date.now(), state.active.restEnd + Number(el.dataset.s) * 1000); save(); tickRest(); };
-actions.restSkip = () => { state.active.restEnd = 0; save(); tickRest(); };
+actions.restAdd = el => { state.active.restEnd = Math.max(Date.now(), state.active.restEnd + Number(el.dataset.s) * 1000); save({ touch: false }); tickRest(); };
+actions.restSkip = () => { state.active.restEnd = 0; save({ touch: false }); tickRest(); };
 
 function nextExercise() {
   const a = state.active;
-  if (a.idx < a.entries.length - 1) { a.idx++; save(); render(); window.scrollTo(0, 0); } else actions.wFinish();
+  if (a.idx < a.entries.length - 1) { a.idx++; save({ touch: false }); render(); window.scrollTo(0, 0); } else actions.wFinish();
 }
 actions.wNext = nextExercise;
-actions.wPrev = () => { const a = state.active; if (a.idx > 0) { a.idx--; save(); render(); window.scrollTo(0, 0); } };
+actions.wPrev = () => { const a = state.active; if (a.idx > 0) { a.idx--; save({ touch: false }); render(); window.scrollTo(0, 0); } };
 actions.wHome = () => go('#/hoje');
-actions.wJump = el => { state.active.idx = Number(el.dataset.i); save(); closeSheet(); render(); window.scrollTo(0, 0); };
+actions.wJump = el => { state.active.idx = Number(el.dataset.i); save({ touch: false }); closeSheet(); render(); window.scrollTo(0, 0); };
 
 actions.wList = () => {
   const a = state.active;
@@ -360,7 +362,7 @@ actions.wDiscardAsk = () => {
     <button class="btn danger block" data-act="wDiscard">${t('Descartar treino')}</button>
     <button class="btn block" data-act="closeSheet">${t('Voltar')}</button>`);
 };
-actions.wDiscard = () => { state.active = null; save(); closeSheet(); releaseAwake(); go('#/hoje'); };
+actions.wDiscard = () => { state.active = null; save({ touch: false }); closeSheet(); releaseAwake(); go('#/hoje'); };
 
 function finish() {
   // No toque de "Finalizar": se a autorização venceu durante o treino, renova sem perguntar nada
@@ -479,7 +481,7 @@ async function applyVoice(text) {
       move = 'next';
     }
   }
-  save();
+  save({ touch: false });
   if (move === 'next') nextExercise(); else render();
   if (said.length) toast(said.join(' · '), 3500);
 }
