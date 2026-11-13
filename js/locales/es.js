@@ -745,6 +745,7 @@ const ui = {
   "Carga abaixo de 70% da meta: esta série vai contar como aquecimento. Suba a carga para registrar como série válida.": "Carga por debajo del 70% de la meta: esta serie contará como calentamiento. Sube la carga para registrarla como serie válida.",
   "versão {v}": "versi\u00f3n {v}",
   "versão de desenvolvimento": "versi\u00f3n de desarrollo",
+  "Monte seu próprio treino": "Arma tu propio entrenamiento",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
