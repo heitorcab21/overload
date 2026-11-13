@@ -610,3 +610,4 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 .quick-acts .qa b .ic { width: 16px; height: 16px; }
 .quick-acts .qa small { font-size: 11px; color: var(--muted); line-height: 1.2; }
 .quick-acts .qa:active { transform: scale(.97); }
+.hints .warm-li, .hints .warm-li b { color: var(--warm); }

@@ -570,8 +570,8 @@ const voiceSheet = (status, listening) => `
     <li>${t('<b>"40 quilos, 12 repetições"</b> registra uma série')}</li>
     <li>${t('<b>"bati a meta"</b> ou <b>"mais uma"</b> usa a meta como base')}</li>
     <li>${t('<b>"três séries de dez com cinquenta"</b> registra várias')}</li>
-    <li>${t('<b>"foi aquecimento"</b> ou <b>"aquecimento, 20 quilos, 15"</b> marca aquecimento; <b>"não foi aquecimento"</b> desfaz')}</li>
     <li>${t('<b>"estava pesado"</b>, <b>"desfazer"</b>, <b>"pular"</b>, <b>"próximo"</b>')}</li>
+    <li class="warm-li">${t('<b>"foi aquecimento"</b> ou <b>"aquecimento, 20 quilos, 15"</b> marca aquecimento; <b>"não foi aquecimento"</b> desfaz')}</li>
   </ul>
   <form class="row" data-submit="voiceText">
     <input type="text" name="t" placeholder="${t('ou digite: 40 12')}" autocomplete="off" aria-label="${t('Digitar em vez de falar')}">
