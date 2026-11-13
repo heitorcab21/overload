@@ -117,9 +117,11 @@ function render() {
       <button class="btn block" data-act="wUnskip">${t('Fazer mesmo assim')}</button></div>`;
   } else if (logging) {
     body = `<div class="log">
-      ${p.first && !p.w && !ex.bw && !en.sets.length ? `<h3>${t('Carga total de hoje (kg)')}</h3>
-      <div class="chips">${[5, 10, 15, 20, 30, 40, 50, 60, 80, 100].map(v =>
-        `<button class="chip${en.cur.w === v ? ' on' : ''}" data-act="wSetW" data-w="${v}" aria-pressed="${en.cur.w === v}">${v}</button>`).join('')}</div>` : ''}
+      <div class="quick-acts">
+        <button class="qa warm" data-act="wWarm"><b>${t('Foi aquecimento')}</b><small>${t('importante marcar se foi')}</small></button>
+        ${en.sets.length < ex.sets ? `<button class="qa" data-act="wAll"><b>${t('Todas como a meta')}</b></button>` : ''}
+        ${en.sets.length ? `<button class="qa" data-act="wUndo"><b>${icon.undo}${t('Desfazer')}</b></button>` : `<button class="qa" data-act="wSkip"><b>${t('Pular exercício')}</b></button>`}
+      </div>
       <div class="two">
         ${stepper('w', en.cur.w, ex.step || 1, loadLabel(ex), 0, 'wCur').replace('data-change="wCur"', 'data-change="wCur" data-live')}
         ${stepper('r', en.cur.r, 1, t('Repetições'), 0, 'wCur').replace('data-change="wCur"', 'data-change="wCur" data-live')}
@@ -128,11 +130,6 @@ function render() {
       <p class="small warm-hint" id="warmHint"${willBeWarmup(en, ex) ? '' : ' hidden'}>${t('Carga abaixo de 70% da meta: esta série vai contar como aquecimento. Suba a carga para registrar como série válida.')}</p>
       <p class="small muted load-hint">${esc(loadHint(ex))}</p>
       ${rirRow(en)}
-      <div class="row wrap">
-        <button class="btn" data-act="wWarm">${t('Foi aquecimento')}</button>
-        ${en.sets.length < ex.sets ? `<button class="btn grow" data-act="wAll">${t('Todas como a meta')}</button>` : ''}
-        ${en.sets.length ? `<button class="btn" data-act="wUndo">${icon.undo}${t('Desfazer')}</button>` : `<button class="btn" data-act="wSkip">${t('Pular exercício')}</button>`}
-      </div>
     </div>`;
   } else {
     body = `<div class="log">
@@ -278,7 +275,6 @@ actions.wDone = () => {
   logSet(en, en.cur.w, en.cur.r);
   done();
 };
-actions.wSetW = el => { cur().en.cur.w = Number(el.dataset.w); done(); };
 
 // Corrigir ou excluir uma série já registrada neste treino
 actions.wEditSet = el => {

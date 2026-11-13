@@ -429,7 +429,6 @@ const ui = {
   'Último': `Last`,
   'Exercício pulado neste treino.': `Exercise skipped in this workout.`,
   'Fazer mesmo assim': `Do it anyway`,
-  'Carga total de hoje (kg)': `Today's total load (kg)`,
   'Feito': `Done`,
   'Todas como a meta': `All as planned`,
   'Desfazer': `Undo`,
@@ -759,6 +758,7 @@ const ui = {
   "Concluir {n} treinos": "Finish {n} workouts",
   "{n} treino criado.": "{n} workout created.",
   "{n} treinos criados.": "{n} workouts created.",
+  "importante marcar se foi": "worth marking if it was",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };

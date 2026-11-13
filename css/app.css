@@ -597,3 +597,14 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 .builder-bar .btn { box-shadow: var(--shadow); }
 .builder-tabs .chip { display: inline-flex; align-items: center; gap: 4px; }
 .builder-tabs .chip .ic { width: 16px; height: 16px; }
+
+/* atalhos do treino em destaque, acima da carga */
+.quick-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.quick-acts .qa.warm { grid-column: 1 / -1; min-height: 52px; }
+.quick-acts .qa:only-child, .quick-acts .qa.warm + .qa:last-child { grid-column: 1 / -1; }
+.quick-acts .qa { display: grid; place-items: center; align-content: center; gap: 2px; min-height: 58px; padding: 8px 6px; border-radius: 14px;
+  border: 1.5px solid color-mix(in srgb, var(--accent) 45%, var(--line)); background: color-mix(in srgb, var(--accent) 8%, var(--surface)); text-align: center; }
+.quick-acts .qa b { font-size: 14px; line-height: 1.2; display: inline-flex; align-items: center; gap: 4px; }
+.quick-acts .qa b .ic { width: 16px; height: 16px; }
+.quick-acts .qa small { font-size: 11px; color: var(--muted); line-height: 1.2; }
+.quick-acts .qa:active { transform: scale(.97); }
