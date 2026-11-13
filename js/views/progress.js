@@ -1,9 +1,10 @@
 // Progresso: números do período, séries por semana, evolução por exercício e histórico.
 import { state, save } from '../store.js';
 import { $, esc, fmt, setStr, compact, icon, actions, changes, submits, sheet, closeSheet, fmtDate, stepper, toast, meter } from '../ui.js';
-import { profile, bodyComposition, overallStrength, strengthLevel } from '../body.js';
+import { profile, bodyComposition, overallStrength, strengthLevel, quickLevel, STRENGTH_LIFTS } from '../body.js';
 import { route, rerender } from '../router.js';
-import { GROUPS, exName, routineName } from '../data.js';
+import { GROUPS, LIB, LIB_BY_ID, exName, routineName, loadHint } from '../data.js';
+import { exPack } from '../i18n.js';
 import { t, tn } from '../i18n.js';
 import {
   weekSeries, sessionsIn, monthStart, monthEnd, monthPRCount, entriesFor, bestOf, e1rm, exGoalStatus, tonnage,
@@ -227,6 +228,56 @@ function strengthOverview() {
   </a>`;
 }
 
+// consulta rápida: qualquer exercício comparável, sem salvar nada
+const QUICK_PARTS = () => [
+  [t('Tronco'), ['Peito', 'Costas', 'Ombros']],
+  [t('Braços'), ['Bíceps', 'Tríceps']],
+  [t('Pernas'), ['Quadríceps', 'Posteriores', 'Glúteos', 'Panturrilhas']],
+];
+const libName = id => exPack(id)?.name ?? LIB_BY_ID[id].name;
+
+function quickCalc() {
+  const parts = QUICK_PARTS().map(([label, groups]) => {
+    const ids = LIB.filter(l => groups.includes(l.group) && STRENGTH_LIFTS[l.id]).map(l => l.id);
+    if (!ids.length) return '';
+    return `<details class="quick-part"><summary><b>${esc(label)}</b><span class="small muted">${tn(ids.length, '{n} exercício', '{n} exercícios')}</span>${icon.down}</summary>
+      <div class="list">${ids.map(id => `<button class="item" data-act="quickLevel" data-id="${id}"><span class="grow t">${esc(libName(id))}</span>${icon.next}</button>`).join('')}</div></details>`;
+  }).join('');
+  return `<div class="card stack quick-card">
+    <h3>${t('Consultar qualquer exercício')}</h3>
+    <p class="small muted">${t('Escolha o exercício, informe carga e repetições e veja seu top na hora. Nada fica salvo.')}</p>
+    ${parts}
+  </div>`;
+}
+
+actions.quickLevel = el => {
+  const id = el.dataset.id;
+  const bw = STRENGTH_LIFTS[id][2];
+  sheet(`<h2>${esc(libName(id))}</h2>
+    <form class="stack" data-quick="${id}" onsubmit="return false">
+      <div class="two">
+        ${stepper('w', bw ? 0 : 40, bw ? 2.5 : 2.5, bw ? t('Peso extra (kg)') : t('Carga total (kg)'), 0, 'quickCalc')}
+        ${stepper('r', 8, 1, t('Repetições'), 1, 'quickCalc')}
+      </div>
+      <p class="small muted">${esc(loadHint({ lib: id }))}</p>
+      <div id="quickOut" class="quick-out" aria-live="polite"></div>
+      <p class="small muted">${t('Use uma série feita até perto da falha. Até 10 reps a estimativa é mais precisa.')}</p>
+    </form>`);
+  const form = $(`form[data-quick="${id}"]`);
+  form.querySelectorAll('input').forEach(i => { i.dataset.live = ''; }); // resultado muda a cada tecla
+  showQuick(form);
+};
+function showQuick(form) {
+  const id = form.dataset.quick;
+  const w = Number(form.w.value) || 0, r = Math.round(Number(form.r.value) || 0);
+  const q = quickLevel(id, w, r);
+  $('#quickOut').innerHTML = q
+    ? `<span class="top-chip big">${t('Top {n}%', { n: q.top })}</span>${meter(q.pct / 100)}
+       <span class="small muted">${t('1RM estimado: {w} kg', { w: Math.round(q.oneRM) })}</span>`
+    : `<span class="small muted">${t('Informe a carga e as repetições.')}</span>`;
+}
+changes.quickCalc = el => showQuick(el.closest('form'));
+
 function renderStrength() {
   const p = profile();
   const rows = p ? strengthRows(p) : [];
@@ -238,6 +289,8 @@ function renderStrength() {
         <button class="btn primary block" data-act="editProfile">${t('Preencher perfil')}</button></div>` : `
       <p class="muted small">${t('Entre {grupo} que treinam musculação, com {idade} anos e cerca de {peso} kg.', { grupo: groupWord(p), idade: p.age, peso: Math.round(p.weight) })}
         ${t('Top 10% quer dizer que você é mais forte que 90% dessas pessoas.')}</p>
+      ${quickCalc()}
+      ${rows.length ? `<h3 class="group-title">${t('Pelos seus treinos')}</h3>` : ''}
       ${rows.map(({ ex, lv }) => `<a class="card stack strength-row" href="#/exercicio/${encodeURIComponent(ex.id)}">
         <div class="row between"><b class="grow">${esc(exName(ex))}</b><span class="top-chip">${t('Top {n}%', { n: lv.top })}</span></div>
         ${meter(lv.pct / 100)}

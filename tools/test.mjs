@@ -308,4 +308,40 @@ eq([dmod.restOf({ rest: 150 }), dmod.restOf({ rest: 0 }), dmod.restOf({})], [150
 const libId = dmod.LIB.find(l => !S().exercises[l.id]).id;
 eq(dmod.ensureExercise(libId), S().exercises[libId], 'exercício da biblioteca entra na lista ao ser adicionado');
 
+// ---- importar de texto ----
+const ti = await import('../js/textimport.js');
+eq(ti.setsOfLine('15kg 10 rep'), [{ w: 15, r: 10 }]);
+eq(ti.setsOfLine('40x12'), [{ w: 40, r: 12 }]);
+eq(ti.setsOfLine('3x10 com 50kg').length, 3);
+eq(ti.setsOfLine('50kg 12/10/8').map(x => x.r), [12, 10, 8]);
+eq(ti.setsOfLine('12 reps'), [{ w: 0, r: 12 }]);
+eq(ti.setsOfLine('22,5 kg x 8'), [{ w: 22.5, r: 8 }]);
+eq(ti.restOfLine('(1:30 min descanso)'), 90);
+const imp = ti.parseWorkoutText(`12/11 Treino A
+• Tríceps_
+————EM PÉ CORDA————
+(1:30 min descanso)
+15kg 10 rep
+15kg 9 rep
+————Barra V————
+17kg 8 rep
+• Ombro_
+———EL. LATERAL———
+7kg 13 rep
+Leg press 3x12 com 120kg
+Desenv. maquina 50kg 10`, new Date(2026, 10, 13));
+const items = imp.sessions[0].items;
+eq(items.map(i => i.id), ['triceps-corda', 'triceps-barra', 'elevacao-lateral', 'leg-press', 'desenvolvimento-maquina'], 'reconhece exercícios abreviados e gírias');
+eq([items[0].rest, items[0].sets.length, items[3].sets.length], [90, 2, 3]);
+eq([imp.sessions[0].date.slice(0, 10), imp.sessions[0].name], ['2026-11-12', 'Treino A']);
+eq(ti.parseWorkoutText('só texto sem séries').sessions, []);
+
+// ---- consulta rápida de força ----
+S().profile = { sex: 'm', birthYear: new Date().getFullYear() - 30, height: 178, weight: 80 };
+const q1 = body.quickLevel('supino-reto', 100, 5), q2 = body.quickLevel('supino-reto', 60, 5);
+eq([q1.top < q2.top, Math.round(q1.oneRM)], [true, Math.round(e1rm(100, 5))], 'mais carga, top menor');
+eq(body.quickLevel('peck-deck', 50, 10), null, 'aparelho não entra');
+eq(body.quickLevel('barra-fixa', 0, 10).top > 0, true, 'peso corporal usa o peso do perfil');
+S().profile = null;
+
 console.log(`ok: ${n} verificações passaram`);

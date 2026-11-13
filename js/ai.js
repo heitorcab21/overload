@@ -317,3 +317,64 @@ Descreva a execução ideal do exercício pedido: três passos objetivos (posiç
   });
   return parseJSON(text);
 }
+
+/** Converte anotações de treino em texto livre (bloco de notas, WhatsApp) em treinos estruturados. */
+export async function aiParseWorkoutText(text, library) {
+  const out = await ask({
+    effort: 'low',
+    schema: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['sessions'],
+      properties: {
+        sessions: {
+          type: 'array',
+          items: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['date', 'name', 'exercises'],
+            properties: {
+              date: { type: ['string', 'null'], description: 'Data do treino em AAAA-MM-DD, ou null se o texto não disser.' },
+              name: { type: ['string', 'null'], description: 'Nome do treino, se houver (ex.: "Treino A", "Peito").' },
+              exercises: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['name', 'libId', 'group', 'restSec', 'sets'],
+                  properties: {
+                    name: { type: 'string', description: 'Nome do exercício como a pessoa escreveu, corrigido e legível.' },
+                    libId: { type: ['string', 'null'], description: 'id da biblioteca que corresponde ao exercício, ou null se nenhum corresponder.' },
+                    group: { type: ['string', 'null'], description: 'Grupamento muscular, um dos nomes da lista, ou null.' },
+                    restSec: { type: ['integer', 'null'], description: 'Descanso entre séries em segundos, se informado.' },
+                    sets: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        required: ['w', 'r'],
+                        properties: { w: { type: 'number', description: 'Carga total em kg (0 se peso corporal).' }, r: { type: 'integer', description: 'Repetições.' } },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    system: `Você converte anotações de treino de musculação, escritas livremente em bloco de notas ou WhatsApp, em dados estruturados.
+Regras:
+- Uma série por item em "sets". "3x10 com 50kg" vira três séries de 50 kg × 10. "40kg 12/10/8" vira três séries.
+- Ignore enfeites (traços, emojis, marcadores). Linhas como "• Tríceps" indicam o grupamento dos exercícios seguintes.
+- Mapeie cada exercício para o libId mais parecido da biblioteca, considerando gírias de academia (ex.: "corda" = tríceps na polia com corda, "barra V" = tríceps na polia com barra, "voador" = peck deck, "cross" = crossover, "serrote" = remada unilateral). Use null se não houver correspondência razoável.
+- Datas sem ano: use o ano atual (${new Date().getFullYear()}). Se não houver datas, devolva uma sessão com date null.
+- Não invente séries nem cargas que não estejam no texto.
+Grupamentos válidos: Peito, Costas, Ombros, Bíceps, Tríceps, Quadríceps, Posteriores, Glúteos, Panturrilhas, Abdômen.
+Biblioteca (libId: nome):
+${library}`,
+    user: text.slice(0, 12000),
+  });
+  return parseJSON(out);
+}

@@ -672,6 +672,39 @@ const ui = {
   "Treino C · Ombros": "Workout C · Shoulders",
   "Treino D · Pernas": "Workout D · Legs",
   "Treino E · Braços": "Workout E · Arms",
+  "Já anoto meus treinos": "I already log my workouts",
+  "Cole o texto do bloco de notas ou do WhatsApp e o app salva todas as suas cargas.": "Paste the text from your notes app or WhatsApp and the app saves all your loads.",
+  "Criar exercício novo: {x}": "Create new exercise: {x}",
+  "sem nome": "no name",
+  "Importar de texto": "Import from text",
+  "Já anota seus treinos no bloco de notas ou no WhatsApp? Cole o texto aqui e o app transforma em treinos, com as cargas e repetições de cada exercício. Assim a próxima carga já vem sugerida.": "Already log your workouts in a notes app or WhatsApp? Paste the text here and the app turns it into workouts, with the loads and reps for each exercise. Your next load comes suggested right away.",
+  "Texto dos treinos": "Workout text",
+  "Entende formatos como \"15kg 10 rep\", \"40x12\", \"3x10 com 50kg\", \"50kg 12/10/8\", datas (\"12/11\") e grupamentos (\"• Tríceps\"). Pode colar vários treinos de uma vez.": "Understands formats like \"15kg 10 reps\", \"40x12\", \"3x10 with 50kg\", \"50kg 12/10/8\", dates (\"11/12\") and muscle groups (\"• Triceps\"). You can paste several workouts at once.",
+  "Ler texto": "Read text",
+  "Lendo com a IA…": "Reading with AI…",
+  "Organizar com a IA (texto bagunçado)": "Organize with AI (messy text)",
+  "Confira o que o app entendeu. Troque o exercício se ele errou e corrija as séries no formato carga x reps.": "Check what the app understood. Change the exercise if it got it wrong and fix the sets in load x reps format.",
+  "Nome do treino": "Workout name",
+  "Treino importado": "Imported workout",
+  "Você escreveu": "You wrote",
+  "Remover": "Remove",
+  "Criar também fichas de treino com esses exercícios": "Also create workout routines with these exercises",
+  "Voltar ao texto": "Back to the text",
+  "Não encontrei séries no texto. Use algo como \"40kg 12 rep\" ou \"40x12\".": "No sets found in the text. Use something like \"40kg 12 reps\" or \"40x12\".",
+  "A IA não encontrou séries no texto.": "The AI found no sets in the text.",
+  "Salvar {n} treino": "Save {n} workout",
+  "Salvar {n} treinos": "Save {n} workouts",
+  "{n} treino importado. A próxima carga já considera esses dados.": "{n} workout imported. Your next load already takes it into account.",
+  "{n} treinos importados. A próxima carga já considera esses dados.": "{n} workouts imported. Your next loads already take them into account.",
+  "Tronco": "Upper body",
+  "Braços": "Arms",
+  "Pernas": "Legs",
+  "Consultar qualquer exercício": "Check any exercise",
+  "Escolha o exercício, informe carga e repetições e veja seu top na hora. Nada fica salvo.": "Pick the exercise, enter load and reps and see your percentile right away. Nothing is saved.",
+  "Use uma série feita até perto da falha. Até 10 reps a estimativa é mais precisa.": "Use a set taken close to failure. Up to 10 reps the estimate is more accurate.",
+  "Informe a carga e as repetições.": "Enter the load and reps.",
+  "Pelos seus treinos": "From your workouts",
+  "Importar treinos de texto (bloco de notas, WhatsApp)": "Import workouts from text (notes, WhatsApp)",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -685,6 +718,15 @@ const help = [
       <li>On the <b>Today</b> tab, tap <b>Start workout</b>.</li>
     </ol>
     <p class="tip">Everything can be changed later in the Workouts tab: exercises, order, sets and rep range. To change the language (Portuguese, English or Spanish), go to <b>Settings &gt; Language</b>.</p>`],
+  ['Import workouts from text', 'From your notes app or WhatsApp', `
+    <p>Already logged your workouts as text? Copy and paste it all at once: the app saves the loads and suggests the next ones.</p>
+    <ol class="steps">
+      <li>On first launch, tap <b>I already log my workouts</b>. Later, use <b>Settings &gt; Import workouts from text</b>.</li>
+      <li>Paste the text and tap <b>Read text</b>. It understands "15kg 10 reps", "40x12", "3x10 with 50kg", "50kg 12/10/8", rest ("1:30 min"), dates ("11/12") and muscle groups ("• Triceps").</li>
+      <li>Check it: the app shows what you wrote and the exercise it recognized. If it got it wrong, pick another one from the list; if it doesn't exist, a new exercise is created.</li>
+      <li>Tap <b>Save</b>. The workouts go into your history with the date given (or today's).</li>
+    </ol>
+    <p class="tip">Very messy text? With the AI coach on, use <b>Organize with AI</b>.</p>`],
   ['Logging a workout', 'One tap per set', `
     <ol class="steps">
       <li>The screen shows <b>today's target</b> for each set, already calculated by the app.</li>
@@ -754,7 +796,7 @@ const help = [
       <li><b>Lean mass and fat mass</b> are the focus. <b>BMI</b> is shown as a number only: it doesn't tell muscle from fat, so people who lift often have a high BMI without being overweight.</li>
       <li><b>Estimated body fat</b>: with waist and neck (and hips, for women), the app uses the US Navy formula, with an error of about 3 to 4 points. Without those measurements, it uses BMI, age and sex, with an error of about 5 points, and takes off up to 4 points if you're strong for your weight.</li>
       <li><b>Lean and fat mass</b>: your weight split by the estimated body fat percentage.</li>
-      <li><b>Strength percentile</b>: tap the <b>Your strength level</b> card in Progress to see the top % for each exercise. It compares your estimated 1RM with standards for lifters, adjusted for sex, age and weight, and is recalculated whenever you update your profile or log your weight. Top 10% = stronger than 90% of them. It only applies to barbell, dumbbell and bodyweight exercises; machines and cables vary too much between gyms.</li>
+      <li><b>Strength percentile</b>: tap the <b>Your strength level</b> card in Progress to see the top % for each exercise. It compares your estimated 1RM with standards for lifters, adjusted for sex, age and weight, and is recalculated whenever you update your profile or log your weight. Top 10% = stronger than 90% of them. Under <b>Check any exercise</b>, pick an exercise (upper body, arms or legs), enter load and reps and see your percentile instantly, without saving anything. It only applies to barbell, dumbbell and bodyweight exercises; machines and cables vary too much between gyms.</li>
       <li><b>Where the 1RM comes from</b>: the exercise's strength card shows the set used (your best in the last 90 days) and the formula. For a more reliable number, tap <b>Take a strength test</b>: after warming up, do one set to failure and enter the load and reps. The test does not change your workout progression.</li>
       <li><b>Body weight</b>: on the Your body card, tap <b>Log weight</b> to follow the chart. One entry per day.</li>
     </ul>

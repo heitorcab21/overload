@@ -135,12 +135,30 @@ export function strengthLevel(ex, p = profile()) {
   const [lift, factor, isBw] = map;
   const src = best1RM(ex, p.weight, isBw);
   if (!src) return { reason: 'noData' };
-  const one = src.value;
+  return { ...levelOf1RM(lift, factor, src.value, p), lift, oneRM: src.value, src, bw: !!isBw };
+}
+
+/** Percentil a partir de um 1RM (carga total, já com o peso do corpo nos exercícios de peso corporal). */
+function levelOf1RM(lift, factor, one, p) {
   const ref = REF_BW[p.sex];
   // normaliza pelo peso corporal (escala alométrica: quem é mais pesado levanta menos por kg) e pela idade
   const ratio = (one / factor / ref) * (ref / p.weight) ** 0.67 / ageFactor(p.age);
   const pct = percentileOf(ratio, STD[p.sex][lift]);
-  return { pct, top: Math.max(1, Math.round(100 - pct)), lift, oneRM: one, src, bw: !!isBw };
+  return { pct, top: Math.max(1, Math.round(100 - pct)) };
+}
+
+/**
+ * Consulta rápida, sem salvar nada: em que top de força fica uma série de carga × reps neste exercício.
+ * w é a carga total (ou o peso extra, nos exercícios de peso corporal). Retorna null se não der para comparar.
+ */
+export function quickLevel(libId, w, r, p = profile()) {
+  const map = STRENGTH_LIFTS[libId];
+  if (!map || !p || !(r >= 1)) return null;
+  const [lift, factor, isBw] = map;
+  const load = isBw ? p.weight + (w || 0) : w;
+  if (!(load > 0)) return null;
+  const one = oneRepMax(load, r);
+  return { ...levelOf1RM(lift, factor, one, p), oneRM: one };
 }
 
 /** Média dos percentis de força de todos os exercícios comparáveis com registros. */

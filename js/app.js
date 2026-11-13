@@ -8,6 +8,7 @@ import './views/goals.js';
 import './views/progress.js';
 import './views/library.js';
 import './views/help.js';
+import './views/importtext.js';
 import { applyTheme, applyLang } from './views/settings.js';
 import { migrateLoadSteps } from './views/home.js';
 import { initDrive } from './drive.js';
@@ -36,7 +37,7 @@ const onChange = ev => {
   const el = ev.target.closest?.('[data-change]');
   if (!el) return;
   // campos de busca reagem a cada tecla; os demais, quando o valor é confirmado
-  if (ev.type === 'input' && el.type !== 'search') return;
+  if (ev.type === 'input' && el.type !== 'search' && !('live' in el.dataset)) return;
   changes[el.dataset.change]?.(el, ev);
 };
 document.addEventListener('change', onChange);

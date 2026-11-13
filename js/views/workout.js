@@ -105,7 +105,7 @@ function render() {
     <h3>${t('Meta de hoje')}</h3>
     <div class="big num">${p.first && !p.w ? `${ex.sets} × ${ex.repMin}–${ex.repMax} reps` : `${kg(p.w)} × ${p.reps.join(' · ')}`}</div>
     ${p.last ? `<div class="small muted num">${t('Último')} (${fmtDate(p.last.date)}): ${kg(p.last.w)} × ${p.last.reps.join(' · ')}</div>` : ''}
-    <div class="note">${esc(p.note)}</div>
+    ${p.first ? '' : `<div class="note">${esc(p.note)}</div>`}
   </div>`;
 
   let body;
@@ -121,8 +121,8 @@ function render() {
         ${stepper('w', en.cur.w, ex.step || 1, loadLabel(ex), 0, 'wCur')}
         ${stepper('r', en.cur.r, 1, t('Repetições'), 0, 'wCur')}
       </div>
-      <p class="small muted load-hint">${esc(loadHint(ex))}</p>
       <button class="btn primary big" data-act="wDone">${icon.check}<span id="doneLabel">${t('Feito')} · ${setStr(en.cur)}</span></button>
+      <p class="small muted load-hint">${esc(loadHint(ex))}</p>
       <h3>${t('Foi diferente?')}</h3>
       <div class="chips">
         <button class="chip" data-act="wDelta" data-d="1">+1 rep</button>

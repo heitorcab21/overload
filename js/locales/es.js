@@ -672,6 +672,39 @@ const ui = {
   "Treino C · Ombros": "Entreno C · Hombros",
   "Treino D · Pernas": "Entreno D · Piernas",
   "Treino E · Braços": "Entreno E · Brazos",
+  "Já anoto meus treinos": "Ya anoto mis entrenamientos",
+  "Cole o texto do bloco de notas ou do WhatsApp e o app salva todas as suas cargas.": "Pega el texto de tus notas o de WhatsApp y la app guarda todas tus cargas.",
+  "Criar exercício novo: {x}": "Crear ejercicio nuevo: {x}",
+  "sem nome": "sin nombre",
+  "Importar de texto": "Importar desde texto",
+  "Já anota seus treinos no bloco de notas ou no WhatsApp? Cole o texto aqui e o app transforma em treinos, com as cargas e repetições de cada exercício. Assim a próxima carga já vem sugerida.": "¿Ya anotas tus entrenamientos en notas o en WhatsApp? Pega el texto aquí y la app lo convierte en entrenamientos, con las cargas y repeticiones de cada ejercicio. Así la próxima carga ya viene sugerida.",
+  "Texto dos treinos": "Texto de los entrenamientos",
+  "Entende formatos como \"15kg 10 rep\", \"40x12\", \"3x10 com 50kg\", \"50kg 12/10/8\", datas (\"12/11\") e grupamentos (\"• Tríceps\"). Pode colar vários treinos de uma vez.": "Entiende formatos como \"15kg 10 rep\", \"40x12\", \"3x10 con 50kg\", \"50kg 12/10/8\", fechas (\"12/11\") y grupos (\"• Tríceps\"). Puedes pegar varios entrenamientos a la vez.",
+  "Ler texto": "Leer texto",
+  "Lendo com a IA…": "Leyendo con la IA…",
+  "Organizar com a IA (texto bagunçado)": "Organizar con la IA (texto desordenado)",
+  "Confira o que o app entendeu. Troque o exercício se ele errou e corrija as séries no formato carga x reps.": "Revisa lo que entendió la app. Cambia el ejercicio si se equivocó y corrige las series en formato carga x reps.",
+  "Nome do treino": "Nombre del entrenamiento",
+  "Treino importado": "Entrenamiento importado",
+  "Você escreveu": "Escribiste",
+  "Remover": "Quitar",
+  "Criar também fichas de treino com esses exercícios": "Crear también rutinas con estos ejercicios",
+  "Voltar ao texto": "Volver al texto",
+  "Não encontrei séries no texto. Use algo como \"40kg 12 rep\" ou \"40x12\".": "No encontré series en el texto. Usa algo como \"40kg 12 rep\" o \"40x12\".",
+  "A IA não encontrou séries no texto.": "La IA no encontró series en el texto.",
+  "Salvar {n} treino": "Guardar {n} entrenamiento",
+  "Salvar {n} treinos": "Guardar {n} entrenamientos",
+  "{n} treino importado. A próxima carga já considera esses dados.": "{n} entrenamiento importado. La próxima carga ya lo tiene en cuenta.",
+  "{n} treinos importados. A próxima carga já considera esses dados.": "{n} entrenamientos importados. La próxima carga ya los tiene en cuenta.",
+  "Tronco": "Tronco",
+  "Braços": "Brazos",
+  "Pernas": "Piernas",
+  "Consultar qualquer exercício": "Consultar cualquier ejercicio",
+  "Escolha o exercício, informe carga e repetições e veja seu top na hora. Nada fica salvo.": "Elige el ejercicio, indica carga y repeticiones y mira tu top al instante. No se guarda nada.",
+  "Use uma série feita até perto da falha. Até 10 reps a estimativa é mais precisa.": "Usa una serie llevada cerca del fallo. Hasta 10 reps la estimación es más precisa.",
+  "Informe a carga e as repetições.": "Indica la carga y las repeticiones.",
+  "Pelos seus treinos": "Según tus entrenamientos",
+  "Importar treinos de texto (bloco de notas, WhatsApp)": "Importar entrenamientos de texto (notas, WhatsApp)",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -685,6 +718,15 @@ const help = [
       <li>En la pestaña <b>Hoy</b>, toca <b>Empezar entrenamiento</b>.</li>
     </ol>
     <p class="tip">Todo se puede cambiar después en la pestaña Entrenos: ejercicios, orden, series y rango de repeticiones. Para cambiar el idioma (portugués, inglés o español), ve a <b>Ajustes &gt; Idioma</b>.</p>`],
+  ['Importar entrenamientos de texto', 'Desde tus notas o WhatsApp', `
+    <p>¿Ya anotabas tus entrenamientos en texto? Copia y pega todo de una vez: la app guarda las cargas y sugiere las siguientes.</p>
+    <ol class="steps">
+      <li>En el primer acceso, toca <b>Ya anoto mis entrenamientos</b>. Después, usa <b>Ajustes &gt; Importar entrenamientos de texto</b>.</li>
+      <li>Pega el texto y toca <b>Leer texto</b>. Entiende "15kg 10 rep", "40x12", "3x10 con 50kg", "50kg 12/10/8", descanso ("1:30 min"), fechas ("12/11") y grupos ("• Tríceps").</li>
+      <li>Revisa: la app muestra lo que escribiste y el ejercicio que reconoció. Si se equivocó, elige otro de la lista; si no existe, crea un ejercicio nuevo.</li>
+      <li>Toca <b>Guardar</b>. Los entrenamientos entran en el historial con la fecha indicada (o la de hoy).</li>
+    </ol>
+    <p class="tip">¿Texto muy desordenado? Con el entrenador IA activado, usa <b>Organizar con la IA</b>.</p>`],
   ['Registrar un entrenamiento', 'Un toque por serie', `
     <ol class="steps">
       <li>La pantalla muestra la <b>meta de hoy</b> de cada serie, ya calculada por la app.</li>
@@ -754,7 +796,7 @@ const help = [
       <li><b>La masa magra y la masa grasa</b> son lo importante. El <b>IMC</b> aparece solo como número: no distingue músculo de grasa, así que quien entrena suele tener un IMC alto sin tener sobrepeso.</li>
       <li><b>Grasa estimada</b>: con cintura y cuello (y cadera, para mujeres), la app usa la fórmula de la Marina de EE. UU., con un error de unos 3 a 4 puntos. Sin esas medidas, usa IMC, edad y sexo, con un error de unos 5 puntos, y descuenta hasta 4 puntos si eres fuerte para tu peso.</li>
       <li><b>Masa magra y grasa</b>: tu peso repartido según el porcentaje de grasa estimado.</li>
-      <li><b>Top de fuerza</b>: toca la tarjeta <b>Tu nivel de fuerza</b>, en Progreso, para ver el top % de cada ejercicio. Compara tu 1RM estimado con estándares de quienes entrenan musculación, ajustados por sexo, edad y peso, y se recalcula cada vez que actualizas el perfil o registras tu peso. Top 10% = más fuerte que el 90% de esas personas. Solo vale para ejercicios con barra, mancuernas o peso corporal; las máquinas y poleas varían demasiado entre gimnasios.</li>
+      <li><b>Top de fuerza</b>: toca la tarjeta <b>Tu nivel de fuerza</b>, en Progreso, para ver el top % de cada ejercicio. Compara tu 1RM estimado con estándares de quienes entrenan musculación, ajustados por sexo, edad y peso, y se recalcula cada vez que actualizas el perfil o registras tu peso. Top 10% = más fuerte que el 90% de esas personas. En <b>Consultar cualquier ejercicio</b>, elige un ejercicio (tronco, brazos o piernas), indica carga y reps y mira el top al instante, sin guardar nada. Solo vale para ejercicios con barra, mancuernas o peso corporal; las máquinas y poleas varían demasiado entre gimnasios.</li>
       <li><b>De dónde viene el 1RM</b>: la tarjeta de fuerza del ejercicio muestra la serie usada (tu mejor de los últimos 90 días) y la fórmula. Para un número más fiable, toca <b>Hacer prueba de fuerza</b>: después de calentar, haz una serie hasta no poder más e indica carga y reps. La prueba no cambia la progresión de los entrenamientos.</li>
       <li><b>Peso corporal</b>: en la tarjeta Tu cuerpo, toca <b>Registrar peso</b> para seguir el gráfico. Un registro por día.</li>
     </ul>

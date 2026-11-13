@@ -14,6 +14,16 @@ const TOPICS = [
     </ol>
     <p class="tip">Tudo pode ser mudado depois na aba Treinos: exercícios, ordem, séries e faixa de repetições. Para trocar o idioma (português, inglês ou espanhol), vá em <b>Ajustes &gt; Idioma</b>.</p>`],
 
+  ['Importar treinos de texto', 'Do bloco de notas ou do WhatsApp', `
+    <p>Já anotava seus treinos em texto? Copie e cole tudo de uma vez: o app salva as cargas e já sugere a próxima.</p>
+    <ol class="steps">
+      <li>No primeiro acesso, toque em <b>Já anoto meus treinos</b>. Depois, use <b>Ajustes &gt; Importar treinos de texto</b>.</li>
+      <li>Cole o texto e toque em <b>Ler texto</b>. Ele entende "15kg 10 rep", "40x12", "3x10 com 50kg", "50kg 12/10/8", descanso ("1:30 min"), datas ("12/11") e grupamentos ("• Tríceps").</li>
+      <li>Confira: o app mostra o que você escreveu e o exercício que reconheceu. Se errou, troque na lista; se não existir, ele cria um exercício novo.</li>
+      <li>Toque em <b>Salvar</b>. Os treinos entram no histórico com a data informada (ou a de hoje).</li>
+    </ol>
+    <p class="tip">Texto muito bagunçado? Com o treinador IA ligado, use <b>Organizar com a IA</b>.</p>`],
+
   ['Registrar um treino', 'Um toque por série', `
     <ol class="steps">
       <li>A tela mostra a <b>meta de hoje</b> de cada série, já calculada pelo app.</li>
@@ -88,7 +98,7 @@ const TOPICS = [
       <li><b>Massa magra e massa gorda</b> são o foco. O <b>IMC</b> aparece só como número: ele não separa músculo de gordura, então quem treina costuma ter IMC alto sem estar acima do peso.</li>
       <li><b>Gordura estimada</b>: com cintura e pescoço (e quadril, para mulheres), o app usa a fórmula da Marinha americana, com erro de cerca de 3 a 4 pontos. Sem essas medidas, usa IMC, idade e sexo, com erro de cerca de 5 pontos, e desconta até 4 pontos se você for forte para o seu peso.</li>
       <li><b>Massa magra e gorda</b>: o peso dividido pelo percentual de gordura estimado.</li>
-      <li><b>Top de força</b>: toque no cartão <b>Seu nível de força</b>, no Progresso, para ver o top % de cada exercício. Ele compara o seu 1RM estimado com padrões de quem treina musculação, ajustados por sexo, idade e peso, e é recalculado sempre que você atualiza o perfil ou registra o peso. Top 10% = mais forte que 90% dessas pessoas. Só vale para exercícios com barra, halteres ou peso corporal; aparelhos e polias variam demais entre academias.</li>
+      <li><b>Top de força</b>: toque no cartão <b>Seu nível de força</b>, no Progresso, para ver o top % de cada exercício. Ele compara o seu 1RM estimado com padrões de quem treina musculação, ajustados por sexo, idade e peso, e é recalculado sempre que você atualiza o perfil ou registra o peso. Top 10% = mais forte que 90% dessas pessoas. Em <b>Consultar qualquer exercício</b>, escolha um exercício (tronco, braços ou pernas), informe carga e reps e veja o top na hora, sem salvar nada. Só vale para exercícios com barra, halteres ou peso corporal; aparelhos e polias variam demais entre academias.</li>
       <li><b>De onde vem o 1RM</b>: o cartão de força do exercício mostra a série usada no cálculo (a melhor dos últimos 90 dias) e a fórmula. Para um número mais confiável, toque em <b>Fazer teste de força</b>: depois de aquecer, faça uma série até não aguentar mais e informe carga e reps. O teste não mexe na progressão dos treinos.</li>
       <li><b>Peso corporal</b>: no cartão Seu corpo, toque em <b>Registrar peso</b> para acompanhar o gráfico. Um registro por dia.</li>
     </ul>

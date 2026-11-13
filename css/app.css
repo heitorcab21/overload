@@ -492,3 +492,21 @@ details.help .help-body b { color: var(--ink); }
 .link-card .ic { color: var(--muted); }
 .top-chip.big { font-size: 18px; padding: 6px 14px; }
 .strength-row { text-decoration: none; color: inherit; }
+
+/* importar de texto */
+.imp-item { padding: 12px 0; border-top: 1px solid var(--line); }
+.imp-item:first-of-type { border-top: 0; }
+#impText { min-height: 220px; font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 16px; }
+a.tpl { text-decoration: none; color: inherit; display: grid; }
+.tpl-import { border-style: dashed; }
+.tpl-import b { display: inline-flex; align-items: center; gap: 6px; }
+.tpl-import .ic { width: 18px; height: 18px; color: var(--accent); }
+
+/* consulta rápida de força */
+.quick-part summary { display: flex; align-items: center; gap: 10px; padding: 12px 2px; cursor: pointer; list-style: none; }
+.quick-part summary::-webkit-details-marker { display: none; }
+.quick-part summary b { flex: 1; }
+.quick-part[open] summary .ic { transform: rotate(180deg); }
+.quick-part + .quick-part { border-top: 1px solid var(--line); }
+.quick-out { display: grid; gap: 8px; justify-items: start; min-height: 74px; padding: 12px; border-radius: 12px; background: var(--surface-2); }
+.quick-out .meter { width: 100%; }
