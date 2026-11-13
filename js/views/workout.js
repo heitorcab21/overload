@@ -126,17 +126,9 @@ function render() {
       </div>
       <button class="btn primary big" data-act="wDone">${icon.check}<span id="doneLabel">${t('Feito')} · ${setStr(en.cur)}</span></button>
       <p class="small muted load-hint">${esc(loadHint(ex))}</p>
-      <h3>${t('Foi diferente?')}</h3>
-      <div class="chips">
-        <button class="chip" data-act="wDelta" data-d="1">+1 rep</button>
-        <button class="chip" data-act="wDelta" data-d="2">+2 reps</button>
-        <button class="chip" data-act="wDelta" data-d="-1">−1 rep</button>
-        <button class="chip" data-act="wDelta" data-d="-2">−2 reps</button>
-        <button class="chip" data-act="wFail">${t('Falhei nesta')}</button>
-        <button class="chip" data-act="wWarm">${t('Foi aquecimento')}</button>
-      </div>
       ${rirRow(en)}
       <div class="row wrap">
+        <button class="btn" data-act="wWarm">${t('Foi aquecimento')}</button>
         ${en.sets.length < ex.sets ? `<button class="btn grow" data-act="wAll">${t('Todas como a meta')}</button>` : ''}
         ${en.sets.length ? `<button class="btn" data-act="wUndo">${icon.undo}${t('Desfazer')}</button>` : `<button class="btn" data-act="wSkip">${t('Pular exercício')}</button>`}
       </div>

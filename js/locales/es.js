@@ -748,7 +748,7 @@ const help = [
     <ol class="steps">
       <li>La pantalla muestra la <b>meta de hoy</b> de cada serie, ya calculada por la app.</li>
       <li>¿Hiciste exactamente eso? Toca el botón naranja <b>Hecho</b>. El descanso empieza a contar solo.</li>
-      <li>¿Fue diferente? Usa <b>+1 rep</b>, <b>−1 rep</b>, <b>+2</b>, <b>−2</b> o <b>Fallé en esta</b>. Para cambiar la carga, usa − y + o toca el número y escribe.</li>
+      <li>¿Fue diferente? Ajusta la carga y las repeticiones con − y + (o toca el número y escribe) antes de tocar <b>Hecho</b>. La app detecta sola si quedaste por encima o por debajo de la meta.</li>
       <li>¿Hiciste todas las series como estaba previsto? <b>Todas como la meta</b> las registra de una vez.</li>
       <li>Al terminar el ejercicio, indica <b>cómo fue</b> (fácil, justo, pesado, al fallo) y marca si <b>pasó algo</b> (dolor, cambio de máquina...). Esto cambia la sugerencia del próximo entrenamiento.</li>
       <li>Toca <b>Siguiente</b> y, en el último ejercicio, <b>Terminar</b>.</li>

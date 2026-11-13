@@ -748,7 +748,7 @@ const help = [
     <ol class="steps">
       <li>The screen shows <b>today's target</b> for each set, already calculated by the app.</li>
       <li>Did exactly that? Tap the orange <b>Done</b> button. The rest timer starts on its own.</li>
-      <li>Was it different? Use <b>+1 rep</b>, <b>−1 rep</b>, <b>+2</b>, <b>−2</b> or <b>Failed this one</b>. To change the load, use − and + or tap the number and type.</li>
+      <li>Was it different? Adjust the load and reps with − and + (or tap the number and type) before tapping <b>Done</b>. The app works out on its own whether you were above or below the target.</li>
       <li>Did every set as planned? <b>All as planned</b> logs them all at once.</li>
       <li>When the exercise is done, say <b>how it was</b> (easy, just right, hard, to failure) and mark if <b>anything happened</b> (pain, changed machine...). This changes the suggestion for the next workout.</li>
       <li>Tap <b>Next</b> and, on the last exercise, <b>Finish</b>.</li>

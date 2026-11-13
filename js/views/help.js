@@ -28,7 +28,7 @@ const TOPICS = [
     <ol class="steps">
       <li>A tela mostra a <b>meta de hoje</b> de cada série, já calculada pelo app.</li>
       <li>Fez exatamente isso? Toque no botão laranja <b>Feito</b>. O descanso começa a contar sozinho.</li>
-      <li>Foi diferente? Use os botões <b>+1 rep</b>, <b>−1 rep</b>, <b>+2</b>, <b>−2</b> ou <b>Falhei nesta</b>. Para mudar a carga, use o − e o + ou toque no número e digite.</li>
+      <li>Foi diferente? Ajuste a carga e as repetições no − e no + (ou toque no número e digite) antes de tocar em <b>Feito</b>. O app percebe sozinho se ficou acima ou abaixo da meta.</li>
       <li>Fez todas as séries como planejado? <b>Todas como a meta</b> registra tudo de uma vez.</li>
       <li>Ao terminar o exercício, diga <b>como foi</b> (fácil, na medida, pesado, até a falha) e marque se <b>aconteceu algo</b> (dor, troca de aparelho...). Isso muda a sugestão do próximo treino.</li>
       <li>Toque em <b>Próximo</b> e, no último exercício, em <b>Finalizar</b>.</li>
