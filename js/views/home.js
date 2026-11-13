@@ -75,9 +75,9 @@ function renderOnboarding() {
       </a>
       <div class="or-sep"><span>${t('ou')}</span></div>
       <h3 class="accent-title"><span class="num-tag">1</span>${t('Monte do zero')}</h3>
-      <button class="tpl tpl-own" data-act="pickTemplate" data-id="">
+      <a class="tpl tpl-own" href="#/montar">
         <b>${icon.plus}${t('Monte seu próprio treino')}</b>
-      </button>
+      </a>
       <h3 class="accent-title"><span class="num-tag">2</span>${t('Escolha um treino pronto')}</h3>
       ${TEMPLATES.map(tp => `
         <button class="tpl" data-act="pickTemplate" data-id="${tp.id}">

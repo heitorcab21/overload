@@ -585,3 +585,15 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 .or-sep::before, .or-sep::after { content: ''; flex: 1; height: 1px; background: var(--line); }
 .num-tag { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-size: 13px; font-weight: 800; flex: none; }
 .tpl-own b { gap: 8px; }
+
+/* montar treino no primeiro acesso */
+.builder-ex.on { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.builder-ex .bx { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--axis); flex: none; }
+.builder-ex.on .bx { background: var(--accent); border-color: var(--accent); }
+.builder-ex.on .bx .ic { color: var(--accent-ink); }
+.builder-ex .bx .ic { width: 16px; height: 16px; }
+.builder-sel { margin: 0; }
+.builder-bar { position: sticky; bottom: calc(12px + var(--safe-b)); z-index: 5; }
+.builder-bar .btn { box-shadow: var(--shadow); }
+.builder-tabs .chip { display: inline-flex; align-items: center; gap: 4px; }
+.builder-tabs .chip .ic { width: 16px; height: 16px; }
