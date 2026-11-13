@@ -102,6 +102,16 @@ export function planFor(ex) {
   if (last.feel === 'fail') {
     return out(w, lr, tr('Você foi até a falha da última vez: repita os mesmos números com mais folga.'), 'hold');
   }
+  // RIR (reps que sobraram), quando informado: muita folga acelera, nenhuma folga segura
+  const rirs = last.sets.map(s => s.rir).filter(v => v != null);
+  if (rirs.length) {
+    if (Math.min(...rirs) >= 3) {
+      return out(w, lr.map(r => Math.min(ex.repMax, r + 2)), tr('Sobraram 3 ou mais reps em todas as séries: +2 reps em cada uma.'), 'reps');
+    }
+    if (rirs.at(-1) === 0) {
+      return out(w, lr, tr('Na última série não sobrou nenhuma rep: repita os mesmos números e ganhe folga.'), 'hold');
+    }
+  }
   if (last.feel === 'easy') {
     return out(w, lr.map(r => Math.min(ex.repMax, r + 1)), tr('Estava fácil: +1 rep em todas as séries.'), 'reps');
   }

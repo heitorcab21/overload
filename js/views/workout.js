@@ -2,12 +2,12 @@
 import { state, save, uid } from '../store.js';
 import { $, esc, kg, setStr, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, fmtDate } from '../ui.js';
 import { route, go, current } from '../router.js';
-import { exName, exCues, tg, loadLabel, loadHint, routineName } from '../data.js';
-import { planFor } from '../logic.js';
+import { exName, exCues, tg, loadLabel, loadHint, routineName, GROUPS, LIB, ensureExercise, restOf } from '../data.js';
+import { planFor, defaultGroupGoals } from '../logic.js';
 import { parseUtterance, voiceSupported, listen, stopListening, abortListening } from '../voice.js';
 import { aiEnabled, aiParseVoice } from '../ai.js';
 import { refreshIfNeeded, sync, driveConnected } from '../drive.js';
-import { t, tn } from '../i18n.js';
+import { t, tn, exPack } from '../i18n.js';
 
 const FEEL = () => ({ easy: t('Fácil'), ok: t('Na medida'), hard: t('Pesado'), fail: t('Até a falha') });
 const FLAGS = () => ({ dor: t('Dor ou desconforto'), troca: t('Troquei o aparelho'), execucao: t('Execução ruim'), tempo: t('Sem tempo') });
@@ -16,19 +16,31 @@ let restTimer = null;
 let restFired = true;
 let wakeLock = null;
 
+function newEntry(ex) {
+  const plan = planFor(ex);
+  return { exId: ex.id, plan, sets: [], warmup: [], cur: { w: plan.w, r: plan.reps[0] }, feel: null, flags: [], skipped: false };
+}
+
 export function startWorkout(routineId) {
   const r = state.routines.find(x => x.id === routineId);
   if (!r) return;
-  const entries = r.ex.map(id => state.exercises[id]).filter(Boolean).map(ex => {
-    const plan = planFor(ex);
-    return { exId: ex.id, plan, sets: [], cur: { w: plan.w, r: plan.reps[0] }, feel: null, flags: [], skipped: false };
-  });
+  const entries = r.ex.map(id => state.exercises[id]).filter(Boolean).map(newEntry);
   if (!entries.length) { toast(t('Este treino não tem exercícios.')); return; }
   // Renova a autorização do Google agora, no toque de "Começar": ela cobre o treino inteiro
   refreshIfNeeded();
   state.active = { id: uid(), routineId: r.id, name: r.name, tpl: !!r.tpl, startedAt: Date.now(), idx: 0, restEnd: 0, entries };
   save({ touch: false });
   go('#/treino');
+}
+
+/** Treino livre: começa vazio e você adiciona os exercícios na hora. */
+export function startFreeWorkout() {
+  if (state.active) { go('#/treino'); return; }
+  refreshIfNeeded();
+  state.active = { id: uid(), routineId: null, name: 'Treino livre', tpl: true, startedAt: Date.now(), idx: 0, restEnd: 0, entries: [] };
+  save({ touch: false });
+  go('#/treino');
+  openPicker('add');
 }
 
 function cur() {
@@ -46,7 +58,7 @@ function logSet(en, w, r, tag) {
   const pr = en.plan.reps;
   // na primeira vez não há meta por série: a próxima parte do que acabou de ser feito
   en.cur = { w, r: en.plan.first ? r : (pr[en.sets.length] ?? pr.at(-1) ?? r) };
-  state.active.restEnd = Date.now() + state.settings.rest * 1000;
+  state.active.restEnd = Date.now() + restOf(state.exercises[en.exId]) * 1000;
   restFired = false;
 }
 
@@ -63,19 +75,24 @@ function undo(en) {
 function render() {
   const a = state.active;
   if (!a) { go('#/hoje'); return; }
+  if (!a.entries.length) { renderEmpty(); return; }
+  a.idx = Math.min(a.idx, a.entries.length - 1);
   const { en, ex } = cur();
-  if (!ex) { a.entries.splice(a.idx, 1); a.idx = Math.max(0, a.idx - 1); save({ touch: false }); if (!a.entries.length) { state.active = null; save({ touch: false }); } render(); return; }
+  if (!ex) { a.entries.splice(a.idx, 1); a.idx = Math.max(0, a.idx - 1); save({ touch: false }); render(); return; }
+  en.warmup ??= [];
   const cues = exCues(ex);
   const logging = !en.skipped && (en.sets.length < ex.sets || en.extra);
   const total = Math.max(ex.sets, en.sets.length + (en.extra ? 1 : 0));
   const p = en.plan;
 
-  const rows = Array.from({ length: total }, (_, i) => {
+  const warm = en.warmup.map((s, i) => `<button class="set warm" data-act="wDelWarm" data-i="${i}" aria-label="${t('Série de aquecimento')}: ${setStr(s)}">
+      <span class="i">A</span><span class="v">${setStr(s)}</span><span class="badge">${t('aquecimento')}</span></button>`).join('');
+  const rows = warm + Array.from({ length: total }, (_, i) => {
     if (i < en.sets.length) {
       const s = en.sets[i];
       return `<button class="set done" data-act="wEditSet" data-i="${i}" aria-label="${t('Corrigir série {n}', { n: i + 1 })}: ${setStr(s)}">
         <span class="i">${icon.check}</span><span class="v">${setStr(s)}</span>
-        ${s.t ? `<span class="badge warn">${t('falhou')}</span>` : ''}<span class="edit-ic">${icon.edit}</span></button>`;
+        ${s.t ? `<span class="badge warn">${t('falhou')}</span>` : s.rir != null ? `<span class="badge">RIR ${s.rir}${s.rir >= 4 ? '+' : ''}</span>` : ''}<span class="edit-ic">${icon.edit}</span></button>`;
     }
     if (i === en.sets.length && logging) {
       return `<div class="set cur"><span class="i">${i + 1}</span><span class="v" id="curLabel">${setStr(en.cur)}</span><span class="badge">${t('agora')}</span></div>`;
@@ -112,7 +129,9 @@ function render() {
         <button class="chip" data-act="wDelta" data-d="-1">−1 rep</button>
         <button class="chip" data-act="wDelta" data-d="-2">−2 reps</button>
         <button class="chip" data-act="wFail">${t('Falhei nesta')}</button>
+        <button class="chip" data-act="wWarm">${t('Foi aquecimento')}</button>
       </div>
+      ${rirRow(en)}
       <div class="row wrap">
         ${en.sets.length < ex.sets ? `<button class="btn grow" data-act="wAll">${t('Todas como a meta')}</button>` : ''}
         ${en.sets.length ? `<button class="btn" data-act="wUndo">${icon.undo}${t('Desfazer')}</button>` : `<button class="btn" data-act="wSkip">${t('Pular exercício')}</button>`}
@@ -120,6 +139,7 @@ function render() {
     </div>`;
   } else {
     body = `<div class="log">
+      ${rirRow(en)}
       <h3>${t('Como foi?')}</h3>
       <div class="chips">${Object.entries(FEEL()).map(([k, v]) =>
         `<button class="chip${en.feel === k ? ' on' : ''}" data-act="wFeel" data-v="${k}" aria-pressed="${en.feel === k}">${v}</button>`).join('')}</div>
@@ -148,7 +168,11 @@ function render() {
       <h1>${esc(exName(ex))}</h1>
       ${cues ? `<button class="icon-btn" data-act="wHow" aria-label="${t('Como executar')}">${icon.info}</button>` : ''}
     </div>
-    <p class="muted">${esc(tg(ex.group))} · ${ex.sets} × ${ex.repMin}–${ex.repMax} reps</p>
+    <p class="muted">${esc(tg(ex.group))} · ${ex.sets} × ${ex.repMin}–${ex.repMax} reps · ${t('descanso {s} s', { s: restOf(ex) })}</p>
+    <div class="row wrap ex-actions">
+      <button class="btn sm ghost" data-act="wSwap">${icon.sync}${t('Trocar exercício')}</button>
+      <button class="btn sm ghost" data-act="wAdd">${icon.plus}${t('Adicionar exercício')}</button>
+    </div>
     ${target}
     <div class="sets">${rows}</div>
     ${body}
@@ -264,6 +288,8 @@ actions.wEditSet = el => {
         ${stepper('r', s.r, 1, t('Repetições'))}
       </div>
       <label class="check"><input type="checkbox" name="fail"${s.t ? ' checked' : ''}>${t('Falhei nesta série')}</label>
+      <label class="field">${t('Reps que sobraram (RIR)')}
+        <select name="rir"><option value="">${t('não informado')}</option>${[0, 1, 2, 3, 4].map(v => `<option value="${v}"${s.rir === v ? ' selected' : ''}>${v === 4 ? '4+' : v}</option>`).join('')}</select></label>
       <button class="btn primary big">${t('Salvar')}</button>
       <button type="button" class="btn ghost danger block" data-act="wDelSet" data-i="${i}">${t('Excluir série')}</button>
     </form>`);
@@ -272,7 +298,8 @@ submits.wEditSave = form => {
   const { en } = cur();
   const w = Math.max(0, Number(form.w.value) || 0);
   const r = Math.max(0, Math.round(Number(form.r.value) || 0));
-  en.sets[Number(form.dataset.i)] = form.fail.checked ? { w, r, t: 'F' } : { w, r };
+  const rir = form.rir.value === '' ? null : Number(form.rir.value);
+  en.sets[Number(form.dataset.i)] = form.fail.checked ? { w, r, t: 'F' } : rir != null ? { w, r, rir } : { w, r };
   closeSheet();
   done();
 };
@@ -325,6 +352,7 @@ actions.wList = () => {
         ${i === a.idx ? `<span class="badge">${t('agora')}</span>` : ex && isDone(e, ex) ? `<span class="badge good">${icon.check}${t('feito')}</span>` : ''}
       </button>`;
     }).join('')}</div></div>
+    <button class="btn block" data-act="wAdd">${icon.plus}${t('Adicionar exercício')}</button>
     <button class="btn primary block" data-act="wFinish">${t('Finalizar treino')}</button>
     <button class="btn ghost danger block" data-act="wDiscardAsk">${t('Descartar treino')}</button>`);
 };
@@ -368,8 +396,9 @@ function finish() {
   // No toque de "Finalizar": se a autorização venceu durante o treino, renova sem perguntar nada
   const ready = refreshIfNeeded();
   const a = state.active;
+  // séries de aquecimento ficam guardadas à parte: não entram na progressão, nas metas, no volume nem nos recordes
   const entries = a.entries.filter(e => e.sets.length || e.skipped)
-    .map(({ exId, sets, feel, flags, skipped }) => ({ exId, sets, feel, flags, skipped: skipped && !sets.length }));
+    .map(({ exId, sets, warmup, feel, flags, skipped }) => ({ exId, sets, ...(warmup?.length ? { warmup } : {}), feel, flags, skipped: skipped && !sets.length }));
   state.sessions.push({
     id: a.id, date: new Date(a.startedAt).toISOString(), routineId: a.routineId, name: a.name, tpl: !!a.tpl,
     dur: Math.max(1, Math.round((Date.now() - a.startedAt) / 60000)), entries,
@@ -392,6 +421,134 @@ function finish() {
     });
   }
 }
+
+// ---------- RIR: quantas reps sobraram ----------
+
+function rirRow(en) {
+  const last = en.sets.at(-1);
+  if (!last || last.t) return '';
+  return `<h3>${t('Quantas reps sobraram na última série? (opcional)')}</h3>
+    <div class="chips">${[0, 1, 2, 3, 4].map(v => `<button class="chip${last.rir === v ? ' on' : ''}" data-act="wRir" data-v="${v}" aria-pressed="${last.rir === v}">${v === 4 ? '4+' : v}</button>`).join('')}</div>`;
+}
+actions.wRir = el => {
+  const { en } = cur();
+  const last = en.sets.at(-1);
+  if (!last) return;
+  const v = Number(el.dataset.v);
+  if (last.rir === v) delete last.rir; else last.rir = v;
+  done();
+};
+
+// ---------- Aquecimento ----------
+
+actions.wWarm = () => {
+  const { en } = cur();
+  en.warmup.push({ w: en.cur.w, r: en.cur.r });
+  state.active.restEnd = Date.now() + Math.round(restOf(state.exercises[en.exId]) / 2) * 1000;
+  restFired = false;
+  toast(t('Série de aquecimento registrada. Ela não conta na progressão nem nas metas.'), 3000);
+  done();
+};
+actions.wDelWarm = el => {
+  const i = Number(el.dataset.i);
+  sheet(`<h2>${t('Série de aquecimento')}</h2>
+    <button class="btn danger block" data-act="wDelWarmNow" data-i="${i}">${t('Excluir série')}</button>
+    <button class="btn block" data-act="closeSheet">${t('Cancelar')}</button>`);
+};
+actions.wDelWarmNow = el => { cur().en.warmup.splice(Number(el.dataset.i), 1); closeSheet(); done(); };
+
+// ---------- Trocar ou adicionar exercício ----------
+
+let pickMode = 'add';
+
+function renderEmpty() {
+  const a = state.active;
+  $('#view').innerHTML = `
+    <div class="w-top">
+      <button class="icon-btn" data-act="wHome" aria-label="${t('Voltar ao início')}">${icon.back}</button>
+      <span class="title">${esc(routineName(a))}</span>
+      <button class="icon-btn" data-act="wList" aria-label="${t('Lista de exercícios')}">${icon.list}</button>
+    </div>
+    <div class="card stack">
+      <h2>${t('Treino livre')}</h2>
+      <p class="muted">${t('Adicione os exercícios conforme for treinando. A carga sugerida vem do seu histórico.')}</p>
+      <button class="btn primary big" data-act="wAdd">${icon.plus}${t('Adicionar exercício')}</button>
+      <button class="btn ghost danger block" data-act="wDiscard">${t('Descartar treino')}</button>
+    </div>`;
+}
+
+function pickerItems(q = '') {
+  const a = state.active;
+  const used = new Set(a.entries.map(e => e.exId));
+  const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const nq = norm(q);
+  const custom = Object.values(state.exercises).filter(e => !e.lib);
+  const pool = [...LIB.map(l => ({ id: l.id, name: exPack(l.id)?.name ?? l.name, group: l.group })), ...custom.map(e => ({ id: e.id, name: e.name, group: e.group }))]
+    .filter(e => !used.has(e.id) && (!nq || norm(e.name).includes(nq) || norm(tg(e.group)).includes(nq)));
+  return GROUPS.map(g => {
+    const items = pool.filter(e => e.group === g);
+    if (!items.length) return '';
+    return `<h3 class="group-title">${esc(tg(g))}</h3><div class="card flat"><div class="list">
+      ${items.map(e => `<button class="item" data-act="wPick" data-id="${esc(e.id)}"><span class="grow t">${esc(e.name)}</span>${icon.plus}</button>`).join('')}
+    </div></div>`;
+  }).join('') || `<p class="empty">${t('Nada encontrado.')}</p>`;
+}
+
+function openPicker(mode) {
+  pickMode = mode;
+  const a = state.active;
+  const r = a.routineId && state.routines.find(x => x.id === a.routineId);
+  const curEx = a.entries.length ? state.exercises[a.entries[a.idx].exId] : null;
+  sheet(`<h2>${mode === 'swap' ? t('Trocar {x} por…', { x: esc(exName(curEx)) }) : t('Adicionar exercício')}</h2>
+    ${r ? `<label class="check"><input type="checkbox" id="pickSave">${mode === 'swap' ? t('Trocar também na ficha {x}', { x: esc(routineName(r)) }) : t('Adicionar também na ficha {x}', { x: esc(routineName(r)) })}</label>` : ''}
+    <input type="search" placeholder="${t('Buscar exercício ou grupamento')}" data-change="wPickFilter" aria-label="${t('Buscar exercício')}" autocomplete="off">
+    <div id="wPickList">${pickerItems()}</div>`);
+}
+changes.wPickFilter = el => { $('#wPickList').innerHTML = pickerItems(el.value); };
+
+actions.wSwap = () => {
+  const { en } = cur();
+  if (en.sets.length) {
+    toast(t('Este exercício já tem séries registradas. Use "Adicionar exercício" para fazer outro.'), 5000);
+    return;
+  }
+  openPicker('swap');
+};
+actions.wAdd = () => openPicker('add');
+
+actions.wPick = el => {
+  const a = state.active;
+  const ex = state.exercises[el.dataset.id] || ensureExercise(el.dataset.id);
+  if (!ex) return;
+  const alsoRoutine = $('#pickSave')?.checked;
+  const r = a.routineId && state.routines.find(x => x.id === a.routineId);
+  let routineChanged = false;
+  if (pickMode === 'swap' && a.entries.length) {
+    const oldId = a.entries[a.idx].exId;
+    a.entries[a.idx] = newEntry(ex);
+    if (alsoRoutine && r) {
+      const i = r.ex.indexOf(oldId);
+      if (i >= 0) r.ex[i] = ex.id; else r.ex.push(ex.id);
+      routineChanged = true;
+    }
+    toast(t('Trocado por {x}.', { x: exName(ex) }));
+  } else {
+    const at = a.entries.length ? a.idx + 1 : 0;
+    a.entries.splice(at, 0, newEntry(ex));
+    if (alsoRoutine && r) {
+      const prev = a.entries[a.idx]?.exId;
+      const i = r.ex.indexOf(prev);
+      r.ex.splice(i >= 0 ? i + 1 : r.ex.length, 0, ex.id);
+      routineChanged = true;
+    }
+    a.idx = at;
+    toast(t('{x} adicionado.', { x: exName(ex) }));
+  }
+  if (routineChanged) { defaultGroupGoals(); save(); } else save({ touch: false });
+  closeSheet();
+  render();
+  window.scrollTo(0, 0);
+};
 
 // ---------- Voz ----------
 

@@ -98,7 +98,8 @@ function best1RM(exId, bw, isBw) {
     for (const s of e.sets) {
       if (!s.r) continue;
       const w = isBw ? bw + (s.w || 0) : s.w;
-      if (w > 0) best = Math.max(best, e1rm(w, s.r));
+      // com RIR informado, as reps que sobraram contam para estimar o máximo (até 4)
+      if (w > 0) best = Math.max(best, e1rm(w, s.r + Math.min(4, s.rir || 0)));
     }
   }
   return best;

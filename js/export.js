@@ -18,15 +18,16 @@ const csv = rows => BOM + rows.map(r => r.map(cell).join(sepChar())).join('\r\n'
 export function sessionsCSV() {
   const FEEL = { easy: t('fácil'), ok: t('na medida'), hard: t('pesado'), fail: t('até a falha') };
   const FLAG = { dor: t('dor ou desconforto'), troca: t('trocou o aparelho'), execucao: t('execução ruim'), tempo: t('sem tempo') };
-  const rows = [[t('Data'), t('Treino'), t('Exercício'), t('Grupamento'), t('Série'), t('Carga total (kg)'), t('Repetições'), t('Falhou'), t('Sensação'), t('Observações')]];
+  const rows = [[t('Data'), t('Treino'), t('Exercício'), t('Grupamento'), t('Série'), t('Carga total (kg)'), t('Repetições'), t('Falhou'), 'RIR', t('Sensação'), t('Observações')]];
   for (const s of state.sessions) {
     const date = new Date(s.date).toLocaleDateString(locale());
     for (const e of s.entries) {
       const ex = state.exercises[e.exId];
       const name = ex ? exName(ex) : e.exId, group = ex ? tg(ex.group) : '';
       const obs = (e.flags || []).map(f => FLAG[f]).filter(Boolean).join(', ');
-      if (e.skipped) { rows.push([date, routineName(s), name, group, '', '', '', '', '', t('pulado')]); continue; }
-      e.sets.forEach((x, i) => rows.push([date, routineName(s), name, group, i + 1, x.w, x.r, x.t ? t('sim') : '', FEEL[e.feel] || '', obs]));
+      if (e.skipped) { rows.push([date, routineName(s), name, group, '', '', '', '', '', '', t('pulado')]); continue; }
+      (e.warmup || []).forEach((x, i) => rows.push([date, routineName(s), name, group, `A${i + 1}`, x.w, x.r, '', '', '', t('aquecimento')]));
+      e.sets.forEach((x, i) => rows.push([date, routineName(s), name, group, i + 1, x.w, x.r, x.t ? t('sim') : '', x.rir ?? '', FEEL[e.feel] || '', obs]));
     }
   }
   return csv(rows);

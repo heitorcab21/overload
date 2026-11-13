@@ -586,6 +586,27 @@ const ui = {
   "Salvando…": `Guardando…`,
   "IA configurada: {ia}, modelo {m}.": `IA configurada: {ia}, modelo {m}.`,
   "Não foi possível sincronizar agora. Tente de novo.": `No se pudo sincronizar ahora. Inténtalo de nuevo.`,
+  "Sobraram 3 ou mais reps em todas as séries: +2 reps em cada uma.": "Te sobraron 3 o más reps en todas las series: +2 reps en cada una.",
+  "Na última série não sobrou nenhuma rep: repita os mesmos números e ganhe folga.": "En la última serie no sobró ninguna rep: repite los mismos números y gana margen.",
+  "Treino livre": "Entrenamiento libre",
+  "Descanso (segundos)": "Descanso (segundos)",
+  "0 usa o descanso padrão dos Ajustes ({s} s).": "0 usa el descanso predeterminado de Ajustes ({s} s).",
+  "Série de aquecimento": "Serie de calentamiento",
+  "aquecimento": "calentamiento",
+  "Foi aquecimento": "Fue calentamiento",
+  "descanso {s} s": "descanso {s} s",
+  "Trocar exercício": "Cambiar ejercicio",
+  "Reps que sobraram (RIR)": "Reps en reserva (RIR)",
+  "não informado": "sin indicar",
+  "Quantas reps sobraram na última série? (opcional)": "¿Cuántas reps te sobraron en la última serie? (opcional)",
+  "Série de aquecimento registrada. Ela não conta na progressão nem nas metas.": "Serie de calentamiento registrada. No cuenta para la progresión ni para las metas.",
+  "Adicione os exercícios conforme for treinando. A carga sugerida vem do seu histórico.": "Agrega los ejercicios a medida que entrenas. La carga sugerida viene de tu historial.",
+  "Nada encontrado.": "No se encontró nada.",
+  "Trocar {x} por…": "Cambiar {x} por…",
+  "Trocar também na ficha {x}": "Cambiar también en la rutina {x}",
+  "Adicionar também na ficha {x}": "Agregar también a la rutina {x}",
+  "Este exercício já tem séries registradas. Use \"Adicionar exercício\" para fazer outro.": "Este ejercicio ya tiene series registradas. Usa \"Agregar ejercicio\" para hacer otro.",
+  "Trocado por {x}.": "Cambiado por {x}.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -609,6 +630,16 @@ const help = [
       <li>Toca <b>Siguiente</b> y, en el último ejercicio, <b>Terminar</b>.</li>
     </ol>
     <p class="tip">¿Te equivocaste de número? Toca la serie registrada para corregirla o eliminarla. El icono de lista arriba muestra todos los ejercicios del entrenamiento.</p>`],
+  ['Cambiar, calentar y RIR', 'Ajustes en medio del entrenamiento', `
+    <ul class="errs">
+      <li><b>Cambiar ejercicio</b>: ¿máquina ocupada? Toca <b>Cambiar ejercicio</b> debajo del nombre y elige otro. Marca la casilla para cambiarlo también en la rutina.</li>
+      <li><b>Agregar ejercicio</b>: incluye un ejercicio justo después del actual, sin tocar la rutina (o también en ella, si marcas la casilla).</li>
+      <li><b>Entrenamiento libre</b>: en la pestaña Hoy, empieza un entrenamiento vacío y agregas los ejercicios a medida que entrenas.</li>
+      <li><b>Fue calentamiento</b>: registra la serie como calentamiento. Queda guardada, pero no cuenta para la progresión, las metas, el volumen ni los récords. Tócala para borrarla.</li>
+      <li><b>RIR (reps en reserva)</b>: después de una serie, toca 0, 1, 2, 3 o 4+. Es opcional. Con 3 o más sobrando en todas las series, la app sugiere +2 reps; con 0 en la última, repite los números. El RIR también mejora la estimación de fuerza máxima.</li>
+      <li><b>Descanso por ejercicio</b>: en Entrenos, abre el ejercicio y define su descanso (0 usa el predeterminado de Ajustes).</li>
+    </ul>`],
+
   ['Cómo anotar la carga', 'Siempre la carga total', `
     <p>Anota siempre la <b>carga total levantada</b>, no solo lo que hay en un lado. Cada ejercicio muestra su regla en el entrenamiento y en la pantalla del ejercicio.</p>
     <ul class="errs">

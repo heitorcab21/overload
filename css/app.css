@@ -301,6 +301,10 @@ button.set:active { background: var(--surface-2); }
 .load-row input { width: 92px; flex: none; text-align: center; font-weight: 700; }
 .set.done .i { background: var(--good); color: #fff; }
 .set.done .i .ic { width: 16px; height: 16px; }
+.set.warm { opacity: .7; border-style: dashed; }
+.set.warm .v { font-size: 15px; }
+.ex-actions { gap: 8px; margin: 2px 0 10px; }
+.ex-actions .btn .ic { width: 16px; height: 16px; }
 .set.cur { border-color: var(--accent); }
 .set.cur .i { background: var(--accent); color: var(--accent-ink); }
 .set.todo { background: transparent; border-style: dashed; color: var(--muted); }

@@ -2,12 +2,12 @@
 import { state, save, uid } from '../store.js';
 import { googleBtn, $, esc, fmt, kg, setStr, compact, icon, actions, toast, sheet, closeSheet, meter, fmtDate, weekLetters } from '../ui.js';
 import { route, go, rerender } from '../router.js';
-import { TEMPLATES, LIB_BY_ID, OLD_STEP, exName, tg, routineName, templateKey } from '../data.js';
+import { TEMPLATES, LIB_BY_ID, OLD_STEP, exName, tg, routineName, templateKey, ensureExercise } from '../data.js';
 import {
   planFor, weekStart, addDays, sessionsIn, groupGoalStatus, defaultGroupGoals, DAY,
   sessionPRs, tonnage, exGoalStatus, entriesFor,
 } from '../logic.js';
-import { startWorkout } from './workout.js';
+import { startWorkout, startFreeWorkout } from './workout.js';
 import { aiEnabled, aiWeeklyAnalysis } from '../ai.js';
 import { driveAvailable, driveConnected, driveDirty, hasToken } from '../drive.js';
 import { t, tn, lang, LANGS } from '../i18n.js';
@@ -31,16 +31,7 @@ export function migrateLoadSteps() {
   if (changed) save({ touch: false });
 }
 
-export function ensureExercise(libId) {
-  if (state.exercises[libId]) return state.exercises[libId];
-  const l = LIB_BY_ID[libId];
-  if (!l) return null;
-  state.exercises[libId] = {
-    id: libId, lib: libId, name: l.name, group: l.group,
-    sets: l.sets, repMin: l.repMin, repMax: l.repMax, step: l.step, bw: !!l.bw,
-  };
-  return state.exercises[libId];
-}
+export { ensureExercise };
 
 export const planStr = p => (p.first && !p.w ? t('definir carga') : `${kg(p.w)} × ${p.reps.join(' · ')}`);
 
@@ -137,6 +128,7 @@ function renderHome() {
       <h2>${t('Monte seu primeiro treino')}</h2>
       <p class="muted">${t('Crie um treino e escolha os exercícios para começar a registrar.')}</p>
       <a class="btn primary block" href="#/exercicios">${t('Criar treino')}</a>
+      <button class="btn ghost block" data-act="freeWorkout">${icon.plus}${t('Treino livre')}</button>
     </div>`;
   } else {
     const r = state.routines[state.next % state.routines.length];
@@ -152,6 +144,7 @@ function renderHome() {
           <span class="v num">${planStr(p)}</span></div>`;
       }).join('') || `<p class="muted">${t('Este treino ainda não tem exercícios.')}</p>`}</div>
       <button class="btn primary big" data-act="start" data-id="${r.id}" ${exs.length ? '' : 'disabled'}>${icon.play}${t('Começar treino')}</button>
+      <button class="btn ghost block" data-act="freeWorkout">${icon.plus}${t('Treino livre')}</button>
     </div>`;
   }
 
@@ -204,6 +197,7 @@ function renderHome() {
 }
 
 actions.start = el => startWorkout(el.dataset.id);
+actions.freeWorkout = () => startFreeWorkout();
 actions.resume = () => go('#/treino');
 actions.chooseRoutine = () => {
   sheet(`<h2>${t('Qual treino hoje?')}</h2>

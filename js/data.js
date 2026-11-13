@@ -1,6 +1,7 @@
 // Biblioteca de exercícios (com execução ideal) e modelos de rotina.
 // Os textos aqui estão em português; as traduções ficam em js/locales/.
 import { t, exPack, allLangs } from './i18n.js';
+import { state } from './store.js';
 
 export const GROUPS = [
   'Peito', 'Costas', 'Ombros', 'Bíceps', 'Tríceps',
@@ -401,3 +402,18 @@ export const routineName = r => (r?.tpl ? t(r.name) : r?.name ?? '');
 export function templateKey(name) {
   return TEMPLATE_NAMES.find(k => allLangs(k).includes(name)) ?? null;
 }
+
+/** Garante que um exercício da biblioteca exista nos exercícios da pessoa e o devolve. */
+export function ensureExercise(libId) {
+  if (state.exercises[libId]) return state.exercises[libId];
+  const l = LIB_BY_ID[libId];
+  if (!l) return null;
+  state.exercises[libId] = {
+    id: libId, lib: libId, name: l.name, group: l.group,
+    sets: l.sets, repMin: l.repMin, repMax: l.repMax, step: l.step, bw: !!l.bw,
+  };
+  return state.exercises[libId];
+}
+
+/** Descanso entre séries deste exercício (segundos): o dele ou o padrão dos Ajustes. */
+export const restOf = ex => (ex?.rest > 0 ? ex.rest : state.settings.rest);

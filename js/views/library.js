@@ -145,6 +145,8 @@ function exerciseForm(ex) {
       ${stepper('repMax', e.repMax, 1, t('Reps máximas'), 1)}
     </div>
     <p class="small muted">${t('Quando você bate as reps máximas em todas as séries, o app sugere subir a carga pelo valor de aumento.')}</p>
+    ${stepper('rest', e.rest || 0, 15, t('Descanso (segundos)'), 0)}
+    <p class="small muted">${t('0 usa o descanso padrão dos Ajustes ({s} s).', { s: state.settings.rest })}</p>
     <button class="btn primary big">${ex ? t('Salvar') : t('Criar exercício')}</button>
   </form>`;
 }
@@ -158,6 +160,7 @@ submits.saveExercise = form => {
   const data = {
     name, group: form.group.value, sets: Math.max(1, Math.round(n('sets'))),
     repMin, repMax: Math.max(repMin, Math.round(n('repMax'))), step: Math.max(0, n('step')),
+    rest: Math.max(0, Math.round(n('rest'))),
   };
   let ex = state.exercises[form.dataset.id];
   // nome de exercício da biblioteca não mudou: mantém o original (assim ele segue o idioma escolhido)

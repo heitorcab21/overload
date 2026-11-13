@@ -586,6 +586,27 @@ const ui = {
   "Salvando…": `Saving…`,
   "IA configurada: {ia}, modelo {m}.": `AI set up: {ia}, model {m}.`,
   "Não foi possível sincronizar agora. Tente de novo.": `Couldn't sync right now. Try again.`,
+  "Sobraram 3 ou mais reps em todas as séries: +2 reps em cada uma.": "You had 3 or more reps left in every set: +2 reps on each.",
+  "Na última série não sobrou nenhuma rep: repita os mesmos números e ganhe folga.": "No reps left in the last set: repeat the same numbers and build some margin.",
+  "Treino livre": "Free workout",
+  "Descanso (segundos)": "Rest (seconds)",
+  "0 usa o descanso padrão dos Ajustes ({s} s).": "0 uses the default rest from Settings ({s} s).",
+  "Série de aquecimento": "Warm-up set",
+  "aquecimento": "warm-up",
+  "Foi aquecimento": "It was a warm-up",
+  "descanso {s} s": "rest {s} s",
+  "Trocar exercício": "Swap exercise",
+  "Reps que sobraram (RIR)": "Reps in reserve (RIR)",
+  "não informado": "not set",
+  "Quantas reps sobraram na última série? (opcional)": "How many reps were left in the last set? (optional)",
+  "Série de aquecimento registrada. Ela não conta na progressão nem nas metas.": "Warm-up set logged. It does not count toward progression or goals.",
+  "Adicione os exercícios conforme for treinando. A carga sugerida vem do seu histórico.": "Add exercises as you train. The suggested load comes from your history.",
+  "Nada encontrado.": "Nothing found.",
+  "Trocar {x} por…": "Swap {x} for…",
+  "Trocar também na ficha {x}": "Also swap it in the routine {x}",
+  "Adicionar também na ficha {x}": "Also add it to the routine {x}",
+  "Este exercício já tem séries registradas. Use \"Adicionar exercício\" para fazer outro.": "This exercise already has logged sets. Use \"Add exercise\" to do another one.",
+  "Trocado por {x}.": "Swapped for {x}.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -609,6 +630,16 @@ const help = [
       <li>Tap <b>Next</b> and, on the last exercise, <b>Finish</b>.</li>
     </ol>
     <p class="tip">Typed a wrong number? Tap a logged set to correct or delete it. The list icon at the top shows every exercise in the workout.</p>`],
+  ['Swap, warm up and RIR', 'Changes mid-workout', `
+    <ul class="errs">
+      <li><b>Swap exercise</b>: machine taken? Tap <b>Swap exercise</b> below the name and pick another one. Tick the box to also swap it in the routine.</li>
+      <li><b>Add exercise</b>: adds an exercise right after the current one, without changing the routine (or in it too, if you tick the box).</li>
+      <li><b>Free workout</b>: on the Today tab, starts an empty workout and you add exercises as you train.</li>
+      <li><b>It was a warm-up</b>: logs the set as a warm-up. It is kept, but does not count toward progression, goals, volume or records. Tap it to delete.</li>
+      <li><b>RIR (reps in reserve)</b>: after a set, tap 0, 1, 2, 3 or 4+. It is optional. With 3 or more left in every set, the app suggests +2 reps; with 0 in the last one, it repeats the numbers. RIR also improves the max strength estimate.</li>
+      <li><b>Rest per exercise</b>: in Workouts, open the exercise and set its rest (0 uses the default from Settings).</li>
+    </ul>`],
+
   ['How to log the load', 'Always the total load', `
     <p>Always log the <b>total load lifted</b>, not just one side. Each exercise shows its own rule during the workout and on the exercise screen.</p>
     <ul class="errs">

@@ -64,6 +64,14 @@ eq([planFor(ex).w, planFor(ex).reps], [40, [12, 10, 9]], '+1 rep na série mais 
 state.sessions = [sess(2, [{ w: 40, r: 12 }, { w: 40, r: 12 }, { w: 40, r: 12 }])];
 eq([planFor(ex).w, planFor(ex).reps, planFor(ex).kind], [42.5, [8, 8, 8], 'up'], 'sobe a carga no topo da faixa');
 
+// RIR: folga grande acelera, zero de folga segura; aquecimento não vira base da progressão
+state.sessions = [sess(2, [{ w: 40, r: 9, rir: 3 }, { w: 40, r: 9, rir: 3 }, { w: 40, r: 8, rir: 4 }])];
+eq([planFor(ex).w, planFor(ex).reps], [40, [11, 11, 10]], 'RIR 3+ em tudo: +2 reps');
+state.sessions = [sess(2, [{ w: 40, r: 10, rir: 2 }, { w: 40, r: 9, rir: 1 }, { w: 40, r: 9, rir: 0 }])];
+eq([planFor(ex).reps, planFor(ex).kind], [[10, 9, 9], 'hold'], 'RIR 0 na última: repete');
+state.sessions = [sess(2, [{ w: 40, r: 10 }, { w: 40, r: 10 }, { w: 40, r: 9 }], { warmup: [{ w: 20, r: 15 }, { w: 30, r: 8 }] })];
+eq([planFor(ex).w, planFor(ex).reps], [40, [10, 10, 10]], 'séries de aquecimento ficam fora da progressão');
+
 state.sessions = [sess(2, [{ w: 40, r: 10 }, { w: 40, r: 9 }, { w: 40, r: 9 }], { feel: 'easy' })];
 eq(planFor(ex).reps, [11, 10, 10], 'fácil: +1 em todas');
 
@@ -251,6 +259,8 @@ S().sessions.push({ id: 'bench', date: nowIso, entries: [{ exId: 'supino-reto', 
 const lv = body.strengthLevel(S().exercises['supino-reto']);
 eq([lv.lift, lv.top >= 15 && lv.top <= 22], ['bench', true], 'supino 1,5x o peso: por volta do top 18%');
 eq(body.strengthLevel(S().exercises['peck-deck']).reason, 'notComparable', 'aparelho não entra no ranking');
+S().sessions.push({ id: 'bench2', date: nowIso, entries: [{ exId: 'supino-reto', sets: [{ w: 100, r: 5, rir: 3 }] }] });
+eq(Math.round(body.strengthLevel(S().exercises['supino-reto']).oneRM), Math.round(e1rm(100, 8)), 'RIR entra na estimativa do 1RM');
 S().profile = null;
 eq(body.strengthLevel(S().exercises['supino-reto']).reason, 'noProfile');
 
@@ -274,5 +284,12 @@ S().active = { id: 'a1', entries: [] };
 store.save({ touch: false });
 eq(S().updatedAt, before2, 'mexer no treino em andamento não muda a versão a enviar');
 S().active = null;
+
+// ---- descanso por exercício ----
+const dmod = await import('../js/data.js');
+S().settings.rest = 90;
+eq([dmod.restOf({ rest: 150 }), dmod.restOf({ rest: 0 }), dmod.restOf({})], [150, 90, 90], 'descanso próprio ou o padrão');
+const libId = dmod.LIB.find(l => !S().exercises[l.id]).id;
+eq(dmod.ensureExercise(libId), S().exercises[libId], 'exercício da biblioteca entra na lista ao ser adicionado');
 
 console.log(`ok: ${n} verificações passaram`);
