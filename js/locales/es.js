@@ -742,7 +742,7 @@ const ui = {
   "Este mês": "Este mes",
   "comparado ao mesmo período do mês passado": "comparado con el mismo período del mes pasado",
   "Aquecimento": "Calentamiento",
-  "Carga abaixo de 60% da meta: esta série vai contar como aquecimento. Suba a carga para registrar como série válida.": "Carga por debajo del 60% de la meta: esta serie contará como calentamiento. Sube la carga para registrarla como serie válida.",
+  "Carga abaixo de 70% da meta: esta série vai contar como aquecimento. Suba a carga para registrar como série válida.": "Carga por debajo del 70% de la meta: esta serie contará como calentamiento. Sube la carga para registrarla como serie válida.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -780,7 +780,7 @@ const help = [
       <li><b>Cambiar ejercicio</b>: ¿máquina ocupada? Toca <b>Cambiar ejercicio</b> debajo del nombre y elige otro. Marca la casilla para cambiarlo también en la rutina.</li>
       <li><b>Agregar ejercicio</b>: incluye un ejercicio justo después del actual, sin tocar la rutina (o también en ella, si marcas la casilla).</li>
       <li><b>Entrenamiento libre</b>: en la pestaña Hoy, empieza un entrenamiento vacío y agregas los ejercicios a medida que entrenas.</li>
-      <li><b>Fue calentamiento</b>: registra la serie como calentamiento. Queda guardada, pero no cuenta para la progresión, las metas, el volumen ni los récords. ¿Olvidaste marcarla? Si la 1.ª serie tiene menos del 60% de la carga sugerida, la app la cuenta como calentamiento sola; y las series muy ligeras nunca entran en las métricas. Toca la serie para borrarla o indicar que era válida.</li>
+      <li><b>Fue calentamiento</b>: registra la serie como calentamiento. Queda guardada, pero no cuenta para la progresión, las metas, el volumen ni los récords. ¿Olvidaste marcarla? Si la 1.ª serie tiene menos del 70% de la carga sugerida, la app la cuenta como calentamiento sola; y las series muy ligeras nunca entran en las métricas. Toca la serie para borrarla o indicar que era válida.</li>
       <li><b>RIR (reps en reserva)</b>: después de una serie, toca 0, 1, 2, 3 o 4+. Es opcional. Con 3 o más sobrando en todas las series, la app sugiere +2 reps; con 0 en la última, repite los números. El RIR también mejora la estimación de fuerza máxima.</li>
       <li><b>Descanso por ejercicio</b>: en Entrenos, abre el ejercicio y define su descanso (0 usa el predeterminado de Ajustes).</li>
     </ul>`],

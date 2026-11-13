@@ -125,7 +125,7 @@ function render() {
         ${stepper('r', en.cur.r, 1, t('Repetições'), 0, 'wCur').replace('data-change="wCur"', 'data-change="wCur" data-live')}
       </div>
       <button class="btn primary big${willBeWarmup(en, ex) ? ' warm-mode' : ''}" data-act="wDone">${icon.check}<span id="doneLabel">${doneText(en, ex)}</span></button>
-      <p class="small warm-hint" id="warmHint"${willBeWarmup(en, ex) ? '' : ' hidden'}>${t('Carga abaixo de 60% da meta: esta série vai contar como aquecimento. Suba a carga para registrar como série válida.')}</p>
+      <p class="small warm-hint" id="warmHint"${willBeWarmup(en, ex) ? '' : ' hidden'}>${t('Carga abaixo de 70% da meta: esta série vai contar como aquecimento. Suba a carga para registrar como série válida.')}</p>
       <p class="small muted load-hint">${esc(loadHint(ex))}</p>
       ${rirRow(en)}
       <div class="row wrap">
@@ -248,10 +248,10 @@ changes.wCur = el => {
   paintDone(en, ex);
 };
 
-/** A próxima série vai contar como aquecimento? (1ª série com menos de 60% da carga sugerida) */
+/** A próxima série vai contar como aquecimento? (1ª série com menos de 70% da carga sugerida) */
 function willBeWarmup(en, ex) {
   const ref = en.plan.first ? 0 : en.plan.w;
-  return !en.sets.length && ref > 0 && en.cur.w > 0 && en.cur.w < ref * 0.6 && !ex.bw;
+  return !en.sets.length && ref > 0 && en.cur.w > 0 && en.cur.w < ref * 0.7 && !ex.bw;
 }
 const doneText = (en, ex) => `${willBeWarmup(en, ex) ? t('Aquecimento') : t('Feito')} · ${setStr(en.cur)}`;
 function paintDone(en, ex) {
@@ -265,7 +265,7 @@ function paintDone(en, ex) {
 
 actions.wDone = () => {
   const { en, ex } = cur();
-  // 1ª série com carga bem abaixo da sugerida (menos de 60%): quase certo que é aquecimento.
+  // 1ª série com carga bem abaixo da sugerida (menos de 70%): quase certo que é aquecimento.
   // Conta à parte sozinha; se não era, um toque na série devolve.
   if (willBeWarmup(en, ex)) {
     en.warmup.push({ w: en.cur.w, r: en.cur.r });

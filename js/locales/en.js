@@ -742,7 +742,7 @@ const ui = {
   "Este mês": "This month",
   "comparado ao mesmo período do mês passado": "compared with the same days last month",
   "Aquecimento": "Warm-up",
-  "Carga abaixo de 60% da meta: esta série vai contar como aquecimento. Suba a carga para registrar como série válida.": "Load below 60% of the target: this set will count as a warm-up. Raise the load to log it as a working set.",
+  "Carga abaixo de 70% da meta: esta série vai contar como aquecimento. Suba a carga para registrar como série válida.": "Load below 70% of the target: this set will count as a warm-up. Raise the load to log it as a working set.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -780,7 +780,7 @@ const help = [
       <li><b>Swap exercise</b>: machine taken? Tap <b>Swap exercise</b> below the name and pick another one. Tick the box to also swap it in the routine.</li>
       <li><b>Add exercise</b>: adds an exercise right after the current one, without changing the routine (or in it too, if you tick the box).</li>
       <li><b>Free workout</b>: on the Today tab, starts an empty workout and you add exercises as you train.</li>
-      <li><b>It was a warm-up</b>: logs the set as a warm-up. It is kept, but does not count toward progression, goals, volume or records. Forgot to mark it? If the 1st set has less than 60% of the suggested load, the app counts it as a warm-up on its own; and very light sets never enter the stats. Tap the set to delete it or say it was a working set.</li>
+      <li><b>It was a warm-up</b>: logs the set as a warm-up. It is kept, but does not count toward progression, goals, volume or records. Forgot to mark it? If the 1st set has less than 70% of the suggested load, the app counts it as a warm-up on its own; and very light sets never enter the stats. Tap the set to delete it or say it was a working set.</li>
       <li><b>RIR (reps in reserve)</b>: after a set, tap 0, 1, 2, 3 or 4+. It is optional. With 3 or more left in every set, the app suggests +2 reps; with 0 in the last one, it repeats the numbers. RIR also improves the max strength estimate.</li>
       <li><b>Rest per exercise</b>: in Workouts, open the exercise and set its rest (0 uses the default from Settings).</li>
     </ul>`],
