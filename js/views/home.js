@@ -154,15 +154,6 @@ function renderHome() {
     </div>`;
   }
 
-  const gs = groupGoalStatus(now).filter(g => g.weekGoal > 0).sort((a, b) => a.weekDone / a.weekGoal - b.weekDone / b.weekGoal);
-  const goals = gs.length ? `<div class="card">
-      <div class="row between" style="margin-bottom:6px"><h3>${t('Metas da semana')}</h3><a class="btn sm ghost" href="#/metas">${t('Ver todas')}</a></div>
-      ${gs.map(g => `<div class="goal-row">
-        <div class="top"><b>${esc(tg(g.group))}</b><span class="num">${t('{done} / {goal} séries', { done: g.weekDone, goal: g.weekGoal })}</span></div>
-        ${meter(g.weekDone / g.weekGoal, g.weekDone >= g.weekGoal)}
-      </div>`).join('')}
-    </div>` : '';
-
   // Lembrete de backup: os dados só existem neste aparelho
   const lb = state.lastBackup ? new Date(state.lastBackup) : null;
   const daysSince = lb ? Math.floor((now - lb) / DAY) : null;
@@ -199,7 +190,7 @@ function renderHome() {
 
   $('#view').innerHTML = `
     <div class="head"><div class="brand grow"><b>Overload</b><span class="muted small">${fmtDate(now)}</span></div></div>
-    <div class="stack">${week}${main}${stalledCard()}${drive}${driveInvite}${backup}${goals}${ai}</div>`;
+    <div class="stack">${week}${main}${stalledCard()}${ai}${drive}${driveInvite}${backup}</div>`;
 }
 
 // ---------- Exercício parado ----------
