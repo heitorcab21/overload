@@ -46,6 +46,15 @@ export function bestInRange(exId, a, b) {
   return best;
 }
 
+/**
+ * Séries que contam como trabalho: tira as muito leves (abaixo de 60% da maior carga do exercício
+ * naquele treino), que são quase sempre aquecimento não marcado. Drop sets (-20 a -30%) continuam valendo.
+ */
+export const workSets = sets => {
+  const top = Math.max(0, ...sets.map(s => s.w || 0));
+  return top > 0 ? sets.filter(s => !(s.w > 0 && s.w < top * 0.6)) : sets;
+};
+
 /** Carga de trabalho de uma sessão: a mais repetida (empate: a maior). */
 export function workWeight(sets) {
   const count = {};
@@ -63,7 +72,8 @@ const fit = (reps, n) => Array.from({ length: n }, (_, i) => reps[i] ?? reps.at(
 export function planFor(ex) {
   // treinos em que o aparelho foi trocado não servem de base para a próxima carga
   const hist = entriesFor(ex.id).filter(e => !(e.flags || []).includes('troca'));
-  const last = hist.at(-1);
+  const lastRaw = hist.at(-1);
+  const last = lastRaw && { ...lastRaw, sets: workSets(lastRaw.sets) };
   const n = ex.sets;
   if (!last) {
     return {
@@ -91,7 +101,7 @@ export function planFor(ex) {
   const below = lr.every(r => r < ex.repMin);
   if (below) {
     const prev = hist.at(-2);
-    const prevBelow = prev && workWeight(prev.sets) >= w && prev.sets.every(s => s.r < ex.repMin);
+    const prevBelow = prev && workWeight(workSets(prev.sets)) >= w && workSets(prev.sets).every(s => s.r < ex.repMin);
     if (prevBelow && w > 0) {
       const w2 = Math.max(0, roundStep(w * 0.9, ex.step));
       return out(w2, Array(n).fill(Math.round((ex.repMin + ex.repMax) / 2)),
@@ -217,7 +227,7 @@ export function groupSets(a, b) {
     for (const e of s.entries) {
       const ex = state.exercises[e.exId];
       if (!ex || e.skipped) continue;
-      m[ex.group] = (m[ex.group] || 0) + e.sets.filter(x => x.r > 0).length;
+      m[ex.group] = (m[ex.group] || 0) + workSets(e.sets).filter(x => x.r > 0).length;
     }
   }
   return m;
@@ -229,7 +239,7 @@ export function groupTonnage(a, b) {
     for (const e of s.entries) {
       const ex = state.exercises[e.exId];
       if (!ex || e.skipped) continue;
-      m[ex.group] = (m[ex.group] || 0) + tonnage(e.sets);
+      m[ex.group] = (m[ex.group] || 0) + tonnage(workSets(e.sets));
     }
   }
   return m;
@@ -289,7 +299,7 @@ export function weekSeries(nWeeks = 8, now = new Date()) {
     const a = addDays(ws, -7 * i);
     const ss = sessionsIn(a, addDays(a, 7));
     let sets = 0, ton = 0;
-    for (const s of ss) for (const e of s.entries) if (!e.skipped) { sets += e.sets.length; ton += tonnage(e.sets); }
+    for (const s of ss) for (const e of s.entries) if (!e.skipped) { const w = workSets(e.sets); sets += w.length; ton += tonnage(w); }
     out.push({ start: a, sets, ton, workouts: ss.length });
   }
   return out;

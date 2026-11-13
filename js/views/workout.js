@@ -247,24 +247,20 @@ changes.wCur = el => {
   if ($('#doneLabel')) $('#doneLabel').textContent = `${t('Feito')} · ${label}`;
 };
 
-actions.wDone = () => { const { en } = cur(); logSet(en, en.cur.w, en.cur.r); done(); };
-actions.wDelta = el => {
-  const { en } = cur();
-  logSet(en, en.cur.w, Math.max(0, en.cur.r + Number(el.dataset.d)));
-  done();
-};
-actions.wFail = () => {
-  const { en } = cur();
-  sheet(`<h2>${t('Quantas reps saíram antes de falhar?')}</h2>
-    <form class="stack" data-submit="wFailSave">
-      ${stepper('r', Math.max(0, en.cur.r - 1), 1, t('Repetições completas'))}
-      <button class="btn primary big">${t('Registrar')}</button>
-    </form>`);
-};
-submits.wFailSave = form => {
-  const { en } = cur();
-  logSet(en, en.cur.w, Math.max(0, Math.round(Number(form.r.value) || 0)), 'F');
-  closeSheet();
+actions.wDone = () => {
+  const { en, ex } = cur();
+  // 1ª série com carga bem abaixo da sugerida (menos de 60%): quase certo que é aquecimento.
+  // Conta à parte sozinha; se não era, um toque na série devolve.
+  const ref = en.plan.first ? 0 : en.plan.w;
+  if (!en.sets.length && ref > 0 && en.cur.w > 0 && en.cur.w < ref * 0.6 && !ex.bw) {
+    en.warmup.push({ w: en.cur.w, r: en.cur.r });
+    state.active.restEnd = Date.now() + Math.round(restOf(ex) / 2) * 1000;
+    restFired = false;
+    toast(t('Carga bem abaixo da meta: contei como aquecimento. Se não era, toque na série.'), 4500);
+    done();
+    return;
+  }
+  logSet(en, en.cur.w, en.cur.r);
   done();
 };
 actions.wSetW = el => { cur().en.cur.w = Number(el.dataset.w); done(); };
@@ -447,8 +443,16 @@ actions.wWarm = () => {
 actions.wDelWarm = el => {
   const i = Number(el.dataset.i);
   sheet(`<h2>${t('Série de aquecimento')}</h2>
+    <p class="muted small">${t('Séries de aquecimento ficam guardadas, mas não contam na progressão, nas metas nem nos recordes.')}</p>
+    <button class="btn primary block" data-act="wWarmToWork" data-i="${i}">${t('Era série válida')}</button>
     <button class="btn danger block" data-act="wDelWarmNow" data-i="${i}">${t('Excluir série')}</button>
     <button class="btn block" data-act="closeSheet">${t('Cancelar')}</button>`);
+};
+actions.wWarmToWork = el => {
+  const { en } = cur();
+  const [w] = en.warmup.splice(Number(el.dataset.i), 1);
+  if (w) { en.sets.unshift(w); en.cur = { ...en.cur, r: en.plan.reps[en.sets.length] ?? en.cur.r }; }
+  closeSheet(); done();
 };
 actions.wDelWarmNow = el => { cur().en.warmup.splice(Number(el.dataset.i), 1); closeSheet(); done(); };
 

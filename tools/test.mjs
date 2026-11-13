@@ -72,6 +72,12 @@ eq([planFor(ex).reps, planFor(ex).kind], [[10, 9, 9], 'hold'], 'RIR 0 na última
 state.sessions = [sess(2, [{ w: 40, r: 10 }, { w: 40, r: 10 }, { w: 40, r: 9 }], { warmup: [{ w: 20, r: 15 }, { w: 30, r: 8 }] })];
 eq([planFor(ex).w, planFor(ex).reps], [40, [10, 10, 10]], 'séries de aquecimento ficam fora da progressão');
 
+// aquecimento esquecido (carga bem menor) não atrapalha a progressão nem a contagem
+state.sessions = [sess(2, [{ w: 20, r: 15 }, { w: 40, r: 10 }, { w: 40, r: 10 }, { w: 40, r: 9 }])];
+eq([planFor(ex).w, planFor(ex).reps], [40, [10, 10, 10]], 'série leve esquecida não entra na progressão');
+const { workSets } = await import('../js/logic.js');
+eq(workSets([{ w: 20, r: 15 }, { w: 40, r: 10 }, { w: 30, r: 12 }]).length, 2, 'drop set de -25% continua valendo; -50% não');
+
 state.sessions = [sess(2, [{ w: 40, r: 10 }, { w: 40, r: 9 }, { w: 40, r: 9 }], { feel: 'easy' })];
 eq(planFor(ex).reps, [11, 10, 10], 'fácil: +1 em todas');
 

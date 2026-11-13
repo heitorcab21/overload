@@ -40,7 +40,7 @@ const TOPICS = [
       <li><b>Trocar exercício</b>: aparelho ocupado? Toque em <b>Trocar exercício</b> abaixo do nome e escolha outro. Marque a caixinha para trocar também na ficha.</li>
       <li><b>Adicionar exercício</b>: inclui um exercício logo depois do atual, sem mexer na ficha (ou também nela, se marcar).</li>
       <li><b>Treino livre</b>: na aba Hoje, começa um treino vazio e você adiciona os exercícios conforme treina.</li>
-      <li><b>Foi aquecimento</b>: registra a série como aquecimento. Ela fica guardada, mas não conta na progressão, nas metas, no volume nem nos recordes. Toque nela para excluir.</li>
+      <li><b>Foi aquecimento</b>: registra a série como aquecimento. Ela fica guardada, mas não conta na progressão, nas metas, no volume nem nos recordes. Esqueceu de marcar? Se a 1ª série vier com menos de 60% da carga sugerida, o app já conta como aquecimento sozinho; e séries muito leves nunca entram nas métricas. Toque na série para excluir ou dizer que era válida.</li>
       <li><b>RIR (reps que sobraram)</b>: depois de uma série, toque em 0, 1, 2, 3 ou 4+. É opcional. Com 3 ou mais sobrando em todas as séries, o app sugere +2 reps; com 0 na última, repete os números. O RIR também melhora a estimativa de força máxima.</li>
       <li><b>Descanso por exercício</b>: em Treinos, abra o exercício e defina o descanso dele (0 usa o padrão dos Ajustes).</li>
     </ul>`],

@@ -431,12 +431,9 @@ const ui = {
   'Fazer mesmo assim': `Do it anyway`,
   'Carga total de hoje (kg)': `Today's total load (kg)`,
   'Feito': `Done`,
-  'Foi diferente?': `Was it different?`,
-  'Falhei nesta': `Failed this one`,
   'Todas como a meta': `All as planned`,
   'Desfazer': `Undo`,
   'Pular exercício': `Skip exercise`,
-  'Como foi?': `How was it?`,
   'Aconteceu algo?': `Did anything happen?`,
   'Série extra': `Extra set`,
   'Voltar ao início': `Back to start`,
@@ -449,8 +446,6 @@ const ui = {
   'Registrar por voz': `Log by voice`,
   'Finalizar': `Finish`,
   'Próximo': `Next`,
-  'Quantas reps saíram antes de falhar?': `How many reps did you get before failing?`,
-  'Repetições completas': `Completed reps`,
   'Registrar': `Log`,
   'Falhei nesta série': `I failed this set`,
   'Excluir série': `Delete set`,
@@ -722,6 +717,9 @@ const ui = {
   "Compartilhar": "Share",
   "No celular, escolha Instagram, WhatsApp ou salve na galeria.": "On your phone, pick Instagram, WhatsApp or save it to your gallery.",
   "Imagem salva. Agora é só postar.": "Image saved. Now just post it.",
+  "Carga bem abaixo da meta: contei como aquecimento. Se não era, toque na série.": "Load well below the target: counted as a warm-up. If it wasn't, tap the set.",
+  "Séries de aquecimento ficam guardadas, mas não contam na progressão, nas metas nem nos recordes.": "Warm-up sets are kept, but they don't count toward progression, goals or records.",
+  "Era série válida": "It was a working set",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -759,7 +757,7 @@ const help = [
       <li><b>Swap exercise</b>: machine taken? Tap <b>Swap exercise</b> below the name and pick another one. Tick the box to also swap it in the routine.</li>
       <li><b>Add exercise</b>: adds an exercise right after the current one, without changing the routine (or in it too, if you tick the box).</li>
       <li><b>Free workout</b>: on the Today tab, starts an empty workout and you add exercises as you train.</li>
-      <li><b>It was a warm-up</b>: logs the set as a warm-up. It is kept, but does not count toward progression, goals, volume or records. Tap it to delete.</li>
+      <li><b>It was a warm-up</b>: logs the set as a warm-up. It is kept, but does not count toward progression, goals, volume or records. Forgot to mark it? If the 1st set has less than 60% of the suggested load, the app counts it as a warm-up on its own; and very light sets never enter the stats. Tap the set to delete it or say it was a working set.</li>
       <li><b>RIR (reps in reserve)</b>: after a set, tap 0, 1, 2, 3 or 4+. It is optional. With 3 or more left in every set, the app suggests +2 reps; with 0 in the last one, it repeats the numbers. RIR also improves the max strength estimate.</li>
       <li><b>Rest per exercise</b>: in Workouts, open the exercise and set its rest (0 uses the default from Settings).</li>
     </ul>`],
