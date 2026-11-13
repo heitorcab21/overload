@@ -98,6 +98,7 @@ function sessionSheet(s) {
       <span class="grow"><span class="t">${esc(state.exercises[e.exId] ? exName(state.exercises[e.exId]) : t('Exercício removido'))}</span><br>
         <span class="d num">${e.skipped ? t('pulado') : e.sets.map(x => (x.w > 0 ? `${fmt(x.w)}×${x.r}` : x.r)).join(' · ')}</span></span>
       ${icon.edit}</button>`).join('')}</div></div>
+    <button class="btn block" data-act="shareStory" data-id="${s.id}">${icon.share}${t('Compartilhar nos stories')}</button>
     <button class="btn ghost danger block" data-act="delSessionAsk" data-id="${s.id}">${icon.trash}${t('Excluir treino')}</button>`);
 }
 actions.openSession = el => {

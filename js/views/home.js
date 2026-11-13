@@ -1,6 +1,6 @@
 // Telas: primeiro acesso, Hoje e resumo do treino.
 import { state, save, uid } from '../store.js';
-import { googleBtn, $, esc, fmt, kg, setStr, compact, icon, actions, toast, sheet, closeSheet, meter, fmtDate, weekLetters } from '../ui.js';
+import { googleBtn, $, esc, fmt, kg, setStr, compact, icon, actions, toast, sheet, closeSheet, meter, fmtDate, weekLetters, shareFile } from '../ui.js';
 import { route, go, rerender } from '../router.js';
 import { TEMPLATES, LIB_BY_ID, OLD_STEP, exName, tg, routineName, templateKey, ensureExercise } from '../data.js';
 import {
@@ -307,9 +307,37 @@ function renderSummary(id) {
         ${s.entries.map(e => `<div class="plan-line"><span class="n">${esc(state.exercises[e.exId] ? exName(state.exercises[e.exId]) : t('Exercício removido'))}</span>
           <span class="v num">${e.skipped ? t('pulado') : e.sets.map(x => (x.w > 0 ? `${fmt(x.w)}×${x.r}` : x.r)).join(' · ')}</span></div>`).join('')}
       </div>
+      <button class="btn big story-btn" data-act="shareStory" data-id="${s.id}">${icon.share}${t('Compartilhar nos stories')}</button>
       <a class="btn primary big" href="#/hoje">${t('Concluir')}</a>
     </div>`;
 }
+
+// ---------- Card para stories ----------
+
+let storyBlob = null, storyUrl = null;
+actions.shareStory = async el => {
+  const s = state.sessions.find(x => x.id === el.dataset.id);
+  if (!s) return;
+  el.disabled = true;
+  try {
+    const { storyCard } = await import('../storycard.js');
+    storyBlob = await storyCard(s);
+    if (storyUrl) URL.revokeObjectURL(storyUrl);
+    storyUrl = URL.createObjectURL(storyBlob);
+    sheet(`<h2>${t('Card para stories')}</h2>
+      <img class="story-preview" src="${storyUrl}" alt="${t('Resumo do treino em imagem')}">
+      <button class="btn primary big" data-act="storySend">${icon.share}${t('Compartilhar')}</button>
+      <p class="small muted">${t('No celular, escolha Instagram, WhatsApp ou salve na galeria.')}</p>`);
+  } catch (e) {
+    toast(e.message, 4000);
+  }
+  el.disabled = false;
+};
+actions.storySend = async () => {
+  if (!storyBlob) return;
+  const r = await shareFile(`overload-${new Date().toISOString().slice(0, 10)}.png`, storyBlob, 'image/png');
+  if (r === 'downloaded') toast(t('Imagem salva. Agora é só postar.'), 4000);
+};
 
 route('inicio', renderOnboarding, { noTabs: true });
 route('hoje', renderHome);

@@ -510,3 +510,7 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 .quick-part + .quick-part { border-top: 1px solid var(--line); }
 .quick-out { display: grid; gap: 8px; justify-items: start; min-height: 74px; padding: 12px; border-radius: 12px; background: var(--surface-2); }
 .quick-out .meter { width: 100%; }
+
+/* card para stories */
+.story-preview { display: block; width: min(100%, 300px); aspect-ratio: 9 / 16; margin: 4px auto 8px; border-radius: 16px; box-shadow: var(--shadow); }
+.story-btn { background: linear-gradient(135deg, #eb6834, #c13584); color: #fff; border: 0; }
