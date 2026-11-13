@@ -720,6 +720,31 @@ const ui = {
   "Carga bem abaixo da meta: contei como aquecimento. Se não era, toque na série.": "Carga muy por debajo de la meta: la conté como calentamiento. Si no lo era, toca la serie.",
   "Séries de aquecimento ficam guardadas, mas não contam na progressão, nas metas nem nos recordes.": "Las series de calentamiento se guardan, pero no cuentan para la progresión, las metas ni los récords.",
   "Era série válida": "Era una serie válida",
+  "Exercícios parados": "Ejercicios estancados",
+  "O que fazer": "Qué hacer",
+  "Normal acontecer. Escolha uma saída e mantenha por 2 a 3 semanas:": "Es normal. Elige una salida y mantenla de 2 a 3 semanas:",
+  "<b>Recue e suba de novo</b>: reduza cerca de 10% da carga e volte a progredir com boa execução.": "<b>Retrocede y vuelve a subir</b>: baja cerca de un 10% la carga y vuelve a progresar con buena técnica.",
+  "<b>Mude a faixa de reps</b>: se treina 8–12, passe para 6–8 com mais carga (ou o contrário).": "<b>Cambia el rango de reps</b>: si entrenas 8–12, pasa a 6–8 con más carga (o al revés).",
+  "<b>Troque por uma variação</b>: halter no lugar da barra, inclinado no lugar do reto.": "<b>Cambia por una variante</b>: mancuernas en lugar de barra, inclinado en lugar de plano.",
+  "<b>Confira o básico</b>: sono, alimentação e descanso entre séries fazem diferença.": "<b>Revisa lo básico</b>: sueño, alimentación y descanso entre series marcan la diferencia.",
+  "Entendi, esconder aviso": "Entendido, ocultar aviso",
+  "Comentário do treinador": "Comentario del entrenador",
+  "Analisando seu treino…": "Analizando tu entrenamiento…",
+  "Não foi possível gerar o comentário agora.": "No se pudo generar el comentario ahora.",
+  "há {n} treino sem superar seu melhor": "{n} entrenamiento sin superar tu mejor marca",
+  "há {n} treinos sem superar seu melhor": "{n} entrenamientos sin superar tu mejor marca",
+  "Repetições somadas, sem contar aquecimento.": "Repeticiones sumadas, sin contar el calentamiento.",
+  "Volume: carga × repetições somadas, sem contar aquecimento.": "Volumen: carga × repeticiones sumadas, sin contar el calentamiento.",
+  "Métrica": "Métrica",
+  "Força": "Fuerza",
+  "Volume": "Volumen",
+  "Período": "Período",
+  "Por treino": "Por entrenamiento",
+  "Por mês": "Por mes",
+  "novo": "nuevo",
+  "igual": "igual",
+  "Este mês": "Este mes",
+  "comparado ao mesmo período do mês passado": "comparado con el mismo período del mes pasado",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -841,7 +866,8 @@ const help = [
     </ul>`],
   ['Progreso e historial', 'Gráficos y entrenamientos anteriores', `
     <ul class="errs">
-      <li>La pestaña <b>Progreso</b> muestra tu nivel de fuerza, tu cuerpo, series por semana y un gráfico por ejercicio, con un punto por entrenamiento y cuánto subió tu fuerza desde el primero. Desliza el dedo por el gráfico para ver la serie de cada día.</li>
+      <li>La pestaña <b>Progreso</b> muestra tu nivel de fuerza, tu cuerpo, series por semana y un gráfico por ejercicio: elige <b>Fuerza</b> o <b>Volumen</b>, <b>Por entrenamiento</b> o <b>Por mes</b>. La tarjeta <b>Este mes</b> compara entrenamientos, series y volumen con el mismo período del mes pasado.</li>
+      <li>En la pantalla Hoy, el aviso <b>Ejercicios estancados</b> aparece cuando un ejercicio pasa 3 entrenamientos sin superar tu mejor marca, con sugerencias.</li>
       <li>En el <b>historial</b>, toca un entrenamiento y luego un ejercicio para corregir series anteriores.</li>
     </ul>`],
   ['Entrenador IA (opcional)', 'Análisis y dudas', `
@@ -851,6 +877,7 @@ const help = [
       <li><b>Claude</b> y <b>ChatGPT</b>: se cobran por uso en tu cuenta. La suscripción ChatGPT Plus no incluye la API: la clave se crea aparte.</li>
       <li>El botón <b>Crear clave de API</b>, en Ajustes, lleva a la página correcta de cada empresa.</li>
       <li><b>Qué ve la IA</b>: en cada pedido, la app arma en el momento un resumen con tus entrenamientos de los últimos 14 días (cargas, reps, RIR, sensación), metas, próximas cargas sugeridas y tu perfil y nivel de fuerza. La IA no guarda memoria entre un pedido y otro: quien guarda todo es la app.</li>
+      <li><b>Comentario del entrenador</b>: con la IA activada, al terminar cada entrenamiento aparece un comentario corto con un punto positivo y una sugerencia para el próximo.</li>
     </ul>`],
   ['Instalar y actualizar la app', 'En la pantalla de inicio del móvil', `
     <p>Toca el <b>icono naranja de descarga</b> en la esquina superior derecha de la pantalla. Desaparece cuando la app ya está instalada. Si el navegador no la instala directamente, la app muestra los pasos:</p>
@@ -920,7 +947,7 @@ const ex = {
      'Baja con control hasta extender por completo los brazos.'],
     ['Balancear las piernas (kipping) sin querer.', 'No extender los brazos abajo.'],
     'Sin peso extra, anota 0. Con cinturón lastrado, anota solo el peso extra.'),
-  'remada-curvada': E('Remo con barra inclinado',
+  'remada-curvada': E('Remo inclinado con barra',
     ['Pies al ancho de la cadera, rodillas algo flexionadas y torso inclinado a ~45°, columna neutra.',
      'Tira de la barra hacia el ombligo, codos cerca del cuerpo.',
      'Aprieta las escápulas arriba y baja con control sin redondear la zona lumbar.'],
@@ -1076,7 +1103,7 @@ const ex = {
      'Mantén 1 segundo contrayendo los glúteos y baja con control.'],
     ['Hiperextender la zona lumbar arriba.', 'Pies demasiado lejos o cerca (la espinilla debe quedar vertical arriba).'],
     'Mira al frente, no al techo, para mantener las costillas abajo.'),
-  'cadeira-abdutora': E('Abductores en máquina',
+  'cadeira-abdutora': E('Máquina abductora',
     ['Sentado con la espalda apoyada, almohadillas en la parte exterior de las rodillas.',
      'Abre las piernas hasta el límite cómodo.',
      'Vuelve despacio, sin dejar que el peso golpee.'],
@@ -1134,7 +1161,7 @@ const ex = {
     ["Acuéstate en el banco con las mancuernas sobre el pecho, palmas enfrentadas y codos un poco flexionados.", "Abre los brazos en arco hasta sentir el pecho estirar, sin cambiar el ángulo de los codos.", "Vuelve por el mismo arco, como si abrazaras un árbol."],
     ["Bajar demasiado y forzar el hombro.", "Doblar y estirar los codos, convirtiéndolo en un press."],
     "Usa menos peso que en el press: el foco es el estiramiento del pecho."),
-  "puxada-supinada": E("Jalón supino",
+  "puxada-supinada": E("Jalón con agarre supino",
     ["Toma la barra con las palmas hacia ti, al ancho de los hombros, y fija los muslos en el apoyo.", "Lleva la barra a la parte alta del pecho, bajando los codos hacia atrás.", "Vuelve con control hasta extender los brazos."],
     ["Echar el torso demasiado atrás.", "Tirar solo con los brazos, sin bajar las escápulas."],
     "Trabaja más el bíceps y la parte baja de la espalda que el jalón abierto."),
@@ -1186,7 +1213,7 @@ const ex = {
     ["Polea baja con barra recta o Z, de pie frente a la máquina.", "Sube la barra flexionando los codos, sin separarlos del cuerpo.", "Baja despacio hasta extender."],
     ["Llevar los codos hacia adelante.", "Balancear el torso."],
     "La polea mantiene la tensión en el bíceps todo el movimiento."),
-  "rosca-inclinada": E("Curl en banco inclinado",
+  "rosca-inclinada": E("Curl inclinado con mancuernas",
     ["Banco a unos 45°, espalda apoyada y brazos colgando al lado del cuerpo.", "Sube las mancuernas sin llevar los codos hacia adelante.", "Baja despacio hasta extender del todo."],
     ["Separar la espalda del banco.", "Acortar la bajada."],
     "El brazo detrás del cuerpo estira el bíceps: usa menos peso que en el curl de pie."),
@@ -1198,7 +1225,7 @@ const ex = {
     ["Apoya una rodilla y una mano en el banco, torso paralelo al suelo.", "Con el brazo pegado al cuerpo, extiende el codo llevando la mancuerna atrás.", "Vuelve despacio a 90°, sin mover el brazo."],
     ["Balancear todo el brazo.", "Usar demasiado peso y acortar el movimiento."],
     "Mantén 1 segundo con el brazo extendido. Anota el peso de una mancuerna."),
-  "supino-fechado": E("Press cerrado",
+  "supino-fechado": E("Press de banca con agarre cerrado",
     ["Acuéstate en el banco y toma la barra al ancho de los hombros.", "Baja la barra a la parte baja del pecho, codos cerca del cuerpo.", "Empuja hasta extender los brazos."],
     ["Agarre demasiado cerrado, que fuerza las muñecas.", "Abrir los codos."],
     "Un agarre al ancho de los hombros ya basta para enfocar el tríceps."),
@@ -1230,7 +1257,7 @@ const ex = {
     ["Siéntate con la espalda apoyada y las piernas abiertas en los apoyos.", "Cierra las piernas hasta que los apoyos casi se toquen.", "Abre despacio hasta sentir estirar la parte interna del muslo."],
     ["Dejar que las placas choquen.", "Usar impulso."],
     "Trabaja la parte interna del muslo."),
-  "panturrilha-leg-press": E("Gemelos en prensa",
+  "panturrilha-leg-press": E("Elevación de talones en prensa",
     ["En la prensa, apoya solo la punta de los pies en la parte baja de la plataforma, rodillas casi extendidas.", "Empuja con la punta de los pies hasta subir lo máximo.", "Baja despacio hasta estirar bien los gemelos."],
     ["Doblar las rodillas para ayudar.", "Movimiento corto y rápido."],
     "Suelta los seguros solo mientras haces el movimiento."),

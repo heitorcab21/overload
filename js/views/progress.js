@@ -5,42 +5,105 @@ import { profile, bodyComposition, overallStrength, strengthLevel, quickLevel, S
 import { route, rerender } from '../router.js';
 import { GROUPS, LIB, LIB_BY_ID, exName, routineName, loadHint } from '../data.js';
 import { exPack } from '../i18n.js';
-import { t, tn } from '../i18n.js';
+import { t, tn, locale } from '../i18n.js';
 import {
-  weekSeries, sessionsIn, monthStart, monthEnd, monthPRCount, entriesFor, bestOf, e1rm, exGoalStatus, tonnage,
+  weekSeries, sessionsIn, monthStart, monthEnd, monthPRCount, entriesFor, bestOf, e1rm, exGoalStatus, tonnage, workSets, addDays,
 } from '../logic.js';
 import { columnChart, lineChart } from '../charts.js';
 
+
+// modo do gráfico de cada exercício: métrica (força ou volume) e período (por treino ou por mês)
+const evoMode = {};
+const modeOf = id => evoMode[id] || { m: 'f', p: 't' };
+actions.evoMode = el => { evoMode[el.dataset.id] = { ...modeOf(el.dataset.id), [el.dataset.k]: el.dataset.v }; rerender(); };
+
+/** Pontos do gráfico conforme o modo. */
+export function evoPoints(hist, { m, p }) {
+  const vol = h => { const w = workSets(h.sets); return w.reduce((n, s) => n + (s.w > 0 ? s.w * s.r : s.r), 0); };
+  if (p === 't') {
+    return hist.slice(-30).map(h => {
+      const top = h.sets.reduce((x, y) => (e1rm(y.w, y.r) > e1rm(x.w, x.r) ? y : x));
+      const value = m === 'f' ? Math.round(bestOf(h.sets) * 10) / 10 : Math.round(vol(h));
+      return { label: fmtDate(h.date, false), value, tip: `${fmtDate(h.date)} · ${m === 'f' ? setStr(top) : tn(workSets(h.sets).length, '{n} série', '{n} séries')}` };
+    });
+  }
+  const months = new Map();
+  for (const h of hist) {
+    const d = new Date(h.date);
+    const k = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    const cur = months.get(k) || { d, best: 0, vol: 0, n: 0 };
+    cur.best = Math.max(cur.best, bestOf(h.sets));
+    cur.vol += vol(h);
+    cur.n++;
+    months.set(k, cur);
+  }
+  return [...months.values()].slice(-12).map(x => {
+    const label = x.d.toLocaleDateString(locale(), { month: 'short' }).replace('.', '');
+    return { label, value: m === 'f' ? Math.round(x.best * 10) / 10 : Math.round(x.vol), tip: `${x.d.toLocaleDateString(locale(), { month: 'long', year: 'numeric' })} · ${tn(x.n, '{n} treino', '{n} treinos')}` };
+  });
+}
 
 /** Gráfico e tabela de evolução de um exercício (usado aqui e na tela do exercício). */
 export function exerciseProgress(ex, { box = 'exChart', table = true } = {}) {
   const hist = entriesFor(ex.id);
   if (!hist.length) return { html: `<p class="empty">${t('Sem registros ainda. O gráfico aparece depois do primeiro treino.')}</p>`, mount() {} };
   const st = exGoalStatus(ex);
-  const unit = ex.bw && hist.every(h => h.sets.every(s => !s.w)) ? ' reps' : ' kg';
-  const pts = hist.slice(-30).map(h => {
-    const top = h.sets.reduce((a, b) => (e1rm(b.w, b.r) > e1rm(a.w, a.r) ? b : a));
-    return { label: fmtDate(h.date, false), value: Math.round(bestOf(h.sets) * 10) / 10, tip: `${fmtDate(h.date)} · ${setStr(top)}` };
-  });
+  const repsOnly = ex.bw && hist.every(h => h.sets.every(s => !s.w));
+  const mode = modeOf(ex.id);
+  const pts = evoPoints(hist, mode);
+  const unit = repsOnly ? ' reps' : ' kg';
+  const caption = mode.m === 'f'
+    ? (repsOnly ? t('Melhor série de cada treino, em repetições.') : t('Força estimada (1RM calculado da melhor série de cada treino), em kg.'))
+    : (repsOnly ? t('Repetições somadas, sem contar aquecimento.') : t('Volume: carga × repetições somadas, sem contar aquecimento.'));
+  const seg = (k, v, label) => `<button type="button" class="${mode[k] === v ? 'on' : ''}" data-act="evoMode" data-id="${esc(ex.id)}" data-k="${k}" data-v="${v}" aria-pressed="${mode[k] === v}">${label}</button>`;
   const rows = hist.slice(-8).reverse().map(h => `<tr><td class="n">${fmtDate(h.date)}</td>
     <td class="v">${h.sets.map(s => (s.w > 0 ? `${fmt(s.w)}×${s.r}` : s.r)).join(' · ')}</td></tr>`).join('');
   return {
-    html: `<p class="small muted">${unit === ' kg' ? t('Força estimada (1RM calculado da melhor série de cada treino), em kg.') : t('Melhor série de cada treino, em repetições.')}</p>
+    html: `<div class="row evo-modes">
+        <div class="seg sm" role="group" aria-label="${t('Métrica')}">${seg('m', 'f', t('Força'))}${seg('m', 'v', t('Volume'))}</div>
+        <div class="seg sm" role="group" aria-label="${t('Período')}">${seg('p', 't', t('Por treino'))}${seg('p', 'm', t('Por mês'))}</div>
+      </div>
+      <p class="small muted">${caption}</p>
       <div class="chart" id="${box}"></div>
-      ${table ? '' : '<!--'}<table class="sheet-table"><thead><tr><th>${t('Treino')}</th><th class="v">${t('Séries')}</th></tr></thead><tbody>${rows}</tbody></table>${table ? '' : '-->'}`,
+      ${table ? `<table class="sheet-table"><thead><tr><th>${t('Treino')}</th><th class="v">${t('Séries')}</th></tr></thead><tbody>${rows}</tbody></table>` : ''}`,
     mount() {
       lineChart($('#' + box), pts, {
-        goal: st && !st.expired ? Math.round(e1rm(st.goal.w, st.goal.r) * 10) / 10 : null, unit,
+        goal: mode.m === 'f' && mode.p === 't' && st && !st.expired ? Math.round(e1rm(st.goal.w, st.goal.r) * 10) / 10 : null,
+        unit: mode.m === 'v' && !repsOnly ? ' kg' : unit,
       });
     },
   };
+}
+
+// ---------- Este mês x mês passado (mesmo número de dias) ----------
+
+export function monthCompare(now = new Date()) {
+  const a = monthStart(now);
+  const day = now.getDate();
+  const pa = new Date(a.getFullYear(), a.getMonth() - 1, 1);
+  const pEnd = new Date(pa.getFullYear(), pa.getMonth(), Math.min(day, new Date(pa.getFullYear(), pa.getMonth() + 1, 0).getDate()) + 1);
+  const sum = ss => {
+    let sets = 0, ton = 0;
+    for (const s of ss) for (const e of s.entries) if (!e.skipped) { const w = workSets(e.sets); sets += w.length; ton += tonnage(w); }
+    return { workouts: ss.length, sets, ton };
+  };
+  return { cur: sum(sessionsIn(a, addDays(now, 1))), prev: sum(sessionsIn(pa, pEnd)) };
+}
+
+function deltaChip(cur, prev, fmtFn = v => v) {
+  if (!prev && !cur) return '';
+  const d = cur - prev;
+  if (!prev) return `<span class="delta up">${t('novo')}</span>`;
+  const pct = Math.round((d / prev) * 100);
+  const cls = d > 0 ? 'up' : d < 0 ? 'down' : '';
+  return `<span class="delta ${cls}">${d > 0 ? '▲' : d < 0 ? '▼' : '='} ${d === 0 ? t('igual') : `${Math.abs(pct)}%`}</span>`;
 }
 
 function render() {
   const now = new Date();
   const weeks = weekSeries(8, now);
   const cw = weeks.at(-1);
-  const monthSessions = sessionsIn(monthStart(now), monthEnd(now));
+  const mc = monthCompare(now);
   const exs = Object.values(state.exercises).filter(ex => entriesFor(ex.id).length)
     .sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group) || exName(a).localeCompare(exName(b)));
   const progs = exs.map((ex, i) => ({ ex, prog: exerciseProgress(ex, { box: `exChart${i}`, table: false }) }));
@@ -51,11 +114,14 @@ function render() {
     <div class="stack">
       ${strengthOverview()}
       ${bodyCard()}
-      <div class="tiles">
-        <div class="tile"><span class="l">${t('Treinos no mês')}</span><span class="v">${monthSessions.length}</span></div>
-        <div class="tile"><span class="l">${t('Séries na semana')}</span><span class="v">${cw.sets}</span></div>
-        <div class="tile"><span class="l">${t('Volume na semana')}</span><span class="v">${compact(cw.ton)}</span></div>
-        <div class="tile"><span class="l">${t('Recordes no mês')}</span><span class="v">${monthPRCount(now)}</span></div>
+      <div class="card stack">
+        <div class="row between"><h3>${t('Este mês')}</h3><span class="small muted">${t('comparado ao mesmo período do mês passado')}</span></div>
+        <div class="tiles">
+          <div class="tile"><span class="l">${t('Treinos')}</span><span class="v">${mc.cur.workouts}</span>${deltaChip(mc.cur.workouts, mc.prev.workouts)}</div>
+          <div class="tile"><span class="l">${t('Séries')}</span><span class="v">${mc.cur.sets}</span>${deltaChip(mc.cur.sets, mc.prev.sets)}</div>
+          <div class="tile"><span class="l">${t('Volume')}</span><span class="v">${compact(mc.cur.ton)}</span>${deltaChip(mc.cur.ton, mc.prev.ton)}</div>
+          <div class="tile"><span class="l">${t('Recordes no mês')}</span><span class="v">${monthPRCount(now)}</span></div>
+        </div>
       </div>
 
       <div class="card"><h3>${t('Séries por semana')}</h3>

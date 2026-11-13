@@ -553,3 +553,19 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
   .chip:active, .set:active, .item:active, .tpl:active { transform: scale(.98); }
   .chip, .set, .item, .tpl { transition: transform .1s, background-color .15s; }
 }
+
+/* modos do gráfico e comparação com o mês passado */
+.evo-modes { gap: 8px; flex-wrap: wrap; }
+.seg.sm button { padding: 6px 10px; font-size: 13px; min-height: 32px; white-space: nowrap; }
+.delta { font-size: 12px; font-weight: 700; color: var(--muted); }
+.delta.up { color: var(--good); }
+.delta.down { color: #d03b3b; }
+
+/* fotos de execução viram um "GIF": alternam início e fim do movimento (com menos movimento, ficam lado a lado) */
+@media (prefers-reduced-motion: no-preference) {
+  .ex-photos { grid-template-columns: 1fr; }
+  .ex-photos img { grid-area: 1 / 1; }
+  .ex-photos figcaption { grid-area: 2 / 1; }
+  .ex-photos img:nth-of-type(2) { animation: exSwap 2.6s ease-in-out infinite; }
+  @keyframes exSwap { 0%, 38% { opacity: 0; } 50%, 88% { opacity: 1; } 100% { opacity: 0; } }
+}

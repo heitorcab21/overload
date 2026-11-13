@@ -132,7 +132,8 @@ const TOPICS = [
 
   ['Progresso e histórico', 'Gráficos e treinos antigos', `
     <ul class="errs">
-      <li>A aba <b>Progresso</b> mostra o seu nível de força, o seu corpo, séries por semana e um gráfico para cada exercício, com um ponto por treino e quanto a força subiu desde o primeiro. Passe o dedo no gráfico para ver a série de cada dia.</li>
+      <li>A aba <b>Progresso</b> mostra o seu nível de força, o seu corpo, séries por semana e um gráfico para cada exercício: escolha <b>Força</b> ou <b>Volume</b>, <b>Por treino</b> ou <b>Por mês</b>. O cartão <b>Este mês</b> compara treinos, séries e volume com o mesmo período do mês passado.</li>
+      <li>Na tela Hoje, o aviso <b>Exercícios parados</b> aparece quando um exercício passa 3 treinos sem superar seu melhor, com sugestões do que fazer.</li>
       <li>No <b>histórico</b>, toque em um treino e depois em um exercício para corrigir séries antigas.</li>
     </ul>`],
 
@@ -143,6 +144,7 @@ const TOPICS = [
       <li><b>Claude</b> e <b>ChatGPT</b>: cobrados por uso na sua conta. A assinatura ChatGPT Plus não inclui a API: a chave é criada à parte.</li>
       <li>O botão <b>Criar chave de API</b>, em Ajustes, leva à página certa de cada empresa.</li>
       <li><b>O que a IA vê</b>: a cada pedido, o app monta um resumo na hora com seus treinos dos últimos 14 dias (cargas, reps, RIR, sensação), metas, próximas cargas sugeridas e seu perfil e nível de força. A IA não guarda memória entre um pedido e outro: quem guarda tudo é o app.</li>
+      <li><b>Comentário do treinador</b>: com a IA ligada, ao terminar cada treino aparece um comentário curto com um ponto positivo e uma sugestão para o próximo.</li>
     </ul>`],
 
   ['Instalar e atualizar o app', 'Na tela inicial do celular', `

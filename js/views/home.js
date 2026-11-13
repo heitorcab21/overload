@@ -5,10 +5,10 @@ import { route, go, rerender } from '../router.js';
 import { TEMPLATES, LIB_BY_ID, OLD_STEP, exName, tg, routineName, templateKey, ensureExercise } from '../data.js';
 import {
   planFor, weekStart, addDays, sessionsIn, groupGoalStatus, defaultGroupGoals, DAY,
-  sessionPRs, tonnage, exGoalStatus, entriesFor,
+  sessionPRs, tonnage, exGoalStatus, entriesFor, stalledExercises,
 } from '../logic.js';
 import { startWorkout, startFreeWorkout } from './workout.js';
-import { aiEnabled, aiWeeklyAnalysis } from '../ai.js';
+import { aiEnabled, aiWeeklyAnalysis, aiWorkoutComment } from '../ai.js';
 import { profile, bodyComposition, overallStrength, strengthLevel } from '../body.js';
 import { driveAvailable, driveConnected, driveDirty, hasToken } from '../drive.js';
 import { t, tn, lang, LANGS } from '../i18n.js';
@@ -197,8 +197,38 @@ function renderHome() {
 
   $('#view').innerHTML = `
     <div class="head"><div class="brand grow"><b>Overload</b><span class="muted small">${fmtDate(now)}</span></div></div>
-    <div class="stack">${week}${main}${drive}${driveInvite}${backup}${goals}${ai}</div>`;
+    <div class="stack">${week}${main}${stalledCard()}${drive}${driveInvite}${backup}${goals}${ai}</div>`;
 }
+
+// ---------- Exercício parado ----------
+
+function stalledCard() {
+  if (state.active) return '';
+  const list = stalledExercises().filter(x => !(state.stallDismissed || {})[x.ex.id] || (state.stallDismissed[x.ex.id] < x.n)).slice(0, 3);
+  if (!list.length) return '';
+  return `<div class="card stack stall-card">
+    <h3>${t('Exercícios parados')}</h3>
+    ${list.map(({ ex, n }) => `<div class="row between"><span class="grow"><b>${esc(exName(ex))}</b><br><span class="small muted">${tn(n, 'há {n} treino sem superar seu melhor', 'há {n} treinos sem superar seu melhor')}</span></span>
+      <button class="btn sm ghost" data-act="stallTips" data-id="${esc(ex.id)}">${t('O que fazer')}</button></div>`).join('')}
+  </div>`;
+}
+actions.stallTips = el => {
+  const ex = state.exercises[el.dataset.id];
+  sheet(`<h2>${esc(exName(ex))}</h2>
+    <p class="muted">${t('Normal acontecer. Escolha uma saída e mantenha por 2 a 3 semanas:')}</p>
+    <ol class="steps">
+      <li>${t('<b>Recue e suba de novo</b>: reduza cerca de 10% da carga e volte a progredir com boa execução.')}</li>
+      <li>${t('<b>Mude a faixa de reps</b>: se treina 8–12, passe para 6–8 com mais carga (ou o contrário).')}</li>
+      <li>${t('<b>Troque por uma variação</b>: halter no lugar da barra, inclinado no lugar do reto.')}</li>
+      <li>${t('<b>Confira o básico</b>: sono, alimentação e descanso entre séries fazem diferença.')}</li>
+    </ol>
+    <button class="btn block" data-act="stallDismiss" data-id="${esc(ex.id)}">${t('Entendi, esconder aviso')}</button>`);
+};
+actions.stallDismiss = el => {
+  const x = stalledExercises().find(s => s.ex.id === el.dataset.id);
+  state.stallDismissed = { ...(state.stallDismissed || {}), [el.dataset.id]: x ? x.n + 2 : 99 };
+  save({ touch: false }); closeSheet(); rerender();
+};
 
 actions.start = el => startWorkout(el.dataset.id);
 actions.freeWorkout = () => startFreeWorkout();
@@ -303,6 +333,8 @@ function renderSummary(id) {
           <span class="badge up">${icon.trophy}${setStr(p.set)}</span></div>`).join('')}</div>` : ''}
       ${hit.length ? `<div class="card"><h3>${t('Metas')}</h3>
         ${hit.map(h => `<div class="plan-line"><span class="n">${esc(h)}</span><span class="badge good">${icon.check}ok</span></div>`).join('')}</div>` : ''}
+      ${aiEnabled() || s.aiNote ? `<div class="card stack ai-note"><h3>${icon.spark}${t('Comentário do treinador')}</h3>
+        <p class="ai-text" id="aiNote">${s.aiNote ? esc(s.aiNote) : `<span class="muted">${t('Analisando seu treino…')}</span>`}</p></div>` : ''}
       <div class="card"><h3>${t('O que você fez')}</h3>
         ${s.entries.map(e => `<div class="plan-line"><span class="n">${esc(state.exercises[e.exId] ? exName(state.exercises[e.exId]) : t('Exercício removido'))}</span>
           <span class="v num">${e.skipped ? t('pulado') : e.sets.map(x => (x.w > 0 ? `${fmt(x.w)}×${x.r}` : x.r)).join(' · ')}</span></div>`).join('')}
@@ -310,6 +342,40 @@ function renderSummary(id) {
       <button class="btn big story-btn" data-act="shareStory" data-id="${s.id}">${icon.share}${t('Compartilhar nos stories')}</button>
       <a class="btn primary big" href="#/hoje">${t('Concluir')}</a>
     </div>`;
+  fillAiNote(s);
+}
+
+// ---------- Comentário automático da IA ----------
+
+const aiPending = new Set();
+function workoutText(s) {
+  const L = [`Treino: ${s.name} (${s.dur || '?'} min) em ${new Date(s.date).toLocaleDateString('pt-BR')}`];
+  const prs = new Set(sessionPRs(s).map(p => p.exId));
+  const w = x => (x.w > 0 ? `${x.w} kg × ${x.r}` : `${x.r} reps`) + (x.rir != null ? ` (RIR ${x.rir})` : '');
+  for (const e of s.entries) {
+    const ex = state.exercises[e.exId];
+    if (!ex || e.skipped || !e.sets.length) continue;
+    const prev = entriesFor(e.exId).filter(h => new Date(h.date) < new Date(s.date)).at(-1);
+    L.push(`- ${ex.name}: ${e.sets.map(w).join(' | ')}${prs.has(e.exId) ? ' — RECORDE' : ''}${prev ? `; treino anterior: ${prev.sets.map(w).join(' | ')}` : '; primeira vez'}${(e.flags || []).includes('dor') ? ' — relatou dor' : ''}`);
+  }
+  const st = stalledExercises().filter(x => s.entries.some(e => e.exId === x.ex.id));
+  if (st.length) L.push('', 'Parados:', ...st.map(x => `- ${x.ex.name}: ${x.n} treinos sem superar o melhor`));
+  return L.join(String.fromCharCode(10));
+}
+async function fillAiNote(s) {
+  if (s.aiNote || aiPending.has(s.id) || !aiEnabled()) return;
+  aiPending.add(s.id);
+  try {
+    s.aiNote = (await aiWorkoutComment(workoutText(s))).trim();
+    save();
+  } catch (e) {
+    s.aiNote = null;
+    const el = $('#aiNote');
+    if (el) el.innerHTML = `<span class="muted">${esc(t('Não foi possível gerar o comentário agora.'))}</span>`;
+  }
+  aiPending.delete(s.id);
+  const el = $('#aiNote');
+  if (el && s.aiNote) el.textContent = s.aiNote;
 }
 
 // ---------- Card para stories ----------

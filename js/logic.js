@@ -327,3 +327,24 @@ export function sessionPRs(session) {
 export function monthPRCount(now = new Date()) {
   return sessionsIn(monthStart(now), monthEnd(now)).reduce((n, s) => n + sessionPRs(s).length, 0);
 }
+
+/**
+ * Exercícios parados: 3 treinos seguidos sem superar a melhor força dos treinos anteriores
+ * (e o último foi nos últimos 30 dias). Devolve [{ ex, n, best, since }].
+ */
+export function stalledExercises(now = new Date()) {
+  const out = [];
+  for (const ex of Object.values(state.exercises)) {
+    const hist = entriesFor(ex.id).filter(e => !(e.flags || []).includes('troca'));
+    if (hist.length < 4) continue;
+    if ((now - new Date(hist.at(-1).date)) / 864e5 > 30) continue;
+    const before = Math.max(...hist.slice(0, -3).map(h => bestOf(workSets(h.sets))));
+    const recent = hist.slice(-3);
+    if (recent.every(h => bestOf(workSets(h.sets)) <= before + 1e-6)) {
+      // treinos desde que o melhor foi alcançado pela primeira vez
+      const bestIdx = hist.findIndex(h => bestOf(workSets(h.sets)) >= before - 1e-6);
+      out.push({ ex, n: hist.length - 1 - bestIdx, best: before });
+    }
+  }
+  return out.sort((a, b) => b.n - a.n);
+}

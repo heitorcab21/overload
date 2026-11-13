@@ -720,6 +720,31 @@ const ui = {
   "Carga bem abaixo da meta: contei como aquecimento. Se não era, toque na série.": "Load well below the target: counted as a warm-up. If it wasn't, tap the set.",
   "Séries de aquecimento ficam guardadas, mas não contam na progressão, nas metas nem nos recordes.": "Warm-up sets are kept, but they don't count toward progression, goals or records.",
   "Era série válida": "It was a working set",
+  "Exercícios parados": "Stalled exercises",
+  "O que fazer": "What to do",
+  "Normal acontecer. Escolha uma saída e mantenha por 2 a 3 semanas:": "It happens. Pick one way out and stick with it for 2 to 3 weeks:",
+  "<b>Recue e suba de novo</b>: reduza cerca de 10% da carga e volte a progredir com boa execução.": "<b>Back off and build up again</b>: drop the load about 10% and progress again with good form.",
+  "<b>Mude a faixa de reps</b>: se treina 8–12, passe para 6–8 com mais carga (ou o contrário).": "<b>Change the rep range</b>: if you train 8–12, switch to 6–8 with more load (or the other way around).",
+  "<b>Troque por uma variação</b>: halter no lugar da barra, inclinado no lugar do reto.": "<b>Swap for a variation</b>: dumbbells instead of a barbell, incline instead of flat.",
+  "<b>Confira o básico</b>: sono, alimentação e descanso entre séries fazem diferença.": "<b>Check the basics</b>: sleep, food and rest between sets make a difference.",
+  "Entendi, esconder aviso": "Got it, hide this",
+  "Comentário do treinador": "Coach's comment",
+  "Analisando seu treino…": "Analyzing your workout…",
+  "Não foi possível gerar o comentário agora.": "Couldn't generate the comment right now.",
+  "há {n} treino sem superar seu melhor": "{n} workout without beating your best",
+  "há {n} treinos sem superar seu melhor": "{n} workouts without beating your best",
+  "Repetições somadas, sem contar aquecimento.": "Total reps, not counting warm-ups.",
+  "Volume: carga × repetições somadas, sem contar aquecimento.": "Volume: load × reps added up, not counting warm-ups.",
+  "Métrica": "Metric",
+  "Força": "Strength",
+  "Volume": "Volume",
+  "Período": "Period",
+  "Por treino": "Per workout",
+  "Por mês": "Per month",
+  "novo": "new",
+  "igual": "same",
+  "Este mês": "This month",
+  "comparado ao mesmo período do mês passado": "compared with the same days last month",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -841,7 +866,8 @@ const help = [
     </ul>`],
   ['Progress and history', 'Charts and past workouts', `
     <ul class="errs">
-      <li>The <b>Progress</b> tab shows your strength level, your body, sets per week and a chart for each exercise, with one point per workout and how much stronger you got since the first one. Slide your finger on the chart to see each day's set.</li>
+      <li>The <b>Progress</b> tab shows your strength level, your body, sets per week and a chart for each exercise: choose <b>Strength</b> or <b>Volume</b>, <b>Per workout</b> or <b>Per month</b>. The <b>This month</b> card compares workouts, sets and volume with the same days last month.</li>
+      <li>On the Today screen, the <b>Stalled exercises</b> notice shows up when an exercise goes 3 workouts without beating your best, with tips on what to do.</li>
       <li>In the <b>history</b>, tap a workout and then an exercise to correct past sets.</li>
     </ul>`],
   ['AI coach (optional)', 'Analyses and questions', `
@@ -851,6 +877,7 @@ const help = [
       <li><b>Claude</b> and <b>ChatGPT</b>: billed per use to your account. A ChatGPT Plus subscription doesn't include the API: the key is created separately.</li>
       <li>The <b>Create API key</b> button in Settings takes you to the right page for each company.</li>
       <li><b>What the AI sees</b>: for each request, the app builds a fresh summary with your workouts from the last 14 days (loads, reps, RIR, feel), goals, next suggested loads and your profile and strength level. The AI keeps no memory between requests: the app is what stores everything.</li>
+      <li><b>Coach's comment</b>: with the AI on, a short comment shows up after each workout, with one positive point and one tip for next time.</li>
     </ul>`],
   ['Installing and updating the app', 'On your phone\'s home screen', `
     <p>Tap the <b>orange download icon</b> in the top right corner of the screen. It disappears once the app is installed. If the browser can't install it directly, the app shows the steps:</p>
@@ -1190,7 +1217,7 @@ const ex = {
     ["Bench at about 45°, back supported and arms hanging at your sides.", "Curl the dumbbells without moving your elbows forward.", "Lower slowly until fully straight."],
     ["Lifting your back off the bench.", "Cutting the lowering short."],
     "Arms behind your body stretch the biceps: use less weight than on standing curls."),
-  "triceps-barra": E("Bar triceps pushdown",
+  "triceps-barra": E("Straight-bar triceps pushdown",
     ["High pulley with a straight or V bar, elbows pinned to your sides.", "Push the bar down until your arms are straight.", "Return slowly until your forearms pass horizontal, without moving your elbows."],
     ["Flaring your elbows or moving them forward.", "Leaning your body weight onto the bar."],
     "Only your forearms move: the elbow is the hinge."),

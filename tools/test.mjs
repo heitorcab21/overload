@@ -307,6 +307,20 @@ store.save({ touch: false });
 eq(S().updatedAt, before2, 'mexer no treino em andamento não muda a versão a enviar');
 S().active = null;
 
+// ---- exercício parado ----
+{
+  const lg = await import('../js/logic.js');
+  const keep = S().sessions;
+  S().exercises.stall = { id: 'stall', name: 'Teste', group: 'Peito', sets: 2, repMin: 8, repMax: 12, step: 2.5 };
+  const d = n => new Date(Date.now() - n * 864e5).toISOString();
+  S().sessions = [[20, 60], [14, 60], [10, 57.5], [5, 60], [1, 55]].map(([n, w], i) => ({ id: 'st' + i, date: d(n), entries: [{ exId: 'stall', sets: [{ w, r: 8 }, { w, r: 8 }] }] }));
+  eq(lg.stalledExercises().map(x => [x.ex.id, x.n]), [['stall', 4]], '4 treinos depois do melhor, sem superar = parado');
+  S().sessions.push({ id: 'st9', date: d(0), entries: [{ exId: 'stall', sets: [{ w: 62.5, r: 8 }] }] });
+  eq(lg.stalledExercises().length, 0, 'superou: sai da lista');
+  S().sessions = keep;
+  delete S().exercises.stall;
+}
+
 // ---- descanso por exercício ----
 const dmod = await import('../js/data.js');
 S().settings.rest = 90;
