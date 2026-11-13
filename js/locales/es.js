@@ -746,6 +746,9 @@ const ui = {
   "versão {v}": "versi\u00f3n {v}",
   "versão de desenvolvimento": "versi\u00f3n de desarrollo",
   "Monte seu próprio treino": "Arma tu propio entrenamiento",
+  "ou": "o",
+  "Monte seu próprio treino do zero": "Arma tu propio entrenamiento desde cero",
+  "Escolha um treino pronto": "Elige un entrenamiento listo",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
