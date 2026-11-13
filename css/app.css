@@ -236,6 +236,7 @@ label.field { display: grid; gap: 6px; font-size: 14px; color: var(--ink-2); fon
 input[type="text"], input[type="password"], input[type="search"], input[type="number"], select, textarea {
   width: 100%; min-height: 46px; padding: 0 12px;
   border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--ink);
+  font-size: max(16px, 1em); /* abaixo de 16px o iPhone dá zoom ao tocar e a tela fica deslocada */
 }
 textarea { padding: 10px 12px; min-height: 80px; resize: vertical; }
 .stepper {

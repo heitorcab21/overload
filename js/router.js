@@ -24,6 +24,7 @@ export function rerender() {
   for (const a of $$('#tabbar a')) a.classList.toggle('on', a.dataset.tab === (r.tab || name));
   r.fn(arg);
   if (name !== lastName) window.scrollTo(0, 0);
+  else if (window.scrollX) window.scrollTo(0, window.scrollY); // nunca fica deslocada para o lado
   lastName = name;
 }
 

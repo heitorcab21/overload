@@ -2,12 +2,13 @@
 // vermelho quando há alteração ainda não enviada ao Google Drive, verde quando está tudo salvo.
 import { $, icon } from './ui.js';
 import { current } from './router.js';
-import { onSave } from './store.js';
+import { onSave, state } from './store.js';
 import { driveConnected, driveDirty, isSyncing } from './drive.js';
 import { t } from './i18n.js';
 
-// Telas sem o selo (o topo delas já tem botões; o treino sincroniza ao finalizar)
-const HIDE_ON = ['treino', 'resumo', 'exercicio'];
+// Telas sem o selo (o topo delas já tem botões; o treino sincroniza ao finalizar).
+// Na primeira entrada (escolha do modelo e cargas iniciais) ele também não aparece.
+const HIDE_ON = ['treino', 'resumo', 'exercicio', 'inicio', 'cargas'];
 
 /** Estado da sincronização: 'off' (sem conta), 'busy', 'dirty' ou 'ok'. */
 export function syncState() {
@@ -22,7 +23,7 @@ export function updateSyncBadge() {
   const b = $('#syncTop');
   if (!b) return;
   const st = syncState();
-  const hide = st === 'off' || HIDE_ON.includes(current().name);
+  const hide = st === 'off' || !state.onboarded || HIDE_ON.includes(current().name);
   b.hidden = hide;
   document.body.classList.toggle('has-sync', !hide);
   if (hide) return;
