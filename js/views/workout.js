@@ -118,9 +118,9 @@ function render() {
   } else if (logging) {
     body = `<div class="log">
       <div class="quick-acts">
-        <button class="qa warm" data-act="wWarm"><b>${t('Foi aquecimento')}</b><small>${t('importante marcar se foi')}</small></button>
         ${en.sets.length < ex.sets ? `<button class="qa" data-act="wAll"><b>${t('Todas como a meta')}</b></button>` : ''}
         ${en.sets.length ? `<button class="qa" data-act="wUndo"><b>${icon.undo}${t('Desfazer')}</b></button>` : `<button class="qa" data-act="wSkip"><b>${t('Pular exercício')}</b></button>`}
+        <button class="qa warm" data-act="wWarm"><b>${t('Foi aquecimento')}</b><small>${t('importante marcar se foi')}</small></button>
       </div>
       <div class="two">
         ${stepper('w', en.cur.w, ex.step || 1, loadLabel(ex), 0, 'wCur').replace('data-change="wCur"', 'data-change="wCur" data-live')}
