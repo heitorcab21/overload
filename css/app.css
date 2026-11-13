@@ -479,3 +479,12 @@ details.help .help-body b { color: var(--ink); }
 .ex-photos { margin: 4px 0 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .ex-photos img { width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; border-radius: 10px; background: var(--surface-2); }
 .ex-photos figcaption { grid-column: 1 / -1; font-size: 12px; color: var(--muted); text-align: center; }
+
+/* nível de força e evolução por exercício */
+.top-chip { flex: none; padding: 4px 10px; border-radius: 999px; background: var(--accent); color: var(--accent-ink); font-weight: 700; font-size: 13px; white-space: nowrap; }
+.strength-card .big-num { color: var(--accent); }
+.strength-list .item { gap: 12px; align-items: center; }
+.strength-list .item .grow { min-width: 0; display: grid; gap: 6px; }
+.ex-evo-head { text-decoration: none; color: inherit; gap: 10px; align-items: flex-start; }
+.good-text { color: var(--good); font-weight: 600; }
+.top-link { color: var(--accent); font-weight: 700; text-decoration: none; white-space: nowrap; }

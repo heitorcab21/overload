@@ -1,7 +1,7 @@
 // Progresso: números do período, séries por semana, evolução por exercício e histórico.
 import { state, save } from '../store.js';
-import { $, esc, fmt, setStr, compact, icon, actions, changes, submits, sheet, closeSheet, fmtDate, stepper, toast } from '../ui.js';
-import { profile, bodyComposition, overallStrength } from '../body.js';
+import { $, esc, fmt, setStr, compact, icon, actions, changes, submits, sheet, closeSheet, fmtDate, stepper, toast, meter } from '../ui.js';
+import { profile, bodyComposition, overallStrength, strengthLevel } from '../body.js';
 import { route, rerender } from '../router.js';
 import { GROUPS, exName, routineName } from '../data.js';
 import { t, tn } from '../i18n.js';
@@ -10,15 +10,14 @@ import {
 } from '../logic.js';
 import { columnChart, lineChart } from '../charts.js';
 
-let selEx = null;
 
 /** Gráfico e tabela de evolução de um exercício (usado aqui e na tela do exercício). */
-export function exerciseProgress(ex) {
+export function exerciseProgress(ex, { box = 'exChart', table = true } = {}) {
   const hist = entriesFor(ex.id);
   if (!hist.length) return { html: `<p class="empty">${t('Sem registros ainda. O gráfico aparece depois do primeiro treino.')}</p>`, mount() {} };
   const st = exGoalStatus(ex);
   const unit = ex.bw && hist.every(h => h.sets.every(s => !s.w)) ? ' reps' : ' kg';
-  const pts = hist.slice(-20).map(h => {
+  const pts = hist.slice(-30).map(h => {
     const top = h.sets.reduce((a, b) => (e1rm(b.w, b.r) > e1rm(a.w, a.r) ? b : a));
     return { label: fmtDate(h.date, false), value: Math.round(bestOf(h.sets) * 10) / 10, tip: `${fmtDate(h.date)} · ${setStr(top)}` };
   });
@@ -26,10 +25,10 @@ export function exerciseProgress(ex) {
     <td class="v">${h.sets.map(s => (s.w > 0 ? `${fmt(s.w)}×${s.r}` : s.r)).join(' · ')}</td></tr>`).join('');
   return {
     html: `<p class="small muted">${unit === ' kg' ? t('Força estimada (1RM calculado da melhor série de cada treino), em kg.') : t('Melhor série de cada treino, em repetições.')}</p>
-      <div class="chart" id="exChart"></div>
-      <table class="sheet-table"><thead><tr><th>${t('Treino')}</th><th class="v">${t('Séries')}</th></tr></thead><tbody>${rows}</tbody></table>`,
+      <div class="chart" id="${box}"></div>
+      ${table ? '' : '<!--'}<table class="sheet-table"><thead><tr><th>${t('Treino')}</th><th class="v">${t('Séries')}</th></tr></thead><tbody>${rows}</tbody></table>${table ? '' : '-->'}`,
     mount() {
-      lineChart($('#exChart'), pts, {
+      lineChart($('#' + box), pts, {
         goal: st && !st.expired ? Math.round(e1rm(st.goal.w, st.goal.r) * 10) / 10 : null, unit,
       });
     },
@@ -43,17 +42,13 @@ function render() {
   const monthSessions = sessionsIn(monthStart(now), monthEnd(now));
   const exs = Object.values(state.exercises).filter(ex => entriesFor(ex.id).length)
     .sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group) || exName(a).localeCompare(exName(b)));
-  // por padrão, mostra o exercício com mais histórico
-  if (!exs.some(e => e.id === selEx)) {
-    selEx = exs.slice().sort((a, b) => entriesFor(b.id).length - entriesFor(a.id).length)[0]?.id || null;
-  }
-  const ex = selEx && state.exercises[selEx];
-  const prog = ex ? exerciseProgress(ex) : null;
+  const progs = exs.map((ex, i) => ({ ex, prog: exerciseProgress(ex, { box: `exChart${i}`, table: false }) }));
   const hasData = state.sessions.length > 0;
 
   $('#view').innerHTML = `
     <div class="head"><h1>${t('Progresso')}</h1></div>
     <div class="stack">
+      ${strengthOverview()}
       ${bodyCard()}
       <div class="tiles">
         <div class="tile"><span class="l">${t('Treinos no mês')}</span><span class="v">${monthSessions.length}</span></div>
@@ -66,10 +61,11 @@ function render() {
         ${hasData ? '<div class="chart" id="weekChart"></div>' : `<p class="empty">${t('Registre seu primeiro treino para ver a evolução.')}</p>`}
       </div>
 
-      <div class="card stack"><h3>${t('Evolução por exercício')}</h3>
-        ${ex ? `<select data-change="selEx" aria-label="${t('Exercício')}">
-            ${exs.map(e => `<option value="${esc(e.id)}"${e.id === selEx ? ' selected' : ''}>${esc(exName(e))}</option>`).join('')}
-          </select>${prog.html}` : `<p class="empty">${t('Nenhum exercício com registros ainda.')}</p>`}
+      <div class="stack">
+        <h3 class="group-title">${t('Evolução por exercício')}</h3>
+        ${progs.length ? `<p class="small muted">${t('Cada ponto é um treino em que você fez o exercício. Passe o dedo no gráfico para ver a série de cada dia.')}</p>
+          ${progs.map(({ ex, prog }) => exEvoCard(ex, prog)).join('')}`
+          : `<div class="card"><p class="empty">${t('Nenhum exercício com registros ainda.')}</p></div>`}
       </div>
 
       <div class="card flat">
@@ -90,11 +86,10 @@ function render() {
       tip: `${i === weeks.length - 1 ? t('Esta semana') : t('Semana de {d}', { d: fmtDate(w.start, false) })} · ${tn(w.workouts, '{n} treino', '{n} treinos')}`,
     })), { unit: ` ${t('séries')}` });
   }
-  prog?.mount();
+  progs.forEach(p => p.prog.mount());
   mountWeightChart();
 }
 
-changes.selEx = el => { selEx = el.value; rerender(); };
 
 function sessionSheet(s) {
   sheet(`<h2>${esc(routineName(s))}</h2><p class="muted">${fmtDate(s.date)} · ${s.dur || '?'} min · ${t('toque em um exercício para corrigir')}</p>
@@ -183,6 +178,55 @@ actions.delSession = el => {
   save(); closeSheet(); rerender();
 };
 
+
+// ---------- Evolução de cada exercício ----------
+
+function exEvoCard(ex, prog) {
+  const hist = entriesFor(ex.id);
+  const first = bestOf(hist[0].sets), last = bestOf(hist.at(-1).sets);
+  const pct = first > 0 ? Math.round((last / first - 1) * 100) : 0;
+  const lv = strengthLevel(ex);
+  const lastSets = hist.at(-1).sets.map(s => (s.w > 0 ? `${fmt(s.w)}×${s.r}` : s.r)).join(' · ');
+  return `<div class="card stack ex-evo">
+    <a class="row between ex-evo-head" href="#/exercicio/${encodeURIComponent(ex.id)}">
+      <span class="grow"><b>${esc(exName(ex))}</b><br><span class="small muted">${tn(hist.length, '{n} treino', '{n} treinos')} · ${t('último: {s}', { s: lastSets })}</span></span>
+      ${lv.top ? `<span class="top-chip">${t('Top {n}%', { n: lv.top })}</span>` : ''}
+    </a>
+    ${hist.length > 1 ? `<p class="small ${pct > 0 ? 'good-text' : 'muted'}">${pct > 0 ? t('+{n}% de força desde o primeiro treino', { n: pct }) : pct < 0 ? t('{n}% em relação ao primeiro treino', { n: pct }) : t('Mesma força do primeiro treino')}</p>` : ''}
+    ${prog.html}
+  </div>`;
+}
+
+// ---------- Nível de força em destaque ----------
+
+function strengthOverview() {
+  const p = profile();
+  if (!p) {
+    return `<div class="card stack strength-card">
+      <h3>${t('Seu nível de força')}</h3>
+      <p>${t('Descubra em que top de força você está em cada exercício, comparado a pessoas do seu sexo, idade e peso que treinam musculação.')}</p>
+      <button class="btn primary block" data-act="editProfile">${t('Preencher perfil')}</button>
+    </div>`;
+  }
+  const levels = Object.values(state.exercises).map(ex => ({ ex, lv: strengthLevel(ex, p) })).filter(x => x.lv.top)
+    .sort((a, b) => a.lv.top - b.lv.top);
+  if (!levels.length) {
+    return `<div class="card stack strength-card"><h3>${t('Seu nível de força')}</h3>
+      <p class="muted">${t('Registre exercícios com barra, halteres ou peso corporal (supino, agachamento, terra, remada, barra fixa...) para ver em que top de força você está.')}</p></div>`;
+  }
+  const all = overallStrength(p);
+  return `<div class="card stack strength-card">
+    <h3>${t('Seu nível de força')}</h3>
+    <div class="row between"><span class="big-num">${t('Top {n}%', { n: all.top })}</span>
+      <span class="small muted" style="text-align:right">${tn(all.count, 'com base em {n} exercício', 'média de {n} exercícios')}</span></div>
+    ${meter(all.pct / 100)}
+    <p class="small muted">${t('Entre {grupo} que treinam musculação, com {idade} anos e cerca de {peso} kg.', { grupo: groupWord(p), idade: p.age, peso: Math.round(p.weight) })}</p>
+    <div class="list strength-list">${levels.map(({ ex, lv }) => `<a class="item" href="#/exercicio/${encodeURIComponent(ex.id)}">
+      <span class="grow"><span class="t">${esc(exName(ex))}</span>${meter(lv.pct / 100)}</span>
+      <span class="top-chip">${t('Top {n}%', { n: lv.top })}</span></a>`).join('')}</div>
+    <p class="small muted">${t('Toque num exercício para ver de onde vem o número e fazer um teste de força.')}</p>
+  </div>`;
+}
 
 // ---------- Seu corpo ----------
 
