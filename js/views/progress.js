@@ -280,14 +280,13 @@ function bodyCard() {
       <div class="tile"><span class="l">${t('Massa magra')}</span><span class="v">${fmt1(c.leanKg)} kg</span></div>
       <div class="tile"><span class="l">${t('Massa gorda')}</span><span class="v">${fmt1(c.fatKg)} kg</span></div>
       <div class="tile"><span class="l">${t('Gordura estimada')}</span><span class="v">${fmt1(c.bf)}%</span><span class="small muted">±${fmt(c.margin)} ${t('pontos')}</span></div>
-      <div class="tile"><span class="l">${t('IMC')}</span><span class="v">${fmt1(c.bmi)}</span><span class="small muted">${t('só informativo')}</span></div>
+      <div class="tile"><span class="l">${t('IMC')}</span><span class="v">${fmt1(c.bmi)}</span></div>
     </div>
     <div class="segbar" role="img" aria-label="${t('Massa magra {a}%, massa gorda {b}%', { a: leanPct, b: 100 - leanPct })}">
       <span class="seg-lean" style="width:${leanPct}%">${leanPct >= 18 ? `${leanPct}%` : ''}</span><span class="seg-fat" style="width:${100 - leanPct}%">${100 - leanPct >= 12 ? `${100 - leanPct}%` : ''}</span>
     </div>
     <div class="legend small"><span><i class="sw-lean"></i>${t('Massa magra')}</span><span><i class="sw-fat"></i>${t('Massa gorda')}</span></div>
     <p class="small muted">${method}</p>
-    <p class="small muted">${t('O IMC é só peso dividido pela altura ao quadrado e não diferencia músculo de gordura. Para quem treina, o que importa é a massa magra e a massa gorda.')}</p>
 
     <p class="small muted">${t('Estimativas aproximadas. Não substituem uma avaliação física (bioimpedância, dobras cutâneas ou DEXA).')}</p>
   </div>`;

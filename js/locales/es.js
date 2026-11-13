@@ -658,8 +658,6 @@ const ui = {
   "Ainda sem registro": "Aún sin registros",
   "treine ou faça um teste": "entrena o haz una prueba",
   "Só entram exercícios com barra, halteres ou peso corporal; aparelhos e polias variam demais entre academias. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.": "Solo cuentan ejercicios con barra, mancuernas o peso corporal; las máquinas y poleas varían demasiado entre gimnasios. Estimación basada en estándares de fuerza de quienes entrenan; no es un ranking oficial.",
-  "só informativo": "solo informativo",
-  "O IMC é só peso dividido pela altura ao quadrado e não diferencia músculo de gordura. Para quem treina, o que importa é a massa magra e a massa gorda.": "El IMC es solo el peso dividido por la altura al cuadrado y no distingue músculo de grasa. Para quien entrena, lo que importa es la masa magra y la masa grasa.",
   "Veja o seu nível em {n} exercício": "Mira tu nivel en {n} ejercicio",
   "Veja o seu nível em cada um dos {n} exercícios": "Mira tu nivel en cada uno de tus {n} ejercicios",
   "Arnold split": "Arnold split",
@@ -753,10 +751,10 @@ const help = [
   ['Tu cuerpo y nivel de fuerza', 'IMC, grasa, masa magra y top de fuerza', `
     <p>En la pestaña <b>Progreso</b>, indica sexo, edad, altura y peso en la tarjeta <b>Tu cuerpo</b>.</p>
     <ul class="errs">
-      <li><b>La masa magra y la masa grasa</b> son lo importante. El <b>IMC</b> aparece solo como información: es el peso dividido por la altura al cuadrado y no distingue músculo de grasa, así que quien entrena suele tener un IMC alto sin tener sobrepeso.</li>
+      <li><b>La masa magra y la masa grasa</b> son lo importante. El <b>IMC</b> aparece solo como número: no distingue músculo de grasa, así que quien entrena suele tener un IMC alto sin tener sobrepeso.</li>
       <li><b>Grasa estimada</b>: con cintura y cuello (y cadera, para mujeres), la app usa la fórmula de la Marina de EE. UU., con un error de unos 3 a 4 puntos. Sin esas medidas, usa IMC, edad y sexo, con un error de unos 5 puntos, y descuenta hasta 4 puntos si eres fuerte para tu peso.</li>
       <li><b>Masa magra y grasa</b>: tu peso repartido según el porcentaje de grasa estimado.</li>
-      <li><b>Top de fuerza</b>: compara tu 1RM estimado con estándares de fuerza de quienes entrenan musculación, ajustados por sexo, edad y peso. Solo vale para ejercicios con barra, mancuernas o peso corporal; las máquinas y poleas varían demasiado entre gimnasios.</li>
+      <li><b>Top de fuerza</b>: toca la tarjeta <b>Tu nivel de fuerza</b>, en Progreso, para ver el top % de cada ejercicio. Compara tu 1RM estimado con estándares de quienes entrenan musculación, ajustados por sexo, edad y peso, y se recalcula cada vez que actualizas el perfil o registras tu peso. Top 10% = más fuerte que el 90% de esas personas. Solo vale para ejercicios con barra, mancuernas o peso corporal; las máquinas y poleas varían demasiado entre gimnasios.</li>
       <li><b>De dónde viene el 1RM</b>: la tarjeta de fuerza del ejercicio muestra la serie usada (tu mejor de los últimos 90 días) y la fórmula. Para un número más fiable, toca <b>Hacer prueba de fuerza</b>: después de calentar, haz una serie hasta no poder más e indica carga y reps. La prueba no cambia la progresión de los entrenamientos.</li>
       <li><b>Peso corporal</b>: en la tarjeta Tu cuerpo, toca <b>Registrar peso</b> para seguir el gráfico. Un registro por día.</li>
     </ul>
@@ -780,13 +778,13 @@ const help = [
     </ul>`],
   ['Técnica correcta de los ejercicios', 'Paso a paso de cada movimiento', `
     <ul class="errs">
-      <li>Durante el entrenamiento, toca el <b>icono (i)</b> junto al nombre del ejercicio.</li>
-      <li>En la pestaña <b>Entrenos</b>, toca un ejercicio para ver la técnica, los errores comunes, un consejo, vídeos y tu evolución.</li>
+      <li>Durante el entrenamiento, toca el botón naranja <b>Tutorial</b> junto al nombre del ejercicio: fotos del inicio y del final del movimiento, paso a paso, errores comunes y un consejo.</li>
+      <li>En la pestaña <b>Entrenos</b>, toca un ejercicio para ver las fotos, la técnica, los vídeos, tu nivel de fuerza y tu evolución.</li>
       <li>Ejercicio creado por ti: con el entrenador IA activado, puede generar las indicaciones.</li>
     </ul>`],
   ['Progreso e historial', 'Gráficos y entrenamientos anteriores', `
     <ul class="errs">
-      <li>La pestaña <b>Progreso</b> muestra series por semana, récords y la evolución de fuerza de cada ejercicio. Desliza el dedo por el gráfico para ver cada entrenamiento.</li>
+      <li>La pestaña <b>Progreso</b> muestra tu nivel de fuerza, tu cuerpo, series por semana y un gráfico por ejercicio, con un punto por entrenamiento y cuánto subió tu fuerza desde el primero. Desliza el dedo por el gráfico para ver la serie de cada día.</li>
       <li>En el <b>historial</b>, toca un entrenamiento y luego un ejercicio para corregir series anteriores.</li>
     </ul>`],
   ['Entrenador IA (opcional)', 'Análisis y dudas', `
@@ -795,6 +793,7 @@ const help = [
       <li><b>Gemini</b>: tiene uso gratuito con límites diarios. En el plan gratuito, Google puede usar lo que se envía para mejorar sus productos.</li>
       <li><b>Claude</b> y <b>ChatGPT</b>: se cobran por uso en tu cuenta. La suscripción ChatGPT Plus no incluye la API: la clave se crea aparte.</li>
       <li>El botón <b>Crear clave de API</b>, en Ajustes, lleva a la página correcta de cada empresa.</li>
+      <li><b>Qué ve la IA</b>: en cada pedido, la app arma en el momento un resumen con tus entrenamientos de los últimos 14 días (cargas, reps, RIR, sensación), metas, próximas cargas sugeridas y tu perfil y nivel de fuerza. La IA no guarda memoria entre un pedido y otro: quien guarda todo es la app.</li>
     </ul>`],
   ['Instalar y actualizar la app', 'En la pantalla de inicio del móvil', `
     <p>Toca el <b>icono naranja de descarga</b> en la esquina superior derecha de la pantalla. Desaparece cuando la app ya está instalada. Si el navegador no la instala directamente, la app muestra los pasos:</p>

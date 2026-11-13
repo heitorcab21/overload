@@ -273,6 +273,10 @@ eq([lvT.oneRM, lvT.src.test], [140, true], 'teste de 1 rep: o 1RM é a própria 
 S().exercises['supino-reto'].tests = [{ date: new Date(Date.now() - 200 * 864e5).toISOString(), w: 200, r: 1 }];
 eq(body.strengthLevel(S().exercises['supino-reto']).src.test, false, 'teste com mais de 180 dias deixa de valer');
 delete S().exercises['supino-reto'].tests;
+const topAt = kgW => { S().profile.weight = kgW; return body.strengthLevel(S().exercises['supino-reto']).top; };
+const pw = S().profile.weight;
+eq(topAt(60) < topAt(110), true, 'o percentil acompanha o peso do perfil: mais leve, mesmo 1RM, top menor (mais forte)');
+S().profile.weight = pw;
 S().profile = null;
 eq(body.strengthLevel(S().exercises['supino-reto']).reason, 'noProfile');
 

@@ -658,8 +658,6 @@ const ui = {
   "Ainda sem registro": "No records yet",
   "treine ou faça um teste": "train it or take a test",
   "Só entram exercícios com barra, halteres ou peso corporal; aparelhos e polias variam demais entre academias. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.": "Only barbell, dumbbell and bodyweight exercises count; machines and cables vary too much between gyms. Estimate based on strength standards for lifters; not an official ranking.",
-  "só informativo": "for information only",
-  "O IMC é só peso dividido pela altura ao quadrado e não diferencia músculo de gordura. Para quem treina, o que importa é a massa magra e a massa gorda.": "BMI is just weight divided by height squared and doesn't tell muscle from fat. If you lift, what matters is lean mass and fat mass.",
   "Veja o seu nível em {n} exercício": "See your level in {n} exercise",
   "Veja o seu nível em cada um dos {n} exercícios": "See your level in each of your {n} exercises",
   "Arnold split": "Arnold split",
@@ -753,10 +751,10 @@ const help = [
   ['Your body and strength level', 'BMI, body fat, lean mass and strength percentile', `
     <p>On the <b>Progress</b> tab, enter your sex, age, height and weight in the <b>Your body</b> card.</p>
     <ul class="errs">
-      <li><b>Lean mass and fat mass</b> are the focus. <b>BMI</b> is shown for information only: it is weight divided by height squared and doesn't tell muscle from fat, so people who lift often have a high BMI without being overweight.</li>
+      <li><b>Lean mass and fat mass</b> are the focus. <b>BMI</b> is shown as a number only: it doesn't tell muscle from fat, so people who lift often have a high BMI without being overweight.</li>
       <li><b>Estimated body fat</b>: with waist and neck (and hips, for women), the app uses the US Navy formula, with an error of about 3 to 4 points. Without those measurements, it uses BMI, age and sex, with an error of about 5 points, and takes off up to 4 points if you're strong for your weight.</li>
       <li><b>Lean and fat mass</b>: your weight split by the estimated body fat percentage.</li>
-      <li><b>Strength percentile</b>: compares your estimated 1RM with strength standards for lifters, adjusted for sex, age and weight. It only applies to barbell, dumbbell and bodyweight exercises; machines and cables vary too much between gyms.</li>
+      <li><b>Strength percentile</b>: tap the <b>Your strength level</b> card in Progress to see the top % for each exercise. It compares your estimated 1RM with standards for lifters, adjusted for sex, age and weight, and is recalculated whenever you update your profile or log your weight. Top 10% = stronger than 90% of them. It only applies to barbell, dumbbell and bodyweight exercises; machines and cables vary too much between gyms.</li>
       <li><b>Where the 1RM comes from</b>: the exercise's strength card shows the set used (your best in the last 90 days) and the formula. For a more reliable number, tap <b>Take a strength test</b>: after warming up, do one set to failure and enter the load and reps. The test does not change your workout progression.</li>
       <li><b>Body weight</b>: on the Your body card, tap <b>Log weight</b> to follow the chart. One entry per day.</li>
     </ul>
@@ -780,13 +778,13 @@ const help = [
     </ul>`],
   ['Proper exercise form', 'Step by step for each movement', `
     <ul class="errs">
-      <li>During a workout, tap the <b>(i) icon</b> next to the exercise name.</li>
-      <li>On the <b>Workouts</b> tab, tap an exercise to see its form, common mistakes, a tip, videos and your progress.</li>
+      <li>During a workout, tap the orange <b>Tutorial</b> button next to the exercise name: photos of the start and end of the movement, step by step, common mistakes and a tip.</li>
+      <li>On the <b>Workouts</b> tab, tap an exercise to see its photos, form, videos, your strength level and your progress.</li>
       <li>Exercise you created: with the AI coach turned on, it can generate the instructions.</li>
     </ul>`],
   ['Progress and history', 'Charts and past workouts', `
     <ul class="errs">
-      <li>The <b>Progress</b> tab shows sets per week, records and the strength progress of each exercise. Slide your finger on the chart to see each workout.</li>
+      <li>The <b>Progress</b> tab shows your strength level, your body, sets per week and a chart for each exercise, with one point per workout and how much stronger you got since the first one. Slide your finger on the chart to see each day's set.</li>
       <li>In the <b>history</b>, tap a workout and then an exercise to correct past sets.</li>
     </ul>`],
   ['AI coach (optional)', 'Analyses and questions', `
@@ -795,6 +793,7 @@ const help = [
       <li><b>Gemini</b>: has free usage with daily limits. On the free tier, Google may use what you send to improve its products.</li>
       <li><b>Claude</b> and <b>ChatGPT</b>: billed per use to your account. A ChatGPT Plus subscription doesn't include the API: the key is created separately.</li>
       <li>The <b>Create API key</b> button in Settings takes you to the right page for each company.</li>
+      <li><b>What the AI sees</b>: for each request, the app builds a fresh summary with your workouts from the last 14 days (loads, reps, RIR, feel), goals, next suggested loads and your profile and strength level. The AI keeps no memory between requests: the app is what stores everything.</li>
     </ul>`],
   ['Installing and updating the app', 'On your phone\'s home screen', `
     <p>Tap the <b>orange download icon</b> in the top right corner of the screen. It disappears once the app is installed. If the browser can't install it directly, the app shows the steps:</p>

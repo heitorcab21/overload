@@ -9,6 +9,7 @@ import {
 } from '../logic.js';
 import { startWorkout, startFreeWorkout } from './workout.js';
 import { aiEnabled, aiWeeklyAnalysis } from '../ai.js';
+import { profile, bodyComposition, overallStrength, strengthLevel } from '../body.js';
 import { driveAvailable, driveConnected, driveDirty, hasToken } from '../drive.js';
 import { t, tn, lang, LANGS } from '../i18n.js';
 
@@ -226,8 +227,15 @@ function buildSummary() {
       if (!ex) continue;
       if (e.skipped) { L.push(`    ${ex.name}: pulado`); continue; }
       const extra = [e.feel && feel[e.feel], ...(e.flags || []).map(f => flag[f])].filter(Boolean).join(', ');
-      L.push(`    ${ex.name} [${ex.group}, faixa ${ex.repMin}-${ex.repMax} reps]: ${e.sets.map(x => w(x) + (x.t ? ' (falhou)' : '')).join(' | ')}${extra ? ` — ${extra}` : ''}`);
+      L.push(`    ${ex.name} [${ex.group}, faixa ${ex.repMin}-${ex.repMax} reps]: ${e.sets.map(x => w(x) + (x.t ? ' (falhou)' : '') + (x.rir != null ? ` (RIR ${x.rir})` : '')).join(' | ')}${extra ? ` — ${extra}` : ''}`);
     }
+  }
+  const p = profile();
+  if (p) {
+    const c = bodyComposition(p, overallStrength(p));
+    L.push('', 'PERFIL:', `- ${p.sex === 'm' ? 'homem' : 'mulher'}, ${p.age} anos, ${p.height} cm, ${p.weight} kg, gordura estimada ${Math.round(c.bf)}%, massa magra ${Math.round(c.leanKg)} kg`);
+    const lv = Object.values(state.exercises).map(ex => [ex, strengthLevel(ex, p)]).filter(([, l]) => l.top);
+    if (lv.length) L.push('NÍVEL DE FORÇA (top % entre praticantes do mesmo sexo, idade e peso):', ...lv.map(([ex, l]) => `- ${ex.name}: top ${l.top}% (1RM estimado ${Math.round(l.oneRM)} kg)`));
   }
   L.push('', 'METAS DE SÉRIES POR GRUPAMENTO (feito / meta):');
   for (const g of groupGoalStatus(now)) {

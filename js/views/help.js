@@ -85,10 +85,10 @@ const TOPICS = [
   ['Seu corpo e nível de força', 'IMC, gordura, massa magra e top de força', `
     <p>Na aba <b>Progresso</b>, preencha sexo, idade, altura e peso no cartão <b>Seu corpo</b>.</p>
     <ul class="errs">
-      <li><b>Massa magra e massa gorda</b> são o foco. O <b>IMC</b> aparece só como informação: é o peso dividido pela altura ao quadrado e não separa músculo de gordura, então quem treina costuma ter IMC alto sem estar acima do peso.</li>
+      <li><b>Massa magra e massa gorda</b> são o foco. O <b>IMC</b> aparece só como número: ele não separa músculo de gordura, então quem treina costuma ter IMC alto sem estar acima do peso.</li>
       <li><b>Gordura estimada</b>: com cintura e pescoço (e quadril, para mulheres), o app usa a fórmula da Marinha americana, com erro de cerca de 3 a 4 pontos. Sem essas medidas, usa IMC, idade e sexo, com erro de cerca de 5 pontos, e desconta até 4 pontos se você for forte para o seu peso.</li>
       <li><b>Massa magra e gorda</b>: o peso dividido pelo percentual de gordura estimado.</li>
-      <li><b>Top de força</b>: compara o seu 1RM estimado com padrões de força de quem treina musculação, ajustados por sexo, idade e peso. Só vale para exercícios com barra, halteres ou peso corporal; aparelhos e polias variam demais entre academias.</li>
+      <li><b>Top de força</b>: toque no cartão <b>Seu nível de força</b>, no Progresso, para ver o top % de cada exercício. Ele compara o seu 1RM estimado com padrões de quem treina musculação, ajustados por sexo, idade e peso, e é recalculado sempre que você atualiza o perfil ou registra o peso. Top 10% = mais forte que 90% dessas pessoas. Só vale para exercícios com barra, halteres ou peso corporal; aparelhos e polias variam demais entre academias.</li>
       <li><b>De onde vem o 1RM</b>: o cartão de força do exercício mostra a série usada no cálculo (a melhor dos últimos 90 dias) e a fórmula. Para um número mais confiável, toque em <b>Fazer teste de força</b>: depois de aquecer, faça uma série até não aguentar mais e informe carga e reps. O teste não mexe na progressão dos treinos.</li>
       <li><b>Peso corporal</b>: no cartão Seu corpo, toque em <b>Registrar peso</b> para acompanhar o gráfico. Um registro por dia.</li>
     </ul>
@@ -115,14 +115,14 @@ const TOPICS = [
 
   ['Execução correta dos exercícios', 'Passo a passo de cada movimento', `
     <ul class="errs">
-      <li>Durante o treino, toque no <b>ícone (i)</b> ao lado do nome do exercício.</li>
-      <li>Na aba <b>Treinos</b>, toque em um exercício para ver execução, erros comuns, dica, vídeos e a sua evolução.</li>
+      <li>Durante o treino, toque no botão laranja <b>Tutorial</b> ao lado do nome do exercício: fotos do início e do fim do movimento, passo a passo, erros comuns e uma dica.</li>
+      <li>Na aba <b>Treinos</b>, toque em um exercício para ver as fotos, a execução, os vídeos, o seu nível de força e a sua evolução.</li>
       <li>Exercício criado por você: com o treinador IA ligado, ele pode gerar as orientações.</li>
     </ul>`],
 
   ['Progresso e histórico', 'Gráficos e treinos antigos', `
     <ul class="errs">
-      <li>A aba <b>Progresso</b> mostra séries por semana, recordes e a evolução de força de cada exercício. Passe o dedo no gráfico para ver cada treino.</li>
+      <li>A aba <b>Progresso</b> mostra o seu nível de força, o seu corpo, séries por semana e um gráfico para cada exercício, com um ponto por treino e quanto a força subiu desde o primeiro. Passe o dedo no gráfico para ver a série de cada dia.</li>
       <li>No <b>histórico</b>, toque em um treino e depois em um exercício para corrigir séries antigas.</li>
     </ul>`],
 
@@ -132,6 +132,7 @@ const TOPICS = [
       <li><b>Gemini</b>: tem uso gratuito com limites diários. No plano gratuito, o Google pode usar o que é enviado para melhorar os produtos dele.</li>
       <li><b>Claude</b> e <b>ChatGPT</b>: cobrados por uso na sua conta. A assinatura ChatGPT Plus não inclui a API: a chave é criada à parte.</li>
       <li>O botão <b>Criar chave de API</b>, em Ajustes, leva à página certa de cada empresa.</li>
+      <li><b>O que a IA vê</b>: a cada pedido, o app monta um resumo na hora com seus treinos dos últimos 14 dias (cargas, reps, RIR, sensação), metas, próximas cargas sugeridas e seu perfil e nível de força. A IA não guarda memória entre um pedido e outro: quem guarda tudo é o app.</li>
     </ul>`],
 
   ['Instalar e atualizar o app', 'Na tela inicial do celular', `
