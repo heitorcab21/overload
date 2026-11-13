@@ -447,7 +447,6 @@ const ui = {
   'Finalizar': `Finish`,
   'Próximo': `Next`,
   'Registrar': `Log`,
-  'Falhei nesta série': `I failed this set`,
   'Excluir série': `Delete set`,
   'pendente': `pending`,
   'feito': `done`,
@@ -728,9 +727,6 @@ const ui = {
   "<b>Troque por uma variação</b>: halter no lugar da barra, inclinado no lugar do reto.": "<b>Swap for a variation</b>: dumbbells instead of a barbell, incline instead of flat.",
   "<b>Confira o básico</b>: sono, alimentação e descanso entre séries fazem diferença.": "<b>Check the basics</b>: sleep, food and rest between sets make a difference.",
   "Entendi, esconder aviso": "Got it, hide this",
-  "Comentário do treinador": "Coach's comment",
-  "Analisando seu treino…": "Analyzing your workout…",
-  "Não foi possível gerar o comentário agora.": "Couldn't generate the comment right now.",
   "há {n} treino sem superar seu melhor": "{n} workout without beating your best",
   "há {n} treinos sem superar seu melhor": "{n} workouts without beating your best",
   "Repetições somadas, sem contar aquecimento.": "Total reps, not counting warm-ups.",
@@ -877,7 +873,6 @@ const help = [
       <li><b>Claude</b> and <b>ChatGPT</b>: billed per use to your account. A ChatGPT Plus subscription doesn't include the API: the key is created separately.</li>
       <li>The <b>Create API key</b> button in Settings takes you to the right page for each company.</li>
       <li><b>What the AI sees</b>: for each request, the app builds a fresh summary with your workouts from the last 14 days (loads, reps, RIR, feel), goals, next suggested loads and your profile and strength level. The AI keeps no memory between requests: the app is what stores everything.</li>
-      <li><b>Coach's comment</b>: with the AI on, a short comment shows up after each workout, with one positive point and one tip for next time.</li>
     </ul>`],
   ['Installing and updating the app', 'On your phone\'s home screen', `
     <p>Tap the <b>orange download icon</b> in the top right corner of the screen. It disappears once the app is installed. If the browser can't install it directly, the app shows the steps:</p>

@@ -447,7 +447,6 @@ const ui = {
   'Finalizar': `Terminar`,
   'Próximo': `Siguiente`,
   'Registrar': `Registrar`,
-  'Falhei nesta série': `Fallé en esta serie`,
   'Excluir série': `Eliminar serie`,
   'pendente': `pendiente`,
   'feito': `hecho`,
@@ -728,9 +727,6 @@ const ui = {
   "<b>Troque por uma variação</b>: halter no lugar da barra, inclinado no lugar do reto.": "<b>Cambia por una variante</b>: mancuernas en lugar de barra, inclinado en lugar de plano.",
   "<b>Confira o básico</b>: sono, alimentação e descanso entre séries fazem diferença.": "<b>Revisa lo básico</b>: sueño, alimentación y descanso entre series marcan la diferencia.",
   "Entendi, esconder aviso": "Entendido, ocultar aviso",
-  "Comentário do treinador": "Comentario del entrenador",
-  "Analisando seu treino…": "Analizando tu entrenamiento…",
-  "Não foi possível gerar o comentário agora.": "No se pudo generar el comentario ahora.",
   "há {n} treino sem superar seu melhor": "{n} entrenamiento sin superar tu mejor marca",
   "há {n} treinos sem superar seu melhor": "{n} entrenamientos sin superar tu mejor marca",
   "Repetições somadas, sem contar aquecimento.": "Repeticiones sumadas, sin contar el calentamiento.",
@@ -877,7 +873,6 @@ const help = [
       <li><b>Claude</b> y <b>ChatGPT</b>: se cobran por uso en tu cuenta. La suscripción ChatGPT Plus no incluye la API: la clave se crea aparte.</li>
       <li>El botón <b>Crear clave de API</b>, en Ajustes, lleva a la página correcta de cada empresa.</li>
       <li><b>Qué ve la IA</b>: en cada pedido, la app arma en el momento un resumen con tus entrenamientos de los últimos 14 días (cargas, reps, RIR, sensación), metas, próximas cargas sugeridas y tu perfil y nivel de fuerza. La IA no guarda memoria entre un pedido y otro: quien guarda todo es la app.</li>
-      <li><b>Comentario del entrenador</b>: con la IA activada, al terminar cada entrenamiento aparece un comentario corto con un punto positivo y una sugerencia para el próximo.</li>
     </ul>`],
   ['Instalar y actualizar la app', 'En la pantalla de inicio del móvil', `
     <p>Toca el <b>icono naranja de descarga</b> en la esquina superior derecha de la pantalla. Desaparece cuando la app ya está instalada. Si el navegador no la instala directamente, la app muestra los pasos:</p>

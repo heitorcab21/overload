@@ -8,7 +8,7 @@ import {
   sessionPRs, tonnage, exGoalStatus, entriesFor, stalledExercises,
 } from '../logic.js';
 import { startWorkout, startFreeWorkout } from './workout.js';
-import { aiEnabled, aiWeeklyAnalysis, aiWorkoutComment } from '../ai.js';
+import { aiEnabled, aiWeeklyAnalysis } from '../ai.js';
 import { profile, bodyComposition, overallStrength, strengthLevel } from '../body.js';
 import { driveAvailable, driveConnected, driveDirty, hasToken } from '../drive.js';
 import { t, tn, lang, LANGS } from '../i18n.js';
@@ -333,8 +333,6 @@ function renderSummary(id) {
           <span class="badge up">${icon.trophy}${setStr(p.set)}</span></div>`).join('')}</div>` : ''}
       ${hit.length ? `<div class="card"><h3>${t('Metas')}</h3>
         ${hit.map(h => `<div class="plan-line"><span class="n">${esc(h)}</span><span class="badge good">${icon.check}ok</span></div>`).join('')}</div>` : ''}
-      ${aiEnabled() || s.aiNote ? `<div class="card stack ai-note"><h3>${icon.spark}${t('Comentário do treinador')}</h3>
-        <p class="ai-text" id="aiNote">${s.aiNote ? esc(s.aiNote) : `<span class="muted">${t('Analisando seu treino…')}</span>`}</p></div>` : ''}
       <div class="card"><h3>${t('O que você fez')}</h3>
         ${s.entries.map(e => `<div class="plan-line"><span class="n">${esc(state.exercises[e.exId] ? exName(state.exercises[e.exId]) : t('Exercício removido'))}</span>
           <span class="v num">${e.skipped ? t('pulado') : e.sets.map(x => (x.w > 0 ? `${fmt(x.w)}×${x.r}` : x.r)).join(' · ')}</span></div>`).join('')}
@@ -342,40 +340,6 @@ function renderSummary(id) {
       <button class="btn big story-btn" data-act="shareStory" data-id="${s.id}">${icon.share}${t('Compartilhar nos stories')}</button>
       <a class="btn primary big" href="#/hoje">${t('Concluir')}</a>
     </div>`;
-  fillAiNote(s);
-}
-
-// ---------- Comentário automático da IA ----------
-
-const aiPending = new Set();
-function workoutText(s) {
-  const L = [`Treino: ${s.name} (${s.dur || '?'} min) em ${new Date(s.date).toLocaleDateString('pt-BR')}`];
-  const prs = new Set(sessionPRs(s).map(p => p.exId));
-  const w = x => (x.w > 0 ? `${x.w} kg × ${x.r}` : `${x.r} reps`) + (x.rir != null ? ` (RIR ${x.rir})` : '');
-  for (const e of s.entries) {
-    const ex = state.exercises[e.exId];
-    if (!ex || e.skipped || !e.sets.length) continue;
-    const prev = entriesFor(e.exId).filter(h => new Date(h.date) < new Date(s.date)).at(-1);
-    L.push(`- ${ex.name}: ${e.sets.map(w).join(' | ')}${prs.has(e.exId) ? ' — RECORDE' : ''}${prev ? `; treino anterior: ${prev.sets.map(w).join(' | ')}` : '; primeira vez'}${(e.flags || []).includes('dor') ? ' — relatou dor' : ''}`);
-  }
-  const st = stalledExercises().filter(x => s.entries.some(e => e.exId === x.ex.id));
-  if (st.length) L.push('', 'Parados:', ...st.map(x => `- ${x.ex.name}: ${x.n} treinos sem superar o melhor`));
-  return L.join(String.fromCharCode(10));
-}
-async function fillAiNote(s) {
-  if (s.aiNote || aiPending.has(s.id) || !aiEnabled()) return;
-  aiPending.add(s.id);
-  try {
-    s.aiNote = (await aiWorkoutComment(workoutText(s))).trim();
-    save();
-  } catch (e) {
-    s.aiNote = null;
-    const el = $('#aiNote');
-    if (el) el.innerHTML = `<span class="muted">${esc(t('Não foi possível gerar o comentário agora.'))}</span>`;
-  }
-  aiPending.delete(s.id);
-  const el = $('#aiNote');
-  if (el && s.aiNote) el.textContent = s.aiNote;
 }
 
 // ---------- Card para stories ----------

@@ -144,7 +144,6 @@ const TOPICS = [
       <li><b>Claude</b> e <b>ChatGPT</b>: cobrados por uso na sua conta. A assinatura ChatGPT Plus não inclui a API: a chave é criada à parte.</li>
       <li>O botão <b>Criar chave de API</b>, em Ajustes, leva à página certa de cada empresa.</li>
       <li><b>O que a IA vê</b>: a cada pedido, o app monta um resumo na hora com seus treinos dos últimos 14 dias (cargas, reps, RIR, sensação), metas, próximas cargas sugeridas e seu perfil e nível de força. A IA não guarda memória entre um pedido e outro: quem guarda tudo é o app.</li>
-      <li><b>Comentário do treinador</b>: com a IA ligada, ao terminar cada treino aparece um comentário curto com um ponto positivo e uma sugestão para o próximo.</li>
     </ul>`],
 
   ['Instalar e atualizar o app', 'Na tela inicial do celular', `

@@ -277,7 +277,6 @@ actions.wEditSet = el => {
         ${stepper('w', s.w, ex.step || 1, loadLabel(ex))}
         ${stepper('r', s.r, 1, t('Repetições'))}
       </div>
-      <label class="check"><input type="checkbox" name="fail"${s.t ? ' checked' : ''}>${t('Falhei nesta série')}</label>
       <label class="field">${t('Reps que sobraram (RIR)')}
         <select name="rir"><option value="">${t('não informado')}</option>${[0, 1, 2, 3, 4].map(v => `<option value="${v}"${s.rir === v ? ' selected' : ''}>${v === 4 ? '4+' : v}</option>`).join('')}</select></label>
       <button class="btn primary big">${t('Salvar')}</button>
@@ -289,7 +288,7 @@ submits.wEditSave = form => {
   const w = Math.max(0, Number(form.w.value) || 0);
   const r = Math.max(0, Math.round(Number(form.r.value) || 0));
   const rir = form.rir.value === '' ? null : Number(form.rir.value);
-  en.sets[Number(form.dataset.i)] = form.fail.checked ? { w, r, t: 'F' } : rir != null ? { w, r, rir } : { w, r };
+  en.sets[Number(form.dataset.i)] = rir != null ? { w, r, rir } : { w, r };
   closeSheet();
   done();
 };

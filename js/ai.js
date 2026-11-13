@@ -378,13 +378,3 @@ ${library}`,
   });
   return parseJSON(out);
 }
-
-/** Comentário curto do treinador logo depois de um treino. */
-export function aiWorkoutComment(summary) {
-  return ask({
-    effort: 'low',
-    system: `${COACH()}
-Escreva um comentário curto (no máximo 70 palavras) sobre o treino que acabou de terminar: um ponto positivo concreto (cite exercício e números) e uma sugestão prática para o próximo treino. Se algum exercício estiver parado há vários treinos, mencione uma saída. Tom motivador, sem exageros.`,
-    user: summary,
-  });
-}
