@@ -136,11 +136,8 @@ function render() {
   } else {
     body = `<div class="log">
       ${rirRow(en)}
-      <h3>${t('Como foi?')}</h3>
-      <div class="chips">${Object.entries(FEEL()).map(([k, v]) =>
-        `<button class="chip${en.feel === k ? ' on' : ''}" data-act="wFeel" data-v="${k}" aria-pressed="${en.feel === k}">${v}</button>`).join('')}</div>
       <h3>${t('Aconteceu algo?')}</h3>
-      <div class="chips">${Object.entries(FLAGS()).map(([k, v]) =>
+      <div class="chips">${Object.entries(FLAGS()).filter(([k]) => k === 'dor' || k === 'troca').map(([k, v]) =>
         `<button class="chip${en.flags.includes(k) ? ' on' : ''}" data-act="wFlag" data-v="${k}" aria-pressed="${en.flags.includes(k)}">${v}</button>`).join('')}</div>
       <div class="row wrap">
         <button class="btn grow" data-act="wExtra">${icon.plus}${t('Série extra')}</button>

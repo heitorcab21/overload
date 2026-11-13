@@ -750,7 +750,7 @@ const help = [
       <li>Did exactly that? Tap the orange <b>Done</b> button. The rest timer starts on its own.</li>
       <li>Was it different? Adjust the load and reps with − and + (or tap the number and type) before tapping <b>Done</b>. The app works out on its own whether you were above or below the target.</li>
       <li>Did every set as planned? <b>All as planned</b> logs them all at once.</li>
-      <li>When the exercise is done, say <b>how it was</b> (easy, just right, hard, to failure) and mark if <b>anything happened</b> (pain, changed machine...). This changes the suggestion for the next workout.</li>
+      <li>When the exercise is done, optionally enter how many <b>reps were left</b> (RIR) and mark if you had <b>pain</b> or <b>changed machines</b>. This changes the suggestion for the next workout.</li>
       <li>Tap <b>Next</b> and, on the last exercise, <b>Finish</b>.</li>
     </ol>
     <p class="tip">Typed a wrong number? Tap a logged set to correct or delete it. The list icon at the top shows every exercise in the workout.</p>`],
@@ -795,8 +795,8 @@ const help = [
       <li>If you fall <b>below the range twice</b>, it suggests dropping about 10%.</li>
     </ol>
     <ul class="errs">
-      <li><b>Easy</b>: +1 rep on every set.</li>
-      <li><b>To failure</b> or <b>pain</b>: repeats the same numbers.</li>
+      <li><b>3 or more reps left</b> in every set: +2 reps. <b>None left</b> in the last one: repeats the numbers.</li>
+      <li><b>Pain</b>: repeats the same numbers.</li>
       <li><b>Changed machine</b>: that workout doesn't count toward the next load.</li>
     </ul>`],
   ['Weekly and monthly goals', 'Muscle groups and exercises', `

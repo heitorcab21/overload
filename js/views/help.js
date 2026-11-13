@@ -30,7 +30,7 @@ const TOPICS = [
       <li>Fez exatamente isso? Toque no botão laranja <b>Feito</b>. O descanso começa a contar sozinho.</li>
       <li>Foi diferente? Ajuste a carga e as repetições no − e no + (ou toque no número e digite) antes de tocar em <b>Feito</b>. O app percebe sozinho se ficou acima ou abaixo da meta.</li>
       <li>Fez todas as séries como planejado? <b>Todas como a meta</b> registra tudo de uma vez.</li>
-      <li>Ao terminar o exercício, diga <b>como foi</b> (fácil, na medida, pesado, até a falha) e marque se <b>aconteceu algo</b> (dor, troca de aparelho...). Isso muda a sugestão do próximo treino.</li>
+      <li>Ao terminar o exercício, informe se quiser quantas <b>reps sobraram</b> (RIR) e marque se teve <b>dor</b> ou se <b>trocou de aparelho</b>. Isso muda a sugestão do próximo treino.</li>
       <li>Toque em <b>Próximo</b> e, no último exercício, em <b>Finalizar</b>.</li>
     </ol>
     <p class="tip">Errou um número? Toque na série já registrada para corrigir ou excluir. O ícone de lista no topo mostra todos os exercícios do treino.</p>`],
@@ -78,8 +78,8 @@ const TOPICS = [
       <li>Se ficar <b>duas vezes abaixo da faixa</b>, ele sugere reduzir cerca de 10%.</li>
     </ol>
     <ul class="errs">
-      <li><b>Fácil</b>: +1 rep em todas as séries.</li>
-      <li><b>Até a falha</b> ou <b>dor</b>: repete os mesmos números.</li>
+      <li><b>Sobraram 3 ou mais reps</b> em todas as séries: +2 reps. <b>Nenhuma sobrando</b> na última: repete os números.</li>
+      <li><b>Dor</b>: repete os mesmos números.</li>
       <li><b>Troquei o aparelho</b>: aquele treino não conta para a próxima carga.</li>
     </ul>`],
 

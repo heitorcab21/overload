@@ -750,7 +750,7 @@ const help = [
       <li>¿Hiciste exactamente eso? Toca el botón naranja <b>Hecho</b>. El descanso empieza a contar solo.</li>
       <li>¿Fue diferente? Ajusta la carga y las repeticiones con − y + (o toca el número y escribe) antes de tocar <b>Hecho</b>. La app detecta sola si quedaste por encima o por debajo de la meta.</li>
       <li>¿Hiciste todas las series como estaba previsto? <b>Todas como la meta</b> las registra de una vez.</li>
-      <li>Al terminar el ejercicio, indica <b>cómo fue</b> (fácil, justo, pesado, al fallo) y marca si <b>pasó algo</b> (dolor, cambio de máquina...). Esto cambia la sugerencia del próximo entrenamiento.</li>
+      <li>Al terminar el ejercicio, indica si quieres cuántas <b>reps sobraron</b> (RIR) y marca si tuviste <b>dolor</b> o <b>cambiaste de máquina</b>. Esto cambia la sugerencia del próximo entrenamiento.</li>
       <li>Toca <b>Siguiente</b> y, en el último ejercicio, <b>Terminar</b>.</li>
     </ol>
     <p class="tip">¿Te equivocaste de número? Toca la serie registrada para corregirla o eliminarla. El icono de lista arriba muestra todos los ejercicios del entrenamiento.</p>`],
@@ -795,8 +795,8 @@ const help = [
       <li>Si quedas <b>dos veces por debajo del rango</b>, sugiere bajar cerca de un 10%.</li>
     </ol>
     <ul class="errs">
-      <li><b>Fácil</b>: +1 rep en todas las series.</li>
-      <li><b>Al fallo</b> o <b>dolor</b>: repite los mismos números.</li>
+      <li><b>Sobraron 3 o más reps</b> en todas las series: +2 reps. <b>Ninguna sobrando</b> en la última: repite los números.</li>
+      <li><b>Dolor</b>: repite los mismos números.</li>
       <li><b>Cambié de máquina</b>: ese entrenamiento no cuenta para la próxima carga.</li>
     </ul>`],
   ['Metas de la semana y del mes', 'Grupos musculares y ejercicios', `
