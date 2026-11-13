@@ -447,6 +447,8 @@ details.help .help-body b { color: var(--ink); }
 /* Primeiro acesso */
 .hero { padding: 28px 0 8px; display: grid; gap: 10px; }
 .hero .logo { width: 64px; height: 64px; }
+.lang-seg { max-width: 360px; margin-right: 52px; }
+.lang-seg button { font-size: 13px; }
 .tpl { text-align: left; display: grid; gap: 4px; width: 100%; padding: 16px; border-radius: 16px; border: 1px solid var(--line); background: var(--surface); }
 .tpl b { font-size: 17px; }
 .tpl span { color: var(--ink-2); font-size: 14px; }

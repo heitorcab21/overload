@@ -105,7 +105,7 @@ function render() {
         <button class="btn ghost danger block" data-act="wipeAsk">${icon.trash}${t('Apagar tudo e começar do zero')}</button>
       </div>
       <p class="small muted" style="text-align:center">${t('Overload · feito para uso pessoal')}<br>
-        <a href="sobre.html">${t('Sobre o app')}</a> · <a href="privacidade.html">${t('Política de privacidade')}</a></p>
+        <a href="sobre.html">${t('Sobre o app')}</a> · <a href="privacidade.html${lang() === 'en' ? '#en' : ''}">${t('Política de privacidade')}</a></p>
     </div>`;
 }
 
@@ -199,6 +199,14 @@ submits.saveKey = async form => {
     save();
     toast(e.message, 6000);
   }
+  rerender();
+};
+
+// Troca rápida de idioma na primeira tela
+actions.quickLang = el => {
+  state.settings.lang = el.dataset.l;
+  save({ touch: false });
+  applyLang();
   rerender();
 };
 

@@ -10,7 +10,7 @@ import {
 import { startWorkout } from './workout.js';
 import { aiEnabled, aiWeeklyAnalysis } from '../ai.js';
 import { driveAvailable, driveConnected, driveDirty, hasToken } from '../drive.js';
-import { t, tn } from '../i18n.js';
+import { t, tn, lang, LANGS } from '../i18n.js';
 
 /**
  * Atualiza o passo de aumento dos exercícios com halteres criados antes de a carga
@@ -47,7 +47,11 @@ export const planStr = p => (p.first && !p.w ? t('definir carga') : `${kg(p.w)} 
 // ---------- Primeiro acesso ----------
 
 function renderOnboarding() {
-  const hero = `<div class="hero">
+  // escolha de idioma logo na primeira tela (o inicial segue o idioma do celular)
+  const langs = `<div class="seg lang-seg" role="group" aria-label="Idioma · Language · Idioma">
+      ${LANGS.map(([id, name]) => `<button type="button" data-act="quickLang" data-l="${id}" class="${lang() === id ? 'on' : ''}" aria-pressed="${lang() === id}">${name}</button>`).join('')}
+    </div>`;
+  const hero = `${langs}<div class="hero">
       <img class="logo" src="icons/icon.svg" alt="">
       <h1>Overload</h1>
       <p class="muted">${t('Registre cada série com um toque ou com a voz. O app calcula a próxima carga e acompanha suas metas da semana e do mês.')}</p>
@@ -65,7 +69,7 @@ function renderOnboarding() {
         </div>
         <button class="btn ghost block" data-act="skipLogin">${t('Usar sem conta')}</button>
         <p class="small muted" style="text-align:center">${t('Sem conta, os dados ficam só neste aparelho. Dá para entrar depois em Ajustes.')}</p>
-        <p class="small muted" style="text-align:center"><a href="privacidade.html">${t('Política de privacidade')}</a></p>
+        <p class="small muted" style="text-align:center"><a href="privacidade.html${lang() === 'en' ? '#en' : ''}">${t('Política de privacidade')}</a></p>
       </div>`;
     return;
   }
