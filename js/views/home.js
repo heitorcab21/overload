@@ -187,7 +187,7 @@ function renderHome() {
     ${aiEnabled()
       ? `<button class="btn block" data-act="aiWeek" ${state.sessions.length ? '' : 'disabled'}>${icon.spark}${la ? t('Atualizar análise') : t('Analisar minha semana')}</button>
          ${state.sessions.length ? '' : `<p class="small muted">${t('Registre um treino para liberar a análise.')}</p>`}`
-      : `<p class="muted">${t('Opcional: adicione uma chave da API do Claude em Ajustes para receber análises da semana e tirar dúvidas de execução. O app funciona normalmente sem ela.')}</p>
+      : `<p class="muted">${t('Opcional: adicione em Ajustes uma chave de API da sua IA favorita (Claude, ChatGPT ou Gemini) para receber análises da semana e tirar dúvidas de execução. O app funciona normalmente sem ela.')}</p>
          <a class="btn block" href="#/ajustes">${t('Configurar IA')}</a>`}
   </div>`;
 

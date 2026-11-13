@@ -216,7 +216,7 @@ const ui = {
   'Atualizar análise': `Update analysis`,
   'Analisar minha semana': `Analyze my week`,
   'Registre um treino para liberar a análise.': `Log a workout to unlock the analysis.`,
-  'Opcional: adicione uma chave da API do Claude em Ajustes para receber análises da semana e tirar dúvidas de execução. O app funciona normalmente sem ela.': `Optional: add a Claude API key in Settings to get weekly analyses and ask about exercise form. The app works fine without it.`,
+  'Opcional: adicione em Ajustes uma chave de API da sua IA favorita (Claude, ChatGPT ou Gemini) para receber análises da semana e tirar dúvidas de execução. O app funciona normalmente sem ela.': `Optional: add an API key for your favorite AI (Claude, ChatGPT or Gemini) in Settings to get weekly analyses and ask about exercise form. The app works fine without it.`,
   'Configurar IA': `Set up AI`,
   'Qual treino hoje?': `Which workout today?`,
   'próximo': `next`,

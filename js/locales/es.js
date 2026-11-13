@@ -216,7 +216,7 @@ const ui = {
   'Atualizar análise': `Actualizar análisis`,
   'Analisar minha semana': `Analizar mi semana`,
   'Registre um treino para liberar a análise.': `Registra un entrenamiento para activar el análisis.`,
-  'Opcional: adicione uma chave da API do Claude em Ajustes para receber análises da semana e tirar dúvidas de execução. O app funciona normalmente sem ela.': `Opcional: añade una clave de la API de Claude en Ajustes para recibir análisis de la semana y resolver dudas de técnica. La app funciona normalmente sin ella.`,
+  'Opcional: adicione em Ajustes uma chave de API da sua IA favorita (Claude, ChatGPT ou Gemini) para receber análises da semana e tirar dúvidas de execução. O app funciona normalmente sem ela.': `Opcional: añade en Ajustes una clave de API de tu IA favorita (Claude, ChatGPT o Gemini) para recibir análisis de la semana y resolver dudas de técnica. La app funciona normalmente sin ella.`,
   'Configurar IA': `Configurar IA`,
   'Qual treino hoje?': `¿Qué entrenamiento hoy?`,
   'próximo': `próximo`,
