@@ -89,18 +89,32 @@ export function percentileOf(ratio, std) {
   return Math.min(99.9, Math.max(0.1, phi(z) * 100));
 }
 
-/** Melhor 1RM estimado dos últimos 90 dias (carga total; peso corporal somado nos exercícios de barra/paralelas). */
-function best1RM(exId, bw, isBw) {
-  let best = 0;
-  const from = addDays(new Date(), -90);
-  for (const e of entriesFor(exId)) {
-    if (new Date(e.date) < from) continue;
-    for (const s of e.sets) {
-      if (!s.r) continue;
-      const w = isBw ? bw + (s.w || 0) : s.w;
-      // com RIR informado, as reps que sobraram contam para estimar o máximo (até 4)
-      if (w > 0) best = Math.max(best, e1rm(w, s.r + Math.min(4, s.rir || 0)));
-    }
+/** 1RM de uma série: com 1 rep (e nada sobrando) é a própria carga; senão, fórmula de Epley. */
+export const oneRepMax = (w, reps) => (reps <= 1 ? w : e1rm(w, reps));
+
+/**
+ * Melhor 1RM estimado, com a série que o originou: treinos dos últimos 90 dias e testes de força
+ * dos últimos 180. Carga total; nos exercícios de peso corporal, soma o peso da pessoa.
+ * Retorna { value, w, r, rir, date, test } ou null.
+ */
+export function best1RM(ex, bw, isBw) {
+  let best = null;
+  const consider = (s, date, test) => {
+    if (!s.r) return;
+    const w = isBw ? bw + (s.w || 0) : s.w;
+    if (!(w > 0)) return;
+    // com RIR informado, as reps que sobraram contam para estimar o máximo (até 4)
+    const rir = Math.min(4, s.rir || 0);
+    const value = oneRepMax(w, s.r + rir);
+    if (!best || value > best.value) best = { value, w: s.w || 0, r: s.r, rir: s.rir ?? null, date, test };
+  };
+  const from90 = addDays(new Date(), -90), from180 = addDays(new Date(), -180);
+  for (const e of entriesFor(ex.id)) {
+    if (new Date(e.date) < from90) continue;
+    for (const s of e.sets) consider(s, e.date, false);
+  }
+  for (const tst of ex.tests || []) {
+    if (new Date(tst.date) >= from180) consider(tst, tst.date, true);
   }
   return best;
 }
@@ -114,13 +128,14 @@ export function strengthLevel(ex, p = profile()) {
   if (!map) return { reason: 'notComparable' };
   if (!p) return { reason: 'noProfile' };
   const [lift, factor, isBw] = map;
-  const one = best1RM(ex.id, p.weight, isBw);
-  if (!one) return { reason: 'noData' };
+  const src = best1RM(ex, p.weight, isBw);
+  if (!src) return { reason: 'noData' };
+  const one = src.value;
   const ref = REF_BW[p.sex];
   // normaliza pelo peso corporal (escala alométrica: quem é mais pesado levanta menos por kg) e pela idade
   const ratio = (one / factor / ref) * (ref / p.weight) ** 0.67 / ageFactor(p.age);
   const pct = percentileOf(ratio, STD[p.sex][lift]);
-  return { pct, top: Math.max(1, Math.round(100 - pct)), lift, oneRM: one };
+  return { pct, top: Math.max(1, Math.round(100 - pct)), lift, oneRM: one, src, bw: !!isBw };
 }
 
 /** Média dos percentis de força de todos os exercícios comparáveis com registros. */

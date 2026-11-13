@@ -14,6 +14,7 @@ Funciona no navegador do celular, pode ser instalado na tela inicial e roda sem 
 - **Metas em formato de planilha**: séries por semana e por mês para cada grupamento, e meta de carga do mês para cada exercício, com a meta de cada semana calculada em degraus até lá (e editável à mão). As metas de grupamento acompanham a rotina sozinhas até você editá-las. Exporte em CSV, edite no Excel ou no Google Planilhas e importe de volta.
 - **Execução ideal** de cada movimento: passo a passo, erros comuns e uma dica para 41 exercícios, acessível durante o treino.
 - **Progresso**: séries por semana, evolução da força estimada por exercício, recordes e histórico.
+- **Força com transparência**: o top de força mostra de qual série saiu o 1RM e a fórmula usada. Um **teste de força** (uma série até a falha) deixa o número mais confiável sem mexer na progressão. O **peso corporal** tem registro rápido e gráfico.
 - **Planilhas**: exporta treinos e metas em CSV (abre no Excel e no Google Planilhas) e faz backup completo em JSON.
 - **Português, inglês e espanhol**: escolha o idioma em Ajustes (o inicial segue o do celular). Telas, exercícios, tutoriais, planilhas, respostas da IA e o registro por voz mudam junto.
 - **Carga total**: toda carga anotada é a total levantada. Cada exercício mostra como somar: barra + anilhas dos dois lados, os dois halteres somados, um halter só, o valor do aparelho ou da polia, ou só o peso extra.

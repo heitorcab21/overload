@@ -1,13 +1,13 @@
 // Treinos (rotinas), exercícios e a tela de execução ideal de cada exercício.
 import { state, save, uid } from '../store.js';
-import { $, esc, kg, setStr, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, meter } from '../ui.js';
+import { $, esc, kg, fmt, fmtDate, setStr, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, meter } from '../ui.js';
 import { route, go, rerender } from '../router.js';
 import { GROUPS, LIB, exName, exCues, tg, loadHint, loadShort, routineName } from '../data.js';
 import { t, tn, exPack } from '../i18n.js';
 import { planFor, exGoalStatus, entriesFor, defaultGroupGoals } from '../logic.js';
 import { ensureExercise, planStr } from './home.js';
 import { exerciseProgress, groupWord } from './progress.js';
-import { strengthLevel, profile } from '../body.js';
+import { strengthLevel, profile, oneRepMax } from '../body.js';
 import { aiEnabled, aiAskExecution, aiCuesFor } from '../ai.js';
 
 // ---------- Treinos ----------
@@ -245,17 +245,71 @@ function strengthCard(ex) {
     return `<a class="card stack" href="#/progresso" style="text-decoration:none"><h3>${t('Seu nível de força')}</h3>
       <p class="muted">${t('Preencha seu perfil (sexo, idade, altura e peso) na aba Progresso para ver em que top de força você está neste exercício.')}</p></a>`;
   }
+  const testBtn = `<button class="btn block" data-act="strengthTest" data-id="${esc(ex.id)}">${icon.target}${t('Fazer teste de força')}</button>`;
   if (lv.reason === 'noData') {
-    return `<div class="card stack"><h3>${t('Seu nível de força')}</h3><p class="muted">${t('Registre este exercício para ver em que top de força você está.')}</p></div>`;
+    return `<div class="card stack"><h3>${t('Seu nível de força')}</h3><p class="muted">${t('Registre este exercício ou faça um teste de força para ver em que top de força você está.')}</p>${testBtn}</div>`;
   }
   const p = profile();
+  const s = lv.src;
+  const load = lv.bw ? (s.w ? t('peso corporal + {w} kg', { w: fmt(s.w) }) : t('peso corporal')) : `${fmt(s.w)} kg`;
+  const setTxt = `${load} × ${s.r}${s.rir ? ` (${t('sobraram {n}', { n: s.rir >= 4 ? '4+' : s.rir })})` : ''}`;
+  const reps = s.r + Math.min(4, s.rir || 0);
+  const how = reps <= 1 ? t('Uma repetição máxima: o 1RM é a própria carga.')
+    : t('Calculado pela fórmula de Epley: carga × (1 + reps ÷ 30).');
   return `<div class="card stack">
     <h3>${t('Seu nível de força')}</h3>
     <div class="row between"><span class="big-num">${t('Top {n}%', { n: lv.top })}</span><span class="small muted">${t('1RM estimado: {w} kg', { w: Math.round(lv.oneRM) })}</span></div>
     ${meter(lv.pct / 100)}
     <p class="small muted">${t('Entre {grupo} que treinam musculação, com {idade} anos e cerca de {peso} kg. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.', { grupo: groupWord(p), idade: p.age, peso: Math.round(p.weight) })}</p>
+    <div class="src-box small">
+      <b>${s.test ? t('Base: teste de força de {d}', { d: fmtDate(s.date, false) }) : t('Base: sua melhor série dos últimos 90 dias ({d})', { d: fmtDate(s.date, false) })}</b><br>
+      ${esc(setTxt)}. ${how}${lv.bw ? ` ${t('Nos exercícios de peso corporal, seu peso entra na conta.')}` : ''}
+      ${reps > 10 ? `<br><span class="warn-text">${t('Séries com mais de 10 reps dão uma estimativa menos precisa. Um teste de força deixa o número mais confiável.')}</span>` : ''}
+    </div>
+    ${testBtn}
   </div>`;
 }
+
+// ---------- Teste de força: uma série até não conseguir mais ----------
+
+actions.strengthTest = el => {
+  const ex = state.exercises[el.dataset.id];
+  const last = entriesFor(ex.id).at(-1);
+  const w0 = (ex.tests || []).at(-1)?.w ?? (last ? Math.max(...last.sets.map(s => s.w || 0)) : ex.startW || 0);
+  const tests = (ex.tests || []).slice(-5).reverse();
+  sheet(`<h2>${t('Teste de força')}</h2>
+    <p class="muted small">${esc(exName(ex))}</p>
+    <ol class="steps small">
+      <li>${t('Aqueça com 2 ou 3 séries leves, aumentando a carga.')}</li>
+      <li>${t('Escolha uma carga que você aguente entre 1 e 8 reps.')}</li>
+      <li>${t('Faça uma única série até não conseguir mais nenhuma rep com boa execução. Use um parceiro ou travas de segurança.')}</li>
+    </ol>
+    <form class="stack" data-submit="saveStrengthTest" data-id="${esc(ex.id)}">
+      <div class="two">
+        ${stepper('w', w0, ex.step > 0 ? ex.step : 1, ex.bw ? t('Peso extra (kg)') : t('Carga total (kg)'))}
+        ${stepper('r', 5, 1, t('Repetições'), 1)}
+      </div>
+      <p class="small muted">${esc(loadHint(ex))}</p>
+      <p class="small muted">${t('Fez 1 rep máxima? Coloque 1: o app usa a carga como seu 1RM real. O teste não altera a progressão dos treinos.')}</p>
+      <button class="btn primary big">${t('Salvar teste')}</button>
+    </form>
+    ${tests.length ? `<h3>${t('Testes anteriores')}</h3><div class="list">${tests.map(x => `<div class="item"><span class="grow">${fmtDate(x.date, false)} · ${ex.bw ? `+${fmt(x.w)}` : fmt(x.w)} kg × ${x.r}</span>
+      <button class="icon-btn" data-act="delStrengthTest" data-id="${esc(ex.id)}" data-date="${esc(x.date)}" aria-label="${t('Excluir teste')}">${icon.trash}</button></div>`).join('')}</div>` : ''}`);
+};
+submits.saveStrengthTest = form => {
+  const ex = state.exercises[form.dataset.id];
+  const w = Math.max(0, Number(form.w.value) || 0), r = Math.round(Number(form.r.value) || 0);
+  if (r < 1 || r > 30 || (!ex.bw && !(w > 0))) { toast(t('Confira a carga e as repetições.'), 4000); return; }
+  ex.tests = [...(ex.tests || []), { date: new Date().toISOString(), w, r }].slice(-20);
+  save(); closeSheet(); rerender();
+  const lv = strengthLevel(ex);
+  toast(lv.top ? t('Teste salvo. Seu nível agora: top {n}%.', { n: lv.top }) : t('Teste salvo.'), 4000);
+};
+actions.delStrengthTest = el => {
+  const ex = state.exercises[el.dataset.id];
+  ex.tests = (ex.tests || []).filter(x => x.date !== el.dataset.date);
+  save(); closeSheet(); rerender();
+};
 
 const cuesText = c => (c ? `Execução: ${c.how.join(' ')}\nErros comuns: ${c.errs.join(' ')}` : '');
 

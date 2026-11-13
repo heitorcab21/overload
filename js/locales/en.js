@@ -607,6 +607,33 @@ const ui = {
   "Adicionar também na ficha {x}": "Also add it to the routine {x}",
   "Este exercício já tem séries registradas. Use \"Adicionar exercício\" para fazer outro.": "This exercise already has logged sets. Use \"Add exercise\" to do another one.",
   "Trocado por {x}.": "Swapped for {x}.",
+  "Fazer teste de força": "Take a strength test",
+  "Registre este exercício ou faça um teste de força para ver em que top de força você está.": "Log this exercise or take a strength test to see your strength percentile.",
+  "peso corporal + {w} kg": "bodyweight + {w} kg",
+  "sobraram {n}": "{n} left",
+  "Uma repetição máxima: o 1RM é a própria carga.": "A one-rep max: the 1RM is the load itself.",
+  "Calculado pela fórmula de Epley: carga × (1 + reps ÷ 30).": "Calculated with the Epley formula: load × (1 + reps ÷ 30).",
+  "Base: teste de força de {d}": "Based on: strength test from {d}",
+  "Base: sua melhor série dos últimos 90 dias ({d})": "Based on: your best set in the last 90 days ({d})",
+  "Nos exercícios de peso corporal, seu peso entra na conta.": "For bodyweight exercises, your body weight is included.",
+  "Séries com mais de 10 reps dão uma estimativa menos precisa. Um teste de força deixa o número mais confiável.": "Sets of more than 10 reps give a less accurate estimate. A strength test makes the number more reliable.",
+  "Teste de força": "Strength test",
+  "Aqueça com 2 ou 3 séries leves, aumentando a carga.": "Warm up with 2 or 3 light sets, increasing the load.",
+  "Escolha uma carga que você aguente entre 1 e 8 reps.": "Pick a load you can lift for 1 to 8 reps.",
+  "Faça uma única série até não conseguir mais nenhuma rep com boa execução. Use um parceiro ou travas de segurança.": "Do a single set until you cannot do another rep with good form. Use a spotter or safety pins.",
+  "Peso extra (kg)": "Extra weight (kg)",
+  "Fez 1 rep máxima? Coloque 1: o app usa a carga como seu 1RM real. O teste não altera a progressão dos treinos.": "Did a 1-rep max? Enter 1: the app uses the load as your real 1RM. The test does not change your workout progression.",
+  "Salvar teste": "Save test",
+  "Testes anteriores": "Previous tests",
+  "Excluir teste": "Delete test",
+  "Confira a carga e as repetições.": "Check the load and reps.",
+  "Teste salvo. Seu nível agora: top {n}%.": "Test saved. Your level now: top {n}%.",
+  "Teste salvo.": "Test saved.",
+  "{d} kg desde {data}": "{d} kg since {data}",
+  "Peso corporal": "Body weight",
+  "Registrar peso": "Log weight",
+  "Registre seu peso de vez em quando (por exemplo, toda semana, em jejum) para ver o gráfico.": "Log your weight now and then (for example, weekly, before eating) to see the chart.",
+  "Dica: pese-se sempre no mesmo horário, de preferência ao acordar.": "Tip: weigh yourself at the same time, ideally right after waking up.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -690,6 +717,8 @@ const help = [
       <li><b>Estimated body fat</b>: with waist and neck (and hips, for women), the app uses the US Navy formula, with an error of about 3 to 4 points. Without those measurements, it uses BMI, age and sex, with an error of about 5 points, and takes off up to 4 points if you're strong for your weight.</li>
       <li><b>Lean and fat mass</b>: your weight split by the estimated body fat percentage.</li>
       <li><b>Strength percentile</b>: compares your estimated 1RM with strength standards for lifters, adjusted for sex, age and weight. It only applies to barbell, dumbbell and bodyweight exercises; machines and cables vary too much between gyms.</li>
+      <li><b>Where the 1RM comes from</b>: the exercise's strength card shows the set used (your best in the last 90 days) and the formula. For a more reliable number, tap <b>Take a strength test</b>: after warming up, do one set to failure and enter the load and reps. The test does not change your workout progression.</li>
+      <li><b>Body weight</b>: on the Your body card, tap <b>Log weight</b> to follow the chart. One entry per day.</li>
     </ul>
     <p class="tip">These are estimates. For a reliable body fat number, get a body composition assessment (bioimpedance, skinfolds or DEXA). Update your weight now and then to keep the calculations right.</p>`],
   ['Spreadsheets (Excel and Google Sheets)', 'Export and import', `

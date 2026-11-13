@@ -607,6 +607,33 @@ const ui = {
   "Adicionar também na ficha {x}": "Agregar también a la rutina {x}",
   "Este exercício já tem séries registradas. Use \"Adicionar exercício\" para fazer outro.": "Este ejercicio ya tiene series registradas. Usa \"Agregar ejercicio\" para hacer otro.",
   "Trocado por {x}.": "Cambiado por {x}.",
+  "Fazer teste de força": "Hacer prueba de fuerza",
+  "Registre este exercício ou faça um teste de força para ver em que top de força você está.": "Registra este ejercicio o haz una prueba de fuerza para ver en qué top de fuerza estás.",
+  "peso corporal + {w} kg": "peso corporal + {w} kg",
+  "sobraram {n}": "sobraron {n}",
+  "Uma repetição máxima: o 1RM é a própria carga.": "Una repetición máxima: el 1RM es la propia carga.",
+  "Calculado pela fórmula de Epley: carga × (1 + reps ÷ 30).": "Calculado con la fórmula de Epley: carga × (1 + reps ÷ 30).",
+  "Base: teste de força de {d}": "Base: prueba de fuerza del {d}",
+  "Base: sua melhor série dos últimos 90 dias ({d})": "Base: tu mejor serie de los últimos 90 días ({d})",
+  "Nos exercícios de peso corporal, seu peso entra na conta.": "En los ejercicios de peso corporal, tu peso entra en la cuenta.",
+  "Séries com mais de 10 reps dão uma estimativa menos precisa. Um teste de força deixa o número mais confiável.": "Las series de más de 10 reps dan una estimación menos precisa. Una prueba de fuerza hace el número más fiable.",
+  "Teste de força": "Prueba de fuerza",
+  "Aqueça com 2 ou 3 séries leves, aumentando a carga.": "Calienta con 2 o 3 series ligeras, aumentando la carga.",
+  "Escolha uma carga que você aguente entre 1 e 8 reps.": "Elige una carga que aguantes entre 1 y 8 reps.",
+  "Faça uma única série até não conseguir mais nenhuma rep com boa execução. Use um parceiro ou travas de segurança.": "Haz una sola serie hasta no poder hacer otra rep con buena técnica. Usa un compañero o topes de seguridad.",
+  "Peso extra (kg)": "Peso extra (kg)",
+  "Fez 1 rep máxima? Coloque 1: o app usa a carga como seu 1RM real. O teste não altera a progressão dos treinos.": "¿Hiciste 1 rep máxima? Pon 1: la app usa la carga como tu 1RM real. La prueba no cambia la progresión de los entrenamientos.",
+  "Salvar teste": "Guardar prueba",
+  "Testes anteriores": "Pruebas anteriores",
+  "Excluir teste": "Borrar prueba",
+  "Confira a carga e as repetições.": "Revisa la carga y las repeticiones.",
+  "Teste salvo. Seu nível agora: top {n}%.": "Prueba guardada. Tu nivel ahora: top {n}%.",
+  "Teste salvo.": "Prueba guardada.",
+  "{d} kg desde {data}": "{d} kg desde el {data}",
+  "Peso corporal": "Peso corporal",
+  "Registrar peso": "Registrar peso",
+  "Registre seu peso de vez em quando (por exemplo, toda semana, em jejum) para ver o gráfico.": "Registra tu peso de vez en cuando (por ejemplo, cada semana, en ayunas) para ver el gráfico.",
+  "Dica: pese-se sempre no mesmo horário, de preferência ao acordar.": "Consejo: pésate siempre a la misma hora, preferiblemente al despertar.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -690,6 +717,8 @@ const help = [
       <li><b>Grasa estimada</b>: con cintura y cuello (y cadera, para mujeres), la app usa la fórmula de la Marina de EE. UU., con un error de unos 3 a 4 puntos. Sin esas medidas, usa IMC, edad y sexo, con un error de unos 5 puntos, y descuenta hasta 4 puntos si eres fuerte para tu peso.</li>
       <li><b>Masa magra y grasa</b>: tu peso repartido según el porcentaje de grasa estimado.</li>
       <li><b>Top de fuerza</b>: compara tu 1RM estimado con estándares de fuerza de quienes entrenan musculación, ajustados por sexo, edad y peso. Solo vale para ejercicios con barra, mancuernas o peso corporal; las máquinas y poleas varían demasiado entre gimnasios.</li>
+      <li><b>De dónde viene el 1RM</b>: la tarjeta de fuerza del ejercicio muestra la serie usada (tu mejor de los últimos 90 días) y la fórmula. Para un número más fiable, toca <b>Hacer prueba de fuerza</b>: después de calentar, haz una serie hasta no poder más e indica carga y reps. La prueba no cambia la progresión de los entrenamientos.</li>
+      <li><b>Peso corporal</b>: en la tarjeta Tu cuerpo, toca <b>Registrar peso</b> para seguir el gráfico. Un registro por día.</li>
     </ul>
     <p class="tip">Son estimaciones. Para un número fiable de grasa corporal, haz una evaluación física (bioimpedancia, pliegues cutáneos o DEXA). Actualiza el peso de vez en cuando para mantener los cálculos al día.</p>`],
   ['Hojas de cálculo (Excel y Google Sheets)', 'Exportar e importar', `

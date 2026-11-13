@@ -89,6 +89,8 @@ const TOPICS = [
       <li><b>Gordura estimada</b>: com cintura e pescoço (e quadril, para mulheres), o app usa a fórmula da Marinha americana, com erro de cerca de 3 a 4 pontos. Sem essas medidas, usa IMC, idade e sexo, com erro de cerca de 5 pontos, e desconta até 4 pontos se você for forte para o seu peso.</li>
       <li><b>Massa magra e gorda</b>: o peso dividido pelo percentual de gordura estimado.</li>
       <li><b>Top de força</b>: compara o seu 1RM estimado com padrões de força de quem treina musculação, ajustados por sexo, idade e peso. Só vale para exercícios com barra, halteres ou peso corporal; aparelhos e polias variam demais entre academias.</li>
+      <li><b>De onde vem o 1RM</b>: o cartão de força do exercício mostra a série usada no cálculo (a melhor dos últimos 90 dias) e a fórmula. Para um número mais confiável, toque em <b>Fazer teste de força</b>: depois de aquecer, faça uma série até não aguentar mais e informe carga e reps. O teste não mexe na progressão dos treinos.</li>
+      <li><b>Peso corporal</b>: no cartão Seu corpo, toque em <b>Registrar peso</b> para acompanhar o gráfico. Um registro por dia.</li>
     </ul>
     <p class="tip">São estimativas. Para um número confiável de gordura corporal, faça uma avaliação física (bioimpedância, dobras cutâneas ou DEXA). Atualize o peso de vez em quando para manter os cálculos certos.</p>`],
 

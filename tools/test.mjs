@@ -261,6 +261,14 @@ eq([lv.lift, lv.top >= 15 && lv.top <= 22], ['bench', true], 'supino 1,5x o peso
 eq(body.strengthLevel(S().exercises['peck-deck']).reason, 'notComparable', 'aparelho não entra no ranking');
 S().sessions.push({ id: 'bench2', date: nowIso, entries: [{ exId: 'supino-reto', sets: [{ w: 100, r: 5, rir: 3 }] }] });
 eq(Math.round(body.strengthLevel(S().exercises['supino-reto']).oneRM), Math.round(e1rm(100, 8)), 'RIR entra na estimativa do 1RM');
+const lvR = body.strengthLevel(S().exercises['supino-reto']);
+eq([lvR.src.w, lvR.src.r, lvR.src.rir, lvR.src.test], [100, 5, 3, false], 'mostra a série que gerou o 1RM');
+S().exercises['supino-reto'].tests = [{ date: nowIso, w: 140, r: 1 }];
+const lvT = body.strengthLevel(S().exercises['supino-reto']);
+eq([lvT.oneRM, lvT.src.test], [140, true], 'teste de 1 rep: o 1RM é a própria carga');
+S().exercises['supino-reto'].tests = [{ date: new Date(Date.now() - 200 * 864e5).toISOString(), w: 200, r: 1 }];
+eq(body.strengthLevel(S().exercises['supino-reto']).src.test, false, 'teste com mais de 180 dias deixa de valer');
+delete S().exercises['supino-reto'].tests;
 S().profile = null;
 eq(body.strengthLevel(S().exercises['supino-reto']).reason, 'noProfile');
 

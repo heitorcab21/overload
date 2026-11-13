@@ -91,6 +91,7 @@ function render() {
     })), { unit: ` ${t('séries')}` });
   }
   prog?.mount();
+  mountWeightChart();
 }
 
 changes.selEx = el => { selEx = el.value; rerender(); };
@@ -209,6 +210,7 @@ function bodyCard() {
   return `<div class="card stack">
     <div class="row between"><h3>${t('Seu corpo')}</h3><button class="btn sm ghost" data-act="editProfile">${t('Atualizar')}</button></div>
     <p class="small muted">${p.sex === 'm' ? t('Homem') : t('Mulher')} · ${t('{n} anos', { n: p.age })} · ${fmt(p.height)} cm · ${fmt1(p.weight)} kg</p>
+    ${weightBlock(p)}
     <div class="tiles">
       <div class="tile"><span class="l">${t('IMC')}</span><span class="v">${fmt1(c.bmi)}</span><span class="small muted">${BMI[c.bmiClass]}</span></div>
       <div class="tile"><span class="l">${t('Gordura estimada')}</span><span class="v">${fmt1(c.bf)}%</span><span class="small muted">±${fmt(c.margin)} ${t('pontos')}</span></div>
@@ -226,6 +228,48 @@ function bodyCard() {
     <p class="small muted">${t('Estimativas aproximadas. Não substituem uma avaliação física (bioimpedância, dobras cutâneas ou DEXA).')}</p>
   </div>`;
 }
+
+// ---------- Peso corporal ----------
+
+function weightBlock(p) {
+  const ws = (p.weights || []).slice(-30);
+  const chart = ws.length >= 2;
+  let delta = '';
+  if (chart) {
+    const d = Math.round((ws.at(-1).kg - ws[0].kg) * 10) / 10;
+    delta = t('{d} kg desde {data}', { d: (d > 0 ? '+' : '') + fmt(d), data: fmtDate(ws[0].date, false) });
+  }
+  return `<div class="row between"><b>${t('Peso corporal')}</b><button class="btn sm" data-act="logWeight">${icon.plus}${t('Registrar peso')}</button></div>
+    ${chart ? `<p class="small muted">${delta}</p><div class="chart" id="bwChart"></div>` : `<p class="small muted">${t('Registre seu peso de vez em quando (por exemplo, toda semana, em jejum) para ver o gráfico.')}</p>`}`;
+}
+function mountWeightChart() {
+  const box = $('#bwChart');
+  const ws = (state.profile?.weights || []).slice(-30);
+  if (!box || ws.length < 2) return;
+  lineChart(box, ws.map(w => ({ label: fmtDate(w.date, false), value: w.kg, tip: `${fmtDate(w.date)} · ${fmt(w.kg)} kg` })), { unit: ' kg' });
+}
+
+actions.logWeight = () => {
+  sheet(`<h2>${t('Registrar peso')}</h2>
+    <form class="stack" data-submit="saveWeight">
+      ${stepper('weight', state.profile.weight, 0.1, t('Peso (kg)'), 30)}
+      <p class="small muted">${t('Dica: pese-se sempre no mesmo horário, de preferência ao acordar.')}</p>
+      <button class="btn primary big">${t('Salvar')}</button>
+    </form>`);
+};
+submits.saveWeight = form => {
+  const kg = Math.round(Number(form.weight.value) * 10) / 10;
+  if (!(kg >= 30 && kg <= 300)) { toast(t('Confira idade, altura e peso.'), 4000); return; }
+  const p = state.profile;
+  const ws = [...(p.weights || [])];
+  const today = new Date().toDateString();
+  // um registro por dia: pesar de novo no mesmo dia substitui
+  if (ws.length && new Date(ws.at(-1).date).toDateString() === today) ws.pop();
+  ws.push({ date: new Date().toISOString(), kg });
+  p.weight = kg;
+  p.weights = ws.slice(-200);
+  save(); closeSheet(); rerender();
+};
 
 actions.editProfile = () => {
   const p = state.profile || {};
@@ -259,7 +303,10 @@ submits.saveProfile = form => {
   if (!age || !height || !weight) { toast(t('Confira idade, altura e peso.'), 4000); return; }
   const old = state.profile || {};
   const weights = [...(old.weights || [])];
-  if (old.weight !== weight) weights.push({ date: new Date().toISOString(), kg: weight });
+  if (old.weight !== weight) {
+    if (weights.length && new Date(weights.at(-1).date).toDateString() === new Date().toDateString()) weights.pop();
+    weights.push({ date: new Date().toISOString(), kg: weight });
+  }
   state.profile = {
     sex: form.sex.value, birthYear: new Date().getFullYear() - Math.round(age), height, weight,
     waist: n('waist', 40, 200), neck: n('neck', 20, 70), hip: n('hip', 50, 200), weights: weights.slice(-200),

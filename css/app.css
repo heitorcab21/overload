@@ -461,3 +461,7 @@ details.help .help-body b { color: var(--ink); }
   .sheet { align-items: center; }
   .sheet-card { border-radius: 22px; }
 }
+
+/* origem do 1RM */
+.src-box { padding: 10px 12px; border-radius: 10px; background: var(--surface-2); color: var(--ink-2); line-height: 1.45; }
+.warn-text { color: var(--warn, #d97706); }
