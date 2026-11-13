@@ -569,3 +569,8 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
   .ex-photos img:nth-of-type(2) { animation: exSwap 2.6s ease-in-out infinite; }
   @keyframes exSwap { 0%, 38% { opacity: 0; } 50%, 88% { opacity: 1; } 100% { opacity: 0; } }
 }
+
+/* botão Feito quando a série vai contar como aquecimento */
+:root { --warm: #5aa9e6; }
+.btn.primary.warm-mode { background: var(--warm); color: #06243a; }
+.warm-hint { color: var(--warm); font-weight: 600; margin-top: -4px; }

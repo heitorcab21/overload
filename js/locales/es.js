@@ -741,6 +741,8 @@ const ui = {
   "igual": "igual",
   "Este mês": "Este mes",
   "comparado ao mesmo período do mês passado": "comparado con el mismo período del mes pasado",
+  "Aquecimento": "Calentamiento",
+  "Carga abaixo de 60% da meta: esta série vai contar como aquecimento. Suba a carga para registrar como série válida.": "Carga por debajo del 60% de la meta: esta serie contará como calentamiento. Sube la carga para registrarla como serie válida.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

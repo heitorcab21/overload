@@ -121,10 +121,11 @@ function render() {
       <div class="chips">${[5, 10, 15, 20, 30, 40, 50, 60, 80, 100].map(v =>
         `<button class="chip${en.cur.w === v ? ' on' : ''}" data-act="wSetW" data-w="${v}" aria-pressed="${en.cur.w === v}">${v}</button>`).join('')}</div>` : ''}
       <div class="two">
-        ${stepper('w', en.cur.w, ex.step || 1, loadLabel(ex), 0, 'wCur')}
-        ${stepper('r', en.cur.r, 1, t('Repetições'), 0, 'wCur')}
+        ${stepper('w', en.cur.w, ex.step || 1, loadLabel(ex), 0, 'wCur').replace('data-change="wCur"', 'data-change="wCur" data-live')}
+        ${stepper('r', en.cur.r, 1, t('Repetições'), 0, 'wCur').replace('data-change="wCur"', 'data-change="wCur" data-live')}
       </div>
-      <button class="btn primary big" data-act="wDone">${icon.check}<span id="doneLabel">${t('Feito')} · ${setStr(en.cur)}</span></button>
+      <button class="btn primary big${willBeWarmup(en, ex) ? ' warm-mode' : ''}" data-act="wDone">${icon.check}<span id="doneLabel">${doneText(en, ex)}</span></button>
+      <p class="small warm-hint" id="warmHint"${willBeWarmup(en, ex) ? '' : ' hidden'}>${t('Carga abaixo de 60% da meta: esta série vai contar como aquecimento. Suba a carga para registrar como série válida.')}</p>
       <p class="small muted load-hint">${esc(loadHint(ex))}</p>
       ${rirRow(en)}
       <div class="row wrap">
@@ -238,21 +239,35 @@ const done = () => { save({ touch: false }); render(); };
 // ---------- Ações de toque ----------
 
 changes.wCur = el => {
-  const { en } = cur();
+  const { en, ex } = cur();
   const v = Math.max(0, Number(el.value) || 0);
   if (el.name === 'w') en.cur.w = v; else en.cur.r = Math.round(v);
   save({ touch: false });
   const label = setStr(en.cur);
   if ($('#curLabel')) $('#curLabel').textContent = label;
-  if ($('#doneLabel')) $('#doneLabel').textContent = `${t('Feito')} · ${label}`;
+  paintDone(en, ex);
 };
+
+/** A próxima série vai contar como aquecimento? (1ª série com menos de 60% da carga sugerida) */
+function willBeWarmup(en, ex) {
+  const ref = en.plan.first ? 0 : en.plan.w;
+  return !en.sets.length && ref > 0 && en.cur.w > 0 && en.cur.w < ref * 0.6 && !ex.bw;
+}
+const doneText = (en, ex) => `${willBeWarmup(en, ex) ? t('Aquecimento') : t('Feito')} · ${setStr(en.cur)}`;
+function paintDone(en, ex) {
+  const b = $('[data-act="wDone"]');
+  if (!b) return;
+  b.classList.toggle('warm-mode', willBeWarmup(en, ex));
+  $('#doneLabel').textContent = doneText(en, ex);
+  const hint = $('#warmHint');
+  if (hint) hint.hidden = !willBeWarmup(en, ex);
+}
 
 actions.wDone = () => {
   const { en, ex } = cur();
   // 1ª série com carga bem abaixo da sugerida (menos de 60%): quase certo que é aquecimento.
   // Conta à parte sozinha; se não era, um toque na série devolve.
-  const ref = en.plan.first ? 0 : en.plan.w;
-  if (!en.sets.length && ref > 0 && en.cur.w > 0 && en.cur.w < ref * 0.6 && !ex.bw) {
+  if (willBeWarmup(en, ex)) {
     en.warmup.push({ w: en.cur.w, r: en.cur.r });
     state.active.restEnd = Date.now() + Math.round(restOf(ex) / 2) * 1000;
     restFired = false;
