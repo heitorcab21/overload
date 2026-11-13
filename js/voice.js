@@ -26,6 +26,8 @@ const VOCAB = {
     feel: [[/\b(facil|leve|tranquilo|sobrou)\b/, 'easy'], [/\b(na medida|normal|ok|bom|certinho)\b/, 'ok'],
       [/\b(pesado|dificil|sofrido|puxado)\b/, 'hard'], [/\b(ate a falha|falhei|falha)\b/, 'fail']],
     next: /\bproximo\b/,
+    warm: /\b(aquecimento|aquecendo|aqueci|aquecer)\b/,
+    notWarm: /\b(nao (foi|era) aquecimento|nao e aquecimento|(era|foi|e) (uma )?serie valida|era valida|valeu sim)\b/,
   },
   en: {
     units: {
@@ -47,6 +49,8 @@ const VOCAB = {
     feel: [[/\b(easy|light)\b/, 'easy'], [/\b(ok|okay|fine|good|normal)\b/, 'ok'],
       [/\b(hard|heavy|tough)\b/, 'hard'], [/\b(to failure|failed|failure)\b/, 'fail']],
     next: /\bnext\b/,
+    warm: /\b(warm ?up|warmup|warming up|warm-up)\b/,
+    notWarm: /\b(not (a )?warm ?up|wasn t (a )?warm ?up|working set|it counted|it was valid)\b/,
   },
   es: {
     units: {
@@ -70,6 +74,8 @@ const VOCAB = {
     feel: [[/\b(facil|ligero|tranquilo)\b/, 'easy'], [/\b(bien|normal|ok|justo)\b/, 'ok'],
       [/\b(pesado|dificil|duro)\b/, 'hard'], [/\b(al fallo|falle)\b/, 'fail']],
     next: /\bsiguiente\b/,
+    warm: /\b(calentamiento|calentando|calente|calentar)\b/,
+    notWarm: /\b(no (fue|era|es) calentamiento|(era|fue|es) (una )?serie valida|era valida)\b/,
   },
 };
 
@@ -124,6 +130,8 @@ export function wordsToDigits(text, l = lang()) {
  * Interpreta o que foi dito e devolve uma lista de ações:
  *  { type:'set', w?, r?, fail? }  { type:'planned', all? }  { type:'delta', dr? , dw? }
  *  { type:'feel', v }  { type:'skip' }  { type:'next' }  { type:'undo' }
+ *  { type:'warm' } (a última série, ou a próxima, foi aquecimento)  { type:'unwarm' } (não foi aquecimento)
+ *  séries ditas junto com "aquecimento" vêm com warm: true
  */
 export function parseUtterance(raw, l = lang()) {
   const V = VOCAB[l] || VOCAB.pt;
@@ -131,6 +139,8 @@ export function parseUtterance(raw, l = lang()) {
   const acts = [];
   if (!txt) return acts;
 
+  if (V.notWarm.test(txt)) return [{ type: 'unwarm' }];
+  const warm = V.warm.test(txt);
   if (V.undo.test(txt)) return [{ type: 'undo' }];
   if (V.skip.test(txt)) return [{ type: 'skip' }];
 
@@ -185,6 +195,7 @@ export function parseUtterance(raw, l = lang()) {
           if (w !== undefined) a.w = w;
           if (r !== undefined) a.r = Math.round(r);
           if (fail) a.fail = true;
+          if (warm) a.warm = true;
           acts.push(a);
         }
       }
@@ -201,6 +212,8 @@ export function parseUtterance(raw, l = lang()) {
       break;
     }
   }
+  // "foi aquecimento" sem números: marca a última série (ou a próxima) como aquecimento
+  if (warm && !acts.some(a => a.type === 'set')) return [{ type: 'warm' }];
   if (V.next.test(txt)) acts.push({ type: 'next' });
   return acts;
 }

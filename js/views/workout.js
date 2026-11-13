@@ -570,6 +570,7 @@ const voiceSheet = (status, listening) => `
     <li>${t('<b>"40 quilos, 12 repetições"</b> registra uma série')}</li>
     <li>${t('<b>"bati a meta"</b> ou <b>"mais uma"</b> usa a meta como base')}</li>
     <li>${t('<b>"três séries de dez com cinquenta"</b> registra várias')}</li>
+    <li>${t('<b>"foi aquecimento"</b> ou <b>"aquecimento, 20 quilos, 15"</b> marca aquecimento; <b>"não foi aquecimento"</b> desfaz')}</li>
     <li>${t('<b>"estava pesado"</b>, <b>"desfazer"</b>, <b>"pular"</b>, <b>"próximo"</b>')}</li>
   </ul>
   <form class="row" data-submit="voiceText">
@@ -627,10 +628,24 @@ async function applyVoice(text) {
   let move = null;
   for (const act of acts) {
     const { en, ex } = cur();
-    if (act.type === 'set') {
+    if (act.type === 'set' && act.warm) {
+      const w = act.w ?? en.cur.w, r = act.r ?? en.cur.r;
+      en.warmup.push({ w, r });
+      said.push(`${setStr({ w, r })} (${t('aquecimento')})`);
+    } else if (act.type === 'set') {
       const w = act.w ?? en.cur.w, r = act.r ?? en.cur.r;
       logSet(en, w, r, act.fail ? 'F' : undefined);
       said.push(setStr({ w, r }) + (act.fail ? ` (${t('falhou')})` : ''));
+    } else if (act.type === 'warm') {
+      // já registrou séries: a última vira aquecimento; senão, registra a próxima como aquecimento
+      const last = en.sets.pop();
+      const s = last ? { w: last.w, r: last.r } : { w: en.cur.w, r: en.cur.r };
+      en.warmup.push(s);
+      said.push(`${setStr(s)} ${t('contada como aquecimento')}`);
+    } else if (act.type === 'unwarm') {
+      const w = en.warmup.pop();
+      if (w) { en.sets.push(w); said.push(`${setStr(w)} ${t('contada como série válida')}`); }
+      else said.push(t('nenhum aquecimento para desfazer'));
     } else if (act.type === 'planned') {
       const n = act.all ? Math.max(1, ex.sets - en.sets.length) : 1;
       for (let i = 0; i < n; i++) { said.push(setStr(en.cur)); logSet(en, en.cur.w, en.cur.r); }

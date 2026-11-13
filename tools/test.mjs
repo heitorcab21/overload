@@ -364,6 +364,16 @@ eq(body.quickLevel('peck-deck', 50, 10), null, 'aparelho não entra');
 eq(body.quickLevel('barra-fixa', 0, 10).top > 0, true, 'peso corporal usa o peso do perfil');
 S().profile = null;
 
+// ---- voz: aquecimento ----
+eq(parseUtterance('foi aquecimento'), [{ type: 'warm' }]);
+eq(parseUtterance('isso foi aquecimento'), [{ type: 'warm' }]);
+eq(parseUtterance('não foi aquecimento'), [{ type: 'unwarm' }]);
+eq(parseUtterance('era série válida'), [{ type: 'unwarm' }]);
+eq(parseUtterance('aquecimento vinte quilos quinze'), [{ type: 'set', w: 20, r: 15, warm: true }]);
+eq(parseUtterance('it was a warm up', 'en'), [{ type: 'warm' }]);
+eq(parseUtterance('no fue calentamiento', 'es'), [{ type: 'unwarm' }]);
+eq(parseUtterance('40 quilos 12 repetições'), [set(40, 12)], 'série normal continua igual');
+
 // ---- todos os arquivos carregam sem erro de sintaxe (inclusive telas que os testes não usam) ----
 {
   const { readdirSync } = await import('node:fs');

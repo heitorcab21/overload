@@ -66,6 +66,7 @@ const TOPICS = [
       <li><b>"bati a meta"</b> ou <b>"fiz tudo"</b>: usa a meta como está.</li>
       <li><b>"mais uma"</b> ou <b>"menos duas"</b>: a meta com reps a mais ou a menos.</li>
       <li><b>"mais 5 quilos"</b>: ajusta a carga da próxima série.</li>
+      <li><b>"foi aquecimento"</b>: a última série (ou a próxima) conta como aquecimento. <b>"aquecimento, 20 quilos, 15"</b>: registra direto como aquecimento. <b>"não foi aquecimento"</b>: volta a ser série válida.</li>
       <li><b>"estava pesado"</b>, <b>"desfazer"</b>, <b>"pular"</b>, <b>"próximo"</b>.</li>
     </ul>
     <p class="tip">Na primeira vez o navegador pede permissão do microfone. No Android, o reconhecimento de voz precisa de internet. Se a voz não funcionar, digite a mesma frase no campo que aparece embaixo.</p>`],

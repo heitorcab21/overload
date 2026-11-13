@@ -759,6 +759,10 @@ const ui = {
   "{n} treino criado.": "{n} workout created.",
   "{n} treinos criados.": "{n} workouts created.",
   "importante marcar se foi": "worth marking if it was",
+  "contada como aquecimento": "counted as a warm-up",
+  "contada como série válida": "counted as a working set",
+  "nenhum aquecimento para desfazer": "no warm-up to undo",
+  "<b>\"foi aquecimento\"</b> ou <b>\"aquecimento, 20 quilos, 15\"</b> marca aquecimento; <b>\"não foi aquecimento\"</b> desfaz": "<b>\"it was a warm-up\"</b> or <b>\"warm-up, 20 kilos, 15\"</b> marks a warm-up; <b>\"not a warm-up\"</b> undoes it",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -821,6 +825,7 @@ const help = [
       <li><b>"hit the target"</b> or <b>"did it all"</b>: uses the target as is.</li>
       <li><b>"one more"</b> or <b>"minus two"</b>: the target with reps added or removed.</li>
       <li><b>"plus 5 kilos"</b>: changes the load for the next set.</li>
+      <li><b>"it was a warm-up"</b>: the last set (or the next one) counts as a warm-up. <b>"warm-up, 20 kilos, 15"</b>: logs it straight as a warm-up. <b>"not a warm-up"</b>: makes it a working set again.</li>
       <li><b>"it was hard"</b>, <b>"undo"</b>, <b>"skip"</b>, <b>"next"</b>.</li>
     </ul>
     <p class="tip">The first time, the browser asks for microphone permission. On Android, speech recognition needs internet. If voice doesn't work, type the same phrase in the field below.</p>`],

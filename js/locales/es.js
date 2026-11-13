@@ -759,6 +759,10 @@ const ui = {
   "{n} treino criado.": "{n} entrenamiento creado.",
   "{n} treinos criados.": "{n} entrenamientos creados.",
   "importante marcar se foi": "importante marcarlo si lo fue",
+  "contada como aquecimento": "contada como calentamiento",
+  "contada como série válida": "contada como serie válida",
+  "nenhum aquecimento para desfazer": "ningún calentamiento para deshacer",
+  "<b>\"foi aquecimento\"</b> ou <b>\"aquecimento, 20 quilos, 15\"</b> marca aquecimento; <b>\"não foi aquecimento\"</b> desfaz": "<b>\"fue calentamiento\"</b> o <b>\"calentamiento, 20 kilos, 15\"</b> marca calentamiento; <b>\"no fue calentamiento\"</b> lo deshace",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -821,6 +825,7 @@ const help = [
       <li><b>"cumplí la meta"</b> o <b>"lo hice todo"</b>: usa la meta tal cual.</li>
       <li><b>"una más"</b> o <b>"menos dos"</b>: la meta con reps de más o de menos.</li>
       <li><b>"más 5 kilos"</b>: ajusta la carga de la próxima serie.</li>
+      <li><b>"fue calentamiento"</b>: la última serie (o la próxima) cuenta como calentamiento. <b>"calentamiento, 20 kilos, 15"</b>: la registra directo como calentamiento. <b>"no fue calentamiento"</b>: vuelve a ser serie válida.</li>
       <li><b>"estaba pesado"</b>, <b>"deshacer"</b>, <b>"saltar"</b>, <b>"siguiente"</b>.</li>
     </ul>
     <p class="tip">La primera vez el navegador pide permiso para el micrófono. En Android, el reconocimiento de voz necesita internet. Si la voz no funciona, escribe la misma frase en el campo de abajo.</p>`],
