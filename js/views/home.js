@@ -74,8 +74,9 @@ function renderOnboarding() {
         <b>${icon.edit}${t('Já anoto meus treinos')}</b><span>${t('Cole o texto do bloco de notas ou do WhatsApp e o app salva todas as suas cargas.')}</span>
       </a>
       <div class="or-sep"><span>${t('ou')}</span></div>
+      <h3 class="accent-title"><span class="num-tag">1</span>${t('Monte do zero')}</h3>
       <button class="tpl tpl-own" data-act="pickTemplate" data-id="">
-        <b><span class="num-tag">1</span>${t('Monte seu próprio treino do zero')}</b>
+        <b>${icon.plus}${t('Monte seu próprio treino')}</b>
       </button>
       <h3 class="accent-title"><span class="num-tag">2</span>${t('Escolha um treino pronto')}</h3>
       ${TEMPLATES.map(tp => `

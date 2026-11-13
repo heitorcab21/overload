@@ -747,8 +747,8 @@ const ui = {
   "versão de desenvolvimento": "development version",
   "Monte seu próprio treino": "Build your own workout",
   "ou": "or",
-  "Monte seu próprio treino do zero": "Build your own workout from scratch",
   "Escolha um treino pronto": "Pick a ready-made workout",
+  "Monte do zero": "Start from scratch",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
