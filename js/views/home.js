@@ -1,8 +1,8 @@
 // Telas: primeiro acesso, Hoje e resumo do treino.
 import { state, save, uid } from '../store.js';
-import { $, esc, fmt, kg, setStr, compact, icon, actions, toast, sheet, closeSheet, meter, fmtDate, weekLetters } from '../ui.js';
+import { googleBtn, $, esc, fmt, kg, setStr, compact, icon, actions, toast, sheet, closeSheet, meter, fmtDate, weekLetters } from '../ui.js';
 import { route, go, rerender } from '../router.js';
-import { TEMPLATES, LIB_BY_ID, OLD_STEP, exName, tg } from '../data.js';
+import { TEMPLATES, LIB_BY_ID, OLD_STEP, exName, tg, routineName, templateKey } from '../data.js';
 import {
   planFor, weekStart, addDays, sessionsIn, groupGoalStatus, defaultGroupGoals, DAY,
   sessionPRs, tonnage, exGoalStatus, entriesFor,
@@ -21,6 +21,12 @@ export function migrateLoadSteps() {
   for (const ex of Object.values(state.exercises)) {
     const l = ex.lib && LIB_BY_ID[ex.lib];
     if (l && OLD_STEP[ex.lib] === ex.step && l.step !== ex.step) { ex.step = l.step; changed = true; }
+  }
+  // fichas pré-moldadas criadas antes da tradução: passam a seguir o idioma
+  for (const r of [...state.routines, ...state.sessions, ...(state.active ? [state.active] : [])]) {
+    if (r.tpl !== undefined) continue;
+    const key = templateKey(r.name);
+    if (key) { r.name = key; r.tpl = true; changed = true; }
   }
   if (changed) save({ touch: false });
 }
@@ -54,7 +60,7 @@ function renderOnboarding() {
         <div class="card stack">
           <h2>${t('Entre com sua conta Google')}</h2>
           <p class="muted">${t('Seus treinos ficam salvos no seu Google Drive e aparecem em qualquer celular ou computador em que você entrar. Se você já usa o Overload, seus dados voltam na hora.')}</p>
-          <button class="btn primary big" data-act="driveConnect">${t('Entrar com Google')}</button>
+          ${googleBtn(t('Entrar com Google'), 'big')}
           <p class="small muted">${t('O app só acessa os arquivos que ele mesmo cria, numa pasta "Overload" do seu Drive. Se aparecer "O Google não verificou este app", toque em <b>Continuar</b>.')}</p>
         </div>
         <button class="btn ghost block" data-act="skipLogin">${t('Usar sem conta')}</button>
@@ -88,8 +94,8 @@ actions.pickTemplate = el => {
   if (tp) {
     for (const [name, ids] of tp.routines) {
       ids.forEach(ensureExercise);
-      // o nome da rotina é criado no idioma atual e depois pode ser editado
-      state.routines.push({ id: uid(), name: t(name), ex: ids.slice() });
+      // nome guardado como chave do modelo: aparece no idioma escolhido até ser renomeado
+      state.routines.push({ id: uid(), name, tpl: true, ex: ids.slice() });
     }
     defaultGroupGoals();
   }
@@ -118,7 +124,7 @@ function renderHome() {
     const done = a.entries.filter(e => e.sets.length || e.skipped).length;
     main = `<div class="card stack">
       <h3>${t('Treino em andamento')}</h3>
-      <h2>${esc(a.name)}</h2>
+      <h2>${esc(routineName(a))}</h2>
       <p class="muted">${t('{done} de {total} exercícios registrados', { done, total: a.entries.length })}</p>
       <button class="btn primary big" data-act="resume">${icon.play}${t('Continuar treino')}</button>
     </div>`;
@@ -134,7 +140,7 @@ function renderHome() {
     main = `<div class="card stack">
       <div class="row between"><h3>${t('Próximo treino')}</h3>
         ${state.routines.length > 1 ? `<button class="btn sm ghost" data-act="chooseRoutine">${t('Trocar')}</button>` : ''}</div>
-      <h2>${esc(r.name)}</h2>
+      <h2>${esc(routineName(r))}</h2>
       <div>${exs.map(ex => {
         const p = planFor(ex);
         return `<div class="plan-line"><span class="n">${esc(exName(ex))}</span>
@@ -167,7 +173,7 @@ function renderHome() {
   const driveInvite = driveAvailable() && !driveConnected() && !state.drivePromptDismissed && !drive ? `<div class="card stack">
       <h3>${t('Novo: Google Drive')}</h3>
       <p class="muted">${t('Entre com sua conta Google para seus treinos ficarem salvos no seu Drive e aparecerem em qualquer aparelho.')}</p>
-      <button class="btn primary block" data-act="driveConnect">${t('Entrar com Google')}</button>
+      ${googleBtn(t('Entrar com Google'), 'block')}
       <button class="btn ghost block" data-act="drivePromptLater">${t('Agora não')}</button>
     </div>` : '';
   const backup = !driveInvite && !driveRecent && state.sessions.length >= 3 && (!lb || daysSince >= 7) ? `<div class="card stack">
@@ -199,7 +205,7 @@ actions.chooseRoutine = () => {
   sheet(`<h2>${t('Qual treino hoje?')}</h2>
     <div class="card flat"><div class="list">
       ${state.routines.map((r, i) => `<button class="item" data-act="setNext" data-i="${i}">
-        <span class="grow"><span class="t">${esc(r.name)}</span><br><span class="d">${tn(r.ex.length, '{n} exercício', '{n} exercícios')}</span></span>
+        <span class="grow"><span class="t">${esc(routineName(r))}</span><br><span class="d">${tn(r.ex.length, '{n} exercício', '{n} exercícios')}</span></span>
         ${i === state.next % state.routines.length ? `<span class="badge">${t('próximo')}</span>` : ''}
       </button>`).join('')}
     </div></div>`);
@@ -273,7 +279,7 @@ function renderSummary(id) {
     else if (st && !st.expired && st.weekDone) hit.push(t('{ex}: meta da semana batida', { ex: exName(ex) }));
   }
   $('#view').innerHTML = `
-    <div class="hero"><h1>${t('Treino concluído')}</h1><p class="muted">${esc(s.name)} · ${fmtDate(s.date)}</p>
+    <div class="hero"><h1>${t('Treino concluído')}</h1><p class="muted">${esc(routineName(s))} · ${fmtDate(s.date)}</p>
       ${driveConnected() ? `<div><span class="badge${driveDirty() ? '' : ' good'}" id="syncNote">${driveDirty() ? t('Salvando no seu Google Drive…') : `${icon.check}${t('Salvo no seu Google Drive')}`}</span></div>` : ''}
     </div>
     <div class="stack">

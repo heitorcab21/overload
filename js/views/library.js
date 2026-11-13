@@ -2,11 +2,12 @@
 import { state, save, uid } from '../store.js';
 import { $, esc, kg, setStr, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, meter } from '../ui.js';
 import { route, go, rerender } from '../router.js';
-import { GROUPS, LIB, exName, exCues, tg, loadHint, loadShort } from '../data.js';
+import { GROUPS, LIB, exName, exCues, tg, loadHint, loadShort, routineName } from '../data.js';
 import { t, tn, exPack } from '../i18n.js';
 import { planFor, exGoalStatus, entriesFor, defaultGroupGoals } from '../logic.js';
 import { ensureExercise, planStr } from './home.js';
-import { exerciseProgress } from './progress.js';
+import { exerciseProgress, groupWord } from './progress.js';
+import { strengthLevel, profile } from '../body.js';
 import { aiEnabled, aiAskExecution, aiCuesFor } from '../ai.js';
 
 // ---------- Treinos ----------
@@ -20,8 +21,8 @@ function renderRoutines() {
     <div class="stack">
       ${state.routines.map((r, ri) => `<div class="card flat">
         <div class="row" style="padding:12px 8px 4px 16px">
-          <h2 class="grow">${esc(r.name)}</h2>
-          <button class="icon-btn" data-act="editRoutine" data-id="${r.id}" aria-label="${t('Renomear ou excluir {x}', { x: esc(r.name) })}">${icon.edit}</button>
+          <h2 class="grow">${esc(routineName(r))}</h2>
+          <button class="icon-btn" data-act="editRoutine" data-id="${r.id}" aria-label="${t('Renomear ou excluir {x}', { x: esc(routineName(r)) })}">${icon.edit}</button>
         </div>
         <div class="list">${r.ex.map((id, i) => {
           const ex = state.exercises[id];
@@ -55,7 +56,7 @@ actions.editRoutine = el => {
   const r = state.routines.find(x => x.id === el.dataset.id);
   sheet(`<h2>${t('Editar treino')}</h2>
     <form class="stack" data-submit="saveRoutine" data-id="${r.id}">
-      <label class="field">${t('Nome')}<input type="text" name="name" required maxlength="40" value="${esc(r.name)}" autocomplete="off"></label>
+      <label class="field">${t('Nome')}<input type="text" name="name" required maxlength="40" value="${esc(routineName(r))}" autocomplete="off"></label>
       <button class="btn primary big">${t('Salvar')}</button>
       <button type="button" class="btn ghost danger block" data-act="delRoutineAsk" data-id="${r.id}">${t('Excluir treino')}</button>
     </form>`);
@@ -64,12 +65,13 @@ submits.saveRoutine = form => {
   const name = form.name.value.trim();
   if (!name) return;
   const r = state.routines.find(x => x.id === form.dataset.id);
-  if (r) r.name = name; else state.routines.push({ id: uid(), name, ex: [] });
+  // renomeou: o nome passa a ser seu e não muda mais com o idioma
+  if (r) { if (name !== routineName(r)) { r.name = name; r.tpl = false; } } else state.routines.push({ id: uid(), name, tpl: false, ex: [] });
   save(); closeSheet(); rerender();
 };
 actions.delRoutineAsk = el => {
   const r = state.routines.find(x => x.id === el.dataset.id);
-  sheet(`<h2>${t('Excluir "{x}"?', { x: esc(r.name) })}</h2><p class="muted">${t('Os exercícios e o histórico continuam salvos. Só o treino sai da rotação.')}</p>
+  sheet(`<h2>${t('Excluir "{x}"?', { x: esc(routineName(r)) })}</h2><p class="muted">${t('Os exercícios e o histórico continuam salvos. Só o treino sai da rotação.')}</p>
     <button class="btn danger block" data-act="delRoutine" data-id="${r.id}">${t('Excluir treino')}</button>
     <button class="btn block" data-act="closeSheet">${t('Cancelar')}</button>`);
 };
@@ -111,7 +113,7 @@ function pickerList(q = '') {
 
 actions.pickEx = el => {
   pickRoutine = Number(el.dataset.r);
-  sheet(`<h2>${t('Adicionar a {x}', { x: esc(state.routines[pickRoutine].name) })}</h2>
+  sheet(`<h2>${t('Adicionar a {x}', { x: esc(routineName(state.routines[pickRoutine])) })}</h2>
     <input type="search" placeholder="${t('Buscar exercício ou grupamento')}" data-change="pickFilter" aria-label="${t('Buscar exercício')}" autocomplete="off">
     <div id="pickList">${pickerList()}</div>
     <button class="btn block" data-act="newExercise">${icon.plus}${t('Criar exercício personalizado')}</button>`);
@@ -200,6 +202,8 @@ function renderExercise(id) {
 
       <div class="tip"><b>${t('Como anotar a carga')}:</b> ${esc(loadHint(ex))}</div>
 
+      ${strengthCard(ex)}
+
       ${st && !st.expired ? `<a class="card" href="#/metas" style="text-decoration:none">
         <div class="goal-row"><div class="top"><b>${t('Meta da semana')}</b><span class="num">${setStr(st.weekSet)}</span></div>${meter(st.weekPct, st.weekDone)}</div>
         <div class="goal-row"><div class="top"><b>${t('Meta do mês')}</b><span class="num">${setStr(st.goal)}</span></div>${meter(st.monthPct, st.monthDone)}</div>
@@ -229,6 +233,25 @@ function renderExercise(id) {
       <button class="btn ghost danger block" data-act="delExerciseAsk" data-id="${esc(ex.id)}">${icon.trash}${t('Excluir exercício')}</button>
     </div>`;
   prog.mount();
+}
+
+function strengthCard(ex) {
+  const lv = strengthLevel(ex);
+  if (lv.reason === 'notComparable') return '';
+  if (lv.reason === 'noProfile') {
+    return `<a class="card stack" href="#/progresso" style="text-decoration:none"><h3>${t('Seu nível de força')}</h3>
+      <p class="muted">${t('Preencha seu perfil (sexo, idade, altura e peso) na aba Progresso para ver em que top de força você está neste exercício.')}</p></a>`;
+  }
+  if (lv.reason === 'noData') {
+    return `<div class="card stack"><h3>${t('Seu nível de força')}</h3><p class="muted">${t('Registre este exercício para ver em que top de força você está.')}</p></div>`;
+  }
+  const p = profile();
+  return `<div class="card stack">
+    <h3>${t('Seu nível de força')}</h3>
+    <div class="row between"><span class="big-num">${t('Top {n}%', { n: lv.top })}</span><span class="small muted">${t('1RM estimado: {w} kg', { w: Math.round(lv.oneRM) })}</span></div>
+    ${meter(lv.pct / 100)}
+    <p class="small muted">${t('Entre {grupo} que treinam musculação, com {idade} anos e cerca de {peso} kg. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.', { grupo: groupWord(p), idade: p.age, peso: Math.round(p.weight) })}</p>
+  </div>`;
 }
 
 const cuesText = c => (c ? `Execução: ${c.how.join(' ')}\nErros comuns: ${c.errs.join(' ')}` : '');

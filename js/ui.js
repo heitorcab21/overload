@@ -53,6 +53,7 @@ export const icon = {
   target: I('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>'),
   chart: I('<path d="M4 20V4M4 20h16M8 16v-4M12 16V8M16 16v-6"/>'),
   dumbbell: I('<path d="M3 9v6M6 6v12M18 6v12M21 9v6M6 12h12"/>'),
+  sync: I('<path d="M20 11a8 8 0 00-14.6-4.5M4 13a8 8 0 0014.6 4.5"/><path d="M20 4v7h-7M4 20v-7h7"/>'),
   download: I('<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>'),
   bulb: I('<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 00-3.6 10.8c.6.5 1.1 1.3 1.1 2.2h5c0-.9.5-1.7 1.1-2.2A6 6 0 0012 3z"/>'),
   gear: I('<circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/>'),
@@ -62,6 +63,10 @@ export const icon = {
   edit: I('<path d="M4 20h4L19 9l-4-4L4 16z"/>'),
   trophy: I('<path d="M8 4h8v5a4 4 0 01-8 0zM8 6H5a3 3 0 003 4M16 6h3a3 3 0 01-3 4M12 13v4M8 20h8"/>'),
 };
+
+/** Botão "Entrar com Google" no padrão visual do Google (azul, com o G colorido). */
+const G_LOGO = '<span class="g-logo" aria-hidden="true"><svg viewBox="0 0 48 48" width="18" height="18"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.8 6C12.4 13.7 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.3.8-4.7l-7.8-6C1 16.6 0 20.2 0 24s1 7.4 2.7 10.7l7.8-6z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.9 2.3-8.4 2.3-6.3 0-11.6-4.2-13.5-9.9l-7.8 6C6.6 42.6 14.6 48 24 48z"/></svg></span>';
+export const googleBtn = (label, cls = '') => `<button class="btn google ${cls}" data-act="driveConnect">${G_LOGO}<span>${label}</span></button>`;
 
 /** Ações de clique: qualquer elemento com data-act="nome" chama actions.nome(el, evento). */
 export const actions = {};

@@ -520,6 +520,57 @@ const ui = {
   'Inferior': `Inferior`,
   'Sobre o app': `Acerca de la app`,
   'Política de privacidade': `Política de privacidad`,
+  "Sincronizando…": `Sincronizando…`,
+  "Sincronizado": `Sincronizado`,
+  "Há alterações não enviadas ao Google Drive. Toque para sincronizar.": `Hay cambios no enviados a Google Drive. Toca para sincronizar.`,
+  "Seu nível de força": `Tu nivel de fuerza`,
+  "Preencha seu perfil (sexo, idade, altura e peso) na aba Progresso para ver em que top de força você está neste exercício.": `Completa tu perfil (sexo, edad, altura y peso) en la pestaña Progreso para ver en qué top de fuerza estás en este ejercicio.`,
+  "Registre este exercício para ver em que top de força você está.": `Registra este ejercicio para ver en qué top de fuerza estás.`,
+  "Top {n}%": `Top {n}%`,
+  "1RM estimado: {w} kg": `1RM estimado: {w} kg`,
+  "Entre {grupo} que treinam musculação, com {idade} anos e cerca de {peso} kg. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.": `Entre {grupo} que entrenan musculación, de {idade} años y unos {peso} kg. Estimación basada en estándares de fuerza de quienes entrenan; no es un ranking oficial.`,
+  "homens": `hombres`,
+  "mulheres": `mujeres`,
+  "Seu corpo": `Tu cuerpo`,
+  "Informe sexo, idade, altura e peso para ver seu IMC, o percentual de gordura estimado, a massa magra e a massa gorda, e em que top de força você está em cada exercício.": `Indica sexo, edad, altura y peso para ver tu IMC, el porcentaje de grasa estimado, la masa magra y la masa grasa, y en qué top de fuerza estás en cada ejercicio.`,
+  "Preencher perfil": `Completar perfil`,
+  "abaixo do peso": `bajo peso`,
+  "normal": `normal`,
+  "sobrepeso": `sobrepeso`,
+  "obesidade": `obesidad`,
+  "Estimado pela fórmula da Marinha americana (cintura e pescoço). Margem de erro: cerca de ±{m} pontos.": `Estimado con la fórmula de la Marina de EE. UU. (cintura y cuello). Margen de error: unos ±{m} puntos.`,
+  "Estimado por IMC, idade e sexo (fórmula de Deurenberg). Margem de erro: cerca de ±{m} pontos.": `Estimado por IMC, edad y sexo (fórmula de Deurenberg). Margen de error: unos ±{m} puntos.`,
+  "Inclui ajuste de {x} pontos pela sua força: quem é forte para o próprio peso tem mais músculo do que o IMC sugere.": `Incluye un ajuste de {x} puntos por tu fuerza: quien es fuerte para su peso tiene más músculo de lo que sugiere el IMC.`,
+  "Informe cintura e pescoço para uma estimativa mais precisa.": `Indica cintura y cuello para una estimación más precisa.`,
+  "Atualizar": `Actualizar`,
+  "Homem": `Hombre`,
+  "Mulher": `Mujer`,
+  "{n} anos": `{n} años`,
+  "IMC": `IMC`,
+  "Gordura estimada": `Grasa estimada`,
+  "pontos": `puntos`,
+  "Massa magra": `Masa magra`,
+  "Massa gorda": `Masa grasa`,
+  "Massa magra {a}%, massa gorda {b}%": `Masa magra {a}%, masa grasa {b}%`,
+  "Nível de força geral: <b>top {top}%</b> entre {grupo} que treinam musculação, com {idade} anos e cerca de {peso} kg ({base}). Veja cada exercício na aba Treinos.": `Nivel de fuerza general: <b>top {top}%</b> entre {grupo} que entrenan musculación, de {idade} años y unos {peso} kg ({base}). Mira cada ejercicio en la pestaña Entrenos.`,
+  "Registre exercícios com barra, halteres ou peso corporal (supino, agachamento, terra, remada, barra fixa...) para ver em que top de força você está.": `Registra ejercicios con barra, mancuernas o peso corporal (press de banca, sentadilla, peso muerto, remo, dominadas...) para ver en qué top de fuerza estás.`,
+  "Estimativas aproximadas. Não substituem uma avaliação física (bioimpedância, dobras cutâneas ou DEXA).": `Estimaciones aproximadas. No sustituyen una evaluación física (bioimpedancia, pliegues cutáneos o DEXA).`,
+  "Seu perfil": `Tu perfil`,
+  "Sexo": `Sexo`,
+  "Masculino": `Masculino`,
+  "Feminino": `Femenino`,
+  "As fórmulas de composição corporal e os padrões de força usam o sexo biológico.": `Las fórmulas de composición corporal y los estándares de fuerza usan el sexo biológico.`,
+  "Idade (anos)": `Edad (años)`,
+  "Altura (cm)": `Altura (cm)`,
+  "Peso (kg)": `Peso (kg)`,
+  "Medidas opcionais (mais precisão)": `Medidas opcionales (más precisión)`,
+  "Com fita métrica, sem apertar. Cintura: na altura do umbigo. Pescoço: logo abaixo do pomo de adão. Quadril (mulheres): na parte mais larga.": `Con cinta métrica, sin apretar. Cintura: a la altura del ombligo. Cuello: justo debajo de la nuez. Cadera (mujeres): en la parte más ancha.`,
+  "Cintura (cm)": `Cintura (cm)`,
+  "Pescoço (cm)": `Cuello (cm)`,
+  "Quadril (cm)": `Cadera (cm)`,
+  "Confira idade, altura e peso.": `Revisa edad, altura y peso.`,
+  'com base em {n} exercício': `con base en {n} ejercicio`,
+  'média de {n} exercícios': `media de {n} ejercicios`,
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -586,6 +637,15 @@ const help = [
       <li>Toca cualquier fila para editar. La meta de esta semana también se puede cambiar a mano.</li>
       <li><b>Sugerir metas</b> crea metas cerca de un 5% por encima de tu mejor marca reciente.</li>
     </ol>`],
+  ['Tu cuerpo y nivel de fuerza', 'IMC, grasa, masa magra y top de fuerza', `
+    <p>En la pestaña <b>Progreso</b>, indica sexo, edad, altura y peso en la tarjeta <b>Tu cuerpo</b>.</p>
+    <ul class="errs">
+      <li><b>IMC</b>: el peso dividido por la altura al cuadrado. No distingue músculo de grasa.</li>
+      <li><b>Grasa estimada</b>: con cintura y cuello (y cadera, para mujeres), la app usa la fórmula de la Marina de EE. UU., con un error de unos 3 a 4 puntos. Sin esas medidas, usa IMC, edad y sexo, con un error de unos 5 puntos, y descuenta hasta 4 puntos si eres fuerte para tu peso.</li>
+      <li><b>Masa magra y grasa</b>: tu peso repartido según el porcentaje de grasa estimado.</li>
+      <li><b>Top de fuerza</b>: compara tu 1RM estimado con estándares de fuerza de quienes entrenan musculación, ajustados por sexo, edad y peso. Solo vale para ejercicios con barra, mancuernas o peso corporal; las máquinas y poleas varían demasiado entre gimnasios.</li>
+    </ul>
+    <p class="tip">Son estimaciones. Para un número fiable de grasa corporal, haz una evaluación física (bioimpedancia, pliegues cutáneos o DEXA). Actualiza el peso de vez en cuando para mantener los cálculos al día.</p>`],
   ['Hojas de cálculo (Excel y Google Sheets)', 'Exportar e importar', `
     <ul class="errs">
       <li><b>Entrenamientos</b>: Ajustes &gt; Exportar entrenamientos. Cada serie se convierte en una fila.</li>

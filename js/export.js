@@ -1,7 +1,7 @@
 // Exportação em CSV para abrir no Excel ou no Google Planilhas.
 // Português e espanhol: separador ";" e vírgula decimal. Inglês: separador "," e ponto decimal.
 import { state } from './store.js';
-import { GROUPS, exName, tg } from './data.js';
+import { GROUPS, exName, tg, routineName } from './data.js';
 import { groupGoalStatus, exGoalStatus, setExGoal, setWeekOverride, daysInMonth } from './logic.js';
 import { t, lang, locale, allLangs, exNamesAll } from './i18n.js';
 
@@ -25,8 +25,8 @@ export function sessionsCSV() {
       const ex = state.exercises[e.exId];
       const name = ex ? exName(ex) : e.exId, group = ex ? tg(ex.group) : '';
       const obs = (e.flags || []).map(f => FLAG[f]).filter(Boolean).join(', ');
-      if (e.skipped) { rows.push([date, s.name, name, group, '', '', '', '', '', t('pulado')]); continue; }
-      e.sets.forEach((x, i) => rows.push([date, s.name, name, group, i + 1, x.w, x.r, x.t ? t('sim') : '', FEEL[e.feel] || '', obs]));
+      if (e.skipped) { rows.push([date, routineName(s), name, group, '', '', '', '', '', t('pulado')]); continue; }
+      e.sets.forEach((x, i) => rows.push([date, routineName(s), name, group, i + 1, x.w, x.r, x.t ? t('sim') : '', FEEL[e.feel] || '', obs]));
     }
   }
   return csv(rows);

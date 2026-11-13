@@ -520,6 +520,57 @@ const ui = {
   'Inferior': `Lower`,
   'Sobre o app': `About the app`,
   'Política de privacidade': `Privacy policy`,
+  "Sincronizando…": `Syncing…`,
+  "Sincronizado": `Synced`,
+  "Há alterações não enviadas ao Google Drive. Toque para sincronizar.": `There are changes not yet uploaded to Google Drive. Tap to sync.`,
+  "Seu nível de força": `Your strength level`,
+  "Preencha seu perfil (sexo, idade, altura e peso) na aba Progresso para ver em que top de força você está neste exercício.": `Fill in your profile (sex, age, height and weight) on the Progress tab to see which strength percentile you're in for this exercise.`,
+  "Registre este exercício para ver em que top de força você está.": `Log this exercise to see which strength percentile you're in.`,
+  "Top {n}%": `Top {n}%`,
+  "1RM estimado: {w} kg": `Estimated 1RM: {w} kg`,
+  "Entre {grupo} que treinam musculação, com {idade} anos e cerca de {peso} kg. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.": `Among {grupo} who lift weights, aged {idade} and around {peso} kg. Estimate based on strength standards for lifters; not an official ranking.`,
+  "homens": `men`,
+  "mulheres": `women`,
+  "Seu corpo": `Your body`,
+  "Informe sexo, idade, altura e peso para ver seu IMC, o percentual de gordura estimado, a massa magra e a massa gorda, e em que top de força você está em cada exercício.": `Enter your sex, age, height and weight to see your BMI, estimated body fat percentage, lean mass and fat mass, and which strength percentile you're in for each exercise.`,
+  "Preencher perfil": `Fill in profile`,
+  "abaixo do peso": `underweight`,
+  "normal": `normal`,
+  "sobrepeso": `overweight`,
+  "obesidade": `obesity`,
+  "Estimado pela fórmula da Marinha americana (cintura e pescoço). Margem de erro: cerca de ±{m} pontos.": `Estimated with the US Navy formula (waist and neck). Margin of error: about ±{m} points.`,
+  "Estimado por IMC, idade e sexo (fórmula de Deurenberg). Margem de erro: cerca de ±{m} pontos.": `Estimated from BMI, age and sex (Deurenberg formula). Margin of error: about ±{m} points.`,
+  "Inclui ajuste de {x} pontos pela sua força: quem é forte para o próprio peso tem mais músculo do que o IMC sugere.": `Includes a {x}-point adjustment for your strength: people who are strong for their weight carry more muscle than BMI suggests.`,
+  "Informe cintura e pescoço para uma estimativa mais precisa.": `Enter your waist and neck for a more accurate estimate.`,
+  "Atualizar": `Update`,
+  "Homem": `Male`,
+  "Mulher": `Female`,
+  "{n} anos": `{n} years old`,
+  "IMC": `BMI`,
+  "Gordura estimada": `Estimated body fat`,
+  "pontos": `points`,
+  "Massa magra": `Lean mass`,
+  "Massa gorda": `Fat mass`,
+  "Massa magra {a}%, massa gorda {b}%": `Lean mass {a}%, fat mass {b}%`,
+  "Nível de força geral: <b>top {top}%</b> entre {grupo} que treinam musculação, com {idade} anos e cerca de {peso} kg ({base}). Veja cada exercício na aba Treinos.": `Overall strength level: <b>top {top}%</b> among {grupo} who lift weights, aged {idade} and around {peso} kg ({base}). See each exercise on the Workouts tab.`,
+  "Registre exercícios com barra, halteres ou peso corporal (supino, agachamento, terra, remada, barra fixa...) para ver em que top de força você está.": `Log barbell, dumbbell or bodyweight exercises (bench press, squat, deadlift, row, pull-ups...) to see which strength percentile you're in.`,
+  "Estimativas aproximadas. Não substituem uma avaliação física (bioimpedância, dobras cutâneas ou DEXA).": `Rough estimates. They don't replace a body composition assessment (bioimpedance, skinfolds or DEXA).`,
+  "Seu perfil": `Your profile`,
+  "Sexo": `Sex`,
+  "Masculino": `Male`,
+  "Feminino": `Female`,
+  "As fórmulas de composição corporal e os padrões de força usam o sexo biológico.": `Body composition formulas and strength standards use biological sex.`,
+  "Idade (anos)": `Age (years)`,
+  "Altura (cm)": `Height (cm)`,
+  "Peso (kg)": `Weight (kg)`,
+  "Medidas opcionais (mais precisão)": `Optional measurements (more accuracy)`,
+  "Com fita métrica, sem apertar. Cintura: na altura do umbigo. Pescoço: logo abaixo do pomo de adão. Quadril (mulheres): na parte mais larga.": `Use a tape measure without squeezing. Waist: at belly-button height. Neck: just below the Adam's apple. Hips (women): at the widest point.`,
+  "Cintura (cm)": `Waist (cm)`,
+  "Pescoço (cm)": `Neck (cm)`,
+  "Quadril (cm)": `Hips (cm)`,
+  "Confira idade, altura e peso.": `Check your age, height and weight.`,
+  'com base em {n} exercício': `based on {n} exercise`,
+  'média de {n} exercícios': `average of {n} exercises`,
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -586,6 +637,15 @@ const help = [
       <li>Tap any row to edit. This week's goal can also be changed by hand.</li>
       <li><b>Suggest goals</b> creates goals about 5% above your recent best.</li>
     </ol>`],
+  ['Your body and strength level', 'BMI, body fat, lean mass and strength percentile', `
+    <p>On the <b>Progress</b> tab, enter your sex, age, height and weight in the <b>Your body</b> card.</p>
+    <ul class="errs">
+      <li><b>BMI</b>: weight divided by height squared. It doesn't tell muscle from fat.</li>
+      <li><b>Estimated body fat</b>: with waist and neck (and hips, for women), the app uses the US Navy formula, with an error of about 3 to 4 points. Without those measurements, it uses BMI, age and sex, with an error of about 5 points, and takes off up to 4 points if you're strong for your weight.</li>
+      <li><b>Lean and fat mass</b>: your weight split by the estimated body fat percentage.</li>
+      <li><b>Strength percentile</b>: compares your estimated 1RM with strength standards for lifters, adjusted for sex, age and weight. It only applies to barbell, dumbbell and bodyweight exercises; machines and cables vary too much between gyms.</li>
+    </ul>
+    <p class="tip">These are estimates. For a reliable body fat number, get a body composition assessment (bioimpedance, skinfolds or DEXA). Update your weight now and then to keep the calculations right.</p>`],
   ['Spreadsheets (Excel and Google Sheets)', 'Export and import', `
     <ul class="errs">
       <li><b>Workouts</b>: Settings &gt; Export workouts. Each set becomes a row.</li>

@@ -215,4 +215,43 @@ S().settings.lang = 'pt';
 eq(importGoalsCSV(esSheet, now).groups, 1, 'importa planilha em espanhol');
 eq(S().goals.groups.Peito, { week: 11, month: 44, auto: false });
 
+
+// ---- nomes das fichas pré-moldadas seguem o idioma ----
+const data = await import('../js/data.js');
+eq(data.templateKey('Workout A · Chest and triceps'), 'Treino A · Peito e tríceps', 'reconhece nome em inglês');
+eq(data.templateKey('Entreno A · Pecho y tríceps'), 'Treino A · Peito e tríceps', 'reconhece nome em espanhol');
+eq(data.templateKey('Meu treino'), null);
+S().settings.lang = 'en';
+eq(data.routineName({ name: 'Treino A · Peito e tríceps', tpl: true }), 'Workout A · Chest and triceps');
+eq(data.routineName({ name: 'Treino de sexta', tpl: false }), 'Treino de sexta', 'nome próprio não é traduzido');
+S().settings.lang = 'pt';
+
+// ---- composição corporal e nível de força ----
+const body = await import('../js/body.js');
+eq(Math.round(body.bmi(80, 178) * 10) / 10, 25.2);
+eq(body.bmiClass(25.2), 'over');
+eq(Math.round(body.navyBodyFat('m', 178, 85, 38)), 16, 'Marinha, homem');
+eq(Math.round(body.navyBodyFat('f', 165, 72, 32, 98)), 27, 'Marinha, mulher');
+eq(body.navyBodyFat('f', 165, 72, 32), null, 'mulher precisa do quadril');
+eq(Math.round(body.deurenbergBodyFat('m', 25, 30) * 10) / 10, 20.7, 'Deurenberg');
+eq(body.strengthAdjustment(28, 90) < -2, true, 'forte e IMC alto: desconta gordura');
+eq(body.strengthAdjustment(22, 90), 0, 'IMC baixo: sem ajuste');
+eq(body.strengthAdjustment(28, 40), 0, 'força abaixo da média: sem ajuste');
+const std = [0.5, 0.75, 1.0, 1.5, 2.0];
+eq(Math.round(body.percentileOf(1.0, std)), 50, 'no padrão intermediário = percentil 50');
+eq(Math.round(body.percentileOf(1.5, std)), 80);
+eq(body.percentileOf(3, std) > 95 && body.percentileOf(3, std) <= 99.9, true, 'acima de elite fica entre 95 e 99,9');
+eq(body.ageFactor(30), 1);
+eq(body.ageFactor(60) < 1, true, 'força cai com a idade');
+const nowIso = new Date().toISOString();
+S().profile = { sex: 'm', birthYear: new Date().getFullYear() - 30, height: 178, weight: 80 };
+S().exercises['supino-reto'] = { id: 'supino-reto', lib: 'supino-reto', name: 'Supino reto com barra', group: 'Peito', sets: 3, repMin: 6, repMax: 10, step: 2.5 };
+S().exercises['peck-deck'] = { id: 'peck-deck', lib: 'peck-deck', name: 'x', group: 'Peito', sets: 3, repMin: 10, repMax: 15, step: 5 };
+S().sessions.push({ id: 'bench', date: nowIso, entries: [{ exId: 'supino-reto', sets: [{ w: 120, r: 1 }] }] });
+const lv = body.strengthLevel(S().exercises['supino-reto']);
+eq([lv.lift, lv.top >= 15 && lv.top <= 22], ['bench', true], 'supino 1,5x o peso: por volta do top 18%');
+eq(body.strengthLevel(S().exercises['peck-deck']).reason, 'notComparable', 'aparelho não entra no ranking');
+S().profile = null;
+eq(body.strengthLevel(S().exercises['supino-reto']).reason, 'noProfile');
+
 console.log(`ok: ${n} verificações passaram`);

@@ -13,6 +13,7 @@ const defaults = () => ({
   active: null,    // treino em andamento
   goals: { ex: {}, groups: {} },
   lastBackup: null, // data do último backup salvo ou compartilhado
+  profile: null,    // { sex, birthYear, height, weight, waist?, neck?, hip?, weights: [{ date, kg }] }
   updatedAt: 0,     // momento da última alteração nos dados (para sincronizar)
   sync: null,       // só deste aparelho: { connected, email, fileId, syncedAt, lastSync, needLogin }
 });

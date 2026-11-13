@@ -12,6 +12,7 @@ import { applyTheme, applyLang } from './views/settings.js';
 import { migrateLoadSteps } from './views/home.js';
 import { initDrive } from './drive.js';
 import { initInstall } from './install.js';
+import { initSyncBadge } from './syncbadge.js';
 
 // Ícones da barra inferior
 for (const el of $$('[data-ic]')) el.outerHTML = icon[el.dataset.ic];
@@ -56,6 +57,7 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme
 if (!location.hash) location.hash = state.onboarded ? '#/hoje' : '#/inicio';
 rerender();
 initDrive();
+initSyncBadge();
 
 // Pede ao navegador para não apagar os dados deste site quando faltar espaço
 navigator.storage?.persist?.().catch(() => {});

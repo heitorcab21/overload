@@ -1,8 +1,9 @@
 // Progresso: números do período, séries por semana, evolução por exercício e histórico.
 import { state, save } from '../store.js';
-import { $, esc, fmt, setStr, compact, icon, actions, changes, submits, sheet, closeSheet, fmtDate } from '../ui.js';
+import { $, esc, fmt, setStr, compact, icon, actions, changes, submits, sheet, closeSheet, fmtDate, stepper, toast } from '../ui.js';
+import { profile, bodyComposition, overallStrength } from '../body.js';
 import { route, rerender } from '../router.js';
-import { GROUPS, exName } from '../data.js';
+import { GROUPS, exName, routineName } from '../data.js';
 import { t, tn } from '../i18n.js';
 import {
   weekSeries, sessionsIn, monthStart, monthEnd, monthPRCount, entriesFor, bestOf, e1rm, exGoalStatus, tonnage,
@@ -53,6 +54,7 @@ function render() {
   $('#view').innerHTML = `
     <div class="head"><h1>${t('Progresso')}</h1></div>
     <div class="stack">
+      ${bodyCard()}
       <div class="tiles">
         <div class="tile"><span class="l">${t('Treinos no mês')}</span><span class="v">${monthSessions.length}</span></div>
         <div class="tile"><span class="l">${t('Séries na semana')}</span><span class="v">${cw.sets}</span></div>
@@ -76,7 +78,7 @@ function render() {
           const sets = s.entries.reduce((n, e) => n + e.sets.length, 0);
           const ton = s.entries.reduce((n, e) => n + tonnage(e.sets), 0);
           return `<button class="item" data-act="openSession" data-id="${s.id}">
-            <span class="grow"><span class="t">${esc(s.name)}</span><br><span class="d">${fmtDate(s.date)} · ${tn(sets, '{n} série', '{n} séries')} · ${compact(ton)}</span></span>
+            <span class="grow"><span class="t">${esc(routineName(s))}</span><br><span class="d">${fmtDate(s.date)} · ${tn(sets, '{n} série', '{n} séries')} · ${compact(ton)}</span></span>
             ${icon.next}</button>`;
         }).join('') || `<p class="empty">${t('Seus treinos concluídos aparecem aqui.')}</p>`}</div>
       </div>
@@ -94,7 +96,7 @@ function render() {
 changes.selEx = el => { selEx = el.value; rerender(); };
 
 function sessionSheet(s) {
-  sheet(`<h2>${esc(s.name)}</h2><p class="muted">${fmtDate(s.date)} · ${s.dur || '?'} min · ${t('toque em um exercício para corrigir')}</p>
+  sheet(`<h2>${esc(routineName(s))}</h2><p class="muted">${fmtDate(s.date)} · ${s.dur || '?'} min · ${t('toque em um exercício para corrigir')}</p>
     <div class="card flat"><div class="list">${s.entries.map((e, i) => `<button class="item" data-act="editEntry" data-s="${s.id}" data-e="${i}">
       <span class="grow"><span class="t">${esc(state.exercises[e.exId] ? exName(state.exercises[e.exId]) : t('Exercício removido'))}</span><br>
         <span class="d num">${e.skipped ? t('pulado') : e.sets.map(x => (x.w > 0 ? `${fmt(x.w)}×${x.r}` : x.r)).join(' · ')}</span></span>
@@ -113,7 +115,7 @@ let draft = null; // { sid, ei, sets: [{ w, r, t? }] }
 function entrySheet() {
   const s = state.sessions.find(x => x.id === draft.sid);
   const ex = state.exercises[s.entries[draft.ei].exId];
-  sheet(`<h2>${esc(ex ? exName(ex) : t('Exercício removido'))}</h2><p class="muted">${esc(s.name)} · ${fmtDate(s.date)}</p>
+  sheet(`<h2>${esc(ex ? exName(ex) : t('Exercício removido'))}</h2><p class="muted">${esc(routineName(s))} · ${fmtDate(s.date)}</p>
     <form class="stack" data-submit="saveEntry">
       ${draft.sets.map((x, i) => `<div class="set-edit">
         <span class="i">${i + 1}</span>
@@ -177,6 +179,91 @@ actions.delSessionAsk = el => {
 };
 actions.delSession = el => {
   state.sessions = state.sessions.filter(x => x.id !== el.dataset.id);
+  save(); closeSheet(); rerender();
+};
+
+
+// ---------- Seu corpo ----------
+
+const fmt1 = v => fmt(Math.round(v * 10) / 10);
+export const groupWord = p => (p.sex === 'm' ? t('homens') : t('mulheres'));
+
+function bodyCard() {
+  const p = profile();
+  if (!p) {
+    return `<div class="card stack">
+      <h3>${t('Seu corpo')}</h3>
+      <p class="muted">${t('Informe sexo, idade, altura e peso para ver seu IMC, o percentual de gordura estimado, a massa magra e a massa gorda, e em que top de força você está em cada exercício.')}</p>
+      <button class="btn primary block" data-act="editProfile">${t('Preencher perfil')}</button>
+    </div>`;
+  }
+  const strength = overallStrength(p);
+  const c = bodyComposition(p, strength);
+  const BMI = { under: t('abaixo do peso'), normal: t('normal'), over: t('sobrepeso'), obese: t('obesidade') };
+  const leanPct = Math.round(100 - c.bf);
+  const method = c.method === 'navy'
+    ? t('Estimado pela fórmula da Marinha americana (cintura e pescoço). Margem de erro: cerca de ±{m} pontos.', { m: fmt(c.margin) })
+    : `${t('Estimado por IMC, idade e sexo (fórmula de Deurenberg). Margem de erro: cerca de ±{m} pontos.', { m: fmt(c.margin) })}`
+      + (c.adj ? ` ${t('Inclui ajuste de {x} pontos pela sua força: quem é forte para o próprio peso tem mais músculo do que o IMC sugere.', { x: fmt1(c.adj) })}` : '')
+      + ` ${t('Informe cintura e pescoço para uma estimativa mais precisa.')}`;
+  return `<div class="card stack">
+    <div class="row between"><h3>${t('Seu corpo')}</h3><button class="btn sm ghost" data-act="editProfile">${t('Atualizar')}</button></div>
+    <p class="small muted">${p.sex === 'm' ? t('Homem') : t('Mulher')} · ${t('{n} anos', { n: p.age })} · ${fmt(p.height)} cm · ${fmt1(p.weight)} kg</p>
+    <div class="tiles">
+      <div class="tile"><span class="l">${t('IMC')}</span><span class="v">${fmt1(c.bmi)}</span><span class="small muted">${BMI[c.bmiClass]}</span></div>
+      <div class="tile"><span class="l">${t('Gordura estimada')}</span><span class="v">${fmt1(c.bf)}%</span><span class="small muted">±${fmt(c.margin)} ${t('pontos')}</span></div>
+      <div class="tile"><span class="l">${t('Massa magra')}</span><span class="v">${fmt1(c.leanKg)} kg</span></div>
+      <div class="tile"><span class="l">${t('Massa gorda')}</span><span class="v">${fmt1(c.fatKg)} kg</span></div>
+    </div>
+    <div class="segbar" role="img" aria-label="${t('Massa magra {a}%, massa gorda {b}%', { a: leanPct, b: 100 - leanPct })}">
+      <span class="seg-lean" style="width:${leanPct}%">${leanPct >= 18 ? `${leanPct}%` : ''}</span><span class="seg-fat" style="width:${100 - leanPct}%">${100 - leanPct >= 12 ? `${100 - leanPct}%` : ''}</span>
+    </div>
+    <div class="legend small"><span><i class="sw-lean"></i>${t('Massa magra')}</span><span><i class="sw-fat"></i>${t('Massa gorda')}</span></div>
+    <p class="small muted">${method}</p>
+    <div class="tip">${strength
+      ? t('Nível de força geral: <b>top {top}%</b> entre {grupo} que treinam musculação, com {idade} anos e cerca de {peso} kg ({base}). Veja cada exercício na aba Treinos.', { top: strength.top, grupo: groupWord(p), idade: p.age, peso: Math.round(p.weight), base: tn(strength.count, 'com base em {n} exercício', 'média de {n} exercícios') })
+      : t('Registre exercícios com barra, halteres ou peso corporal (supino, agachamento, terra, remada, barra fixa...) para ver em que top de força você está.')}</div>
+    <p class="small muted">${t('Estimativas aproximadas. Não substituem uma avaliação física (bioimpedância, dobras cutâneas ou DEXA).')}</p>
+  </div>`;
+}
+
+actions.editProfile = () => {
+  const p = state.profile || {};
+  const age = p.birthYear ? new Date().getFullYear() - p.birthYear : 25;
+  sheet(`<h2>${t('Seu perfil')}</h2>
+    <form class="stack" data-submit="saveProfile">
+      <label class="field">${t('Sexo')}
+        <select name="sex">
+          <option value="m"${p.sex !== 'f' ? ' selected' : ''}>${t('Masculino')}</option>
+          <option value="f"${p.sex === 'f' ? ' selected' : ''}>${t('Feminino')}</option>
+        </select></label>
+      <p class="small muted">${t('As fórmulas de composição corporal e os padrões de força usam o sexo biológico.')}</p>
+      <div class="two">
+        ${stepper('age', age, 1, t('Idade (anos)'), 10)}
+        ${stepper('height', p.height || 170, 1, t('Altura (cm)'), 100)}
+      </div>
+      ${stepper('weight', p.weight || 70, 0.5, t('Peso (kg)'), 30)}
+      <h3>${t('Medidas opcionais (mais precisão)')}</h3>
+      <p class="small muted">${t('Com fita métrica, sem apertar. Cintura: na altura do umbigo. Pescoço: logo abaixo do pomo de adão. Quadril (mulheres): na parte mais larga.')}</p>
+      <div class="two">
+        <label class="field">${t('Cintura (cm)')}<input type="number" inputmode="decimal" step="any" min="0" name="waist" value="${p.waist || ''}"></label>
+        <label class="field">${t('Pescoço (cm)')}<input type="number" inputmode="decimal" step="any" min="0" name="neck" value="${p.neck || ''}"></label>
+      </div>
+      <label class="field">${t('Quadril (cm)')}<input type="number" inputmode="decimal" step="any" min="0" name="hip" value="${p.hip || ''}"></label>
+      <button class="btn primary big">${t('Salvar')}</button>
+    </form>`);
+};
+submits.saveProfile = form => {
+  const n = (k, min, max) => { const v = Number(form[k].value); return v >= min && v <= max ? v : null; };
+  const age = n('age', 10, 100), height = n('height', 100, 250), weight = n('weight', 30, 300);
+  if (!age || !height || !weight) { toast(t('Confira idade, altura e peso.'), 4000); return; }
+  const old = state.profile || {};
+  const weights = [...(old.weights || [])];
+  if (old.weight !== weight) weights.push({ date: new Date().toISOString(), kg: weight });
+  state.profile = {
+    sex: form.sex.value, birthYear: new Date().getFullYear() - Math.round(age), height, weight,
+    waist: n('waist', 40, 200), neck: n('neck', 20, 70), hip: n('hip', 50, 200), weights: weights.slice(-200),
+  };
   save(); closeSheet(); rerender();
 };
 

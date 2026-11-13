@@ -2,7 +2,7 @@
 import { state, save, uid } from '../store.js';
 import { $, esc, kg, setStr, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, fmtDate } from '../ui.js';
 import { route, go, current } from '../router.js';
-import { exName, exCues, tg, loadLabel, loadHint } from '../data.js';
+import { exName, exCues, tg, loadLabel, loadHint, routineName } from '../data.js';
 import { planFor } from '../logic.js';
 import { parseUtterance, voiceSupported, listen, stopListening, abortListening } from '../voice.js';
 import { aiEnabled, aiParseVoice } from '../ai.js';
@@ -26,7 +26,7 @@ export function startWorkout(routineId) {
   if (!entries.length) { toast(t('Este treino não tem exercícios.')); return; }
   // Renova a autorização do Google agora, no toque de "Começar": ela cobre o treino inteiro
   refreshIfNeeded();
-  state.active = { id: uid(), routineId: r.id, name: r.name, startedAt: Date.now(), idx: 0, restEnd: 0, entries };
+  state.active = { id: uid(), routineId: r.id, name: r.name, tpl: !!r.tpl, startedAt: Date.now(), idx: 0, restEnd: 0, entries };
   save();
   go('#/treino');
 }
@@ -137,7 +137,7 @@ function render() {
   $('#view').innerHTML = `
     <div class="w-top">
       <button class="icon-btn" data-act="wHome" aria-label="${t('Voltar ao início')}">${icon.back}</button>
-      <span class="title">${esc(a.name)} · ${t('{i} de {n}', { i: a.idx + 1, n: a.entries.length })}</span>
+      <span class="title">${esc(routineName(a))} · ${t('{i} de {n}', { i: a.idx + 1, n: a.entries.length })}</span>
       <button class="icon-btn" data-act="wList" aria-label="${t('Lista de exercícios')}">${icon.list}</button>
     </div>
     <div class="dots" aria-hidden="true">${a.entries.map((e, i) => {
@@ -314,7 +314,7 @@ actions.wJump = el => { state.active.idx = Number(el.dataset.i); save(); closeSh
 
 actions.wList = () => {
   const a = state.active;
-  sheet(`<h2>${esc(a.name)}</h2>
+  sheet(`<h2>${esc(routineName(a))}</h2>
     <div class="card flat"><div class="list">${a.entries.map((e, i) => {
       const ex = state.exercises[e.exId];
       const st = e.skipped ? t('pulado') : e.sets.length ? e.sets.map(s => (s.w > 0 ? `${s.w}×${s.r}` : s.r)).join(' · ') : t('pendente');
@@ -369,7 +369,7 @@ function finish() {
   const entries = a.entries.filter(e => e.sets.length || e.skipped)
     .map(({ exId, sets, feel, flags, skipped }) => ({ exId, sets, feel, flags, skipped: skipped && !sets.length }));
   state.sessions.push({
-    id: a.id, date: new Date(a.startedAt).toISOString(), routineId: a.routineId, name: a.name,
+    id: a.id, date: new Date(a.startedAt).toISOString(), routineId: a.routineId, name: a.name, tpl: !!a.tpl,
     dur: Math.max(1, Math.round((Date.now() - a.startedAt) / 60000)), entries,
   });
   const i = state.routines.findIndex(r => r.id === a.routineId);

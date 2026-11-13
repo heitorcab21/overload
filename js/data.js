@@ -1,6 +1,6 @@
 // Biblioteca de exercícios (com execução ideal) e modelos de rotina.
 // Os textos aqui estão em português; as traduções ficam em js/locales/.
-import { t, exPack } from './i18n.js';
+import { t, exPack, allLangs } from './i18n.js';
 
 export const GROUPS = [
   'Peito', 'Costas', 'Ombros', 'Bíceps', 'Tríceps',
@@ -388,3 +388,16 @@ export const TEMPLATES = [
     ],
   },
 ];
+
+// ---------- Nomes das fichas pré-moldadas ----------
+// O nome de uma ficha criada a partir de um modelo fica guardado em português (a chave da tradução)
+// com tpl: true, e é traduzido na hora de mostrar. Ao renomear, vira um nome próprio (tpl: false).
+export const TEMPLATE_NAMES = TEMPLATES.flatMap(tp => tp.routines.map(([name]) => name));
+
+/** Nome de uma rotina, treino em andamento ou treino salvo, no idioma atual. */
+export const routineName = r => (r?.tpl ? t(r.name) : r?.name ?? '');
+
+/** Reconhece um nome de modelo escrito em qualquer idioma e devolve a chave em português. */
+export function templateKey(name) {
+  return TEMPLATE_NAMES.find(k => allLangs(k).includes(name)) ?? null;
+}

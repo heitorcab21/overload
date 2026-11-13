@@ -148,9 +148,15 @@ let lastTry = 0;
 /** Sincroniza agora. Não faz nada durante um treino em andamento (ele sincroniza ao terminar). */
 export function sync() {
   if (!driveConnected() || state.active) return Promise.resolve(false);
-  running ??= doSync().finally(() => { running = null; });
+  if (!running) {
+    running = doSync().finally(() => { running = null; notify(); });
+    notify();
+  }
   return running;
 }
+export const isSyncing = () => !!running;
+/** Avisa a interface (selo vermelho/verde) que o estado da sincronização mudou. */
+const notify = () => { try { window.dispatchEvent(new Event('overload-sync')); } catch { /* fora do navegador */ } };
 
 async function doSync() {
   lastTry = Date.now();
@@ -166,22 +172,28 @@ async function doSync() {
     const remoteNew = !!remote && (remote.updatedAt || 0) > (s.syncedAt || 0);
     const firstTime = !s.syncedAt;
 
+    // versão que fica igual nos dois lados ao fim; alterações feitas durante o envio
+    // têm data mais nova e continuam marcadas como pendentes
+    let version = state.updatedAt;
+    const send = async () => { const data = exportData(); version = data.updatedAt; await upload(data); };
+
     if (remote && firstTime && !remote.sessions?.length && state.onboarded) {
       // primeira conexão deste aparelho e o Drive ainda não tem treinos: vale o que está aqui
-      await upload(exportData());
+      await send();
     } else if (remoteNew && (!localDirty || !state.sessions.length)) {
       // só o Drive mudou, ou este aparelho ainda não tem treinos: usa a versão do Drive
       applyRemote(remote);
+      version = state.updatedAt;
       changed = true;
     } else if (remoteNew && localDirty) {
       // os dois lados mudaram: junta e envia o resultado
       mergeRemote(remote);
-      await upload(exportData());
+      await send();
       changed = true;
     } else if (localDirty || !remote) {
-      await upload(exportData());
+      await send();
     }
-    state.sync.syncedAt = state.updatedAt;
+    state.sync.syncedAt = version;
     state.sync.lastSync = new Date().toISOString();
     state.sync.needLogin = false;
     state.sync.error = null;

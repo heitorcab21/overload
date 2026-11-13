@@ -1,11 +1,12 @@
 // Ajustes: idioma, descanso, tema, IA, conta, dados e instalação.
 import { state, save, exportJSON, importJSON, emptyData, resetKeepAccount } from '../store.js';
-import { $, $$, esc, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, shareFile, fmtDate, fmtTime } from '../ui.js';
+import { googleBtn, $, $$, esc, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, shareFile, fmtDate, fmtTime } from '../ui.js';
 import { route, go, rerender } from '../router.js';
 import { sessionsCSV } from '../export.js';
 import { aiEnabled, aiAskExecution } from '../ai.js';
 import { driveAvailable, driveConnected, driveDirty, connect, sync, hasToken, refreshIfNeeded, logout, wipeRemote } from '../drive.js';
 import { isInstalled } from '../install.js';
+import { syncState, syncLabel, updateSyncBadge } from '../syncbadge.js';
 import { t, tn, lang, LANGS } from '../i18n.js';
 
 /** Aplica o idioma às partes fixas da página (abas, atributo lang). */
@@ -28,7 +29,7 @@ function accountCard() {
     return `<div class="card stack">
       <h3>${t('Conta')}</h3>
       <p class="muted small">${t('Você está usando o app sem conta: os dados ficam só neste aparelho. Entre com sua conta Google para salvar tudo no seu Drive e usar em qualquer aparelho. O app só enxerga os arquivos que ele mesmo cria, numa pasta "Overload".')}</p>
-      <button class="btn primary block" data-act="driveConnect">${t('Entrar com Google')}</button>
+      ${googleBtn(t('Entrar com Google'), 'block')}
     </div>`;
   }
   const status = s.error ? `<span class="badge warn">${esc(t(s.error))}</span>`
@@ -39,7 +40,7 @@ function accountCard() {
     <p class="small">${t('Conectado como <b>{email}</b>', { email: esc(s.email) })}</p>
     <p class="small muted">${t('Última sincronização com o Google Drive: {quando}', { quando: s.lastSync ? t('{dia} às {hora}', { dia: fmtDate(s.lastSync), hora: fmtTime(s.lastSync) }) : t('nunca') })}</p>
     <div>${status}</div>
-    <button class="btn primary block" data-act="driveConnect">${t('Sincronizar agora')}</button>
+    <button class="btn block sync-btn ${syncState()}" id="syncNow" data-act="driveConnect">${syncState() === 'ok' ? `${icon.check}${t('Sincronizado')}` : `${icon.sync}${t('Sincronizar agora')}`}</button>
     <p class="muted small">${t('O app salva no Drive sozinho, inclusive ao finalizar cada treino.')}</p>
     <button class="btn block" data-act="logoutAsk">${t('Sair da conta')}</button>
     <p class="muted small">${t('Para usar outro perfil, saia e entre com outra conta Google.')}</p>
@@ -195,7 +196,7 @@ actions.importNow = () => {
 };
 // Entrar, reconectar ou sincronizar (também usado na tela Hoje e no primeiro acesso)
 actions.driveConnect = async el => {
-  const label = el.textContent;
+  const label = el.innerHTML;
   el.disabled = true;
   el.textContent = t('Conectando…');
   const wasNew = !state.onboarded;
@@ -213,8 +214,9 @@ actions.driveConnect = async el => {
     toast(e.message, 6000);
   }
   el.disabled = false;
-  el.textContent = label;
+  el.innerHTML = label;
   rerender();
+  updateSyncBadge();
 };
 
 // ---------- Sair da conta ----------
