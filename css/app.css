@@ -576,6 +576,7 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 .warm-hint { color: var(--warm); font-weight: 600; margin-top: -4px; }
 
 /* primeiro acesso: montar o próprio treino e título em laranja */
+.tpl-own { margin-top: 10px; }
 .tpl-own b { color: var(--accent); display: inline-flex; align-items: center; gap: 6px; }
 .tpl-own .ic { width: 18px; height: 18px; }
 .accent-title { color: var(--accent); margin-top: 6px; }
