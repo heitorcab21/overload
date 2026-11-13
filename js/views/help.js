@@ -8,7 +8,7 @@ const TOPICS = [
   ['Primeiros passos', 'Do primeiro acesso ao primeiro treino', `
     <ol class="steps">
       <li><b>Entre com sua conta Google</b> na primeira tela. Assim seus treinos ficam salvos no seu Drive. Se preferir, toque em "Usar sem conta".</li>
-      <li><b>Escolha um ponto de partida</b>: ABC, Push/Pull/Legs, Superior/Inferior, Corpo inteiro ou do zero.</li>
+      <li><b>Escolha um ponto de partida</b>: ABC, Push/Pull/Legs, Superior/Inferior, Arnold split, ABCDE, Corpo inteiro ou do zero. Depois dá para adicionar outros em <b>Treinos &gt; Adicionar treino pronto</b>.</li>
       <li><b>Informe as cargas que você já usa</b> na tela de cargas iniciais. É opcional: o que ficar em branco você escolhe no primeiro treino.</li>
       <li>Na aba <b>Hoje</b>, toque em <b>Começar treino</b>.</li>
     </ol>
@@ -85,7 +85,7 @@ const TOPICS = [
   ['Seu corpo e nível de força', 'IMC, gordura, massa magra e top de força', `
     <p>Na aba <b>Progresso</b>, preencha sexo, idade, altura e peso no cartão <b>Seu corpo</b>.</p>
     <ul class="errs">
-      <li><b>IMC</b>: peso dividido pela altura ao quadrado. Não separa músculo de gordura.</li>
+      <li><b>Massa magra e massa gorda</b> são o foco. O <b>IMC</b> aparece só como informação: é o peso dividido pela altura ao quadrado e não separa músculo de gordura, então quem treina costuma ter IMC alto sem estar acima do peso.</li>
       <li><b>Gordura estimada</b>: com cintura e pescoço (e quadril, para mulheres), o app usa a fórmula da Marinha americana, com erro de cerca de 3 a 4 pontos. Sem essas medidas, usa IMC, idade e sexo, com erro de cerca de 5 pontos, e desconta até 4 pontos se você for forte para o seu peso.</li>
       <li><b>Massa magra e gorda</b>: o peso dividido pelo percentual de gordura estimado.</li>
       <li><b>Top de força</b>: compara o seu 1RM estimado com padrões de força de quem treina musculação, ajustados por sexo, idade e peso. Só vale para exercícios com barra, halteres ou peso corporal; aparelhos e polias variam demais entre academias.</li>

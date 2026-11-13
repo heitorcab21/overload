@@ -647,6 +647,33 @@ const ui = {
   "Entre {grupo} que treinam musculação, com {idade} anos e cerca de {peso} kg.": "Among {grupo} who lift, aged {idade} and around {peso} kg.",
   "Toque num exercício para ver de onde vem o número e fazer um teste de força.": "Tap an exercise to see where the number comes from and take a strength test.",
   "Top {n}% de força": "Top {n}% strength",
+  "Adicionar treino pronto": "Add a ready-made routine",
+  "Os treinos do modelo entram na sua lista. Os que você já tem continuam iguais.": "The template's workouts are added to your list. The ones you already have stay the same.",
+  "{n} treino adicionado.": "{n} workout added.",
+  "{n} treinos adicionados.": "{n} workouts added.",
+  "Seu destaque": "Your best",
+  "Nível de força": "Strength level",
+  "Top 10% quer dizer que você é mais forte que 90% dessas pessoas.": "Top 10% means you are stronger than 90% of them.",
+  "teste de força": "strength test",
+  "Ainda sem registro": "No records yet",
+  "treine ou faça um teste": "train it or take a test",
+  "Só entram exercícios com barra, halteres ou peso corporal; aparelhos e polias variam demais entre academias. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.": "Only barbell, dumbbell and bodyweight exercises count; machines and cables vary too much between gyms. Estimate based on strength standards for lifters; not an official ranking.",
+  "só informativo": "for information only",
+  "O IMC é só peso dividido pela altura ao quadrado e não diferencia músculo de gordura. Para quem treina, o que importa é a massa magra e a massa gorda.": "BMI is just weight divided by height squared and doesn't tell muscle from fat. If you lift, what matters is lean mass and fat mass.",
+  "Veja o seu nível em {n} exercício": "See your level in {n} exercise",
+  "Veja o seu nível em cada um dos {n} exercícios": "See your level in each of your {n} exercises",
+  "Arnold split": "Arnold split",
+  "3 treinos (peito e costas, ombros e braços, pernas), repetidos 2 vezes na semana.": "3 workouts (chest and back, shoulders and arms, legs), done twice a week.",
+  "ABCDE (um grupo por dia)": "Bro split (one muscle group a day)",
+  "5 treinos, um grupamento por dia: peito, costas, ombros, pernas e braços.": "5 workouts, one muscle group a day: chest, back, shoulders, legs and arms.",
+  "Arnold A · Peito e costas": "Arnold A · Chest and back",
+  "Arnold B · Ombros e braços": "Arnold B · Shoulders and arms",
+  "Arnold C · Pernas": "Arnold C · Legs",
+  "Treino A · Peito": "Workout A · Chest",
+  "Treino B · Costas": "Workout B · Back",
+  "Treino C · Ombros": "Workout C · Shoulders",
+  "Treino D · Pernas": "Workout D · Legs",
+  "Treino E · Braços": "Workout E · Arms",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -655,7 +682,7 @@ const help = [
   ['Getting started', 'From first launch to your first workout', `
     <ol class="steps">
       <li><b>Sign in with your Google account</b> on the first screen so your workouts are saved to your Drive. If you prefer, tap "Use without an account".</li>
-      <li><b>Choose a starting point</b>: ABC, Push/Pull/Legs, Upper/Lower, Full body or from scratch.</li>
+      <li><b>Choose a starting point</b>: ABC, Push/Pull/Legs, Upper/Lower, Arnold split, Bro split, Full body or from scratch. You can add others later in <b>Workouts &gt; Add a ready-made routine</b>.</li>
       <li><b>Enter the loads you already use</b> on the starting loads screen. It's optional: anything left blank you choose in your first workout.</li>
       <li>On the <b>Today</b> tab, tap <b>Start workout</b>.</li>
     </ol>
@@ -726,7 +753,7 @@ const help = [
   ['Your body and strength level', 'BMI, body fat, lean mass and strength percentile', `
     <p>On the <b>Progress</b> tab, enter your sex, age, height and weight in the <b>Your body</b> card.</p>
     <ul class="errs">
-      <li><b>BMI</b>: weight divided by height squared. It doesn't tell muscle from fat.</li>
+      <li><b>Lean mass and fat mass</b> are the focus. <b>BMI</b> is shown for information only: it is weight divided by height squared and doesn't tell muscle from fat, so people who lift often have a high BMI without being overweight.</li>
       <li><b>Estimated body fat</b>: with waist and neck (and hips, for women), the app uses the US Navy formula, with an error of about 3 to 4 points. Without those measurements, it uses BMI, age and sex, with an error of about 5 points, and takes off up to 4 points if you're strong for your weight.</li>
       <li><b>Lean and fat mass</b>: your weight split by the estimated body fat percentage.</li>
       <li><b>Strength percentile</b>: compares your estimated 1RM with strength standards for lifters, adjusted for sex, age and weight. It only applies to barbell, dumbbell and bodyweight exercises; machines and cables vary too much between gyms.</li>

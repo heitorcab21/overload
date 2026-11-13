@@ -2,7 +2,7 @@
 import { state, save, uid } from '../store.js';
 import { $, esc, kg, fmt, fmtDate, setStr, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, meter } from '../ui.js';
 import { route, go, rerender } from '../router.js';
-import { exPhotos, GROUPS, LIB, exName, exCues, tg, loadHint, loadShort, routineName } from '../data.js';
+import { TEMPLATES, exPhotos, GROUPS, LIB, exName, exCues, tg, loadHint, loadShort, routineName } from '../data.js';
 import { t, tn, exPack } from '../i18n.js';
 import { planFor, exGoalStatus, entriesFor, defaultGroupGoals } from '../logic.js';
 import { ensureExercise, planStr } from './home.js';
@@ -37,6 +37,7 @@ function renderRoutines() {
         <div style="padding:8px 12px 12px"><button class="btn block" data-act="pickEx" data-r="${ri}">${icon.plus}${t('Adicionar exercício')}</button></div>
       </div>`).join('')}
       <button class="btn primary block" data-act="newRoutine">${icon.plus}${t('Novo treino')}</button>
+      <button class="btn block" data-act="addTemplate">${icon.list}${t('Adicionar treino pronto')}</button>
       ${noHistory().length ? `<a class="btn block" href="#/cargas">${t('Definir cargas iniciais')}</a>` : ''}
 
       ${all.length ? `<h3 class="group-title">${t('Todos os exercícios')}</h3>
@@ -44,6 +45,24 @@ function renderRoutines() {
         <span class="grow"><span class="t">${esc(exName(ex))}</span><br><span class="d">${esc(tg(ex.group))} · ${t('próxima')}: ${planStr(planFor(ex))}</span></span>${icon.next}</a>`).join('')}</div></div>` : ''}
     </div>`;
 }
+
+actions.addTemplate = () => {
+  sheet(`<h2>${t('Adicionar treino pronto')}</h2>
+    <p class="muted small">${t('Os treinos do modelo entram na sua lista. Os que você já tem continuam iguais.')}</p>
+    <div class="list">${TEMPLATES.map(tp => `<button class="item" data-act="addTemplateNow" data-id="${tp.id}">
+      <span class="grow"><span class="t">${esc(t(tp.name))}</span><br><span class="d">${esc(t(tp.desc))}</span></span>${icon.plus}</button>`).join('')}</div>`);
+};
+actions.addTemplateNow = el => {
+  const tp = TEMPLATES.find(x => x.id === el.dataset.id);
+  if (!tp) return;
+  for (const [name, ids] of tp.routines) {
+    ids.forEach(ensureExercise);
+    state.routines.push({ id: uid(), name, tpl: true, ex: ids.slice() });
+  }
+  defaultGroupGoals();
+  save(); closeSheet(); rerender();
+  toast(tn(tp.routines.length, '{n} treino adicionado.', '{n} treinos adicionados.'));
+};
 
 actions.newRoutine = () => {
   sheet(`<h2>${t('Novo treino')}</h2>

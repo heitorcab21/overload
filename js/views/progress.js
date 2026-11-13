@@ -197,7 +197,12 @@ function exEvoCard(ex, prog) {
   </div>`;
 }
 
-// ---------- Nível de força em destaque ----------
+// ---------- Nível de força: cartão no Progresso e tela por exercício ----------
+
+function strengthRows(p) {
+  return Object.values(state.exercises).map(ex => ({ ex, lv: strengthLevel(ex, p) })).filter(x => x.lv.top)
+    .sort((a, b) => a.lv.top - b.lv.top);
+}
 
 function strengthOverview() {
   const p = profile();
@@ -208,24 +213,41 @@ function strengthOverview() {
       <button class="btn primary block" data-act="editProfile">${t('Preencher perfil')}</button>
     </div>`;
   }
-  const levels = Object.values(state.exercises).map(ex => ({ ex, lv: strengthLevel(ex, p) })).filter(x => x.lv.top)
-    .sort((a, b) => a.lv.top - b.lv.top);
-  if (!levels.length) {
-    return `<div class="card stack strength-card"><h3>${t('Seu nível de força')}</h3>
-      <p class="muted">${t('Registre exercícios com barra, halteres ou peso corporal (supino, agachamento, terra, remada, barra fixa...) para ver em que top de força você está.')}</p></div>`;
+  const rows = strengthRows(p);
+  if (!rows.length) {
+    return `<a class="card stack strength-card link-card" href="#/forca"><div class="row between"><h3>${t('Seu nível de força')}</h3>${icon.next}</div>
+      <p class="muted">${t('Registre exercícios com barra, halteres ou peso corporal (supino, agachamento, terra, remada, barra fixa...) para ver em que top de força você está.')}</p></a>`;
   }
-  const all = overallStrength(p);
-  return `<div class="card stack strength-card">
-    <h3>${t('Seu nível de força')}</h3>
-    <div class="row between"><span class="big-num">${t('Top {n}%', { n: all.top })}</span>
-      <span class="small muted" style="text-align:right">${tn(all.count, 'com base em {n} exercício', 'média de {n} exercícios')}</span></div>
-    ${meter(all.pct / 100)}
-    <p class="small muted">${t('Entre {grupo} que treinam musculação, com {idade} anos e cerca de {peso} kg.', { grupo: groupWord(p), idade: p.age, peso: Math.round(p.weight) })}</p>
-    <div class="list strength-list">${levels.map(({ ex, lv }) => `<a class="item" href="#/exercicio/${encodeURIComponent(ex.id)}">
-      <span class="grow"><span class="t">${esc(exName(ex))}</span>${meter(lv.pct / 100)}</span>
-      <span class="top-chip">${t('Top {n}%', { n: lv.top })}</span></a>`).join('')}</div>
-    <p class="small muted">${t('Toque num exercício para ver de onde vem o número e fazer um teste de força.')}</p>
-  </div>`;
+  const best = rows[0];
+  return `<a class="card stack strength-card link-card" href="#/forca">
+    <div class="row between"><h3>${t('Seu nível de força')}</h3>${icon.next}</div>
+    <div class="row between"><span class="grow"><span class="small muted">${t('Seu destaque')}</span><br><b>${esc(exName(best.ex))}</b></span>
+      <span class="top-chip big">${t('Top {n}%', { n: best.lv.top })}</span></div>
+    <p class="small muted">${tn(rows.length, 'Veja o seu nível em {n} exercício', 'Veja o seu nível em cada um dos {n} exercícios')}</p>
+  </a>`;
+}
+
+function renderStrength() {
+  const p = profile();
+  const rows = p ? strengthRows(p) : [];
+  const pending = p ? Object.values(state.exercises).filter(ex => strengthLevel(ex, p).reason === 'noData') : [];
+  $('#view').innerHTML = `
+    <div class="head"><a class="icon-btn" href="#/progresso" aria-label="${t('Voltar')}">${icon.back}</a><h1 class="grow">${t('Nível de força')}</h1></div>
+    <div class="stack">
+      ${!p ? `<div class="card stack"><p>${t('Descubra em que top de força você está em cada exercício, comparado a pessoas do seu sexo, idade e peso que treinam musculação.')}</p>
+        <button class="btn primary block" data-act="editProfile">${t('Preencher perfil')}</button></div>` : `
+      <p class="muted small">${t('Entre {grupo} que treinam musculação, com {idade} anos e cerca de {peso} kg.', { grupo: groupWord(p), idade: p.age, peso: Math.round(p.weight) })}
+        ${t('Top 10% quer dizer que você é mais forte que 90% dessas pessoas.')}</p>
+      ${rows.map(({ ex, lv }) => `<a class="card stack strength-row" href="#/exercicio/${encodeURIComponent(ex.id)}">
+        <div class="row between"><b class="grow">${esc(exName(ex))}</b><span class="top-chip">${t('Top {n}%', { n: lv.top })}</span></div>
+        ${meter(lv.pct / 100)}
+        <span class="small muted">${t('1RM estimado: {w} kg', { w: Math.round(lv.oneRM) })} · ${lv.src.test ? t('teste de força') : `${fmt(lv.src.w)} kg × ${lv.src.r}`} · ${fmtDate(lv.src.date, false)}</span>
+      </a>`).join('') || `<div class="card"><p class="muted">${t('Registre exercícios com barra, halteres ou peso corporal (supino, agachamento, terra, remada, barra fixa...) para ver em que top de força você está.')}</p></div>`}
+      ${pending.length ? `<h3 class="group-title">${t('Ainda sem registro')}</h3>
+        <div class="card flat"><div class="list">${pending.map(ex => `<a class="item" href="#/exercicio/${encodeURIComponent(ex.id)}">
+          <span class="grow t">${esc(exName(ex))}</span><span class="small muted">${t('treine ou faça um teste')}</span>${icon.next}</a>`).join('')}</div></div>` : ''}
+      <p class="small muted">${t('Só entram exercícios com barra, halteres ou peso corporal; aparelhos e polias variam demais entre academias. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.')}</p>`}
+    </div>`;
 }
 
 // ---------- Seu corpo ----------
@@ -244,7 +266,6 @@ function bodyCard() {
   }
   const strength = overallStrength(p);
   const c = bodyComposition(p, strength);
-  const BMI = { under: t('abaixo do peso'), normal: t('normal'), over: t('sobrepeso'), obese: t('obesidade') };
   const leanPct = Math.round(100 - c.bf);
   const method = c.method === 'navy'
     ? t('Estimado pela fórmula da Marinha americana (cintura e pescoço). Margem de erro: cerca de ±{m} pontos.', { m: fmt(c.margin) })
@@ -256,19 +277,18 @@ function bodyCard() {
     <p class="small muted">${p.sex === 'm' ? t('Homem') : t('Mulher')} · ${t('{n} anos', { n: p.age })} · ${fmt(p.height)} cm · ${fmt1(p.weight)} kg</p>
     ${weightBlock(p)}
     <div class="tiles">
-      <div class="tile"><span class="l">${t('IMC')}</span><span class="v">${fmt1(c.bmi)}</span><span class="small muted">${BMI[c.bmiClass]}</span></div>
-      <div class="tile"><span class="l">${t('Gordura estimada')}</span><span class="v">${fmt1(c.bf)}%</span><span class="small muted">±${fmt(c.margin)} ${t('pontos')}</span></div>
       <div class="tile"><span class="l">${t('Massa magra')}</span><span class="v">${fmt1(c.leanKg)} kg</span></div>
       <div class="tile"><span class="l">${t('Massa gorda')}</span><span class="v">${fmt1(c.fatKg)} kg</span></div>
+      <div class="tile"><span class="l">${t('Gordura estimada')}</span><span class="v">${fmt1(c.bf)}%</span><span class="small muted">±${fmt(c.margin)} ${t('pontos')}</span></div>
+      <div class="tile"><span class="l">${t('IMC')}</span><span class="v">${fmt1(c.bmi)}</span><span class="small muted">${t('só informativo')}</span></div>
     </div>
     <div class="segbar" role="img" aria-label="${t('Massa magra {a}%, massa gorda {b}%', { a: leanPct, b: 100 - leanPct })}">
       <span class="seg-lean" style="width:${leanPct}%">${leanPct >= 18 ? `${leanPct}%` : ''}</span><span class="seg-fat" style="width:${100 - leanPct}%">${100 - leanPct >= 12 ? `${100 - leanPct}%` : ''}</span>
     </div>
     <div class="legend small"><span><i class="sw-lean"></i>${t('Massa magra')}</span><span><i class="sw-fat"></i>${t('Massa gorda')}</span></div>
     <p class="small muted">${method}</p>
-    <div class="tip">${strength
-      ? t('Nível de força geral: <b>top {top}%</b> entre {grupo} que treinam musculação, com {idade} anos e cerca de {peso} kg ({base}). Veja cada exercício na aba Treinos.', { top: strength.top, grupo: groupWord(p), idade: p.age, peso: Math.round(p.weight), base: tn(strength.count, 'com base em {n} exercício', 'média de {n} exercícios') })
-      : t('Registre exercícios com barra, halteres ou peso corporal (supino, agachamento, terra, remada, barra fixa...) para ver em que top de força você está.')}</div>
+    <p class="small muted">${t('O IMC é só peso dividido pela altura ao quadrado e não diferencia músculo de gordura. Para quem treina, o que importa é a massa magra e a massa gorda.')}</p>
+
     <p class="small muted">${t('Estimativas aproximadas. Não substituem uma avaliação física (bioimpedância, dobras cutâneas ou DEXA).')}</p>
   </div>`;
 }
@@ -359,3 +379,4 @@ submits.saveProfile = form => {
 };
 
 route('progresso', render);
+route('forca', renderStrength, { tab: 'progresso' });

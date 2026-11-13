@@ -647,6 +647,33 @@ const ui = {
   "Entre {grupo} que treinam musculação, com {idade} anos e cerca de {peso} kg.": "Entre {grupo} que entrenan musculación, con {idade} años y unos {peso} kg.",
   "Toque num exercício para ver de onde vem o número e fazer um teste de força.": "Toca un ejercicio para ver de dónde sale el número y hacer una prueba de fuerza.",
   "Top {n}% de força": "Top {n}% de fuerza",
+  "Adicionar treino pronto": "Agregar rutina lista",
+  "Os treinos do modelo entram na sua lista. Os que você já tem continuam iguais.": "Los entrenamientos del modelo se agregan a tu lista. Los que ya tienes siguen igual.",
+  "{n} treino adicionado.": "{n} entrenamiento agregado.",
+  "{n} treinos adicionados.": "{n} entrenamientos agregados.",
+  "Seu destaque": "Tu mejor",
+  "Nível de força": "Nivel de fuerza",
+  "Top 10% quer dizer que você é mais forte que 90% dessas pessoas.": "Top 10% significa que eres más fuerte que el 90% de esas personas.",
+  "teste de força": "prueba de fuerza",
+  "Ainda sem registro": "Aún sin registros",
+  "treine ou faça um teste": "entrena o haz una prueba",
+  "Só entram exercícios com barra, halteres ou peso corporal; aparelhos e polias variam demais entre academias. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.": "Solo cuentan ejercicios con barra, mancuernas o peso corporal; las máquinas y poleas varían demasiado entre gimnasios. Estimación basada en estándares de fuerza de quienes entrenan; no es un ranking oficial.",
+  "só informativo": "solo informativo",
+  "O IMC é só peso dividido pela altura ao quadrado e não diferencia músculo de gordura. Para quem treina, o que importa é a massa magra e a massa gorda.": "El IMC es solo el peso dividido por la altura al cuadrado y no distingue músculo de grasa. Para quien entrena, lo que importa es la masa magra y la masa grasa.",
+  "Veja o seu nível em {n} exercício": "Mira tu nivel en {n} ejercicio",
+  "Veja o seu nível em cada um dos {n} exercícios": "Mira tu nivel en cada uno de tus {n} ejercicios",
+  "Arnold split": "Arnold split",
+  "3 treinos (peito e costas, ombros e braços, pernas), repetidos 2 vezes na semana.": "3 entrenamientos (pecho y espalda, hombros y brazos, piernas), repetidos 2 veces por semana.",
+  "ABCDE (um grupo por dia)": "ABCDE (un grupo por día)",
+  "5 treinos, um grupamento por dia: peito, costas, ombros, pernas e braços.": "5 entrenamientos, un grupo muscular por día: pecho, espalda, hombros, piernas y brazos.",
+  "Arnold A · Peito e costas": "Arnold A · Pecho y espalda",
+  "Arnold B · Ombros e braços": "Arnold B · Hombros y brazos",
+  "Arnold C · Pernas": "Arnold C · Piernas",
+  "Treino A · Peito": "Entreno A · Pecho",
+  "Treino B · Costas": "Entreno B · Espalda",
+  "Treino C · Ombros": "Entreno C · Hombros",
+  "Treino D · Pernas": "Entreno D · Piernas",
+  "Treino E · Braços": "Entreno E · Brazos",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -655,7 +682,7 @@ const help = [
   ['Primeros pasos', 'Del primer acceso al primer entrenamiento', `
     <ol class="steps">
       <li><b>Inicia sesión con tu cuenta de Google</b> en la primera pantalla para que tus entrenamientos se guarden en tu Drive. Si prefieres, toca "Usar sin cuenta".</li>
-      <li><b>Elige un punto de partida</b>: ABC, Empuje/Tracción/Piernas, Superior/Inferior, Cuerpo completo o de cero.</li>
+      <li><b>Elige un punto de partida</b>: ABC, Empuje/Tracción/Piernas, Superior/Inferior, Arnold split, ABCDE, Cuerpo completo o de cero. Después puedes agregar otros en <b>Entrenos &gt; Agregar rutina lista</b>.</li>
       <li><b>Indica las cargas que ya usas</b> en la pantalla de cargas iniciales. Es opcional: lo que quede en blanco lo eliges en el primer entrenamiento.</li>
       <li>En la pestaña <b>Hoy</b>, toca <b>Empezar entrenamiento</b>.</li>
     </ol>
@@ -726,7 +753,7 @@ const help = [
   ['Tu cuerpo y nivel de fuerza', 'IMC, grasa, masa magra y top de fuerza', `
     <p>En la pestaña <b>Progreso</b>, indica sexo, edad, altura y peso en la tarjeta <b>Tu cuerpo</b>.</p>
     <ul class="errs">
-      <li><b>IMC</b>: el peso dividido por la altura al cuadrado. No distingue músculo de grasa.</li>
+      <li><b>La masa magra y la masa grasa</b> son lo importante. El <b>IMC</b> aparece solo como información: es el peso dividido por la altura al cuadrado y no distingue músculo de grasa, así que quien entrena suele tener un IMC alto sin tener sobrepeso.</li>
       <li><b>Grasa estimada</b>: con cintura y cuello (y cadera, para mujeres), la app usa la fórmula de la Marina de EE. UU., con un error de unos 3 a 4 puntos. Sin esas medidas, usa IMC, edad y sexo, con un error de unos 5 puntos, y descuenta hasta 4 puntos si eres fuerte para tu peso.</li>
       <li><b>Masa magra y grasa</b>: tu peso repartido según el porcentaje de grasa estimado.</li>
       <li><b>Top de fuerza</b>: compara tu 1RM estimado con estándares de fuerza de quienes entrenan musculación, ajustados por sexo, edad y peso. Solo vale para ejercicios con barra, mancuernas o peso corporal; las máquinas y poleas varían demasiado entre gimnasios.</li>

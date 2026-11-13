@@ -488,3 +488,7 @@ details.help .help-body b { color: var(--ink); }
 .ex-evo-head { text-decoration: none; color: inherit; gap: 10px; align-items: flex-start; }
 .good-text { color: var(--good); font-weight: 600; }
 .top-link { color: var(--accent); font-weight: 700; text-decoration: none; white-space: nowrap; }
+.link-card { text-decoration: none; color: inherit; }
+.link-card .ic { color: var(--muted); }
+.top-chip.big { font-size: 18px; padding: 6px 14px; }
+.strength-row { text-decoration: none; color: inherit; }

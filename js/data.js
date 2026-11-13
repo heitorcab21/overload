@@ -512,6 +512,24 @@ export const TEMPLATES = [
     ],
   },
   {
+    id: 'arnold', name: 'Arnold split', desc: '3 treinos (peito e costas, ombros e braços, pernas), repetidos 2 vezes na semana.',
+    routines: [
+      ['Arnold A · Peito e costas', ['supino-reto', 'supino-inclinado-barra', 'crucifixo-halteres', 'barra-fixa', 'remada-curvada', 'puxada-frente', 'abdominal-supra']],
+      ['Arnold B · Ombros e braços', ['desenvolvimento-barra', 'elevacao-lateral', 'crucifixo-inverso', 'rosca-direta', 'rosca-alternada', 'supino-fechado', 'triceps-frances']],
+      ['Arnold C · Pernas', ['agachamento-livre', 'leg-press', 'cadeira-extensora', 'stiff', 'mesa-flexora', 'panturrilha-em-pe', 'abdominal-infra']],
+    ],
+  },
+  {
+    id: 'abcde', name: 'ABCDE (um grupo por dia)', desc: '5 treinos, um grupamento por dia: peito, costas, ombros, pernas e braços.',
+    routines: [
+      ['Treino A · Peito', ['supino-reto', 'supino-inclinado-halteres', 'supino-declinado', 'crucifixo-halteres', 'crossover']],
+      ['Treino B · Costas', ['barra-fixa', 'remada-curvada', 'puxada-frente', 'remada-baixa', 'pulldown-braco-reto', 'hiperextensao']],
+      ['Treino C · Ombros', ['desenvolvimento-halteres', 'elevacao-lateral', 'elevacao-frontal', 'crucifixo-inverso', 'encolhimento']],
+      ['Treino D · Pernas', ['agachamento-livre', 'leg-press', 'cadeira-extensora', 'stiff', 'mesa-flexora', 'panturrilha-em-pe']],
+      ['Treino E · Braços', ['rosca-direta', 'rosca-martelo', 'rosca-concentrada', 'triceps-barra', 'triceps-testa', 'triceps-coice']],
+    ],
+  },
+  {
     id: 'full', name: 'Corpo inteiro', desc: '1 treino completo para repetir 2 a 3 vezes por semana.',
     routines: [
       ['Corpo inteiro', ['agachamento-livre', 'supino-reto', 'remada-baixa', 'stiff', 'desenvolvimento-halteres', 'rosca-direta', 'triceps-corda']],
