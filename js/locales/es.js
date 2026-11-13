@@ -634,6 +634,7 @@ const ui = {
   "Registrar peso": "Registrar peso",
   "Registre seu peso de vez em quando (por exemplo, toda semana, em jejum) para ver o gráfico.": "Registra tu peso de vez en cuando (por ejemplo, cada semana, en ayunas) para ver el gráfico.",
   "Dica: pese-se sempre no mesmo horário, de preferência ao acordar.": "Consejo: pésate siempre a la misma hora, preferiblemente al despertar.",
+  'Tutorial': `Tutorial`,
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

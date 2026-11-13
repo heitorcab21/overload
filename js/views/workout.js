@@ -166,7 +166,7 @@ function render() {
     }).join('')}</div>
     <div class="ex-name">
       <h1>${esc(exName(ex))}</h1>
-      ${cues ? `<button class="icon-btn" data-act="wHow" aria-label="${t('Como executar')}">${icon.info}</button>` : ''}
+      ${cues ? `<button class="how-btn" data-act="wHow" aria-label="${t('Como executar')}">${icon.info}<span>${t('Tutorial')}</span></button>` : ''}
     </div>
     <p class="muted">${esc(tg(ex.group))} · ${ex.sets} × ${ex.repMin}–${ex.repMax} reps · ${t('descanso {s} s', { s: restOf(ex) })}</p>
     <div class="row wrap ex-actions">

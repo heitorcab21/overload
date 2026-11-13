@@ -634,6 +634,7 @@ const ui = {
   "Registrar peso": "Log weight",
   "Registre seu peso de vez em quando (por exemplo, toda semana, em jejum) para ver o gráfico.": "Log your weight now and then (for example, weekly, before eating) to see the chart.",
   "Dica: pese-se sempre no mesmo horário, de preferência ao acordar.": "Tip: weigh yourself at the same time, ideally right after waking up.",
+  'Tutorial': `Tutorial`,
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
