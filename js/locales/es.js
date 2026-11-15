@@ -765,6 +765,24 @@ const ui = {
   "<b>\"foi aquecimento\"</b> ou <b>\"aquecimento, 20 quilos, 15\"</b> marca aquecimento; <b>\"não foi aquecimento\"</b> desfaz": "<b>\"fue calentamiento\"</b> o <b>\"calentamiento, 20 kilos, 15\"</b> marca calentamiento; <b>\"no fue calentamiento\"</b> lo deshace",
   "Importar do bloco de notas": "Importar desde notas",
   "Planilha": "Hoja de cálculo",
+  "Planilhas": "Hojas de cálculo",
+  "Treinos deste dia": "Entrenamientos de este día",
+  "Nenhum treino registrado neste dia.": "Ningún entrenamiento registrado este día.",
+  "Termine o treino em andamento para registrar outro dia.": "Termina el entrenamiento en curso para registrar otro día.",
+  "Registrar treino neste dia": "Registrar entrenamiento este día",
+  "Esqueceu de anotar? Escolha a ficha e registre as séries como num treino normal; ele fica salvo nesta data.": "¿Olvidaste anotarlo? Elige la rutina y registra las series como un entrenamiento normal; queda guardado en esta fecha.",
+  "Cada treino vira uma ficha. As cargas ficam como o seu treino anterior: ao começar a ficha, você já vê e ajusta.": "Cada entrenamiento se convierte en una rutina. Las cargas quedan como tu entrenamiento anterior: al empezar la rutina, ya las ves y ajustas.",
+  "Usar com o meu nome (exercício próprio)": "Usar con mi nombre (ejercicio propio)",
+  "Nome do exercício": "Nombre del ejercicio",
+  "Mesmo exercício que \"{x}\". Se forem diferentes, marque \"Usar com o meu nome\".": "Mismo ejercicio que \"{x}\". Si son distintos, marca \"Usar con mi nombre\".",
+  "Também registrar como treino feito, na data de cada treino": "Registrar también como entrenamientos hechos, en la fecha de cada uno",
+  "Salvar {n} ficha": "Guardar {n} rutina",
+  "Salvar {n} fichas": "Guardar {n} rutinas",
+  "{n} ficha salva e treinos registrados.": "{n} rutina guardada y entrenamientos registrados.",
+  "{n} fichas salvas e treinos registrados.": "{n} rutinas guardadas y entrenamientos registrados.",
+  "{n} ficha salva. Ao começar, as cargas do texto já aparecem como o treino anterior.": "{n} rutina guardada. Al empezar, las cargas del texto aparecen como tu entrenamiento anterior.",
+  "{n} fichas salvas. Ao começar, as cargas do texto já aparecem como o treino anterior.": "{n} rutinas guardadas. Al empezar, las cargas del texto aparecen como tu entrenamiento anterior.",
+  "Registrando o treino de {d}": "Registrando el entrenamiento del {d}",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -781,10 +799,11 @@ const help = [
   ['Importar entrenamientos de texto', 'Desde tus notas o WhatsApp', `
     <p>¿Ya anotabas tus entrenamientos en texto? Copia y pega todo de una vez: la app guarda las cargas y sugiere las siguientes.</p>
     <ol class="steps">
-      <li>En el primer acceso, toca <b>Ya anoto mis entrenamientos</b>. Después, usa <b>Ajustes &gt; Importar entrenamientos de texto</b>.</li>
+      <li>En el primer acceso, toca <b>Ya anoto mis entrenamientos</b>. Después, usa el botón naranja <b>Importar desde notas</b> arriba en la pestaña Entrenos.</li>
       <li>Pega el texto y toca <b>Leer texto</b>. Entiende "15kg 10 rep", "40x12", "3x10 con 50kg", "50kg 12/10/8", descanso ("1:30 min"), fechas ("12/11") y grupos ("• Tríceps").</li>
       <li>Revisa: la app muestra lo que escribiste y el ejercicio que reconoció. Si se equivocó, elige otro de la lista; si no existe, crea un ejercicio nuevo.</li>
-      <li>Toca <b>Guardar</b>. Los entrenamientos entran en el historial con la fecha indicada (o la de hoy).</li>
+      <li>Toca <b>Guardar</b>. Cada entrenamiento se convierte en una <b>rutina</b>, y las cargas quedan como tu entrenamiento anterior: al empezar la rutina, ya ves las cargas y las ajustas. Si quieres, marca para registrarlos también como entrenamientos hechos en la fecha del texto.</li>
+      <li>¿Dos ejercicios distintos quedaron como el mismo (ej.: "cruce alto" y "cruce bajo")? Marca <b>Usar con mi nombre</b> para crear un ejercicio propio.</li>
     </ol>
     <p class="tip">¿Texto muy desordenado? Con el entrenador IA activado, usa <b>Organizar con la IA</b>.</p>`],
   ['Registrar un entrenamiento', 'Un toque por serie', `
@@ -802,6 +821,7 @@ const help = [
       <li><b>Cambiar ejercicio</b>: ¿máquina ocupada? Toca <b>Cambiar ejercicio</b> debajo del nombre y elige otro. Marca la casilla para cambiarlo también en la rutina.</li>
       <li><b>Agregar ejercicio</b>: incluye un ejercicio justo después del actual, sin tocar la rutina (o también en ella, si marcas la casilla).</li>
       <li><b>Entrenamiento libre</b>: en la pestaña Hoy, empieza un entrenamiento vacío y agregas los ejercicios a medida que entrenas.</li>
+      <li><b>¿Olvidaste anotar un día?</b> En la pantalla Hoy, toca ese día de la semana y registra su entrenamiento; queda guardado en esa fecha.</li>
       <li><b>Fue calentamiento</b>: registra la serie como calentamiento. Queda guardada, pero no cuenta para la progresión, las metas, el volumen ni los récords. ¿Olvidaste marcarla? Si la 1.ª serie tiene menos del 70% de la carga sugerida, la app la cuenta como calentamiento sola; y las series muy ligeras nunca entran en las métricas. Toca la serie para borrarla o indicar que era válida.</li>
       <li><b>RIR (reps en reserva)</b>: después de una serie, toca 0, 1, 2, 3 o 4+. Es opcional. Con 3 o más sobrando en todas las series, la app sugiere +2 reps; con 0 en la última, repite los números. El RIR también mejora la estimación de fuerza máxima.</li>
       <li><b>Descanso por ejercicio</b>: en Entrenos, abre el ejercicio y define su descanso (0 usa el predeterminado de Ajustes).</li>

@@ -115,8 +115,9 @@ function renderHome() {
   const today = (now.getDay() + 6) % 7;
 
   const week = `<div class="card"><div class="week" aria-label="${t('Dias treinados nesta semana')}">
-    ${weekLetters().map((d, i) => `<div class="${trained.has(i) ? 'done' : ''}${i === today ? ' today' : ''}">
-      ${d}<i>${trained.has(i) ? icon.check : ''}</i></div>`).join('')}
+    ${weekLetters().map((d, i) => `<button type="button" class="wd ${trained.has(i) ? 'done' : ''}${i === today ? ' today' : ''}"
+      data-act="weekDay" data-i="${i}" ${i > today ? 'disabled' : ''} aria-label="${esc(fmtDate(addDays(ws, i)))}">
+      ${d}<i>${trained.has(i) ? icon.check : ''}</i></button>`).join('')}
   </div></div>`;
 
   let main;
@@ -222,6 +223,25 @@ actions.stallDismiss = el => {
   state.stallDismissed = { ...(state.stallDismissed || {}), [el.dataset.id]: x ? x.n + 2 : 99 };
   save({ touch: false }); closeSheet(); rerender();
 };
+
+// ---------- Tocar num dia da semana: ver o que foi feito ou registrar um treino esquecido ----------
+
+actions.weekDay = el => {
+  const day = addDays(weekStart(new Date()), Number(el.dataset.i));
+  const ss = sessionsIn(day, addDays(day, 1));
+  const at = new Date(day); at.setHours(12, 0, 0, 0);
+  const isToday = new Date().toDateString() === day.toDateString();
+  sheet(`<h2>${esc(fmtDate(day))}</h2>
+    ${ss.length ? `<h3>${t('Treinos deste dia')}</h3><div class="card flat"><div class="list">${ss.map(s => `<button class="item" data-act="openSession" data-id="${s.id}">
+      <span class="grow"><span class="t">${esc(routineName(s))}</span><br><span class="d">${tn(s.entries.reduce((n, e) => n + e.sets.length, 0), '{n} série', '{n} séries')}</span></span>${icon.next}</button>`).join('')}</div></div>`
+      : `<p class="muted">${t('Nenhum treino registrado neste dia.')}</p>`}
+    ${isToday ? '' : state.active ? `<p class="small muted">${t('Termine o treino em andamento para registrar outro dia.')}</p>`
+      : state.routines.length ? `<h3>${t('Registrar treino neste dia')}</h3>
+      <p class="small muted">${t('Esqueceu de anotar? Escolha a ficha e registre as séries como num treino normal; ele fica salvo nesta data.')}</p>
+      <div class="card flat"><div class="list">${state.routines.map(r => `<button class="item" data-act="startOnDay" data-id="${r.id}" data-day="${at.toISOString()}">
+        <span class="grow t">${esc(routineName(r))}</span>${icon.plus}</button>`).join('')}</div></div>` : ''}`);
+};
+actions.startOnDay = el => { closeSheet(); startWorkout(el.dataset.id, el.dataset.day); };
 
 actions.start = el => startWorkout(el.dataset.id);
 actions.freeWorkout = () => startFreeWorkout();

@@ -17,10 +17,11 @@ const TOPICS = [
   ['Importar treinos de texto', 'Do bloco de notas ou do WhatsApp', `
     <p>Já anotava seus treinos em texto? Copie e cole tudo de uma vez: o app salva as cargas e já sugere a próxima.</p>
     <ol class="steps">
-      <li>No primeiro acesso, toque em <b>Já anoto meus treinos</b>. Depois, use <b>Ajustes &gt; Importar treinos de texto</b>.</li>
+      <li>No primeiro acesso, toque em <b>Já anoto meus treinos</b>. Depois, use o botão laranja <b>Importar do bloco de notas</b> no topo da aba Treinos.</li>
       <li>Cole o texto e toque em <b>Ler texto</b>. Ele entende "15kg 10 rep", "40x12", "3x10 com 50kg", "50kg 12/10/8", descanso ("1:30 min"), datas ("12/11") e grupamentos ("• Tríceps").</li>
       <li>Confira: o app mostra o que você escreveu e o exercício que reconheceu. Se errou, troque na lista; se não existir, ele cria um exercício novo.</li>
-      <li>Toque em <b>Salvar</b>. Os treinos entram no histórico com a data informada (ou a de hoje).</li>
+      <li>Toque em <b>Salvar</b>. Cada treino vira uma <b>ficha</b>, e as cargas ficam como o seu treino anterior: ao começar a ficha, você já vê as cargas e ajusta. Se quiser, marque para registrar também como treino feito na data do texto.</li>
+      <li>Dois exercícios diferentes caíram no mesmo (ex.: "cross supra" e "cross infra")? Marque <b>Usar com o meu nome</b> para criar um exercício próprio.</li>
     </ol>
     <p class="tip">Texto muito bagunçado? Com o treinador IA ligado, use <b>Organizar com a IA</b>.</p>`],
 
@@ -40,6 +41,7 @@ const TOPICS = [
       <li><b>Trocar exercício</b>: aparelho ocupado? Toque em <b>Trocar exercício</b> abaixo do nome e escolha outro. Marque a caixinha para trocar também na ficha.</li>
       <li><b>Adicionar exercício</b>: inclui um exercício logo depois do atual, sem mexer na ficha (ou também nela, se marcar).</li>
       <li><b>Treino livre</b>: na aba Hoje, começa um treino vazio e você adiciona os exercícios conforme treina.</li>
+      <li><b>Esqueceu de anotar um dia?</b> Na tela Hoje, toque no dia da semana e registre o treino dele; ele fica salvo naquela data.</li>
       <li><b>Foi aquecimento</b>: registra a série como aquecimento. Ela fica guardada, mas não conta na progressão, nas metas, no volume nem nos recordes. Esqueceu de marcar? Se a 1ª série vier com menos de 70% da carga sugerida, o app já conta como aquecimento sozinho; e séries muito leves nunca entram nas métricas. Toque na série para excluir ou dizer que era válida.</li>
       <li><b>RIR (reps que sobraram)</b>: depois de uma série, toque em 0, 1, 2, 3 ou 4+. É opcional. Com 3 ou mais sobrando em todas as séries, o app sugere +2 reps; com 0 na última, repete os números. O RIR também melhora a estimativa de força máxima.</li>
       <li><b>Descanso por exercício</b>: em Treinos, abra o exercício e defina o descanso dele (0 usa o padrão dos Ajustes).</li>

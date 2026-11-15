@@ -22,14 +22,14 @@ function newEntry(ex) {
   return { exId: ex.id, plan, sets: [], warmup: [], cur: { w: plan.w, r: plan.reps[0] }, feel: null, flags: [], skipped: false };
 }
 
-export function startWorkout(routineId) {
+export function startWorkout(routineId, onDate = null) {
   const r = state.routines.find(x => x.id === routineId);
   if (!r) return;
   const entries = r.ex.map(id => state.exercises[id]).filter(Boolean).map(newEntry);
   if (!entries.length) { toast(t('Este treino não tem exercícios.')); return; }
   // Renova a autorização do Google agora, no toque de "Começar": ela cobre o treino inteiro
   refreshIfNeeded();
-  state.active = { id: uid(), routineId: r.id, name: r.name, tpl: !!r.tpl, startedAt: Date.now(), idx: 0, restEnd: 0, entries };
+  state.active = { id: uid(), routineId: r.id, name: r.name, tpl: !!r.tpl, startedAt: Date.now(), idx: 0, restEnd: 0, entries, ...(onDate ? { onDate } : {}) };
   save({ touch: false });
   go('#/treino');
 }
@@ -152,6 +152,7 @@ function render() {
       <span class="title">${esc(routineName(a))} · ${t('{i} de {n}', { i: a.idx + 1, n: a.entries.length })}</span>
       <button class="icon-btn" data-act="wList" aria-label="${t('Lista de exercícios')}">${icon.list}</button>
     </div>
+    ${a.onDate ? `<p class="small past-day">${icon.edit}${t('Registrando o treino de {d}', { d: fmtDate(a.onDate) })}</p>` : ''}
     <div class="dots" aria-hidden="true">${a.entries.map((e, i) => {
       const x = state.exercises[e.exId];
       return `<i class="${i === a.idx ? 'cur' : x && isDone(e, x) ? 'done' : ''}"></i>`;
@@ -400,10 +401,12 @@ function finish() {
   // séries de aquecimento ficam guardadas à parte: não entram na progressão, nas metas, no volume nem nos recordes
   const entries = a.entries.filter(e => e.sets.length || e.skipped)
     .map(({ exId, sets, warmup, feel, flags, skipped }) => ({ exId, sets, ...(warmup?.length ? { warmup } : {}), feel, flags, skipped: skipped && !sets.length }));
+  // treino registrado depois (dia esquecido): fica salvo na data escolhida, sem duração
   state.sessions.push({
-    id: a.id, date: new Date(a.startedAt).toISOString(), routineId: a.routineId, name: a.name, tpl: !!a.tpl,
-    dur: Math.max(1, Math.round((Date.now() - a.startedAt) / 60000)), entries,
+    id: a.id, date: a.onDate || new Date(a.startedAt).toISOString(), routineId: a.routineId, name: a.name, tpl: !!a.tpl,
+    ...(a.onDate ? {} : { dur: Math.max(1, Math.round((Date.now() - a.startedAt) / 60000)) }), entries,
   });
+  if (a.onDate) state.sessions.sort((x, y) => new Date(x.date) - new Date(y.date));
   const i = state.routines.findIndex(r => r.id === a.routineId);
   if (i >= 0 && state.routines.length) state.next = (i + 1) % state.routines.length;
   state.active = null;

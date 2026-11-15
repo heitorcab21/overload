@@ -66,7 +66,7 @@ function render() {
 
   $('#view').innerHTML = `
     <div class="head"><div class="grow"><h1>${t('Metas')}</h1><p class="sub">${period}</p></div>
-      <button class="btn sm sheet-green" data-act="toSheet">${icon.sheet}${t('Planilha')}</button></div>
+      <button class="btn sm sheet-green" data-act="toSheet">${icon.sheet}${t('Planilhas')}</button></div>
     <div class="stack">
       <div class="seg" role="tablist">
         <button role="tab" aria-selected="${isWeek}" class="${isWeek ? 'on' : ''}" data-act="goalMode" data-m="week">${t('Semana')}</button>

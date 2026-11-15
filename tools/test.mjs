@@ -374,6 +374,19 @@ eq(parseUtterance('it was a warm up', 'en'), [{ type: 'warm' }]);
 eq(parseUtterance('no fue calentamiento', 'es'), [{ type: 'unwarm' }]);
 eq(parseUtterance('40 quilos 12 repetições'), [set(40, 12)], 'série normal continua igual');
 
+// ---- cargas de referência importadas viram o treino anterior ----
+{
+  const keep = S().sessions;
+  S().sessions = [];
+  S().exercises.rf = { id: 'rf', name: 'Ref', group: 'Peito', sets: 3, repMin: 8, repMax: 12, step: 2.5, ref: { date: new Date().toISOString(), sets: [{ w: 40, r: 10 }, { w: 40, r: 9 }, { w: 40, r: 9 }] } };
+  const pf = planFor(S().exercises.rf);
+  eq([pf.w, pf.first ?? false, pf.last?.w], [40, false, 40], 'sem treino feito, as cargas importadas viram a base');
+  S().sessions = [{ id: 'rf1', date: new Date(Date.now() + 864e5).toISOString(), entries: [{ exId: 'rf', sets: [{ w: 45, r: 8 }, { w: 45, r: 8 }, { w: 45, r: 8 }] }] }];
+  eq(planFor(S().exercises.rf).last.w, 45, 'treino mais novo passa na frente da referência');
+  S().sessions = keep;
+  delete S().exercises.rf;
+}
+
 // ---- todos os arquivos carregam sem erro de sintaxe (inclusive telas que os testes não usam) ----
 {
   const { readdirSync } = await import('node:fs');

@@ -447,7 +447,7 @@ export function exName(ex) {
 }
 
 /** Tipo de carga: barra, halteres, polia, aparelho, peso corporal... (null em exercício próprio). */
-export const loadType = ex => (ex?.lib && LOAD_TYPE[ex.lib]) || (ex?.bw ? 'bw' : null);
+export const loadType = ex => (LOAD_TYPE[ex?.lib || ex?.base]) || (ex?.bw ? 'bw' : null);
 
 /** Como somar a carga total deste exercício, com exemplo. */
 export function loadHint(ex) {
@@ -482,8 +482,9 @@ export const loadLabel = ex => (ex?.bw ? t('Carga extra (kg)') : t('Carga total 
 /** Execução ideal do exercício no idioma atual (biblioteca) ou a gerada para exercício próprio. */
 export function exCues(ex) {
   if (!ex) return null;
-  const l = ex.lib && LIB_BY_ID[ex.lib];
-  if (l) return exPack(ex.lib) ?? l;
+  const id = ex.lib || ex.base;
+  const l = id && LIB_BY_ID[id];
+  if (l) return exPack(id) ?? l;
   return ex.cues ?? null;
 }
 
@@ -575,4 +576,4 @@ export function exPhotos(ex) {
   return `<figure class="ex-photos">${imgs.map((src, i) => `<img src="${src}" alt="${alt[i]}" loading="lazy" width="480" height="320">`).join('')}
     <figcaption>${t('Início e fim do movimento')}</figcaption></figure>`;
 }
-export const exImages = ex => (ex?.lib && IMG[ex.lib] ? [0, 1].map(n => `img/ex/${ex.lib}-${n}.jpg`) : []);
+export const exImages = ex => { const id = ex?.lib || ex?.base; return id && IMG[id] ? [0, 1].map(n => `img/ex/${id}-${n}.jpg`) : []; };

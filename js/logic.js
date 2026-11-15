@@ -72,6 +72,10 @@ const fit = (reps, n) => Array.from({ length: n }, (_, i) => reps[i] ?? reps.at(
 export function planFor(ex) {
   // treinos em que o aparelho foi trocado não servem de base para a próxima carga
   const hist = entriesFor(ex.id).filter(e => !(e.flags || []).includes('troca'));
+  // cargas importadas do bloco de notas valem como "treino anterior" até haver um treino mais novo
+  if (ex.ref?.sets?.length && (!hist.length || new Date(ex.ref.date) > new Date(hist.at(-1).date))) {
+    hist.push({ exId: ex.id, sets: ex.ref.sets, date: ex.ref.date, flags: [], ref: true });
+  }
   const lastRaw = hist.at(-1);
   const last = lastRaw && { ...lastRaw, sets: workSets(lastRaw.sets) };
   const n = ex.sets;

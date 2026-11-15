@@ -765,6 +765,24 @@ const ui = {
   "<b>\"foi aquecimento\"</b> ou <b>\"aquecimento, 20 quilos, 15\"</b> marca aquecimento; <b>\"não foi aquecimento\"</b> desfaz": "<b>\"it was a warm-up\"</b> or <b>\"warm-up, 20 kilos, 15\"</b> marks a warm-up; <b>\"not a warm-up\"</b> undoes it",
   "Importar do bloco de notas": "Import from notes",
   "Planilha": "Spreadsheet",
+  "Planilhas": "Spreadsheets",
+  "Treinos deste dia": "Workouts on this day",
+  "Nenhum treino registrado neste dia.": "No workout logged on this day.",
+  "Termine o treino em andamento para registrar outro dia.": "Finish the workout in progress to log another day.",
+  "Registrar treino neste dia": "Log a workout on this day",
+  "Esqueceu de anotar? Escolha a ficha e registre as séries como num treino normal; ele fica salvo nesta data.": "Forgot to log it? Pick the routine and log the sets like a normal workout; it's saved on this date.",
+  "Cada treino vira uma ficha. As cargas ficam como o seu treino anterior: ao começar a ficha, você já vê e ajusta.": "Each workout becomes a routine. The loads are kept as your previous workout: when you start the routine, you see and adjust them.",
+  "Usar com o meu nome (exercício próprio)": "Use my name for it (own exercise)",
+  "Nome do exercício": "Exercise name",
+  "Mesmo exercício que \"{x}\". Se forem diferentes, marque \"Usar com o meu nome\".": "Same exercise as \"{x}\". If they're different, tick \"Use my name for it\".",
+  "Também registrar como treino feito, na data de cada treino": "Also log them as completed workouts, on each workout's date",
+  "Salvar {n} ficha": "Save {n} routine",
+  "Salvar {n} fichas": "Save {n} routines",
+  "{n} ficha salva e treinos registrados.": "{n} routine saved and workouts logged.",
+  "{n} fichas salvas e treinos registrados.": "{n} routines saved and workouts logged.",
+  "{n} ficha salva. Ao começar, as cargas do texto já aparecem como o treino anterior.": "{n} routine saved. When you start it, the loads from the text show up as your previous workout.",
+  "{n} fichas salvas. Ao começar, as cargas do texto já aparecem como o treino anterior.": "{n} routines saved. When you start them, the loads from the text show up as your previous workout.",
+  "Registrando o treino de {d}": "Logging the workout for {d}",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -781,10 +799,11 @@ const help = [
   ['Import workouts from text', 'From your notes app or WhatsApp', `
     <p>Already logged your workouts as text? Copy and paste it all at once: the app saves the loads and suggests the next ones.</p>
     <ol class="steps">
-      <li>On first launch, tap <b>I already log my workouts</b>. Later, use <b>Settings &gt; Import workouts from text</b>.</li>
+      <li>On first launch, tap <b>I already log my workouts</b>. Later, use the orange <b>Import from notes</b> button at the top of the Workouts tab.</li>
       <li>Paste the text and tap <b>Read text</b>. It understands "15kg 10 reps", "40x12", "3x10 with 50kg", "50kg 12/10/8", rest ("1:30 min"), dates ("11/12") and muscle groups ("• Triceps").</li>
       <li>Check it: the app shows what you wrote and the exercise it recognized. If it got it wrong, pick another one from the list; if it doesn't exist, a new exercise is created.</li>
-      <li>Tap <b>Save</b>. The workouts go into your history with the date given (or today's).</li>
+      <li>Tap <b>Save</b>. Each workout becomes a <b>routine</b>, and the loads are kept as your previous workout: when you start the routine, you see the loads and adjust them. You can also tick the box to log them as completed workouts on the text's date.</li>
+      <li>Two different exercises ended up as the same one (e.g. "high cable fly" and "low cable fly")? Tick <b>Use my name for it</b> to create your own exercise.</li>
     </ol>
     <p class="tip">Very messy text? With the AI coach on, use <b>Organize with AI</b>.</p>`],
   ['Logging a workout', 'One tap per set', `
@@ -802,6 +821,7 @@ const help = [
       <li><b>Swap exercise</b>: machine taken? Tap <b>Swap exercise</b> below the name and pick another one. Tick the box to also swap it in the routine.</li>
       <li><b>Add exercise</b>: adds an exercise right after the current one, without changing the routine (or in it too, if you tick the box).</li>
       <li><b>Free workout</b>: on the Today tab, starts an empty workout and you add exercises as you train.</li>
+      <li><b>Forgot to log a day?</b> On the Today screen, tap that day of the week and log its workout; it's saved on that date.</li>
       <li><b>It was a warm-up</b>: logs the set as a warm-up. It is kept, but does not count toward progression, goals, volume or records. Forgot to mark it? If the 1st set has less than 70% of the suggested load, the app counts it as a warm-up on its own; and very light sets never enter the stats. Tap the set to delete it or say it was a working set.</li>
       <li><b>RIR (reps in reserve)</b>: after a set, tap 0, 1, 2, 3 or 4+. It is optional. With 3 or more left in every set, the app suggests +2 reps; with 0 in the last one, it repeats the numbers. RIR also improves the max strength estimate.</li>
       <li><b>Rest per exercise</b>: in Workouts, open the exercise and set its rest (0 uses the default from Settings).</li>

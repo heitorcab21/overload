@@ -623,3 +623,11 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 .sheet-card h3 .ic { width: 18px; height: 18px; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --sheet: #34a853; } }
 :root[data-theme="dark"] { --sheet: #34a853; }
+
+/* dias da semana tocáveis */
+.week button.wd { display: grid; justify-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--muted); background: none; border: 0; padding: 0; }
+.week button.wd.today { color: var(--ink); }
+.week button.wd:disabled { opacity: .45; cursor: default; }
+.week button.wd:not(:disabled):active i { transform: scale(.92); }
+.past-day { display: flex; align-items: center; gap: 6px; color: var(--warm); font-weight: 600; margin: 4px 0; }
+.past-day .ic { width: 16px; height: 16px; }

@@ -52,6 +52,7 @@ function render() {
   $('#view').innerHTML = `${head}
     <div class="stack">
       <p class="muted">${t('Confira o que o app entendeu. Troque o exercício se ele errou e corrija as séries no formato carga x reps.')}</p>
+      <p class="small muted">${t('Cada treino vira uma ficha. As cargas ficam como o seu treino anterior: ao começar a ficha, você já vê e ajusta.')}</p>
       ${draft.sessions.map((s, si) => `<div class="card stack">
         <div class="two">
           <label class="field">${t('Data')}<input type="date" value="${dateInput(s.date)}" data-change="impDate" data-s="${si}"></label>
@@ -61,18 +62,29 @@ function render() {
           <div class="row between"><span class="small muted">${t('Você escreveu')}: <b>${esc(it.raw || '—')}</b></span>
             <button class="icon-btn" data-act="impDel" data-s="${si}" data-i="${ii}" aria-label="${t('Remover')}">${icon.trash}</button></div>
           <select data-change="impEx" data-s="${si}" data-i="${ii}" aria-label="${t('Exercício')}">${exOptions(it)}</select>
+          ${it.id ? `<label class="check small"><input type="checkbox" data-change="impOwn" data-s="${si}" data-i="${ii}"${it.own ? ' checked' : ''}>${t('Usar com o meu nome (exercício próprio)')}</label>` : ''}
+          ${!it.id || it.own ? `<input type="text" value="${esc(it.name ?? it.raw ?? '')}" maxlength="50" placeholder="${t('Nome do exercício')}" data-change="impNm" data-s="${si}" data-i="${ii}" aria-label="${t('Nome do exercício')}">` : ''}
           ${it.id ? '' : `<select data-change="impGroup" data-s="${si}" data-i="${ii}" aria-label="${t('Grupamento')}">${GROUPS.map(g => `<option value="${esc(g)}"${g === (it.group || GROUPS[0]) ? ' selected' : ''}>${esc(tg(g))}</option>`).join('')}</select>`}
+          ${dupOf(s, ii) ? `<p class="small warn-text">${t('Mesmo exercício que "{x}". Se forem diferentes, marque "Usar com o meu nome".', { x: esc(dupOf(s, ii)) })}</p>` : ''}
           <input type="text" value="${esc(setsText(it.sets))}" data-change="impSets" data-s="${si}" data-i="${ii}" aria-label="${t('Séries')}" inputmode="text">
           <span class="small muted">${tn(it.sets.length, '{n} série', '{n} séries')}${it.rest ? ` · ${t('descanso {s} s', { s: it.rest })}` : ''}</span>
         </div>`).join('')}
       </div>`).join('')}
-      <label class="check"><input type="checkbox" id="impRoutine"${state.routines.length ? '' : ' checked'}>${t('Criar também fichas de treino com esses exercícios')}</label>
-      <button class="btn primary big" data-act="impSave"${total ? '' : ' disabled'}>${tn(draft.sessions.length, 'Salvar {n} treino', 'Salvar {n} treinos')}</button>
+      <label class="check"><input type="checkbox" id="impLog">${t('Também registrar como treino feito, na data de cada treino')}</label>
+      <button class="btn primary big" data-act="impSave"${total ? '' : ' disabled'}>${tn(new Set(draft.sessions.map(s => s.name || '')).size, 'Salvar {n} ficha', 'Salvar {n} fichas')}</button>
       <button class="btn ghost block" data-act="impBack">${t('Voltar ao texto')}</button>
     </div>`;
 }
 
 const cur = el => draft.sessions[Number(el.dataset.s)];
+
+// chave do exercício que o item vai virar (para avisar quando dois itens caem no mesmo)
+const keyOf = it => (it.id && !it.own ? it.id : `own:${(it.name ?? it.raw ?? '').toLowerCase().trim()}`);
+function dupOf(s, ii) {
+  const k = keyOf(s.items[ii]);
+  const j = s.items.findIndex((x, n) => n !== ii && keyOf(x) === k);
+  return j >= 0 && s.items[ii].id && !s.items[ii].own ? s.items[j].raw || '—' : '';
+}
 const itemOf = el => cur(el).items[Number(el.dataset.i)];
 
 actions.impRead = () => {
@@ -116,6 +128,8 @@ changes.impDate = el => { cur(el).date = el.value ? new Date(`${el.value}T12:00:
 changes.impName = el => { cur(el).name = el.value.trim() || null; };
 changes.impEx = el => { itemOf(el).id = el.value || null; rerender(); };
 changes.impGroup = el => { itemOf(el).group = el.value; };
+changes.impOwn = el => { const it = itemOf(el); it.own = el.checked; if (it.own && it.name == null) it.name = it.raw; rerender(); };
+changes.impNm = el => { itemOf(el).name = el.value; };
 changes.impSets = el => {
   // aceita "40x12 40x10", "40kg 12 rep", "12" (peso corporal), separados por espaço, vírgula ou ponto e vírgula
   const parts = el.value.split(/[;,]|\s+(?=\d+(?:[.,]\d+)?\s*(?:x|kg))/i).map(p => p.trim()).filter(Boolean);
@@ -132,24 +146,34 @@ changes.impSets = el => {
 };
 
 actions.impSave = () => {
-  const mkRoutine = $('#impRoutine')?.checked;
+  const alsoLog = $('#impLog')?.checked;
   const created = {};
+  const routinesTouched = new Set();
   let nSessions = 0;
   for (const s of draft.sessions) {
     const entries = [];
+    const date = s.date || new Date().toISOString();
     for (const it of s.items) {
       if (!it.sets.length) continue;
-      let ex = it.id && (state.exercises[it.id] || ensureExercise(it.id));
-      if (!ex) {
-        // exercício que não está na biblioteca: cria um personalizado (o mesmo nome reaproveita)
-        const key = `${(it.raw || '').toLowerCase()}|${it.group}`;
-        ex = created[key];
+      let ex;
+      if (it.id && !it.own) {
+        ex = state.exercises[it.id] || ensureExercise(it.id);
+      } else {
+        // exercício próprio: com o nome que a pessoa escreveu (o mesmo nome reaproveita)
+        const base = it.id && LIB_BY_ID[it.id];
+        const name = ((it.name ?? it.raw) || t('Exercício')).trim().slice(0, 50);
+        const group = base ? base.group : it.group || GROUPS[0];
+        const key = `${name.toLowerCase()}|${group}`;
+        ex = created[key] || Object.values(state.exercises).find(e => !e.lib && e.name.toLowerCase() === name.toLowerCase() && e.group === group);
         if (!ex) {
           const reps = it.sets.map(x => x.r);
-          const repMin = Math.max(1, Math.min(...reps)), repMax = Math.max(repMin, Math.max(...reps));
-          ex = { id: uid(), name: (it.raw || t('Exercício')).slice(0, 50), group: it.group || GROUPS[0], sets: Math.min(6, it.sets.length), repMin, repMax, step: 2.5, bw: it.sets.every(x => !x.w) };
-          state.exercises[ex.id] = created[key] = ex;
+          const repMin = base ? base.repMin : Math.max(1, Math.min(...reps));
+          const repMax = base ? base.repMax : Math.max(repMin, Math.max(...reps));
+          ex = { id: uid(), name, group, sets: base ? base.sets : Math.min(6, it.sets.length), repMin, repMax,
+            step: base ? base.step : 2.5, bw: base ? !!base.bw : it.sets.every(x => !x.w), ...(base ? { base: base.id } : {}) };
+          state.exercises[ex.id] = ex;
         }
+        created[key] = ex;
       }
       if (it.rest && !ex.rest) ex.rest = it.rest;
       const same = entries.find(e => e.exId === ex.id);
@@ -157,13 +181,19 @@ actions.impSave = () => {
       else entries.push({ exId: ex.id, sets: it.sets.map(x => ({ w: x.w, r: x.r })), feel: null, flags: [], skipped: false });
     }
     if (!entries.length) continue;
+    // cargas de referência: viram o "treino anterior" de cada exercício
+    for (const e of entries) {
+      const ex = state.exercises[e.exId];
+      if (!ex.ref || new Date(date) >= new Date(ex.ref.date)) ex.ref = { date, sets: e.sets.map(x => ({ ...x })) };
+    }
     const name = s.name || 'Treino importado';
-    state.sessions.push({ id: uid(), date: s.date || new Date().toISOString(), name, tpl: !s.name, imported: true, entries });
-    nSessions++;
-    if (mkRoutine) {
-      const r = state.routines.find(x => x.name === name);
-      if (r) entries.forEach(e => { if (!r.ex.includes(e.exId)) r.ex.push(e.exId); });
-      else state.routines.push({ id: uid(), name, tpl: !s.name, ex: entries.map(e => e.exId) });
+    let r = state.routines.find(x => x.name === name);
+    if (r) entries.forEach(e => { if (!r.ex.includes(e.exId)) r.ex.push(e.exId); });
+    else { r = { id: uid(), name, tpl: !s.name, ex: entries.map(e => e.exId) }; state.routines.push(r); }
+    routinesTouched.add(r.id);
+    if (alsoLog) {
+      state.sessions.push({ id: uid(), date, name, tpl: !s.name, imported: true, routineId: r.id, entries });
+      nSessions++;
     }
   }
   state.sessions.sort((a, b) => new Date(a.date) - new Date(b.date));
@@ -171,8 +201,11 @@ actions.impSave = () => {
   defaultGroupGoals();
   save();
   draft = null; text = '';
-  toast(tn(nSessions, '{n} treino importado. A próxima carga já considera esses dados.', '{n} treinos importados. A próxima carga já considera esses dados.'), 5000);
-  go('#/hoje');
+  const nR = routinesTouched.size;
+  toast(nSessions
+    ? tn(nR, '{n} ficha salva e treinos registrados.', '{n} fichas salvas e treinos registrados.', { n: nR })
+    : tn(nR, '{n} ficha salva. Ao começar, as cargas do texto já aparecem como o treino anterior.', '{n} fichas salvas. Ao começar, as cargas do texto já aparecem como o treino anterior.'), 5500);
+  go(state.routines.length > nR ? '#/exercicios' : '#/hoje');
 };
 
 route('importar', render, { tab: 'ajustes' });
