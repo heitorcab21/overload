@@ -785,6 +785,9 @@ const ui = {
   "Registrando o treino de {d}": "Logging the workout for {d}",
   "Exportar planilha": "Export spreadsheet",
   "Importar planilha": "Import spreadsheet",
+  "Backup": "Backup",
+  "Planilhas e importação": "Spreadsheets and import",
+  "Abra no Excel ou no Google Planilhas. A planilha de metas pode ser editada e importada de volta.": "Open them in Excel or Google Sheets. The goals spreadsheet can be edited and imported back.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };

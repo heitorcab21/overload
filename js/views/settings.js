@@ -84,14 +84,21 @@ function render() {
       ${accountCard()}
 
       <div class="card stack">
-        <h3>${t('Seus dados')}</h3>
+        <h3>${t('Backup')}</h3>
         <p class="muted small">${tn(n, '{n} treino salvo neste aparelho.', '{n} treinos salvos neste aparelho.')} ${t('Faça backup de vez em quando: limpar os dados do navegador apaga tudo.')}</p>
         <p class="small"><b>${t('Último backup:')}</b> ${state.lastBackup ? fmtDate(state.lastBackup) : t('nunca')}</p>
         <button class="btn primary block" data-act="backupNow">${t('Salvar backup completo')}</button>
         <p class="muted small">${t('No celular, abre o menu de compartilhar para mandar o arquivo ao Google Drive, WhatsApp ou e-mail. Se o navegador não permitir, o arquivo é baixado.')}</p>
-        <a class="btn block" href="#/importar">${icon.edit}${t('Importar treinos de texto (bloco de notas, WhatsApp)')}</a>
-        <button class="btn block" data-act="exportCSV">${t('Exportar treinos (planilha CSV)')}</button>
         <label class="btn block">${t('Restaurar backup')}<input type="file" accept="application/json,.json,text/plain,.txt" data-change="importBackup" class="sr"></label>
+      </div>
+
+      <div class="card stack">
+        <h3>${t('Planilhas e importação')}</h3>
+        <p class="muted small">${t('Abra no Excel ou no Google Planilhas. A planilha de metas pode ser editada e importada de volta.')}</p>
+        <button class="btn block sheet-green" data-act="exportCSV">${icon.download}${t('Exportar treinos (planilha CSV)')}</button>
+        <button class="btn block sheet-green" data-act="exportGoals">${icon.download}${t('Exportar metas (CSV)')}</button>
+        <label class="btn block sheet-green-soft">${icon.share}${t('Importar metas (CSV)')}<input type="file" accept=".csv,text/csv,text/plain" data-change="importGoals" class="sr"></label>
+        <a class="btn block" href="#/importar">${icon.edit}${t('Importar do bloco de notas')}</a>
       </div>
 
       ${isInstalled() ? '' : `<div class="card stack">
