@@ -631,3 +631,5 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 .week button.wd:not(:disabled):active i { transform: scale(.92); }
 .past-day { display: flex; align-items: center; gap: 6px; color: var(--warm); font-weight: 600; margin: 4px 0; }
 .past-day .ic { width: 16px; height: 16px; }
+.top-acts .btn.sheet-green-soft { font-size: 14px; }
+.top-acts label.btn { cursor: pointer; }

@@ -65,9 +65,12 @@ function render() {
   const noGoal = exs.filter(ex => { const st = exGoalStatus(ex, now); return (!st || st.expired) && entriesFor(ex.id).length; }).length;
 
   $('#view').innerHTML = `
-    <div class="head"><div class="grow"><h1>${t('Metas')}</h1><p class="sub">${period}</p></div>
-      <button class="btn sm sheet-green" data-act="toSheet">${icon.sheet}${t('Planilhas')}</button></div>
+    <div class="head"><div class="grow"><h1>${t('Metas')}</h1><p class="sub">${period}</p></div></div>
     <div class="stack">
+      <div class="two top-acts">
+        <button class="btn sheet-green-soft" data-act="exportGoals">${icon.download}${t('Exportar planilha')}</button>
+        <label class="btn sheet-green-soft">${icon.share}${t('Importar planilha')}<input type="file" accept=".csv,text/csv,text/plain" data-change="importGoals" class="sr"></label>
+      </div>
       <div class="seg" role="tablist">
         <button role="tab" aria-selected="${isWeek}" class="${isWeek ? 'on' : ''}" data-act="goalMode" data-m="week">${t('Semana')}</button>
         <button role="tab" aria-selected="${!isWeek}" class="${!isWeek ? 'on' : ''}" data-act="goalMode" data-m="month">${t('Mês')}</button>

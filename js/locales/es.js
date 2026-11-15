@@ -783,6 +783,8 @@ const ui = {
   "{n} ficha salva. Ao começar, as cargas do texto já aparecem como o treino anterior.": "{n} rutina guardada. Al empezar, las cargas del texto aparecen como tu entrenamiento anterior.",
   "{n} fichas salvas. Ao começar, as cargas do texto já aparecem como o treino anterior.": "{n} rutinas guardadas. Al empezar, las cargas del texto aparecen como tu entrenamiento anterior.",
   "Registrando o treino de {d}": "Registrando el entrenamiento del {d}",
+  "Exportar planilha": "Exportar hoja",
+  "Importar planilha": "Importar hoja",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
