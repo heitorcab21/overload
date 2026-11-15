@@ -65,7 +65,8 @@ function render() {
   const noGoal = exs.filter(ex => { const st = exGoalStatus(ex, now); return (!st || st.expired) && entriesFor(ex.id).length; }).length;
 
   $('#view').innerHTML = `
-    <div class="head"><div class="grow"><h1>${t('Metas')}</h1><p class="sub">${period}</p></div></div>
+    <div class="head"><div class="grow"><h1>${t('Metas')}</h1><p class="sub">${period}</p></div>
+      <button class="btn sm sheet-green" data-act="toSheet">${icon.sheet}${t('Planilha')}</button></div>
     <div class="stack">
       <div class="seg" role="tablist">
         <button role="tab" aria-selected="${isWeek}" class="${isWeek ? 'on' : ''}" data-act="goalMode" data-m="week">${t('Semana')}</button>
@@ -89,11 +90,11 @@ function render() {
 
       ${noGoal ? `<button class="btn block" data-act="suggestAll">${icon.spark}${tn(noGoal, 'Sugerir metas para {n} exercício', 'Sugerir metas para {n} exercícios')}</button>` : ''}
 
-      <div class="card stack">
-        <h3>${t('Planilha de metas')}</h3>
+      <div class="card stack sheet-card" id="sheetCard">
+        <h3>${icon.sheet}${t('Planilha de metas')}</h3>
         <p class="small muted">${t('Exporte, edite no Excel ou no Google Planilhas e importe de volta. Nos grupamentos, escreva séries ("12 séries"); nos exercícios, carga e repetições ("42,5 kg x 10"). As colunas "Feito" e "Situação" são ignoradas.')}</p>
-        <button class="btn block" data-act="exportGoals">${t('Exportar metas (CSV)')}</button>
-        <label class="btn block">${t('Importar metas (CSV)')}<input type="file" accept=".csv,text/csv,text/plain" data-change="importGoals" class="sr"></label>
+        <button class="btn block sheet-green" data-act="exportGoals">${icon.download}${t('Exportar metas (CSV)')}</button>
+        <label class="btn block sheet-green-soft">${t('Importar metas (CSV)')}<input type="file" accept=".csv,text/csv,text/plain" data-change="importGoals" class="sr"></label>
       </div>
     </div>`;
 }
@@ -209,6 +210,8 @@ actions.suggestAll = () => {
 };
 
 // ---------- Planilha ----------
+
+actions.toSheet = () => $('#sheetCard')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
 actions.exportGoals = () => shareFile(`overload-${t('metas')}-${monthKey()}.csv`, goalsCSV(), 'text/csv');
 

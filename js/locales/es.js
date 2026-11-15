@@ -763,6 +763,8 @@ const ui = {
   "contada como série válida": "contada como serie válida",
   "nenhum aquecimento para desfazer": "ningún calentamiento para deshacer",
   "<b>\"foi aquecimento\"</b> ou <b>\"aquecimento, 20 quilos, 15\"</b> marca aquecimento; <b>\"não foi aquecimento\"</b> desfaz": "<b>\"fue calentamiento\"</b> o <b>\"calentamiento, 20 kilos, 15\"</b> marca calentamiento; <b>\"no fue calentamiento\"</b> lo deshace",
+  "Importar do bloco de notas": "Importar desde notas",
+  "Planilha": "Hoja de cálculo",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

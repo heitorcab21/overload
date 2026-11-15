@@ -611,3 +611,15 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 .quick-acts .qa small { font-size: 11px; color: var(--muted); line-height: 1.2; }
 .quick-acts .qa:active { transform: scale(.97); }
 .hints .warm-li, .hints .warm-li b { color: var(--warm); }
+
+/* atalhos em destaque: laranja nos treinos, verde (Excel/Google Planilhas) nas planilhas */
+:root { --sheet: #1e8e3e; }
+.btn.accent-soft { background: color-mix(in srgb, var(--accent) 14%, var(--surface)); border: 1.5px solid color-mix(in srgb, var(--accent) 55%, transparent); color: var(--accent); font-weight: 700; font-size: 14px; }
+.top-acts .btn { min-height: 52px; padding: 8px 10px; line-height: 1.2; text-align: center; }
+.btn.sheet-green { background: var(--sheet); border-color: var(--sheet); color: #fff; }
+.btn.sheet-green-soft { background: color-mix(in srgb, var(--sheet) 14%, var(--surface)); border: 1.5px solid color-mix(in srgb, var(--sheet) 55%, transparent); color: var(--sheet); font-weight: 700; }
+.sheet-card { border: 1.5px solid color-mix(in srgb, var(--sheet) 45%, var(--line)); scroll-margin-top: 16px; }
+.sheet-card h3 { color: var(--sheet); display: flex; align-items: center; gap: 6px; }
+.sheet-card h3 .ic { width: 18px; height: 18px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --sheet: #34a853; } }
+:root[data-theme="dark"] { --sheet: #34a853; }

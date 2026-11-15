@@ -763,6 +763,8 @@ const ui = {
   "contada como série válida": "counted as a working set",
   "nenhum aquecimento para desfazer": "no warm-up to undo",
   "<b>\"foi aquecimento\"</b> ou <b>\"aquecimento, 20 quilos, 15\"</b> marca aquecimento; <b>\"não foi aquecimento\"</b> desfaz": "<b>\"it was a warm-up\"</b> or <b>\"warm-up, 20 kilos, 15\"</b> marks a warm-up; <b>\"not a warm-up\"</b> undoes it",
+  "Importar do bloco de notas": "Import from notes",
+  "Planilha": "Spreadsheet",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };

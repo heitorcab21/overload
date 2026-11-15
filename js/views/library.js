@@ -19,6 +19,10 @@ function renderRoutines() {
   $('#view').innerHTML = `
     <div class="head"><h1>${t('Treinos')}</h1></div>
     <div class="stack">
+      <div class="two top-acts">
+        <a class="btn accent-soft" href="#/importar">${icon.edit}${t('Importar do bloco de notas')}</a>
+        <button class="btn accent-soft" data-act="addTemplate">${icon.list}${t('Adicionar treino pronto')}</button>
+      </div>
       ${state.routines.map((r, ri) => `<div class="card flat">
         <div class="row" style="padding:12px 8px 4px 16px">
           <h2 class="grow">${esc(routineName(r))}</h2>
@@ -37,7 +41,6 @@ function renderRoutines() {
         <div style="padding:8px 12px 12px"><button class="btn block" data-act="pickEx" data-r="${ri}">${icon.plus}${t('Adicionar exercício')}</button></div>
       </div>`).join('')}
       <button class="btn primary block" data-act="newRoutine">${icon.plus}${t('Novo treino')}</button>
-      <button class="btn block" data-act="addTemplate">${icon.list}${t('Adicionar treino pronto')}</button>
       ${noHistory().length ? `<a class="btn block" href="#/cargas">${t('Definir cargas iniciais')}</a>` : ''}
 
       ${all.length ? `<h3 class="group-title">${t('Todos os exercícios')}</h3>
