@@ -633,3 +633,4 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 .past-day .ic { width: 16px; height: 16px; }
 .top-acts .btn.sheet-green-soft { font-size: 14px; }
 .top-acts label.btn { cursor: pointer; }
+.week .missed i { border: 2px dashed var(--muted); opacity: .7; }

@@ -115,7 +115,7 @@ function renderHome() {
   const today = (now.getDay() + 6) % 7;
 
   const week = `<div class="card"><div class="week" aria-label="${t('Dias treinados nesta semana')}">
-    ${weekLetters().map((d, i) => `<button type="button" class="wd ${trained.has(i) ? 'done' : ''}${i === today ? ' today' : ''}"
+    ${weekLetters().map((d, i) => `<button type="button" class="wd ${trained.has(i) ? 'done' : i < today ? 'missed' : ''}${i === today ? ' today' : ''}"
       data-act="weekDay" data-i="${i}" ${i > today ? 'disabled' : ''} aria-label="${esc(fmtDate(addDays(ws, i)))}">
       ${d}<i>${trained.has(i) ? icon.check : ''}</i></button>`).join('')}
   </div></div>`;
