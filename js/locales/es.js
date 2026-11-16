@@ -978,6 +978,8 @@ const ui = {
   "Novo dia de treino": "Nuevo día de entrenamiento",
   "Acrescentar ao meu treino atual": "Agregar a mi entrenamiento actual",
   "Substituir meu treino atual": "Reemplazar mi entrenamiento actual",
+  "Já está em \"Meus treinos salvos\". Mude ao menos um exercício para salvar outro.": "Ya está en \"Mis entrenamientos guardados\". Cambia al menos un ejercicio para guardar otro.",
+  "Igual a um treino pronto. Mude ao menos um exercício para salvar.": "Igual a un entrenamiento listo. Cambia al menos un ejercicio para guardarlo.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

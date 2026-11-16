@@ -26,7 +26,7 @@ function renderRoutines() {
         <a class="btn accent-soft" href="#/importar">${icon.edit}${t('Importar do bloco de notas')}</a>
       </div>
       <button class="btn primary block" data-act="newRoutine">${icon.plus}${t('Novo dia de treino')}</button>
-      ${canSavePlan() ? `<button class="btn block" data-act="planSaveAsk">${icon.download}${t('Salvar treino atual em "Meus treinos salvos"')}</button>` : ''}
+      ${state.routines.length ? saveBtn() : ''}
       ${state.routines.map((r, ri) => `<div class="card flat">
         <div class="row" style="padding:12px 8px 4px 16px">
           <h2 class="grow">${esc(routineName(r))}</h2>
@@ -81,6 +81,16 @@ const plans = () => (state.savedPlans ??= []);
 /** Assinatura dos exercícios de um conjunto de treinos (a ordem das fichas e dos exercícios não conta). */
 const exSig = list => list.filter(ex => ex.length).map(ex => [...ex].sort().join(',')).sort().join('|');
 /** Só faz sentido salvar se os treinos atuais diferem, em ao menos um exercício, de todo treino pronto e salvo. */
+/** Botão de salvar: sempre visível; apagado, com o motivo, quando não há o que salvar. */
+function saveBtn() {
+  const label = `${icon.download}${t('Salvar treino atual em "Meus treinos salvos"')}`;
+  if (canSavePlan()) return `<button class="btn block" data-act="planSaveAsk">${label}</button>`;
+  const cur = exSig(state.routines.map(r => r.ex));
+  const why = plans().some(p => exSig(p.routines.map(r => r.ex)) === cur)
+    ? t('Já está em "Meus treinos salvos". Mude ao menos um exercício para salvar outro.')
+    : t('Igual a um treino pronto. Mude ao menos um exercício para salvar.');
+  return `<div class="stack-tight"><button class="btn block" disabled>${label}</button><p class="small muted save-why">${why}</p></div>`;
+}
 function canSavePlan() {
   if (!state.routines.length) return false;
   const cur = exSig(state.routines.map(r => r.ex));

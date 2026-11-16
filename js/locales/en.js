@@ -978,6 +978,8 @@ const ui = {
   "Novo dia de treino": "New training day",
   "Acrescentar ao meu treino atual": "Add to my current workout",
   "Substituir meu treino atual": "Replace my current workout",
+  "Já está em \"Meus treinos salvos\". Mude ao menos um exercício para salvar outro.": "Already in \"My saved workouts\". Change at least one exercise to save another.",
+  "Igual a um treino pronto. Mude ao menos um exercício para salvar.": "Same as a ready-made workout. Change at least one exercise to save it.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
