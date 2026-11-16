@@ -14,8 +14,8 @@ import { aiEnabled, aiAskExecution, aiCuesFor } from '../ai.js';
 
 // divisão do corpo para a lista de exercícios
 const BODY_PARTS = () => [
-  [t('Tronco'), ['Peito', 'Costas', 'Ombros', 'Abdômen']],
-  [t('Braços'), ['Bíceps', 'Tríceps']],
+  [t('Tronco'), ['Peito', 'Costas', 'Abdômen']],
+  [t('Braços'), ['Ombros', 'Bíceps', 'Tríceps']],
   [t('Inferiores'), ['Quadríceps', 'Posteriores', 'Glúteos', 'Panturrilhas']],
 ];
 
