@@ -1024,6 +1024,13 @@ const ui = {
   "Salvo em \"Meus treinos salvos\". Para restaurar: Treinos prontos e salvos.": "Saved in \"My saved workouts\". To restore: Ready-made and saved workouts.",
   "Escolha um para acrescentar ao seu treino atual ou substituí-lo.": "Pick one to add to your current workout or replace it.",
   "Aqui você <b>adiciona</b> ao seu treino atual ou <b>substitui</b> ele por um treino pronto ou salvo.": "Here you <b>add</b> a ready-made or saved workout to your current one, or <b>replace</b> it.",
+  "Obrigatórios": "Required",
+  "Opcionais": "Optional",
+  "Sexo, idade, altura e peso: o app precisa deles para calcular seu corpo e seu nível de força.": "Sex, age, height and weight: the app needs them to work out your body and strength level.",
+  "Escolha": "Choose",
+  "Preencha os obrigatórios acima para liberar.": "Fill in the required fields above to unlock.",
+  "Cintura, pescoço e quadril não são obrigatórios: servem só para deixar a estimativa de gordura corporal mais precisa.": "Waist, neck and hip are not required: they only make the body fat estimate more precise.",
+  "Escolha o sexo.": "Choose your sex.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };

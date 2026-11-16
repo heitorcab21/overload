@@ -737,3 +737,9 @@ body.no-tabs #view:has(.w-done) { padding-bottom: calc(320px + var(--safe-b)); }
 .plan-lead { font-size: 17px; line-height: 1.4; color: var(--ink); margin: 2px 0 6px; }
 .plan-lead b { color: var(--accent); }
 .btn.accent-soft.dashed { border-style: dashed; }
+
+/* perfil: opcionais travados até os obrigatórios */
+.opt-fields { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: 12px; }
+.opt-fields[disabled] > *:not(.opt-lock):not(h3) { opacity: .4; }
+.opt-fields:not([disabled]) .opt-lock { display: none; }
+.opt-lock { color: var(--accent) !important; font-weight: 600; }

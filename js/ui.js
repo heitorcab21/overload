@@ -166,6 +166,11 @@ function bump(el, dir) {
   const input = $('input', box);
   const step = Number(box.dataset.step) || 1;
   const min = Number(box.dataset.min) || 0;
+  if (input.value === '' && box.dataset.start) {
+    input.value = box.dataset.start;
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    return;
+  }
   const v = Math.max(min, Math.round(((Number(input.value) || 0) + dir * step) * 100) / 100);
   input.value = v;
   input.dispatchEvent(new Event('change', { bubbles: true }));

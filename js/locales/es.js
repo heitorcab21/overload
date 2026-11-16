@@ -1024,6 +1024,13 @@ const ui = {
   "Salvo em \"Meus treinos salvos\". Para restaurar: Treinos prontos e salvos.": "Guardado en \"Mis entrenamientos guardados\". Para restaurar: Entrenamientos listos y guardados.",
   "Escolha um para acrescentar ao seu treino atual ou substituí-lo.": "Elige una para agregarla a tu entrenamiento actual o reemplazarlo.",
   "Aqui você <b>adiciona</b> ao seu treino atual ou <b>substitui</b> ele por um treino pronto ou salvo.": "Aquí <b>agregas</b> a tu entrenamiento actual o lo <b>reemplazas</b> por uno listo o guardado.",
+  "Obrigatórios": "Obligatorios",
+  "Opcionais": "Opcionales",
+  "Sexo, idade, altura e peso: o app precisa deles para calcular seu corpo e seu nível de força.": "Sexo, edad, altura y peso: la app los necesita para calcular tu cuerpo y tu nivel de fuerza.",
+  "Escolha": "Elige",
+  "Preencha os obrigatórios acima para liberar.": "Completa los obligatorios de arriba para habilitar.",
+  "Cintura, pescoço e quadril não são obrigatórios: servem só para deixar a estimativa de gordura corporal mais precisa.": "Cintura, cuello y cadera no son obligatorios: solo sirven para que la estimación de grasa corporal sea más precisa.",
+  "Escolha o sexo.": "Elige el sexo.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

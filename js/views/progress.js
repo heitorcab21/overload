@@ -441,36 +441,58 @@ function mountWeightChart() {
   lineChart(box, ws.map(w => ({ label: fmtDate(w.date, false), value: w.kg, tip: `${fmtDate(w.date)} · ${fmt(w.kg)} kg` })), { unit: ' kg' });
 }
 
+// valores de partida dos campos +/− quando ainda estão vazios (perfil novo)
+const START = { age: 25, height: 170, weight: 70 };
+const reqOk = form => ['m', 'f'].includes(form.sex.value)
+  && Number(form.age.value) >= 10 && Number(form.age.value) <= 100
+  && Number(form.height.value) >= 100 && Number(form.height.value) <= 250
+  && Number(form.weight.value) >= 30 && Number(form.weight.value) <= 300;
+
 actions.editProfile = () => {
   const p = state.profile || {};
-  const age = p.birthYear ? new Date().getFullYear() - p.birthYear : 25;
+  const age = p.birthYear ? new Date().getFullYear() - p.birthYear : '';
+  const start = (html, k) => html.replace('class="stepper"', `class="stepper" data-start="${START[k]}"`);
   sheet(`<h2>${t('Seu perfil')}</h2>
-    <form class="stack" data-submit="saveProfile">
+    <form class="stack" data-submit="saveProfile" data-change="profReq" data-live>
+      <h3>${t('Obrigatórios')}</h3>
+      <p class="small muted">${t('Sexo, idade, altura e peso: o app precisa deles para calcular seu corpo e seu nível de força.')}</p>
       <label class="field">${t('Sexo')}
-        <select name="sex">
-          <option value="m"${p.sex !== 'f' ? ' selected' : ''}>${t('Masculino')}</option>
+        <select name="sex" required>
+          ${p.sex ? '' : `<option value="" selected disabled>${t('Escolha')}</option>`}
+          <option value="m"${p.sex === 'm' ? ' selected' : ''}>${t('Masculino')}</option>
           <option value="f"${p.sex === 'f' ? ' selected' : ''}>${t('Feminino')}</option>
         </select></label>
       <p class="small muted">${t('As fórmulas de composição corporal e os padrões de força usam o sexo biológico.')}</p>
       <div class="two">
-        ${stepper('age', age, 1, t('Idade (anos)'), 10)}
-        ${stepper('height', p.height || 170, 1, t('Altura (cm)'), 100)}
+        ${start(stepper('age', age, 1, t('Idade (anos)'), 10), 'age')}
+        ${start(stepper('height', p.height || '', 1, t('Altura (cm)'), 100), 'height')}
       </div>
-      ${stepper('weight', p.weight || 70, 0.5, t('Peso (kg)'), 30)}
+      ${start(stepper('weight', p.weight || '', 0.5, t('Peso (kg)'), 30), 'weight')}
       <p class="small muted">${t('Dica: pese-se sempre no mesmo horário, de preferência ao acordar. Cada mudança de peso entra no gráfico.')}</p>
-      <h3>${t('Medidas opcionais (mais precisão)')}</h3>
+      <fieldset class="opt-fields" id="optFields"${p.sex && p.height && p.weight ? '' : ' disabled'}>
+      <h3>${t('Opcionais')}</h3>
+      <p class="small muted opt-lock">${t('Preencha os obrigatórios acima para liberar.')}</p>
+      <p class="small muted">${t('Cintura, pescoço e quadril não são obrigatórios: servem só para deixar a estimativa de gordura corporal mais precisa.')}</p>
       <p class="small muted">${t('Com fita métrica, sem apertar. Cintura: na altura do umbigo. Pescoço: logo abaixo do pomo de adão. Quadril (mulheres): na parte mais larga.')}</p>
       <div class="two">
         <label class="field">${t('Cintura (cm)')}<input type="number" inputmode="decimal" step="any" min="0" name="waist" value="${p.waist || ''}"></label>
         <label class="field">${t('Pescoço (cm)')}<input type="number" inputmode="decimal" step="any" min="0" name="neck" value="${p.neck || ''}"></label>
       </div>
       <label class="field">${t('Quadril (cm)')}<input type="number" inputmode="decimal" step="any" min="0" name="hip" value="${p.hip || ''}"></label>
-      <button class="btn primary big">${t('Salvar')}</button>
+      </fieldset>
+      <button class="btn primary big" id="profSave"${p.sex && p.height && p.weight ? '' : ' disabled'}>${t('Salvar')}</button>
     </form>`);
+};
+// os opcionais e o Salvar só liberam com sexo, idade, altura e peso preenchidos
+changes.profReq = form => {
+  const ok = reqOk(form);
+  $('#optFields').disabled = !ok;
+  $('#profSave').disabled = !ok;
 };
 submits.saveProfile = form => {
   const n = (k, min, max) => { const v = Number(form[k].value); return v >= min && v <= max ? v : null; };
   const age = n('age', 10, 100), height = n('height', 100, 250), weight = n('weight', 30, 300);
+  if (!['m', 'f'].includes(form.sex.value)) { toast(t('Escolha o sexo.'), 4000); return; }
   if (!age || !height || !weight) { toast(t('Confira idade, altura e peso.'), 4000); return; }
   const old = state.profile || {};
   const weights = [...(old.weights || [])];
