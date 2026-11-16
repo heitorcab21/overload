@@ -720,7 +720,14 @@ button.plain { background: none; border: 0; padding: 0; text-align: left; color:
 
 /* tela de treino: Feito fixo na barra de baixo */
 .w-bar .w-done { width: 100%; max-width: 528px; min-height: 54px; }
-body.no-tabs #view:has(.w-done) { padding-bottom: calc(236px + var(--safe-b)); }
+body.no-tabs #view:has(.w-done) { padding-bottom: calc(320px + var(--safe-b)); }
+/* carga e repetições na barra de baixo, compactas */
+.w-bar .w-steps { width: 100%; max-width: 528px; gap: 8px; }
+.w-bar .stepper { grid-template-columns: 40px 1fr 40px; gap: 2px 4px; padding: 4px 6px 6px; border-radius: 12px; }
+.w-bar .stepper-label { font-size: 10.5px; }
+.w-bar .stepper input { min-height: 38px; font-size: 22px; }
+.w-bar .stepper .icon-btn { width: 40px; height: 38px; min-height: 38px; }
+.todo-load { color: var(--accent); font-weight: 600; }
 .note-link { display: inline-flex; align-items: center; gap: 4px; border: 0; background: none; padding: 0; color: #e6b450; font: inherit; font-weight: 600; }
 .note-link .ic { width: 14px; height: 14px; }
 .ex-info { margin: 8px 0 6px; line-height: 1.5; }

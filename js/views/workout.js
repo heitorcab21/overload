@@ -159,10 +159,6 @@ function render() {
         ${en.sets.length || en.warmup.length ? `<button class="qa" data-act="wUndo"><b>${icon.undo}${t('Desfazer')}</b></button>` : `<button class="qa" data-act="wSkip"><b>${t('Pular exercício')}</b></button>`}
         <button class="qa warm" data-act="wWarm"><b>${t('Foi aquecimento')}</b></button>
       </div>
-      <div class="two">
-        ${stepper('w', en.cur.w, ex.step || 1, loadLabel(ex), 0, 'wCur').replace('data-change="wCur"', 'data-change="wCur" data-live')}
-        ${stepper('r', en.cur.r, 1, t('Repetições'), 0, 'wCur').replace('data-change="wCur"', 'data-change="wCur" data-live')}
-      </div>
       <p class="small warm-hint" id="warmHint"${willBeWarmup(en, ex) ? '' : ' hidden'}>${t('Carga abaixo de 70% da meta: esta série vai contar como aquecimento. Suba a carga para registrar como série válida.')}</p>
       <p class="small muted load-hint">${esc(loadHint(ex))}</p>
       ${rirRow(en)}
@@ -213,6 +209,10 @@ function render() {
         <button data-act="restAdd" data-s="-15">−15s</button><button data-act="restAdd" data-s="15">+15s</button>
         <button data-act="restSkip">${t('Pular')}</button>
       </div>
+      ${logging && !en.skipped ? `<div class="two w-steps">
+        ${stepper('w', en.cur.w, ex.step || 1, loadLabel(ex), 0, 'wCur').replace('data-change="wCur"', 'data-change="wCur" data-live')}
+        ${stepper('r', en.cur.r, 1, t('Repetições'), 0, 'wCur').replace('data-change="wCur"', 'data-change="wCur" data-live')}
+      </div>` : ''}
       ${logging && !en.skipped ? `<button class="btn primary big w-done${willBeWarmup(en, ex) ? ' warm-mode' : ''}" data-act="wDone">${icon.check}<span id="doneLabel">${doneText(en, ex)}</span></button>` : ''}
       <div class="w-nav">
         <button class="btn" data-act="wPrev" ${a.idx === 0 ? 'disabled' : ''}>${icon.back}${t('Anterior')}</button>

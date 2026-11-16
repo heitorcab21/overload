@@ -1021,6 +1021,8 @@ const ui = {
   "Salvo em \"Meus treinos salvos\". Para restaurar: Adicionar ou substituir treino pronto/salvo.": "Saved in \"My saved workouts\". To restore: Add or replace a ready-made/saved workout.",
   "Anotar": "Add note",
   "Editar anotação": "Edit note",
+  "Salvo em \"Meus treinos salvos\". Para restaurar: Treinos prontos e salvos.": "Saved in \"My saved workouts\". To restore: Ready-made and saved workouts.",
+  "Escolha um para acrescentar ao seu treino atual ou substituí-lo.": "Pick one to add to your current workout or replace it.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -1029,7 +1031,7 @@ const help = [
   ['Getting started', 'From first launch to your first workout', `
     <ol class="steps">
       <li><b>Sign in with your Google account</b> on the first screen so your workouts are saved to your Drive. If you prefer, tap "Use without an account".</li>
-      <li><b>Choose a starting point</b>: ABC, Push/Pull/Legs, Upper/Lower, Arnold split, Bro split, three glute-and-leg focused options, Full body or from scratch. You can add others later in <b>Workouts &gt; Add or replace a ready-made/saved workout</b>.</li>
+      <li><b>Choose a starting point</b>: ABC, Push/Pull/Legs, Upper/Lower, Arnold split, Bro split, three glute-and-leg focused options, Full body or from scratch. You can add others later in <b>Workouts &gt; Ready-made and saved workouts</b>.</li>
       <li><b>Enter the loads you already use</b> on the starting loads screen. It's optional: anything left blank you choose in your first workout.</li>
       <li>On the <b>Today</b> tab, tap <b>Start workout</b>.</li>
     </ol>
@@ -1060,7 +1062,7 @@ const help = [
       <li><b>Supersets and tri-sets</b>: in Workouts, tap the chain icon next to an exercise to pair it with the next one. During the workout, after each set the app goes straight to the next one in the group, with no rest; after the last one, you rest and go back to the first.</li>
       <li><b>Note</b>: tap <b>Add a note</b> below the name ("seat at height 4", "close grip"). It shows up every time you open the exercise.</li>
       <li><b>Add exercise</b>: adds an exercise right after the current one, without changing the workout (or in it too, if you tick the box).</li>
-      <li><b>Save my workouts</b>: in Workouts, keep your workouts (built from scratch or adapted) under a name. The button shows up when your workouts differ in at least one exercise from every ready-made and saved set. They go to <b>Add or replace a ready-made/saved workout &gt; My saved workouts</b> and come back with one tap. Up to 10 fit. When you pick a ready-made or saved set, the app asks whether to <b>add</b> it to your workouts or <b>replace</b> them; before replacing, save your current ones if you want to come back to them.</li>
+      <li><b>Save my workouts</b>: in Workouts, keep your workouts (built from scratch or adapted) under a name. The button shows up when your workouts differ in at least one exercise from every ready-made and saved set. They go to <b>Ready-made and saved workouts &gt; My saved workouts</b> and come back with one tap. Up to 10 fit. When you pick a ready-made or saved set, the app asks whether to <b>add</b> it to your workouts or <b>replace</b> them; before replacing, save your current ones if you want to come back to them.</li>
       <li><b>Free workout</b>: on the Today tab, starts an empty workout and you add exercises as you train.</li>
       <li><b>Forgot to log a day?</b> On the Today screen, tap that day of the week and log its workout; it's saved on that date.</li>
       <li><b>It was a warm-up</b>: logs the set as a warm-up. It is kept, but does not count toward progression, goals, volume or records. Forgot to mark it? If the 1st set has less than 70% of the suggested load, the app counts it as a warm-up on its own; and very light sets never enter the stats. Tap the set to delete it or say it was a working set. And if a working set was actually a warm-up, tap it and choose <b>It was a warm-up</b>. <b>Undo</b> always undoes the last entry, warm-up or set.</li>

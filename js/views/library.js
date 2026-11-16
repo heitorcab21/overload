@@ -14,15 +14,20 @@ import { aiEnabled, aiAskExecution, aiCuesFor } from '../ai.js';
 
 const BODY_PARTS = () => BODY_PARTS_DATA.map(([k, g]) => [t(k), g]);
 
+/** Próxima carga na linha do exercício, curta (ex.: " · próxima 80 kg"). */
+function nextLoad(ex) {
+  const p = planFor(ex);
+  if (p.w) return ` · ${t('próxima')} ${kg(p.w)}`;
+  return ex.bw ? '' : ` · <span class="todo-load">${t('definir carga')}</span>`;
+}
+
 function renderRoutines() {
   if (!state.onboarded) { go('#/inicio'); return; }
-  const all = activeExercises()
-    .sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group) || exName(a).localeCompare(exName(b)));
   $('#view').innerHTML = `
     <div class="head"><h1>${t('Treinos')}</h1></div>
     <div class="stack">
       <div class="two top-acts">
-        <button class="btn accent-soft" data-act="addTemplate">${icon.list}${t('Adicionar ou substituir treino pronto/salvo')}</button>
+        <button class="btn accent-soft" data-act="addTemplate">${icon.list}${t('Treinos prontos e salvos')}</button>
         <a class="btn accent-soft" href="#/importar">${icon.edit}${t('Importar do bloco de notas')}</a>
       </div>
       <button class="btn primary block" data-act="newRoutine">${icon.plus}${t('Novo dia de treino')}</button>
@@ -40,7 +45,7 @@ function renderRoutines() {
           const tag = grp ? `<b class="sup-label">${grp.length === 3 ? t('Tri-set') : t('Bi-set')}</b> · ` : '';
           return `<div class="item${grp ? ` in-sup${pos === 0 ? ' sup-first' : ''}${pos === grp.length - 1 ? ' sup-last' : ''}` : ''}">
             <a class="grow" href="#/exercicio/${encodeURIComponent(id)}" style="text-decoration:none">
-              <span class="t">${esc(exName(ex))}</span><br><span class="d">${tag}${esc(tg(ex.group))} · ${ex.sets} × ${ex.repMin}–${ex.repMax}</span></a>
+              <span class="t">${esc(exName(ex))}</span><br><span class="d">${tag}${esc(tg(ex.group))} · ${ex.sets} × ${ex.repMin}–${ex.repMax}${nextLoad(ex)}</span></a>
             ${i < r.ex.length - 1 ? `<button class="icon-btn link-btn${r.link?.[id] ? ' on' : ''}" data-act="toggleLink" data-r="${ri}" data-i="${i}" aria-pressed="${!!r.link?.[id]}" aria-label="${t('Juntar com o próximo em bi-set')}">${icon.link}</button>` : '<span class="icon-btn-space"></span>'}
             <button class="icon-btn" data-act="moveEx" data-r="${ri}" data-i="${i}" ${i === 0 ? 'disabled' : ''} aria-label="${t('Subir {x}', { x: esc(exName(ex)) })}">${icon.up}</button>
             <button class="icon-btn" data-act="removeEx" data-r="${ri}" data-i="${i}" aria-label="${t('Tirar {x} do treino', { x: esc(exName(ex)) })}">${icon.x}</button>
@@ -49,16 +54,6 @@ function renderRoutines() {
         <div style="padding:8px 12px 12px"><button class="btn block" data-act="pickEx" data-r="${ri}">${icon.plus}${t('Adicionar exercício')}</button></div>
       </div>`).join('')}
 
-      ${all.length ? `<h3 class="group-title">${t('Exercícios ativos')}</h3>
-      ${BODY_PARTS().map(([label, groups]) => {
-        if (!all.some(ex => groups.includes(ex.group))) return '';
-        return `<section class="part-card"><h3 class="part-title">${esc(label)}</h3>${groups.map(g => {
-          const list = all.filter(ex => ex.group === g);
-          return list.length ? `<p class="muscle-title">${esc(tg(g))}</p>
-      <div class="card flat"><div class="list">${list.map(ex => `<a class="item" href="#/exercicio/${encodeURIComponent(ex.id)}">
-        <span class="grow"><span class="t">${esc(exName(ex))}</span><br><span class="d">${t('próxima')}: ${planStr(planFor(ex), ex)}</span></span>${icon.next}</a>`).join('')}</div></div>` : '';
-        }).join('')}</section>`;
-      }).join('')}` : ''}
     </div>`;
 }
 
@@ -111,6 +106,7 @@ function savePlan(name) {
 actions.addTemplate = () => {
   const saved = plans();
   sheet(`<h2>${t('Treinos prontos e salvos')}</h2>
+    <p class="muted small">${t('Escolha um para acrescentar ao seu treino atual ou substituí-lo.')}</p>
     ${saved.length ? `<h3>${t('Meus treinos salvos')} <span class="muted small">${saved.length}/${MAX_PLANS}</span></h3>
       <div class="card flat"><div class="list">${saved.map(p => `<div class="item">
         <button class="grow plain" data-act="planPick" data-kind="saved" data-id="${p.id}"><span class="t">${esc(p.name)}</span><br>
@@ -210,7 +206,7 @@ actions.planSaveAsk = () => {
 submits.planSave = form => {
   const p = savePlan(form.name.value.trim() || t('Meus treinos'));
   save(); closeSheet(); rerender();
-  if (p) toast(t('Salvo em "Meus treinos salvos". Para restaurar: Adicionar ou substituir treino pronto/salvo.'), 4500);
+  if (p) toast(t('Salvo em "Meus treinos salvos". Para restaurar: Treinos prontos e salvos.'), 4500);
 };
 actions.planDelAsk = el => {
   const p = plans().find(x => x.id === el.dataset.id);
