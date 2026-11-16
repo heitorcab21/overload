@@ -829,6 +829,41 @@ const ui = {
   "aquec.": "warm-up",
   "Aquec.": "Warm",
   "Toque em \"Aquec.\" para marcar ou desmarcar uma série como aquecimento.": "Tap \"Warm\" to mark or unmark a set as a warm-up.",
+  "Cardio": "Cardio",
+  "Leve": "Light",
+  "Moderado": "Moderate",
+  "Forte": "Hard",
+  "Meta da semana batida!": "Weekly goal reached!",
+  "Faltam {n} min para a meta da semana.": "{n} min to go for this week's goal.",
+  "Registrar cardio": "Log cardio",
+  "Repetir: {x}": "Repeat: {x}",
+  "Minutos por semana": "Minutes per week",
+  "Histórico": "History",
+  "Seus treinos de cardio aparecem aqui.": "Your cardio sessions show up here.",
+  "Editar cardio": "Edit cardio",
+  "Tempo (min)": "Time (min)",
+  "Distância (km, opcional)": "Distance (km, optional)",
+  "Intensidade": "Intensity",
+  "Excluir": "Delete",
+  "Cerca de {n} kcal (estimativa pelo tipo, tempo, intensidade e seu peso).": "About {n} kcal (estimated from type, time, intensity and your weight).",
+  "Cardio salvo: {x}.": "Cardio saved: {x}.",
+  "Meta de cardio por semana": "Weekly cardio goal",
+  "A recomendação da OMS para adultos é de 150 a 300 minutos de atividade moderada por semana.": "The WHO recommends 150 to 300 minutes of moderate activity per week for adults.",
+  "{n} sessão": "{n} session",
+  "{n} sessões": "{n} sessions",
+  "Registrar cardio neste dia": "Log cardio on this day",
+  "Tutoriais de cada parte do app": "Tutorials for every part of the app",
+  "Adicionar cardio": "Add cardio",
+  "Esteira": "Treadmill",
+  "Corrida na rua": "Outdoor run",
+  "Caminhada": "Walk",
+  "Bicicleta": "Bike",
+  "Elíptico": "Elliptical",
+  "Escada": "Stair climber",
+  "Remo": "Rowing",
+  "Natação": "Swimming",
+  "HIIT": "HIIT",
+  "Outro": "Other",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -887,6 +922,13 @@ const help = [
       <li><b>Bodyweight</b> (pull-ups, dips, push-ups): leave 0. With a weight belt or vest, log only the extra weight.</li>
     </ul>
     <p class="tip">What matters most is always logging the same way: that's how the app compares one workout with the next and suggests the next load.</p>`],
+  ['Cardio', 'Treadmill, bike, running and more', `
+    <ol class="steps">
+      <li>On the <b>Cardio</b> tab, tap <b>Log cardio</b>: pick the type, the time and, if you like, the distance and intensity. The app estimates calories from your weight.</li>
+      <li>Did cardio along with lifting? During the workout, open the exercise list and tap <b>Add cardio</b>. It shows up in the summary and on the story card.</li>
+      <li>The <b>weekly goal</b> starts at 150 minutes (WHO recommendation) and can be changed with the pencil.</li>
+      <li>On the Today screen, cardio-only days show a blue heart. Forgot to log it? Tap the day and use <b>Log cardio on this day</b>.</li>
+    </ol>`],
   ['Logging by voice', 'Speak instead of tapping', `
     <p>Tap the <b>blue microphone</b> at the bottom and speak. Examples:</p>
     <ul class="errs">

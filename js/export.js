@@ -1,6 +1,7 @@
 // Exportação em CSV para abrir no Excel ou no Google Planilhas.
 // Português e espanhol: separador ";" e vírgula decimal. Inglês: separador "," e ponto decimal.
 import { state } from './store.js';
+import { CARDIO_TYPES } from './cardio.js';
 import { GROUPS, exName, tg, routineName } from './data.js';
 import { groupGoalStatus, exGoalStatus, setExGoal, setWeekOverride, daysInMonth } from './logic.js';
 import { t, lang, locale, allLangs, exNamesAll } from './i18n.js';
@@ -29,6 +30,11 @@ export function sessionsCSV() {
       (e.warmup || []).forEach((x, i) => rows.push([date, routineName(s), name, group, `A${i + 1}`, x.w, x.r, '', '', '', t('aquecimento')]));
       e.sets.forEach((x, i) => rows.push([date, routineName(s), name, group, i + 1, x.w, x.r, x.t ? t('sim') : '', x.rir ?? '', FEEL[e.feel] || '', obs]));
     }
+  }
+  for (const c of state.cardio || []) {
+    const date = new Date(c.date).toLocaleDateString(locale());
+    rows.push([date, t('Cardio'), t((CARDIO_TYPES[c.type] || CARDIO_TYPES.outro).name), t('Cardio'), '', '', '', '', '', '',
+      `${c.min} min${c.km ? ` · ${c.km} km` : ''} · ${c.kcal || 0} kcal`]);
   }
   return csv(rows);
 }

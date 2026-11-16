@@ -8,6 +8,8 @@ import {
   sessionPRs, tonnage, exGoalStatus, entriesFor, stalledExercises,
 } from '../logic.js';
 import { startWorkout, startFreeWorkout } from './workout.js';
+import { openCardioSheet, cardioLine } from './cardio.js';
+import { cardioIn } from '../cardio.js';
 import { aiEnabled, aiWeeklyAnalysis } from '../ai.js';
 import { profile, bodyComposition, overallStrength, strengthLevel } from '../body.js';
 import { driveAvailable, driveConnected, driveDirty, hasToken } from '../drive.js';
@@ -117,12 +119,13 @@ function renderHome() {
   const now = new Date();
   const ws = weekStart(now);
   const trained = new Set(sessionsIn(ws, addDays(ws, 7)).map(s => (new Date(s.date).getDay() + 6) % 7));
+  const cardioDays = new Set(cardioIn(ws, addDays(ws, 7)).map(c => (new Date(c.date).getDay() + 6) % 7));
   const today = (now.getDay() + 6) % 7;
 
   const week = `<div class="card"><div class="week" aria-label="${t('Dias treinados nesta semana')}">
-    ${weekLetters().map((d, i) => `<button type="button" class="wd ${trained.has(i) ? 'done' : i < today ? 'missed' : ''}${i === today ? ' today' : ''}"
+    ${weekLetters().map((d, i) => `<button type="button" class="wd ${trained.has(i) ? 'done' : cardioDays.has(i) ? 'cardio' : i < today ? 'missed' : ''}${i === today ? ' today' : ''}"
       data-act="weekDay" data-i="${i}" ${i > today ? 'disabled' : ''} aria-label="${esc(fmtDate(addDays(ws, i)))}">
-      ${d}<i>${trained.has(i) ? icon.check : ''}</i></button>`).join('')}
+      ${d}<i>${trained.has(i) ? icon.check : cardioDays.has(i) ? icon.heart : ''}</i></button>`).join('')}
   </div></div>`;
 
   let main;
@@ -234,18 +237,23 @@ actions.stallDismiss = el => {
 actions.weekDay = el => {
   const day = addDays(weekStart(new Date()), Number(el.dataset.i));
   const ss = sessionsIn(day, addDays(day, 1));
+  const cc = cardioIn(day, addDays(day, 1));
   const at = new Date(day); at.setHours(12, 0, 0, 0);
   const isToday = new Date().toDateString() === day.toDateString();
   sheet(`<h2>${esc(fmtDate(day))}</h2>
     ${ss.length ? `<h3>${t('Treinos deste dia')}</h3><div class="card flat"><div class="list">${ss.map(s => `<button class="item" data-act="openSession" data-id="${s.id}">
       <span class="grow"><span class="t">${esc(routineName(s))}</span><br><span class="d">${tn(s.entries.reduce((n, e) => n + e.sets.length, 0), '{n} série', '{n} séries')}</span></span>${icon.next}</button>`).join('')}</div></div>`
-      : `<p class="muted">${t('Nenhum treino registrado neste dia.')}</p>`}
+      : cc.length ? '' : `<p class="muted">${t('Nenhum treino registrado neste dia.')}</p>`}
+    ${cc.length ? `<h3>${t('Cardio')}</h3><div class="card flat"><div class="list">${cc.map(c => `<button class="item" data-act="cardioEdit" data-id="${c.id}">
+      <span class="grow t">${esc(cardioLine(c))}</span>${icon.edit}</button>`).join('')}</div></div>` : ''}
+    <button class="btn block" data-act="cardioOnDay" data-day="${at.toISOString()}">${icon.heart}${t('Registrar cardio neste dia')}</button>
     ${isToday ? '' : state.active ? `<p class="small muted">${t('Termine o treino em andamento para registrar outro dia.')}</p>`
       : state.routines.length ? `<h3>${t('Registrar treino neste dia')}</h3>
       <p class="small muted">${t('Esqueceu de anotar? Escolha a ficha e registre as séries como num treino normal; ele fica salvo nesta data.')}</p>
       <div class="card flat"><div class="list">${state.routines.map(r => `<button class="item" data-act="startOnDay" data-id="${r.id}" data-day="${at.toISOString()}">
         <span class="grow t">${esc(routineName(r))}</span>${icon.plus}</button>`).join('')}</div></div>` : ''}`);
 };
+actions.cardioOnDay = el => { closeSheet(); openCardioSheet({ date: el.dataset.day }); };
 actions.startOnDay = el => { closeSheet(); startWorkout(el.dataset.id, el.dataset.day); };
 
 actions.start = el => startWorkout(el.dataset.id);
@@ -351,6 +359,8 @@ function renderSummary(id) {
           <span class="badge up">${icon.trophy}${setStr(p.set)}</span></div>`).join('')}</div>` : ''}
       ${hit.length ? `<div class="card"><h3>${t('Metas')}</h3>
         ${hit.map(h => `<div class="plan-line"><span class="n">${esc(h)}</span><span class="badge good">${icon.check}ok</span></div>`).join('')}</div>` : ''}
+      ${(state.cardio || []).some(c => c.sessionId === s.id) ? `<div class="card"><h3>${t('Cardio')}</h3>
+        ${state.cardio.filter(c => c.sessionId === s.id).map(c => `<div class="plan-line"><span class="n">${esc(cardioLine(c))}</span><span class="v num">${c.kcal || 0} kcal</span></div>`).join('')}</div>` : ''}
       <div class="card"><h3>${t('O que você fez')}</h3>
         ${s.entries.map(e => `<div class="plan-line"><span class="n">${esc(state.exercises[e.exId] ? exName(state.exercises[e.exId]) : t('Exercício removido'))}</span>
           <span class="v num">${e.skipped ? t('pulado') : e.sets.map(x => (x.w > 0 ? `${fmt(x.w)}×${x.r}` : x.r)).join(' · ')}</span></div>`).join('')}

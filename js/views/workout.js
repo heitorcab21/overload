@@ -5,6 +5,7 @@ import { route, go, current, rerender } from '../router.js';
 import { exPhotos, exName, exCues, tg, loadLabel, loadHint, routineName, GROUPS, LIB, ensureExercise, restOf, substitutes, supGroups } from '../data.js';
 import { planFor, defaultGroupGoals, entriesFor } from '../logic.js';
 import { strengthLevel } from '../body.js';
+import { openCardioSheet, cardioLine } from './cardio.js';
 import { parseUtterance, voiceSupported, listen, stopListening, abortListening } from '../voice.js';
 import { aiEnabled, aiParseVoice } from '../ai.js';
 import { refreshIfNeeded, sync, driveConnected } from '../drive.js';
@@ -429,9 +430,17 @@ actions.wList = () => {
         ${i === a.idx ? `<span class="badge">${t('agora')}</span>` : ex && isDone(e, ex) ? `<span class="badge good">${icon.check}${t('feito')}</span>` : ''}
       </button>`;
     }).join('')}</div></div>
+    ${(state.cardio || []).filter(c => c.sessionId === a.id).map(c => `<p class="small cardio-in">${icon.heart}${esc(cardioLine(c))}</p>`).join('')}
     <button class="btn block" data-act="wAdd">${icon.plus}${t('Adicionar exercício')}</button>
+    <button class="btn block" data-act="wCardio">${icon.heart}${t('Adicionar cardio')}</button>
     <button class="btn primary block" data-act="wFinish">${t('Finalizar treino')}</button>
     <button class="btn ghost danger block" data-act="wDiscardAsk">${t('Descartar treino')}</button>`);
+};
+
+actions.wCardio = () => {
+  const a = state.active;
+  closeSheet();
+  openCardioSheet({ sessionId: a.id, date: a.onDate || new Date().toISOString() });
 };
 
 actions.wHow = () => {

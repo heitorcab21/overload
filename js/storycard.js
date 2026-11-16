@@ -5,6 +5,7 @@ import { t, tn, locale } from './i18n.js';
 import { weekLetters, fmt, compact } from './ui.js';
 import { tonnage, bestOf, e1rm, sessionPRs, weekStart, sessionsIn, addDays } from './logic.js';
 import { strengthLevel } from './body.js';
+import { CARDIO_TYPES } from './cardio.js';
 
 const W = 1080, H = 1920;
 const ACCENT = '#eb6834';
@@ -131,14 +132,18 @@ export async function storyCard(session) {
   ctx.fillText(t('O QUE EU FIZ').toUpperCase(), X, y);
   y += 30;
   const fit = Math.max(1, Math.floor((by - 70 - y) / 84));
-  const show = done.slice(0, done.length > fit ? fit - 1 : fit);
+  // cardio feito no treino entra como mais uma linha
+  const cardio = (state.cardio || []).filter(c => c.sessionId === session.id)
+    .map(c => ({ cardio: true, name: t((CARDIO_TYPES[c.type] || CARDIO_TYPES.outro).name), right: `${c.min} min${c.km ? ` · ${fmt(c.km)} km` : ''}` }));
+  const all = [...done, ...cardio];
+  const show = all.slice(0, all.length > fit ? fit - 1 : fit);
   for (const e of show) {
-    const ex = state.exercises[e.exId];
-    const pr = prIds.has(e.exId);
+    const ex = e.cardio ? null : state.exercises[e.exId];
+    const pr = !e.cardio && prIds.has(e.exId);
     y += 84;
     ctx.strokeStyle = 'rgba(255,255,255,.1)'; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.moveTo(X, y - 58); ctx.lineTo(X + CW, y - 58); ctx.stroke();
-    const right = `${setTxt(bestSet(e.sets))}${pr ? '  🏆' : ''}`;
+    const right = e.cardio ? `❤ ${e.right}` : `${setTxt(bestSet(e.sets))}${pr ? '  🏆' : ''}`;
     ctx.font = `700 38px ${FONT}`;
     const rw = ctx.measureText(right).width;
     ctx.fillStyle = pr ? ACCENT : '#fff';
@@ -147,13 +152,13 @@ export async function storyCard(session) {
     ctx.textAlign = 'left';
     ctx.fillStyle = '#fff';
     ctx.font = `600 38px ${FONT}`;
-    ctx.fillText(fitText(ctx, ex ? exName(ex) : '—', CW - rw - 30), X, y);
+    ctx.fillText(fitText(ctx, e.cardio ? e.name : ex ? exName(ex) : '—', CW - rw - 30), X, y);
   }
-  if (done.length > show.length) {
+  if (all.length > show.length) {
     y += 70;
     ctx.fillStyle = 'rgba(255,255,255,.5)';
     ctx.font = `500 32px ${FONT}`;
-    ctx.fillText(tn(done.length - show.length, '+ {n} exercício', '+ {n} exercícios'), X, y);
+    ctx.fillText(tn(all.length - show.length, '+ {n} exercício', '+ {n} exercícios'), X, y);
   }
 
   // semana

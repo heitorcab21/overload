@@ -12,7 +12,7 @@ import { t, tn, lang, LANGS } from '../i18n.js';
 /** Aplica o idioma às partes fixas da página (abas, atributo lang). */
 export function applyLang() {
   document.documentElement.lang = { pt: 'pt-BR', en: 'en', es: 'es' }[lang()];
-  const labels = { hoje: t('Hoje'), metas: t('Metas'), progresso: t('Progresso'), exercicios: t('Treinos'), ajuda: t('Ajuda'), ajustes: t('Ajustes') };
+  const labels = { hoje: t('Hoje'), metas: t('Metas'), progresso: t('Progresso'), exercicios: t('Treinos'), cardio: t('Cardio'), ajustes: t('Ajustes') };
   for (const a of $$('#tabbar a')) {
     const l = a.querySelector('.tab-label');
     if (l) l.textContent = labels[a.dataset.tab];
@@ -61,6 +61,7 @@ function render() {
   $('#view').innerHTML = `
     <div class="head"><h1>${t('Ajustes')}</h1></div>
     <div class="stack">
+      <a class="btn block help-btn" href="#/ajuda">${icon.bulb}<span class="grow">${t('Ajuda')}<br><small>${t('Tutoriais de cada parte do app')}</small></span>${icon.next}</a>
       <div class="card stack">
         <label class="field">${t('Idioma')} · Language · Idioma
           <select data-change="setLang">

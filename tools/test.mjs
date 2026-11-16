@@ -407,6 +407,18 @@ eq(parseUtterance('40 quilos 12 repetições'), [set(40, 12)], 'série normal co
   eq(dm.supGroups({ ex: ['a', 'b'], link: { b: true } }), [], 'ligação no último não forma grupo');
 }
 
+// ---- cardio ----
+{
+  const cd = await import('../js/cardio.js');
+  const st = await import('../js/store.js');
+  st.state.profile = null;
+  eq(cd.cardioKcal('esteira', 60, 'moderado'), 490, 'esteira moderada 1 h, 70 kg ≈ 490 kcal');
+  st.state.cardio = [{ id: 'c1', date: new Date().toISOString(), type: 'bike', min: 30 }, { id: 'c2', date: new Date(Date.now() - 20 * 864e5).toISOString(), type: 'bike', min: 40 }];
+  const wk = cd.cardioWeeks(8);
+  eq([wk.length, wk.at(-1).min], [8, 30], 'minutos da semana atual');
+  st.state.cardio = [];
+}
+
 // ---- todos os arquivos carregam sem erro de sintaxe (inclusive telas que os testes não usam) ----
 {
   const { readdirSync } = await import('node:fs');

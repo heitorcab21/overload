@@ -669,3 +669,13 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 .set-edit.is-warm .i { background: color-mix(in srgb, var(--warm) 20%, transparent); color: var(--warm); }
 .set-edit.is-warm input { opacity: .8; }
 .warm-text { color: var(--warm); }
+
+/* cardio */
+.week .cardio i { background: color-mix(in srgb, var(--warm) 22%, transparent); border-color: var(--warm); color: var(--warm); }
+.week .cardio i .ic { width: 16px; height: 16px; }
+.cardio-types { display: flex; flex-wrap: wrap; gap: 6px; }
+.cardio-in { display: flex; align-items: center; gap: 6px; color: var(--warm); }
+.cardio-in .ic { width: 16px; height: 16px; }
+.help-btn { justify-content: flex-start; text-align: left; gap: 10px; min-height: 58px; }
+.help-btn small { color: var(--muted); font-weight: 400; font-size: 12px; }
+.help-btn .ic:first-child { color: var(--accent); }

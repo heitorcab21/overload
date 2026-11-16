@@ -62,6 +62,14 @@ const TOPICS = [
     </ul>
     <p class="tip">O mais importante é anotar sempre do mesmo jeito: é assim que o app compara um treino com o outro e sugere a próxima carga.</p>`],
 
+  ['Cardio', 'Esteira, bike, corrida e mais', `
+    <ol class="steps">
+      <li>Na aba <b>Cardio</b>, toque em <b>Registrar cardio</b>: escolha o tipo, o tempo e, se quiser, a distância e a intensidade. O app estima as calorias pelo seu peso.</li>
+      <li>Fez cardio junto com a musculação? No treino, abra a lista de exercícios e toque em <b>Adicionar cardio</b>. Ele aparece no resumo e no card dos stories.</li>
+      <li>A <b>meta da semana</b> começa em 150 minutos (recomendação da OMS) e pode ser mudada no lápis.</li>
+      <li>Na tela Hoje, dias só com cardio aparecem com um coração azul. Esqueceu de anotar? Toque no dia e use <b>Registrar cardio neste dia</b>.</li>
+    </ol>`],
+
   ['Registrar por voz', 'Fale em vez de tocar', `
     <p>Toque no <b>microfone azul</b> embaixo e fale. Exemplos:</p>
     <ul class="errs">
@@ -171,7 +179,7 @@ const TOPICS = [
 
 function render() {
   $('#view').innerHTML = `
-    <div class="head"><div class="grow"><h1>${t('Ajuda')}</h1><p class="sub">${t('Como usar o Overload')}</p></div></div>
+    <div class="head"><a class="icon-btn" href="#/ajustes" aria-label="${t('Voltar')}">${icon.back}</a><div class="grow"><h1>${t('Ajuda')}</h1><p class="sub">${t('Como usar o Overload')}</p></div></div>
     <div class="stack">
       ${(helpPack() || TOPICS).map(([title, sub, body], i) => `<details class="card help"${i === 0 ? ' open' : ''}>
         <summary><span class="grow"><b>${esc(title)}</b><br><span class="small muted">${esc(sub)}</span></span>${icon.down}</summary>
@@ -180,4 +188,4 @@ function render() {
     </div>`;
 }
 
-route('ajuda', render);
+route('ajuda', render, { tab: 'ajustes' });

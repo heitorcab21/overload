@@ -829,6 +829,41 @@ const ui = {
   "aquec.": "calent.",
   "Aquec.": "Calent.",
   "Toque em \"Aquec.\" para marcar ou desmarcar uma série como aquecimento.": "Toca \"Calent.\" para marcar o desmarcar una serie como calentamiento.",
+  "Cardio": "Cardio",
+  "Leve": "Suave",
+  "Moderado": "Moderado",
+  "Forte": "Intenso",
+  "Meta da semana batida!": "¡Meta de la semana cumplida!",
+  "Faltam {n} min para a meta da semana.": "Faltan {n} min para la meta de la semana.",
+  "Registrar cardio": "Registrar cardio",
+  "Repetir: {x}": "Repetir: {x}",
+  "Minutos por semana": "Minutos por semana",
+  "Histórico": "Historial",
+  "Seus treinos de cardio aparecem aqui.": "Tus sesiones de cardio aparecen aquí.",
+  "Editar cardio": "Editar cardio",
+  "Tempo (min)": "Tiempo (min)",
+  "Distância (km, opcional)": "Distancia (km, opcional)",
+  "Intensidade": "Intensidad",
+  "Excluir": "Borrar",
+  "Cerca de {n} kcal (estimativa pelo tipo, tempo, intensidade e seu peso).": "Cerca de {n} kcal (estimación por tipo, tiempo, intensidad y tu peso).",
+  "Cardio salvo: {x}.": "Cardio guardado: {x}.",
+  "Meta de cardio por semana": "Meta de cardio por semana",
+  "A recomendação da OMS para adultos é de 150 a 300 minutos de atividade moderada por semana.": "La OMS recomienda a los adultos de 150 a 300 minutos de actividad moderada por semana.",
+  "{n} sessão": "{n} sesión",
+  "{n} sessões": "{n} sesiones",
+  "Registrar cardio neste dia": "Registrar cardio este día",
+  "Tutoriais de cada parte do app": "Tutoriales de cada parte de la app",
+  "Adicionar cardio": "Agregar cardio",
+  "Esteira": "Cinta",
+  "Corrida na rua": "Correr al aire libre",
+  "Caminhada": "Caminata",
+  "Bicicleta": "Bicicleta",
+  "Elíptico": "Elíptica",
+  "Escada": "Escaladora",
+  "Remo": "Remo",
+  "Natação": "Natación",
+  "HIIT": "HIIT",
+  "Outro": "Otro",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -887,6 +922,13 @@ const help = [
       <li><b>Peso corporal</b> (dominadas, fondos, flexiones): deja 0. Con cinturón o chaleco lastrado, anota solo el peso extra.</li>
     </ul>
     <p class="tip">Lo más importante es anotar siempre de la misma forma: así la app compara un entrenamiento con otro y sugiere la próxima carga.</p>`],
+  ['Cardio', 'Cinta, bici, carrera y más', `
+    <ol class="steps">
+      <li>En la pestaña <b>Cardio</b>, toca <b>Registrar cardio</b>: elige el tipo, el tiempo y, si quieres, la distancia y la intensidad. La app estima las calorías según tu peso.</li>
+      <li>¿Hiciste cardio junto con pesas? En el entrenamiento, abre la lista de ejercicios y toca <b>Agregar cardio</b>. Aparece en el resumen y en la tarjeta para historias.</li>
+      <li>La <b>meta semanal</b> empieza en 150 minutos (recomendación de la OMS) y se cambia con el lápiz.</li>
+      <li>En la pantalla Hoy, los días solo con cardio aparecen con un corazón azul. ¿Olvidaste anotarlo? Toca el día y usa <b>Registrar cardio este día</b>.</li>
+    </ol>`],
   ['Registrar por voz', 'Habla en lugar de tocar', `
     <p>Toca el <b>micrófono azul</b> abajo y habla. Ejemplos:</p>
     <ul class="errs">

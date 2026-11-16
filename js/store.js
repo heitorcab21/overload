@@ -10,6 +10,8 @@ const defaults = () => ({
   routines: [],    // { id, name, ex: [exId] }
   next: 0,         // índice do próximo treino na rotação
   sessions: [],    // { id, date, routineId, name, dur, entries: [{ exId, sets:[{w,r,t?}], feel, flags, skipped }] }
+  cardio: [],      // { id, date, type, min, km?, int: 'leve'|'moderado'|'forte', kcal, sessionId? }
+  cardioGoal: 150, // minutos de cardio por semana
   active: null,    // treino em andamento
   goals: { ex: {}, groups: {} },
   lastBackup: null, // data do último backup salvo ou compartilhado
@@ -104,7 +106,10 @@ export function mergeRemote(raw) {
   const byId = new Map(older.sessions.map(s => [s.id, s]));
   for (const s of newer.sessions) byId.set(s.id, s);
   const sessions = [...byId.values()].sort((a, b) => new Date(a.date) - new Date(b.date));
-  replaceWith({ ...newer, sessions, exercises: { ...older.exercises, ...newer.exercises } });
+  const cById = new Map((older.cardio || []).map(c => [c.id, c]));
+  for (const c of newer.cardio || []) cById.set(c.id, c);
+  const cardio = [...cById.values()].filter(c => !c.deleted).sort((a, b) => new Date(a.date) - new Date(b.date));
+  replaceWith({ ...newer, sessions, cardio, exercises: { ...older.exercises, ...newer.exercises } });
   save();
 }
 

@@ -10,6 +10,7 @@ import './views/library.js';
 import './views/help.js';
 import './views/importtext.js';
 import './views/builder.js';
+import './views/cardio.js';
 import { applyTheme, applyLang } from './views/settings.js';
 import { migrateLoadSteps } from './views/home.js';
 import { initDrive } from './drive.js';
