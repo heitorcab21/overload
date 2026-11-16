@@ -826,6 +826,9 @@ const ui = {
   "Sugestões equivalentes": "Equivalent options",
   "Ou escolha outro": "Or pick another one",
   "carga a definir": "load to set",
+  "aquec.": "warm-up",
+  "Aquec.": "Warm",
+  "Toque em \"Aquec.\" para marcar ou desmarcar uma série como aquecimento.": "Tap \"Warm\" to mark or unmark a set as a warm-up.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -954,7 +957,7 @@ const help = [
     <ul class="errs">
       <li>The <b>Progress</b> tab shows your strength level, your body, sets per week and a chart for each exercise: choose <b>Strength</b> or <b>Volume</b>, <b>Per workout</b> or <b>Per month</b>. The <b>This month</b> card compares workouts, sets and volume with the same days last month.</li>
       <li>On the Today screen, the <b>Stalled exercises</b> notice shows up when an exercise goes 3 workouts without beating your best, with tips on what to do.</li>
-      <li>In the <b>history</b>, tap a workout and then an exercise to correct past sets.</li>
+      <li>In the <b>history</b>, tap a workout and then an exercise to correct past sets, including marking or unmarking a set as a warm-up (<b>Warm</b> button).</li>
     </ul>`],
   ['AI coach (optional)', 'Analyses and questions', `
     <p>In <b>Settings &gt; AI coach</b>, choose your favorite AI (<b>Claude</b>, <b>ChatGPT</b> or <b>Gemini</b>) and paste an API key for it. The app then analyzes your week, answers form questions and understands freer voice phrases. Without a key, everything else works.</p>

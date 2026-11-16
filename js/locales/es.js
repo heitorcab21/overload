@@ -826,6 +826,9 @@ const ui = {
   "Sugestões equivalentes": "Opciones equivalentes",
   "Ou escolha outro": "O elige otro",
   "carga a definir": "carga por definir",
+  "aquec.": "calent.",
+  "Aquec.": "Calent.",
+  "Toque em \"Aquec.\" para marcar ou desmarcar uma série como aquecimento.": "Toca \"Calent.\" para marcar o desmarcar una serie como calentamiento.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -954,7 +957,7 @@ const help = [
     <ul class="errs">
       <li>La pestaña <b>Progreso</b> muestra tu nivel de fuerza, tu cuerpo, series por semana y un gráfico por ejercicio: elige <b>Fuerza</b> o <b>Volumen</b>, <b>Por entrenamiento</b> o <b>Por mes</b>. La tarjeta <b>Este mes</b> compara entrenamientos, series y volumen con el mismo período del mes pasado.</li>
       <li>En la pantalla Hoy, el aviso <b>Ejercicios estancados</b> aparece cuando un ejercicio pasa 3 entrenamientos sin superar tu mejor marca, con sugerencias.</li>
-      <li>En el <b>historial</b>, toca un entrenamiento y luego un ejercicio para corregir series anteriores.</li>
+      <li>En el <b>historial</b>, toca un entrenamiento y luego un ejercicio para corregir series anteriores, incluso marcar o desmarcar una serie como calentamiento (botón <b>Calent.</b>).</li>
     </ul>`],
   ['Entrenador IA (opcional)', 'Análisis y dudas', `
     <p>En <b>Ajustes &gt; Entrenador IA</b>, elige tu IA favorita (<b>Claude</b>, <b>ChatGPT</b> o <b>Gemini</b>) y pega una clave de API. Con ella, la app analiza tu semana, responde dudas de técnica y entiende frases de voz más libres. Sin clave, todo lo demás funciona.</p>

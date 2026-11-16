@@ -162,7 +162,7 @@ function sessionSheet(s) {
   sheet(`<h2>${esc(routineName(s))}</h2><p class="muted">${fmtDate(s.date)} · ${s.dur || '?'} min · ${t('toque em um exercício para corrigir')}</p>
     <div class="card flat"><div class="list">${s.entries.map((e, i) => `<button class="item" data-act="editEntry" data-s="${s.id}" data-e="${i}">
       <span class="grow"><span class="t">${esc(state.exercises[e.exId] ? exName(state.exercises[e.exId]) : t('Exercício removido'))}</span><br>
-        <span class="d num">${e.skipped ? t('pulado') : e.sets.map(x => (x.w > 0 ? `${fmt(x.w)}×${x.r}` : x.r)).join(' · ')}</span></span>
+        <span class="d num">${e.warmup?.length ? `<span class="warm-text">${t('aquec.')} ${e.warmup.map(x => (x.w > 0 ? `${fmt(x.w)}×${x.r}` : x.r)).join(' · ')}</span> · ` : ''}${e.skipped ? t('pulado') : e.sets.map(x => (x.w > 0 ? `${fmt(x.w)}×${x.r}` : x.r)).join(' · ')}</span></span>
       ${icon.edit}</button>`).join('')}</div></div>
     <button class="btn block" data-act="shareStory" data-id="${s.id}">${icon.share}${t('Compartilhar nos stories')}</button>
     <button class="btn ghost danger block" data-act="delSessionAsk" data-id="${s.id}">${icon.trash}${t('Excluir treino')}</button>`);
@@ -174,18 +174,20 @@ actions.openSession = el => {
 
 // ---------- Corrigir um exercício de um treino já salvo ----------
 
-let draft = null; // { sid, ei, sets: [{ w, r, t? }] }
+let draft = null; // { sid, ei, sets: [{ w, r, t?, rir?, warm? }] } (aquecimento primeiro, marcado com warm)
 
 function entrySheet() {
   const s = state.sessions.find(x => x.id === draft.sid);
   const ex = state.exercises[s.entries[draft.ei].exId];
   sheet(`<h2>${esc(ex ? exName(ex) : t('Exercício removido'))}</h2><p class="muted">${esc(routineName(s))} · ${fmtDate(s.date)}</p>
     <form class="stack" data-submit="saveEntry">
-      ${draft.sets.map((x, i) => `<div class="set-edit">
-        <span class="i">${i + 1}</span>
+      <p class="small muted">${t('Toque em "Aquec." para marcar ou desmarcar uma série como aquecimento.')}</p>
+      ${draft.sets.map((x, i) => `<div class="set-edit${x.warm ? ' is-warm' : ''}">
+        <span class="i">${x.warm ? 'A' : draft.sets.slice(0, i + 1).filter(y => !y.warm).length}</span>
         <input type="number" inputmode="decimal" step="any" min="0" name="w${i}" value="${x.w}" aria-label="${t('Carga da série {n} em kg', { n: i + 1 })}">
         <span class="muted">kg ×</span>
         <input type="number" inputmode="numeric" step="1" min="0" name="r${i}" value="${x.r}" aria-label="${t('Repetições da série {n}', { n: i + 1 })}">
+        <button type="button" class="warm-toggle${x.warm ? ' on' : ''}" data-act="entryWarm" data-i="${i}" aria-pressed="${!!x.warm}">${t('Aquec.')}</button>
         <button type="button" class="icon-btn" data-act="entryDelSet" data-i="${i}" aria-label="${t('Excluir série {n}', { n: i + 1 })}">${icon.x}</button>
       </div>`).join('') || `<p class="muted">${t('Sem séries. Salvar assim tira o exercício deste treino.')}</p>`}
       <button type="button" class="btn block" data-act="entryAddSet">${icon.plus}${t('Adicionar série')}</button>
@@ -205,13 +207,21 @@ actions.editEntry = el => {
   const s = state.sessions.find(x => x.id === el.dataset.s);
   const e = s?.entries[Number(el.dataset.e)];
   if (!e) return;
-  draft = { sid: s.id, ei: Number(el.dataset.e), sets: e.sets.map(x => ({ ...x })) };
+  draft = { sid: s.id, ei: Number(el.dataset.e), sets: [...(e.warmup || []).map(x => ({ ...x, warm: true })), ...e.sets.map(x => ({ ...x }))] };
   entrySheet();
 };
 actions.entryAddSet = () => {
   readDraft();
   const last = draft.sets.at(-1);
   draft.sets.push(last ? { w: last.w, r: last.r } : { w: 0, r: 0 });
+  entrySheet();
+};
+actions.entryWarm = el => {
+  readDraft();
+  const x = draft.sets[Number(el.dataset.i)];
+  x.warm = !x.warm;
+  // aquecimento fica sempre antes das séries válidas
+  draft.sets.sort((a, b) => (b.warm ? 1 : 0) - (a.warm ? 1 : 0));
   entrySheet();
 };
 actions.entryDelSet = el => { readDraft(); draft.sets.splice(Number(el.dataset.i), 1); entrySheet(); };
@@ -223,10 +233,14 @@ actions.entryCancel = () => {
 submits.saveEntry = () => {
   readDraft();
   const s = state.sessions.find(x => x.id === draft.sid);
-  const sets = draft.sets.filter(x => x.r > 0);
-  if (sets.length) {
-    s.entries[draft.ei].sets = sets;
-    s.entries[draft.ei].skipped = false;
+  const clean = ({ warm, ...x }) => x;
+  const sets = draft.sets.filter(x => x.r > 0 && !x.warm).map(clean);
+  const warmup = draft.sets.filter(x => x.r > 0 && x.warm).map(({ w, r }) => ({ w, r }));
+  if (sets.length || warmup.length) {
+    const e = s.entries[draft.ei];
+    e.sets = sets;
+    if (warmup.length) e.warmup = warmup; else delete e.warmup;
+    e.skipped = false;
   } else {
     s.entries.splice(draft.ei, 1);
     if (!s.entries.length) state.sessions = state.sessions.filter(x => x.id !== s.id);
