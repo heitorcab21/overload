@@ -25,7 +25,7 @@ function renderRoutines() {
         <button class="btn accent-soft" data-act="addTemplate">${icon.list}${t('Adicionar treino pronto')}</button>
         <a class="btn accent-soft" href="#/importar">${icon.edit}${t('Importar do bloco de notas')}</a>
       </div>
-      <button class="btn primary block" data-act="newRoutine">${icon.plus}${t('Novo Treino {l}', { l: nextLetter() })}</button>
+      <button class="btn primary block" data-act="newRoutine">${icon.plus}${t('Novo dia de treino')}</button>
       ${canSavePlan() ? `<button class="btn block" data-act="planSaveAsk">${icon.download}${t('Salvar treino atual em "Meus treinos salvos"')}</button>` : ''}
       ${state.routines.map((r, ri) => `<div class="card flat">
         <div class="row" style="padding:12px 8px 4px 16px">
@@ -197,7 +197,7 @@ function nextLetter() {
 
 actions.newRoutine = () => {
   const l = nextLetter();
-  sheet(`<h2>${t('Novo Treino {l}', { l })}</h2>
+  sheet(`<h2>${t('Novo dia de treino')}</h2>
     <form class="stack" data-submit="saveRoutine">
       <label class="field">${t('Nome')}<input type="text" name="name" required maxlength="40" value="${esc(t('Treino {l}', { l }))}" autocomplete="off"></label>
       <p class="small muted">${t('Pode completar o nome, por exemplo "{x} · Braços".', { x: t('Treino {l}', { l }) })}</p>

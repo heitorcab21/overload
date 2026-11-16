@@ -975,6 +975,7 @@ const ui = {
   "Esses treinos já estão nos prontos ou nos salvos.": "These workouts are already among the ready-made or saved ones.",
   "Novo Treino {l}": "New Workout {l}",
   "Pode completar o nome, por exemplo \"{x} · Braços\".": "You can add to the name, for example \"{x} · Arms\".",
+  "Novo dia de treino": "New training day",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
