@@ -8,7 +8,7 @@ const TOPICS = [
   ['Primeiros passos', 'Do primeiro acesso ao primeiro treino', `
     <ol class="steps">
       <li><b>Entre com sua conta Google</b> na primeira tela. Assim seus treinos ficam salvos no seu Drive. Se preferir, toque em "Usar sem conta".</li>
-      <li><b>Escolha um ponto de partida</b>: ABC, Push/Pull/Legs, Superior/Inferior, Arnold split, ABCDE, Corpo inteiro ou do zero. Depois dá para adicionar outros em <b>Treinos &gt; Adicionar treino pronto</b>.</li>
+      <li><b>Escolha um ponto de partida</b>: ABC, Push/Pull/Legs, Superior/Inferior, Arnold split, ABCDE, três opções com foco em glúteos e pernas, Corpo inteiro ou do zero. Depois dá para adicionar outros em <b>Treinos &gt; Adicionar treino pronto</b>.</li>
       <li><b>Informe as cargas que você já usa</b> na tela de cargas iniciais. É opcional: o que ficar em branco você escolhe no primeiro treino.</li>
       <li>Na aba <b>Hoje</b>, toque em <b>Começar treino</b>.</li>
     </ol>

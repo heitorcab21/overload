@@ -387,6 +387,13 @@ eq(parseUtterance('40 quilos 12 repetições'), [set(40, 12)], 'série normal co
   delete S().exercises.rf;
 }
 
+// ---- treinos prontos só usam exercícios que existem ----
+{
+  const dm = await import('../js/data.js');
+  const bad = dm.TEMPLATES.flatMap(tp => tp.routines.flatMap(([, ids]) => ids.filter(id => !dm.LIB_BY_ID[id]).map(id => `${tp.id}: ${id}`)));
+  eq(bad, [], 'todo exercício dos treinos prontos existe na biblioteca');
+}
+
 // ---- todos os arquivos carregam sem erro de sintaxe (inclusive telas que os testes não usam) ----
 {
   const { readdirSync } = await import('node:fs');

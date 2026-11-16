@@ -790,6 +790,21 @@ const ui = {
   "Abra no Excel ou no Google Planilhas. A planilha de metas pode ser editada e importada de volta.": "Ábrelas en Excel o Google Sheets. La hoja de metas se puede editar e importar de nuevo.",
   "Como editar a planilha": "Cómo editar la hoja",
   "Inferiores": "Tren inferior",
+  "Glúteos em foco (ABC)": "Glúteos en foco (ABC)",
+  "3 treinos: 2 de glúteos e pernas e 1 de superiores. Ideal para 3 a 5 dias por semana.": "3 entrenamientos: 2 de glúteos y piernas y 1 de tren superior. Ideal para 3 a 5 días por semana.",
+  "Treino A · Glúteos e posteriores": "Entreno A · Glúteos e isquiotibiales",
+  "Treino B · Superiores": "Entreno B · Tren superior",
+  "Treino C · Quadríceps e glúteos": "Entreno C · Cuádriceps y glúteos",
+  "Pernas e glúteos 4x (ABCD)": "Piernas y glúteos 4x (ABCD)",
+  "4 treinos: glúteos, superiores, quadríceps e posteriores. Três dias de inferiores por semana.": "4 entrenamientos: glúteos, tren superior, cuádriceps e isquiotibiales. Tres días de tren inferior por semana.",
+  "Treino A · Glúteos": "Entreno A · Glúteos",
+  "Treino B · Superiores e abdômen": "Entreno B · Tren superior y abdomen",
+  "Treino C · Quadríceps": "Entreno C · Cuádriceps",
+  "Treino D · Posteriores e glúteos": "Entreno D · Isquiotibiales y glúteos",
+  "Corpo inteiro com foco em glúteos": "Cuerpo completo con foco en glúteos",
+  "2 treinos completos alternados, para 2 a 3 vezes por semana.": "2 entrenamientos completos alternados, de 2 a 3 veces por semana.",
+  "Treino A · Corpo inteiro": "Entreno A · Cuerpo completo",
+  "Treino B · Corpo inteiro": "Entreno B · Cuerpo completo",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -798,7 +813,7 @@ const help = [
   ['Primeros pasos', 'Del primer acceso al primer entrenamiento', `
     <ol class="steps">
       <li><b>Inicia sesión con tu cuenta de Google</b> en la primera pantalla para que tus entrenamientos se guarden en tu Drive. Si prefieres, toca "Usar sin cuenta".</li>
-      <li><b>Elige un punto de partida</b>: ABC, Empuje/Tracción/Piernas, Superior/Inferior, Arnold split, ABCDE, Cuerpo completo o de cero. Después puedes agregar otros en <b>Entrenos &gt; Agregar rutina lista</b>.</li>
+      <li><b>Elige un punto de partida</b>: ABC, Empuje/Tracción/Piernas, Superior/Inferior, Arnold split, ABCDE, tres opciones con foco en glúteos y piernas, Cuerpo completo o de cero. Después puedes agregar otros en <b>Entrenos &gt; Agregar rutina lista</b>.</li>
       <li><b>Indica las cargas que ya usas</b> en la pantalla de cargas iniciales. Es opcional: lo que quede en blanco lo eliges en el primer entrenamiento.</li>
       <li>En la pestaña <b>Hoy</b>, toca <b>Empezar entrenamiento</b>.</li>
     </ol>

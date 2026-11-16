@@ -790,6 +790,21 @@ const ui = {
   "Abra no Excel ou no Google Planilhas. A planilha de metas pode ser editada e importada de volta.": "Open them in Excel or Google Sheets. The goals spreadsheet can be edited and imported back.",
   "Como editar a planilha": "How to edit the spreadsheet",
   "Inferiores": "Lower body",
+  "Glúteos em foco (ABC)": "Glute focus (ABC)",
+  "3 treinos: 2 de glúteos e pernas e 1 de superiores. Ideal para 3 a 5 dias por semana.": "3 workouts: 2 for glutes and legs and 1 for upper body. Great for 3 to 5 days a week.",
+  "Treino A · Glúteos e posteriores": "Workout A · Glutes and hamstrings",
+  "Treino B · Superiores": "Workout B · Upper body",
+  "Treino C · Quadríceps e glúteos": "Workout C · Quads and glutes",
+  "Pernas e glúteos 4x (ABCD)": "Legs and glutes 4x (ABCD)",
+  "4 treinos: glúteos, superiores, quadríceps e posteriores. Três dias de inferiores por semana.": "4 workouts: glutes, upper body, quads and hamstrings. Three lower-body days a week.",
+  "Treino A · Glúteos": "Workout A · Glutes",
+  "Treino B · Superiores e abdômen": "Workout B · Upper body and abs",
+  "Treino C · Quadríceps": "Workout C · Quads",
+  "Treino D · Posteriores e glúteos": "Workout D · Hamstrings and glutes",
+  "Corpo inteiro com foco em glúteos": "Full body with glute focus",
+  "2 treinos completos alternados, para 2 a 3 vezes por semana.": "2 alternating full-body workouts, 2 to 3 times a week.",
+  "Treino A · Corpo inteiro": "Workout A · Full body",
+  "Treino B · Corpo inteiro": "Workout B · Full body",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -798,7 +813,7 @@ const help = [
   ['Getting started', 'From first launch to your first workout', `
     <ol class="steps">
       <li><b>Sign in with your Google account</b> on the first screen so your workouts are saved to your Drive. If you prefer, tap "Use without an account".</li>
-      <li><b>Choose a starting point</b>: ABC, Push/Pull/Legs, Upper/Lower, Arnold split, Bro split, Full body or from scratch. You can add others later in <b>Workouts &gt; Add a ready-made routine</b>.</li>
+      <li><b>Choose a starting point</b>: ABC, Push/Pull/Legs, Upper/Lower, Arnold split, Bro split, three glute-and-leg focused options, Full body or from scratch. You can add others later in <b>Workouts &gt; Add a ready-made routine</b>.</li>
       <li><b>Enter the loads you already use</b> on the starting loads screen. It's optional: anything left blank you choose in your first workout.</li>
       <li>On the <b>Today</b> tab, tap <b>Start workout</b>.</li>
     </ol>

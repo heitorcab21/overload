@@ -531,6 +531,30 @@ export const TEMPLATES = [
     ],
   },
   {
+    id: 'gluteos-abc', name: 'Glúteos em foco (ABC)', desc: '3 treinos: 2 de glúteos e pernas e 1 de superiores. Ideal para 3 a 5 dias por semana.',
+    routines: [
+      ['Treino A · Glúteos e posteriores', ['elevacao-pelvica', 'stiff', 'agachamento-bulgaro', 'mesa-flexora', 'gluteo-polia', 'cadeira-abdutora']],
+      ['Treino B · Superiores', ['puxada-frente', 'remada-baixa', 'desenvolvimento-halteres', 'elevacao-lateral', 'triceps-corda', 'rosca-alternada', 'abdominal-supra']],
+      ['Treino C · Quadríceps e glúteos', ['agachamento-livre', 'leg-press', 'afundo', 'cadeira-extensora', 'cadeira-adutora', 'panturrilha-em-pe']],
+    ],
+  },
+  {
+    id: 'inferiores-abcd', name: 'Pernas e glúteos 4x (ABCD)', desc: '4 treinos: glúteos, superiores, quadríceps e posteriores. Três dias de inferiores por semana.',
+    routines: [
+      ['Treino A · Glúteos', ['elevacao-pelvica', 'agachamento-sumo', 'gluteo-polia', 'cadeira-abdutora', 'hiperextensao']],
+      ['Treino B · Superiores e abdômen', ['puxada-frente', 'supino-reto-halteres', 'remada-unilateral', 'elevacao-lateral', 'triceps-corda', 'prancha']],
+      ['Treino C · Quadríceps', ['agachamento-smith', 'leg-press', 'cadeira-extensora', 'agachamento-goblet', 'panturrilha-sentado']],
+      ['Treino D · Posteriores e glúteos', ['stiff', 'mesa-flexora', 'cadeira-flexora', 'agachamento-bulgaro', 'elevacao-pelvica', 'cadeira-adutora']],
+    ],
+  },
+  {
+    id: 'full-gluteos', name: 'Corpo inteiro com foco em glúteos', desc: '2 treinos completos alternados, para 2 a 3 vezes por semana.',
+    routines: [
+      ['Treino A · Corpo inteiro', ['agachamento-goblet', 'elevacao-pelvica', 'puxada-frente', 'supino-reto-halteres', 'cadeira-abdutora', 'prancha']],
+      ['Treino B · Corpo inteiro', ['stiff', 'afundo', 'remada-baixa', 'desenvolvimento-halteres', 'gluteo-polia', 'abdominal-infra']],
+    ],
+  },
+  {
     id: 'full', name: 'Corpo inteiro', desc: '1 treino completo para repetir 2 a 3 vezes por semana.',
     routines: [
       ['Corpo inteiro', ['agachamento-livre', 'supino-reto', 'remada-baixa', 'stiff', 'desenvolvimento-halteres', 'rosca-direta', 'triceps-corda']],
