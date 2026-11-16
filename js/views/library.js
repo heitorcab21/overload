@@ -25,7 +25,7 @@ function renderRoutines() {
         <button class="btn accent-soft" data-act="addTemplate">${icon.list}${t('Adicionar treino pronto')}</button>
         <a class="btn accent-soft" href="#/importar">${icon.edit}${t('Importar do bloco de notas')}</a>
       </div>
-      <button class="btn primary block" data-act="newRoutine">${icon.plus}${t('Novo treino')}</button>
+      <button class="btn primary block" data-act="newRoutine">${icon.plus}${t('Novo Treino {l}', { l: nextLetter() })}</button>
       ${canSavePlan() ? `<button class="btn block" data-act="planSaveAsk">${icon.download}${t('Salvar treino atual em "Meus treinos salvos"')}</button>` : ''}
       ${state.routines.map((r, ri) => `<div class="card flat">
         <div class="row" style="padding:12px 8px 4px 16px">
@@ -79,7 +79,7 @@ actions.toggleLink = el => {
 
 const plans = () => (state.savedPlans ??= []);
 /** Assinatura dos exercícios de um conjunto de treinos (a ordem das fichas e dos exercícios não conta). */
-const exSig = list => list.map(ex => [...ex].sort().join(',')).sort().join('|');
+const exSig = list => list.filter(ex => ex.length).map(ex => [...ex].sort().join(',')).sort().join('|');
 /** Só faz sentido salvar se os treinos atuais diferem, em ao menos um exercício, de todo treino pronto e salvo. */
 function canSavePlan() {
   if (!state.routines.length) return false;
@@ -187,10 +187,20 @@ actions.planDel = el => {
   save(); actions.addTemplate();
 };
 
+/** Próxima letra de treino: a seguinte à maior já usada ("Treino A", "Workout B"...), ou pela quantidade de treinos. */
+function nextLetter() {
+  const used = state.routines.map(r => /^\S+\s+([A-Z])(?![\p{L}\d])/u.exec(routineName(r))?.[1]).filter(Boolean);
+  const L = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const i = used.length ? Math.max(...used.map(c => L.indexOf(c))) + 1 : state.routines.length;
+  return L[i] || String(state.routines.length + 1);
+}
+
 actions.newRoutine = () => {
-  sheet(`<h2>${t('Novo treino')}</h2>
+  const l = nextLetter();
+  sheet(`<h2>${t('Novo Treino {l}', { l })}</h2>
     <form class="stack" data-submit="saveRoutine">
-      <label class="field">${t('Nome')}<input type="text" name="name" required maxlength="40" placeholder="${t('Ex.: Treino D · Braços')}" autocomplete="off"></label>
+      <label class="field">${t('Nome')}<input type="text" name="name" required maxlength="40" value="${esc(t('Treino {l}', { l }))}" autocomplete="off"></label>
+      <p class="small muted">${t('Pode completar o nome, por exemplo "{x} · Braços".', { x: t('Treino {l}', { l }) })}</p>
       <button class="btn primary big">${t('Criar')}</button>
     </form>`);
 };

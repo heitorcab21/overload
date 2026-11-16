@@ -973,6 +973,8 @@ const ui = {
   "Salvar treino atual em \"Meus treinos salvos\"": "Guardar entrenamiento actual en \"Mis entrenamientos guardados\"",
   "Ao substituir, seus treinos atuais saem da lista. O histórico não muda.": "Al reemplazar, tus entrenamientos actuales salen de la lista. El historial no cambia.",
   "Esses treinos já estão nos prontos ou nos salvos.": "Estos entrenamientos ya están entre los listos o los guardados.",
+  "Novo Treino {l}": "Nuevo Entreno {l}",
+  "Pode completar o nome, por exemplo \"{x} · Braços\".": "Puedes completar el nombre, por ejemplo \"{x} · Brazos\".",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
