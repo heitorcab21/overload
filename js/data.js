@@ -673,3 +673,9 @@ export const BODY_PARTS = [
   ['Braços', ['Ombros', 'Bíceps', 'Tríceps']],
   ['Inferiores', ['Quadríceps', 'Posteriores', 'Glúteos', 'Panturrilhas']],
 ];
+
+/** Exercícios ativos: os que aparecem em alguma das fichas atuais. */
+export function activeExercises() {
+  const ids = new Set(state.routines.flatMap(r => r.ex));
+  return Object.values(state.exercises).filter(ex => ids.has(ex.id));
+}

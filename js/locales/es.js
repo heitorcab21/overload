@@ -953,6 +953,15 @@ const ui = {
   "Meus treinos": "Mis entrenamientos",
   "Salvo em \"Meus treinos salvos\". Para restaurar: Adicionar treino pronto.": "Guardado en \"Mis entrenamientos guardados\". Para restaurar: Agregar rutina lista.",
   "Só o conjunto salvo é apagado. Seus treinos atuais e o histórico não mudam.": "Solo se borra el conjunto guardado. Tus entrenamientos actuales y el historial no cambian.",
+  "Exercícios ativos": "Ejercicios activos",
+  "Nenhum exercício nos seus treinos. Adicione em Treinos.": "Ningún ejercicio en tus entrenamientos. Agrégalos en Entrenos.",
+  "Ao substituir, seus treinos atuais saem da lista (o histórico não muda). Se quiser guardá-los para voltar depois, salve antes:": "Al reemplazar, tus entrenamientos actuales salen de la lista (el historial no cambia). Si quieres guardarlos para volver después, guárdalos antes:",
+  "Salvar meus treinos atuais": "Guardar mis entrenamientos actuales",
+  "Treinos substituídos.": "Entrenamientos reemplazados.",
+  "Limite de {n} treinos salvos": "Límite de {n} entrenamientos guardados",
+  "Exclua um dos treinos salvos para guardar este. Toque na lixeira ao lado dele.": "Borra uno de los entrenamientos guardados para guardar este. Toca la papelera a su lado.",
+  "Ver meus treinos salvos": "Ver mis entrenamientos guardados",
+  "{n} de {m} espaços usados.": "{n} de {m} espacios usados.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -992,7 +1001,7 @@ const help = [
       <li><b>Biseries y triseries</b>: en Entrenos, toca el ícono de cadena junto a un ejercicio para unirlo al siguiente. En el entrenamiento, tras cada serie la app va directo al siguiente del grupo, sin descanso; tras el último, descansas y vuelves al primero.</li>
       <li><b>Nota</b>: toca <b>Agregar nota</b> debajo del nombre ("asiento en la altura 4", "agarre cerrado"). Aparece siempre que abras el ejercicio.</li>
       <li><b>Agregar ejercicio</b>: incluye un ejercicio justo después del actual, sin tocar la rutina (o también en ella, si marcas la casilla).</li>
-      <li><b>Guardar mis entrenamientos</b>: en Entrenos, guarda tus rutinas (creadas de cero o adaptadas) con un nombre. Quedan en <b>Agregar rutina lista &gt; Mis entrenamientos guardados</b> y vuelven con un toque. Al elegir una rutina lista o guardada, la app pregunta si quieres <b>agregarla</b> o <b>reemplazar</b> las tuyas; al reemplazar, las actuales se guardan antes.</li>
+      <li><b>Guardar mis entrenamientos</b>: en Entrenos, guarda tus rutinas (creadas de cero o adaptadas) con un nombre. Quedan en <b>Agregar rutina lista &gt; Mis entrenamientos guardados</b> y vuelven con un toque. Caben hasta 10. Al elegir una rutina lista o guardada, la app pregunta si quieres <b>agregarla</b> o <b>reemplazar</b> las tuyas; antes de reemplazar, guarda las actuales si quieres volver a ellas.</li>
       <li><b>Entrenamiento libre</b>: en la pestaña Hoy, empieza un entrenamiento vacío y agregas los ejercicios a medida que entrenas.</li>
       <li><b>¿Olvidaste anotar un día?</b> En la pantalla Hoy, toca ese día de la semana y registra su entrenamiento; queda guardado en esa fecha.</li>
       <li><b>Fue calentamiento</b>: registra la serie como calentamiento. Queda guardada, pero no cuenta para la progresión, las metas, el volumen ni los récords. ¿Olvidaste marcarla? Si la 1.ª serie tiene menos del 70% de la carga sugerida, la app la cuenta como calentamiento sola; y las series muy ligeras nunca entran en las métricas. Toca la serie para borrarla o indicar que era válida. Y si una serie válida era calentamiento, tócala y elige <b>Era calentamiento</b>. <b>Deshacer</b> siempre deshace el último registro, sea calentamiento o serie.</li>

@@ -953,6 +953,15 @@ const ui = {
   "Meus treinos": "My workouts",
   "Salvo em \"Meus treinos salvos\". Para restaurar: Adicionar treino pronto.": "Saved in \"My saved workouts\". To restore: Add a ready-made routine.",
   "Só o conjunto salvo é apagado. Seus treinos atuais e o histórico não mudam.": "Only the saved set is deleted. Your current workouts and history don't change.",
+  "Exercícios ativos": "Active exercises",
+  "Nenhum exercício nos seus treinos. Adicione em Treinos.": "No exercises in your workouts. Add them in Workouts.",
+  "Ao substituir, seus treinos atuais saem da lista (o histórico não muda). Se quiser guardá-los para voltar depois, salve antes:": "Replacing removes your current workouts from the list (your history doesn't change). To keep them for later, save them first:",
+  "Salvar meus treinos atuais": "Save my current workouts",
+  "Treinos substituídos.": "Workouts replaced.",
+  "Limite de {n} treinos salvos": "Limit of {n} saved workouts",
+  "Exclua um dos treinos salvos para guardar este. Toque na lixeira ao lado dele.": "Delete one of your saved workouts to keep this one. Tap the trash icon next to it.",
+  "Ver meus treinos salvos": "See my saved workouts",
+  "{n} de {m} espaços usados.": "{n} of {m} slots used.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -992,7 +1001,7 @@ const help = [
       <li><b>Supersets and tri-sets</b>: in Workouts, tap the chain icon next to an exercise to pair it with the next one. During the workout, after each set the app goes straight to the next one in the group, with no rest; after the last one, you rest and go back to the first.</li>
       <li><b>Note</b>: tap <b>Add a note</b> below the name ("seat at height 4", "close grip"). It shows up every time you open the exercise.</li>
       <li><b>Add exercise</b>: adds an exercise right after the current one, without changing the routine (or in it too, if you tick the box).</li>
-      <li><b>Save my workouts</b>: in Workouts, keep your routines (built from scratch or adapted) under a name. They go to <b>Add a ready-made routine &gt; My saved workouts</b> and come back with one tap. When you pick a ready-made or saved set, the app asks whether to <b>add</b> it to your workouts or <b>replace</b> them; when replacing, the current ones are saved first.</li>
+      <li><b>Save my workouts</b>: in Workouts, keep your routines (built from scratch or adapted) under a name. They go to <b>Add a ready-made routine &gt; My saved workouts</b> and come back with one tap. Up to 10 fit. When you pick a ready-made or saved set, the app asks whether to <b>add</b> it to your workouts or <b>replace</b> them; before replacing, save your current ones if you want to come back to them.</li>
       <li><b>Free workout</b>: on the Today tab, starts an empty workout and you add exercises as you train.</li>
       <li><b>Forgot to log a day?</b> On the Today screen, tap that day of the week and log its workout; it's saved on that date.</li>
       <li><b>It was a warm-up</b>: logs the set as a warm-up. It is kept, but does not count toward progression, goals, volume or records. Forgot to mark it? If the 1st set has less than 70% of the suggested load, the app counts it as a warm-up on its own; and very light sets never enter the stats. Tap the set to delete it or say it was a working set. And if a working set was actually a warm-up, tap it and choose <b>It was a warm-up</b>. <b>Undo</b> always undoes the last entry, warm-up or set.</li>

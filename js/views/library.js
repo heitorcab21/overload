@@ -2,7 +2,7 @@
 import { state, save, uid } from '../store.js';
 import { $, esc, kg, fmt, fmtDate, setStr, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, meter } from '../ui.js';
 import { route, go, rerender } from '../router.js';
-import { BODY_PARTS as BODY_PARTS_DATA, supGroups, TEMPLATES, exPhotos, GROUPS, LIB, exName, exCues, tg, loadHint, loadShort, routineName } from '../data.js';
+import { activeExercises, BODY_PARTS as BODY_PARTS_DATA, supGroups, TEMPLATES, exPhotos, GROUPS, LIB, exName, exCues, tg, loadHint, loadShort, routineName } from '../data.js';
 import { t, tn, exPack } from '../i18n.js';
 import { planFor, exGoalStatus, entriesFor, defaultGroupGoals } from '../logic.js';
 import { ensureExercise, planStr } from './home.js';
@@ -16,7 +16,7 @@ const BODY_PARTS = () => BODY_PARTS_DATA.map(([k, g]) => [t(k), g]);
 
 function renderRoutines() {
   if (!state.onboarded) { go('#/inicio'); return; }
-  const all = Object.values(state.exercises)
+  const all = activeExercises()
     .sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group) || exName(a).localeCompare(exName(b)));
   $('#view').innerHTML = `
     <div class="head"><h1>${t('Treinos')}</h1></div>
@@ -50,7 +50,7 @@ function renderRoutines() {
       ${state.routines.length ? `<button class="btn block" data-act="planSaveAsk">${icon.download}${t('Salvar meus treinos')}</button>` : ''}
       ${noHistory().length ? `<a class="btn block" href="#/cargas">${t('Definir cargas iniciais')}</a>` : ''}
 
-      ${all.length ? `<h3 class="group-title">${t('Todos os exercícios')}</h3>
+      ${all.length ? `<h3 class="group-title">${t('Exercícios ativos')}</h3>
       ${BODY_PARTS().map(([label, groups]) => {
         if (!all.some(ex => groups.includes(ex.group))) return '';
         return `<section class="part-card"><h3 class="part-title">${esc(label)}</h3>${groups.map(g => {
@@ -82,18 +82,18 @@ const plans = () => (state.savedPlans ??= []);
 const snapshot = () => state.routines.map(({ name, tpl, ex, link }) => ({ name, tpl: !!tpl, ex: ex.slice(), ...(link ? { link: { ...link } } : {}) }));
 
 /** Guarda os treinos atuais como um conjunto salvo (para restaurar depois com um toque). */
+const MAX_PLANS = 10;
 function savePlan(name) {
-  if (!state.routines.length) return null;
+  if (!state.routines.length || plans().length >= MAX_PLANS) return null;
   const p = { id: uid(), name: name.slice(0, 40), date: new Date().toISOString(), routines: snapshot() };
   plans().unshift(p);
-  state.savedPlans = plans().slice(0, 20);
   return p;
 }
 
 actions.addTemplate = () => {
   const saved = plans();
   sheet(`<h2>${t('Treinos prontos e salvos')}</h2>
-    ${saved.length ? `<h3>${t('Meus treinos salvos')}</h3>
+    ${saved.length ? `<h3>${t('Meus treinos salvos')} <span class="muted small">${saved.length}/${MAX_PLANS}</span></h3>
       <div class="card flat"><div class="list">${saved.map(p => `<div class="item">
         <button class="grow plain" data-act="planPick" data-kind="saved" data-id="${p.id}"><span class="t">${esc(p.name)}</span><br>
           <span class="d">${esc(p.routines.map(r => routineName(r)).join(' · '))}</span></button>
@@ -122,7 +122,8 @@ actions.planPick = el => {
     ${has ? `<p class="small muted">${t('Você já tem {n} na sua lista. Escolha como usar este:', { n: tn(state.routines.length, '{n} treino', '{n} treinos') })}</p>` : ''}
     <button class="btn primary block" data-act="planApply" data-kind="${el.dataset.kind}" data-id="${el.dataset.id}" data-mode="add">${icon.plus}${has ? t('Adicionar aos meus treinos') : t('Usar estes treinos')}</button>
     ${has ? `<button class="btn danger-soft block" data-act="planApply" data-kind="${el.dataset.kind}" data-id="${el.dataset.id}" data-mode="replace">${icon.sync}${t('Substituir meus treinos')}</button>
-      <p class="small muted">${t('Ao substituir, seus treinos atuais são guardados em "Meus treinos salvos", para você voltar a eles quando quiser. O histórico não muda.')}</p>` : ''}
+      <p class="small muted">${t('Ao substituir, seus treinos atuais saem da lista (o histórico não muda). Se quiser guardá-los para voltar depois, salve antes:')}</p>
+      <button class="btn block" data-act="planSaveAsk">${icon.download}${t('Salvar meus treinos atuais')}</button>` : ''}
     <button class="btn block" data-act="addTemplate">${t('Voltar')}</button>`);
 };
 
@@ -130,7 +131,6 @@ actions.planApply = el => {
   const p = planOf(el.dataset.kind, el.dataset.id);
   if (!p) return;
   if (el.dataset.mode === 'replace' && state.routines.length) {
-    savePlan(t('Antes da troca · {d}', { d: new Date().toLocaleDateString() }));
     state.routines = [];
     state.next = 0;
   }
@@ -142,15 +142,22 @@ actions.planApply = el => {
   }
   defaultGroupGoals();
   save(); closeSheet(); rerender();
-  toast(el.dataset.mode === 'replace' ? t('Treinos substituídos. Os anteriores estão em "Meus treinos salvos".') : tn(p.routines.length, '{n} treino adicionado.', '{n} treinos adicionados.'), 4500);
+  toast(el.dataset.mode === 'replace' ? t('Treinos substituídos.') : tn(p.routines.length, '{n} treino adicionado.', '{n} treinos adicionados.'), 4500);
 };
 
 actions.planSaveAsk = () => {
   if (!state.routines.length) { toast(t('Crie ou adicione treinos primeiro.')); return; }
+  if (plans().length >= MAX_PLANS) {
+    sheet(`<h2>${t('Limite de {n} treinos salvos', { n: MAX_PLANS })}</h2>
+      <p class="muted">${t('Exclua um dos treinos salvos para guardar este. Toque na lixeira ao lado dele.')}</p>
+      <button class="btn primary block" data-act="addTemplate">${t('Ver meus treinos salvos')}</button>`);
+    return;
+  }
   sheet(`<h2>${t('Salvar meus treinos')}</h2>
     <p class="muted small">${t('Guarda todos os seus treinos atuais ({x}) para você restaurar com um toque depois, mesmo que troque de ficha.', { x: state.routines.map(r => routineName(r)).join(', ') })}</p>
     <form class="stack" data-submit="planSave">
       <label class="field">${t('Nome')}<input type="text" name="name" required maxlength="40" value="${esc(t('Meus treinos · {d}', { d: new Date().toLocaleDateString() }))}"></label>
+      <p class="small muted">${t('{n} de {m} espaços usados.', { n: plans().length, m: MAX_PLANS })}</p>
       <button class="btn primary big">${t('Salvar')}</button>
     </form>`);
 };

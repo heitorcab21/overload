@@ -2,7 +2,7 @@
 import { state, save } from '../store.js';
 import { $, esc, setStr, compact, icon, actions, changes, submits, toast, sheet, closeSheet, meter, stepper, fmtDate, monthName, shareFile } from '../ui.js';
 import { route, rerender } from '../router.js';
-import { BODY_PARTS, GROUPS, exName, tg, loadLabel, loadHint } from '../data.js';
+import { activeExercises, BODY_PARTS, GROUPS, exName, tg, loadLabel, loadHint } from '../data.js';
 import {
   groupGoalStatus, exGoalStatus, suggestGoal, weekStart, addDays, monthKey, daysInMonth, entriesFor,
   setExGoal, setWeekOverride, autoWeekSet, routineGroupSets,
@@ -34,7 +34,7 @@ function render() {
     </tr>`;
   }).join('');
 
-  const exs = Object.values(state.exercises)
+  const exs = activeExercises()
     .sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group) || exName(a).localeCompare(exName(b)));
   const exRow = ex => {
     const st = exGoalStatus(ex, now);
@@ -92,8 +92,8 @@ function render() {
         </table>
       </div>
 
-      <div class="row between ex-goals-head"><h3>${t('Exercício')}</h3><span class="small muted">${isWeek ? t('Meta da semana') : t('Meta do mês')}</span></div>
-      ${exSections || `<div class="card"><p class="empty">${t('Nenhum exercício cadastrado.')}</p></div>`}
+      <div class="row between ex-goals-head"><h3>${t('Exercícios ativos')}</h3><span class="small muted">${isWeek ? t('Meta da semana') : t('Meta do mês')}</span></div>
+      ${exSections || `<div class="card"><p class="empty">${t('Nenhum exercício nos seus treinos. Adicione em Treinos.')}</p></div>`}
       <p class="small muted">${t('A meta da semana é calculada sozinha, em degraus até a meta do mês, e você pode trocá-la quando quiser. Toque em uma linha para editar.')}</p>
 
       ${noGoal ? `<button class="btn block" data-act="suggestAll">${icon.spark}${tn(noGoal, 'Sugerir metas para {n} exercício', 'Sugerir metas para {n} exercícios')}</button>` : ''}
@@ -205,7 +205,7 @@ actions.delExGoal = el => { delete state.goals.ex[el.dataset.id]; save(); closeS
 
 actions.suggestAll = () => {
   let n = 0;
-  for (const ex of Object.values(state.exercises)) {
+  for (const ex of activeExercises()) {
     const st = exGoalStatus(ex);
     if (st && !st.expired) continue;
     const sug = suggestGoal(ex);
