@@ -12,6 +12,13 @@ import { aiEnabled, aiAskExecution, aiCuesFor } from '../ai.js';
 
 // ---------- Treinos ----------
 
+// divisão do corpo para a lista de exercícios
+const BODY_PARTS = () => [
+  [t('Tronco'), ['Peito', 'Costas', 'Ombros', 'Abdômen']],
+  [t('Braços'), ['Bíceps', 'Tríceps']],
+  [t('Inferiores'), ['Quadríceps', 'Posteriores', 'Glúteos', 'Panturrilhas']],
+];
+
 function renderRoutines() {
   if (!state.onboarded) { go('#/inicio'); return; }
   const all = Object.values(state.exercises)
@@ -44,8 +51,12 @@ function renderRoutines() {
       ${noHistory().length ? `<a class="btn block" href="#/cargas">${t('Definir cargas iniciais')}</a>` : ''}
 
       ${all.length ? `<h3 class="group-title">${t('Todos os exercícios')}</h3>
-      <div class="card flat"><div class="list">${all.map(ex => `<a class="item" href="#/exercicio/${encodeURIComponent(ex.id)}">
-        <span class="grow"><span class="t">${esc(exName(ex))}</span><br><span class="d">${esc(tg(ex.group))} · ${t('próxima')}: ${planStr(planFor(ex))}</span></span>${icon.next}</a>`).join('')}</div></div>` : ''}
+      ${BODY_PARTS().map(([label, groups]) => {
+        const list = all.filter(ex => groups.includes(ex.group));
+        return list.length ? `<h3 class="part-title">${esc(label)}</h3>
+      <div class="card flat"><div class="list">${list.map(ex => `<a class="item" href="#/exercicio/${encodeURIComponent(ex.id)}">
+        <span class="grow"><span class="t">${esc(exName(ex))}</span><br><span class="d">${esc(tg(ex.group))} · ${t('próxima')}: ${planStr(planFor(ex))}</span></span>${icon.next}</a>`).join('')}</div></div>` : '';
+      }).join('')}` : ''}
     </div>`;
 }
 

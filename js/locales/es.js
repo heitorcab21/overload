@@ -789,6 +789,7 @@ const ui = {
   "Planilhas e importação": "Hojas de cálculo e importación",
   "Abra no Excel ou no Google Planilhas. A planilha de metas pode ser editada e importada de volta.": "Ábrelas en Excel o Google Sheets. La hoja de metas se puede editar e importar de nuevo.",
   "Como editar a planilha": "Cómo editar la hoja",
+  "Inferiores": "Tren inferior",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

@@ -634,3 +634,4 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 .top-acts .btn.sheet-green-soft { font-size: 14px; }
 .top-acts label.btn { cursor: pointer; }
 .week .missed i { border: 2px dashed var(--muted); opacity: .7; }
+.part-title { color: var(--accent); padding: 6px 4px 2px; }
