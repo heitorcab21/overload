@@ -25,6 +25,9 @@ function renderRoutines() {
         <button class="btn accent-soft" data-act="addTemplate">${icon.list}${t('Adicionar treino pronto')}</button>
         <a class="btn accent-soft" href="#/importar">${icon.edit}${t('Importar do bloco de notas')}</a>
       </div>
+      <button class="btn primary block" data-act="newRoutine">${icon.plus}${t('Novo treino')}</button>
+      ${state.routines.length ? `<button class="btn block" data-act="planSaveAsk">${icon.download}${t('Salvar meus treinos')}</button>` : ''}
+      ${noHistory().length ? `<a class="btn block" href="#/cargas">${t('Definir cargas iniciais')}</a>` : ''}
       ${state.routines.map((r, ri) => `<div class="card flat">
         <div class="row" style="padding:12px 8px 4px 16px">
           <h2 class="grow">${esc(routineName(r))}</h2>
@@ -46,9 +49,6 @@ function renderRoutines() {
         }).join('')}</div>
         <div style="padding:8px 12px 12px"><button class="btn block" data-act="pickEx" data-r="${ri}">${icon.plus}${t('Adicionar exercício')}</button></div>
       </div>`).join('')}
-      <button class="btn primary block" data-act="newRoutine">${icon.plus}${t('Novo treino')}</button>
-      ${state.routines.length ? `<button class="btn block" data-act="planSaveAsk">${icon.download}${t('Salvar meus treinos')}</button>` : ''}
-      ${noHistory().length ? `<a class="btn block" href="#/cargas">${t('Definir cargas iniciais')}</a>` : ''}
 
       ${all.length ? `<h3 class="group-title">${t('Exercícios ativos')}</h3>
       ${BODY_PARTS().map(([label, groups]) => {
