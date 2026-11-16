@@ -27,7 +27,6 @@ function renderRoutines() {
       </div>
       <button class="btn primary block" data-act="newRoutine">${icon.plus}${t('Novo treino')}</button>
       ${state.routines.length ? `<button class="btn block" data-act="planSaveAsk">${icon.download}${t('Salvar meus treinos')}</button>` : ''}
-      ${noHistory().length ? `<a class="btn block" href="#/cargas">${t('Definir cargas iniciais')}</a>` : ''}
       ${state.routines.map((r, ri) => `<div class="card flat">
         <div class="row" style="padding:12px 8px 4px 16px">
           <h2 class="grow">${esc(routineName(r))}</h2>
@@ -282,6 +281,8 @@ function exerciseForm(ex) {
     <p class="small muted">${t('Quando você bate as reps máximas em todas as séries, o app sugere subir a carga pelo valor de aumento.')}</p>
     ${stepper('rest', e.rest || 0, 15, t('Descanso (segundos)'), 0)}
     <p class="small muted">${t('0 usa o descanso padrão dos Ajustes ({s} s).', { s: state.settings.rest })}</p>
+    ${!ex || !entriesFor(ex.id).length ? `${stepper('startW', e.startW || 0, e.step || 1, ex?.bw ? t('Carga extra inicial (kg)') : t('Carga inicial (kg)'), 0)}
+    <p class="small muted">${t('A carga que você já usa hoje. Vira a sugestão do primeiro treino; depois o app calcula pelo seu histórico.')}</p>` : ''}
     <button class="btn primary big">${ex ? t('Salvar') : t('Criar exercício')}</button>
   </form>`;
 }
@@ -297,6 +298,7 @@ submits.saveExercise = form => {
     repMin, repMax: Math.max(repMin, Math.round(n('repMax'))), step: Math.max(0, n('step')),
     rest: Math.max(0, Math.round(n('rest'))),
   };
+  if (form.startW) data.startW = Math.max(0, n('startW')) || undefined;
   let ex = state.exercises[form.dataset.id];
   // nome de exercício da biblioteca não mudou: mantém o original (assim ele segue o idioma escolhido)
   if (ex && name === exName(ex)) data.name = ex.name;
@@ -335,6 +337,7 @@ function renderExercise(id) {
       <div class="target" style="margin:0">
         <h3>${t('Próximo treino')}</h3>
         <div class="big num">${planStr(p, ex)}</div>
+        ${p.first && !p.w && !ex.bw ? `<button class="btn sm" data-act="editExercise" data-id="${esc(ex.id)}">${icon.edit}${t('Definir carga inicial')}</button>` : ''}
         <div class="note">${esc(p.note)}</div>
       </div>
 

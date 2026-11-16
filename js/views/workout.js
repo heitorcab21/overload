@@ -697,7 +697,7 @@ const voiceSheet = (status, listening) => `
     <li>${t('<b>"40 quilos, 12 repetições"</b> registra uma série')}</li>
     <li>${t('<b>"bati a meta"</b> ou <b>"mais uma"</b> usa a meta como base')}</li>
     <li>${t('<b>"três séries de dez com cinquenta"</b> registra várias')}</li>
-    <li>${t('<b>"estava pesado"</b>, <b>"desfazer"</b>, <b>"pular"</b>, <b>"próximo"</b>')}</li>
+    <li>${t('<b>"desfazer"</b>, <b>"pular"</b>, <b>"próximo"</b>')}</li>
     <li class="warm-li">${t('<b>"foi aquecimento"</b> ou <b>"aquecimento, 20 quilos, 15"</b> marca aquecimento; <b>"não foi aquecimento"</b> desfaz')}</li>
   </ul>
   <form class="row" data-submit="voiceText">
@@ -782,8 +782,6 @@ async function applyVoice(text) {
     } else if (act.type === 'delta') {
       if (act.dw) { en.cur.w = Math.max(0, en.cur.w + act.dw); said.push(t('carga ajustada para {w}', { w: kg(en.cur.w) })); }
       else { const r = Math.max(0, en.cur.r + act.dr); said.push(setStr({ w: en.cur.w, r })); logSet(en, en.cur.w, r); }
-    } else if (act.type === 'feel') {
-      en.feel = act.v; said.push(FEEL()[act.v].toLowerCase());
     } else if (act.type === 'undo') {
       said.push(undo(en) ? t('última série desfeita') : t('nada para desfazer'));
     } else if (act.type === 'skip') {

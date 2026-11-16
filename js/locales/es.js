@@ -962,6 +962,12 @@ const ui = {
   "Exclua um dos treinos salvos para guardar este. Toque na lixeira ao lado dele.": "Borra uno de los entrenamientos guardados para guardar este. Toca la papelera a su lado.",
   "Ver meus treinos salvos": "Ver mis entrenamientos guardados",
   "{n} de {m} espaços usados.": "{n} de {m} espacios usados.",
+  "<b>\"desfazer\"</b>, <b>\"pular\"</b>, <b>\"próximo\"</b>": "<b>\"deshacer\"</b>, <b>\"saltar\"</b>, <b>\"siguiente\"</b>",
+  "Carga inicial (kg)": "Carga inicial (kg)",
+  "Carga extra inicial (kg)": "Carga extra inicial (kg)",
+  "A carga que você já usa hoje. Vira a sugestão do primeiro treino; depois o app calcula pelo seu histórico.": "La carga que ya usas hoy. Será la sugerencia del primer entrenamiento; después la app calcula según tu historial.",
+  "Definir carga inicial": "Definir carga inicial",
+  "Seu corpo e nível de força": "Tu cuerpo y nivel de fuerza",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -1039,7 +1045,7 @@ const help = [
       <li><b>"una más"</b> o <b>"menos dos"</b>: la meta con reps de más o de menos.</li>
       <li><b>"más 5 kilos"</b>: ajusta la carga de la próxima serie.</li>
       <li><b>"fue calentamiento"</b>: la última serie (o la próxima) cuenta como calentamiento. <b>"calentamiento, 20 kilos, 15"</b>: la registra directo como calentamiento. <b>"no fue calentamiento"</b>: vuelve a ser serie válida.</li>
-      <li><b>"estaba pesado"</b>, <b>"deshacer"</b>, <b>"saltar"</b>, <b>"siguiente"</b>.</li>
+      <li><b>"deshacer"</b>, <b>"saltar"</b>, <b>"siguiente"</b>.</li>
     </ul>
     <p class="tip">La primera vez el navegador pide permiso para el micrófono. En Android, el reconocimiento de voz necesita internet. Si la voz no funciona, escribe la misma frase en el campo de abajo.</p>`],
   ['Cómo se sugiere la carga', 'La lógica de la progresión', `

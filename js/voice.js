@@ -129,7 +129,7 @@ export function wordsToDigits(text, l = lang()) {
 /**
  * Interpreta o que foi dito e devolve uma lista de ações:
  *  { type:'set', w?, r?, fail? }  { type:'planned', all? }  { type:'delta', dr? , dw? }
- *  { type:'feel', v }  { type:'skip' }  { type:'next' }  { type:'undo' }
+ *  { type:'skip' }  { type:'next' }  { type:'undo' }
  *  { type:'warm' } (a última série, ou a próxima, foi aquecimento)  { type:'unwarm' } (não foi aquecimento)
  *  séries ditas junto com "aquecimento" vêm com warm: true
  */
@@ -204,14 +204,6 @@ export function parseUtterance(raw, l = lang()) {
     }
   }
 
-  for (const [re, v] of V.feel) {
-    if (re.test(txt)) {
-      // "falhei" junto de números já marcou a série; só vira sensação se vier sozinho
-      if (v === 'fail' && acts.some(a => a.type === 'set')) break;
-      acts.push({ type: 'feel', v });
-      break;
-    }
-  }
   // "foi aquecimento" sem números: marca a última série (ou a próxima) como aquecimento
   if (warm && !acts.some(a => a.type === 'set')) return [{ type: 'warm' }];
   if (V.next.test(txt)) acts.push({ type: 'next' });

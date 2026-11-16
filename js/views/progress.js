@@ -288,13 +288,8 @@ function strengthRows(p) {
 
 function strengthOverview() {
   const p = profile();
-  if (!p) {
-    return `<div class="card stack strength-card">
-      <h3>${t('Seu nível de força')}</h3>
-      <p>${t('Descubra em que top de força você está em cada exercício, comparado a pessoas do seu sexo, idade e peso que treinam musculação.')}</p>
-      <button class="btn primary block" data-act="editProfile">${t('Preencher perfil')}</button>
-    </div>`;
-  }
+  // sem perfil, o convite para preencher fica só no cartão "Seu corpo"
+  if (!p) return '';
   const rows = strengthRows(p);
   if (!rows.length) {
     return `<a class="card stack strength-card link-card" href="#/forca"><div class="row between"><h3>${t('Seu nível de força')}</h3>${icon.next}</div>
@@ -393,7 +388,7 @@ function bodyCard() {
   const p = profile();
   if (!p) {
     return `<div class="card stack">
-      <h3>${t('Seu corpo')}</h3>
+      <h3>${t('Seu corpo e nível de força')}</h3>
       <p class="muted">${t('Informe sexo, idade, altura e peso para ver seu IMC, o percentual de gordura estimado, a massa magra e a massa gorda, e em que top de força você está em cada exercício.')}</p>
       <button class="btn primary block" data-act="editProfile">${t('Preencher perfil')}</button>
     </div>`;

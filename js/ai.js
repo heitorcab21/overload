@@ -220,13 +220,12 @@ const ACTIONS_SCHEMA = {
       items: {
         type: 'object',
         additionalProperties: false,
-        required: ['type', 'weight', 'reps', 'failed', 'feel'],
+        required: ['type', 'weight', 'reps', 'failed'],
         properties: {
-          type: { type: 'string', enum: ['set', 'warmup_set', 'mark_warmup', 'not_warmup', 'planned', 'planned_all', 'feel', 'skip', 'next', 'undo'] },
+          type: { type: 'string', enum: ['set', 'warmup_set', 'mark_warmup', 'not_warmup', 'planned', 'planned_all', 'skip', 'next', 'undo'] },
           weight: { type: ['number', 'null'], description: 'Carga em kg, ou null para manter a carga atual.' },
           reps: { type: ['integer', 'null'], description: 'Repetições, ou null para usar a meta.' },
           failed: { type: 'boolean', description: 'true se a pessoa disse que falhou nessa série.' },
-          feel: { type: ['string', 'null'], enum: ['easy', 'ok', 'hard', 'fail', null] },
         },
       },
     },
@@ -244,7 +243,6 @@ Tipos de ação:
 - "set": uma série feita. Uma ação por série (se a pessoa disse "três séries de dez com cinquenta", devolva três ações).
 - "planned": a pessoa fez a próxima série exatamente como a meta. "planned_all": fez todas as séries restantes como a meta.
 - "warmup_set": uma série de aquecimento com carga e reps ditas. "mark_warmup": a pessoa disse que a série (a última, ou a que vai fazer) foi aquecimento, sem números. "not_warmup": disse que não foi aquecimento / era série válida.
-- "feel": como foi o exercício (easy = fácil, ok = na medida, hard = pesado, fail = até a falha).
 - "skip": pular o exercício. "next": ir para o próximo exercício. "undo": desfazer a última série.
 Se a frase não tiver relação com o registro do treino, devolva uma lista vazia.`,
     user: `Exercício atual: ${ctx.exercise}
@@ -273,7 +271,6 @@ O que a pessoa disse: "${transcript}"`,
     if (a.type === 'mark_warmup') return { type: 'warm' };
     if (a.type === 'not_warmup') return { type: 'unwarm' };
     if (a.type === 'planned_all') return { type: 'planned', all: true };
-    if (a.type === 'feel') return a.feel ? { type: 'feel', v: a.feel } : null;
     return { type: a.type };
   }).filter(Boolean);
 }

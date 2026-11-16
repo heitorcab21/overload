@@ -962,6 +962,12 @@ const ui = {
   "Exclua um dos treinos salvos para guardar este. Toque na lixeira ao lado dele.": "Delete one of your saved workouts to keep this one. Tap the trash icon next to it.",
   "Ver meus treinos salvos": "See my saved workouts",
   "{n} de {m} espaços usados.": "{n} of {m} slots used.",
+  "<b>\"desfazer\"</b>, <b>\"pular\"</b>, <b>\"próximo\"</b>": "<b>\"undo\"</b>, <b>\"skip\"</b>, <b>\"next\"</b>",
+  "Carga inicial (kg)": "Starting load (kg)",
+  "Carga extra inicial (kg)": "Starting extra load (kg)",
+  "A carga que você já usa hoje. Vira a sugestão do primeiro treino; depois o app calcula pelo seu histórico.": "The load you already use today. It becomes the first workout's suggestion; after that the app works it out from your history.",
+  "Definir carga inicial": "Set starting load",
+  "Seu corpo e nível de força": "Your body and strength level",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -1039,7 +1045,7 @@ const help = [
       <li><b>"one more"</b> or <b>"minus two"</b>: the target with reps added or removed.</li>
       <li><b>"plus 5 kilos"</b>: changes the load for the next set.</li>
       <li><b>"it was a warm-up"</b>: the last set (or the next one) counts as a warm-up. <b>"warm-up, 20 kilos, 15"</b>: logs it straight as a warm-up. <b>"not a warm-up"</b>: makes it a working set again.</li>
-      <li><b>"it was hard"</b>, <b>"undo"</b>, <b>"skip"</b>, <b>"next"</b>.</li>
+      <li><b>"undo"</b>, <b>"skip"</b>, <b>"next"</b>.</li>
     </ul>
     <p class="tip">The first time, the browser asks for microphone permission. On Android, speech recognition needs internet. If voice doesn't work, type the same phrase in the field below.</p>`],
   ['How the load is suggested', 'The progression logic', `
