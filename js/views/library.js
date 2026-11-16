@@ -1,6 +1,6 @@
 // Treinos (rotinas), exercícios e a tela de execução ideal de cada exercício.
 import { state, save, uid } from '../store.js';
-import { $, esc, kg, fmt, fmtDate, setStr, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, meter } from '../ui.js';
+import { $, esc, kg, fmt, fmtDate, setStr, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, meter, waitDone } from '../ui.js';
 import { route, go, rerender } from '../router.js';
 import { activeExercises, BODY_PARTS as BODY_PARTS_DATA, supGroups, TEMPLATES, exPhotos, GROUPS, LIB, exName, exCues, tg, loadHint, loadShort, routineName } from '../data.js';
 import { t, tn, exPack } from '../i18n.js';
@@ -138,14 +138,41 @@ actions.planPick = el => {
     <div class="card flat"><div class="list">${p.routines.map(r => `<div class="item"><span class="grow"><span class="t">${esc(routineName(r))}</span><br>
       <span class="d">${tn(r.ex.length, '{n} exercício', '{n} exercícios')}</span></span></div>`).join('')}</div></div>
     ${has ? `<p class="small muted">${t('Você já tem {n} na sua lista. Escolha como usar este:', { n: tn(state.routines.length, '{n} treino', '{n} treinos') })}</p>` : ''}
-    <button class="btn primary block" data-act="planApply" data-kind="${el.dataset.kind}" data-id="${el.dataset.id}" data-mode="add">${icon.plus}${has ? t('Acrescentar ao meu treino atual') : t('Usar estes treinos')}</button>
-    ${has ? `<button class="btn danger-soft block" data-act="planApply" data-kind="${el.dataset.kind}" data-id="${el.dataset.id}" data-mode="replace">${icon.sync}${t('Substituir meu treino atual')}</button>
-      ${canSavePlan() ? `<p class="small muted">${t('Ao substituir, seus treinos atuais saem da lista (o histórico não muda). Se quiser guardá-los para voltar depois, salve antes:')}</p>
-      <button class="btn block" data-act="planSaveAsk">${icon.download}${t('Salvar meus treinos atuais')}</button>` : `<p class="small muted">${t('Ao substituir, seus treinos atuais saem da lista. O histórico não muda.')}</p>`}` : ''}
+    <button class="btn primary block" data-act="${has ? 'planConfirm' : 'planApply'}" data-kind="${el.dataset.kind}" data-id="${el.dataset.id}" data-mode="add">${icon.plus}${has ? t('Acrescentar ao meu treino atual') : t('Usar estes treinos')}</button>
+    ${has ? `<button class="btn danger-soft block" data-act="planConfirm" data-kind="${el.dataset.kind}" data-id="${el.dataset.id}" data-mode="replace">${icon.sync}${t('Substituir meu treino atual')}</button>` : ''}
     <button class="btn block" data-act="addTemplate">${t('Voltar')}</button>`);
 };
 
+/** "Tem certeza?" antes de acrescentar ou substituir: explica o que muda e só libera depois de 5 segundos. */
+actions.planConfirm = el => {
+  const { kind, id, mode } = el.dataset;
+  const p = planOf(kind, id);
+  if (!p) return;
+  const names = p.routines.filter(r => r.ex.length).map(r => routineName(r));
+  const mine = state.routines.map(r => routineName(r));
+  const attrs = `data-kind="${kind}" data-id="${id}" data-mode="${mode}"`;
+  const replace = mode === 'replace';
+  sheet(`<h2>${replace ? t('Substituir seu treino atual?') : t('Acrescentar ao seu treino atual?')}</h2>
+    <p class="muted">${t('O que vai acontecer:')}</p>
+    <ul class="confirm-list">
+      ${replace
+        ? `<li>${t('Saem da lista: <b>{x}</b>.', { x: esc(mine.join(', ')) })}</li>
+           <li>${t('Entram: <b>{x}</b>.', { x: esc(names.join(', ')) })}</li>
+           <li>${t('O próximo treino volta a ser o primeiro da nova lista.')}</li>
+           <li>${t('Seu histórico, exercícios e metas continuam.')}</li>
+           ${canSavePlan() ? `<li><b>${t('Seu treino atual não está salvo: sem salvar, não dá para voltar a ele com um toque.')}</b></li>` : ''}`
+        : `<li>${t('Entram no fim da sua lista: <b>{x}</b>.', { x: esc(names.join(', ')) })}</li>
+           <li>${t('Ficam como estão: <b>{x}</b>.', { x: esc(mine.join(', ')) })}</li>
+           <li>${t('Nada é apagado.')}</li>`}
+    </ul>
+    ${replace && canSavePlan() ? `<button class="btn block" data-act="planSaveAsk">${icon.download}${t('Salvar meu treino atual antes')}</button>` : ''}
+    <p class="small muted">${t('Por segurança, o botão de confirmar libera em 5 segundos.')}</p>
+    <button class="btn ${replace ? 'danger' : 'primary'} block" data-act="planApply" ${attrs} data-wait="5">${replace ? t('Sim, substituir') : t('Sim, acrescentar')}</button>
+    <button class="btn block" data-act="planPick" data-kind="${kind}" data-id="${id}">${t('Voltar')}</button>`);
+};
+
 actions.planApply = el => {
+  if (!waitDone(el)) return;
   const p = planOf(el.dataset.kind, el.dataset.id);
   if (!p) return;
   if (el.dataset.mode === 'replace' && state.routines.length) {

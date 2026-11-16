@@ -1,6 +1,6 @@
 // Ajustes: idioma, descanso, tema, IA, conta, dados e instalação.
 import { state, save, exportJSON, importJSON, emptyData, resetKeepAccount } from '../store.js';
-import { googleBtn, $, $$, esc, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, shareFile, fmtDate, fmtTime } from '../ui.js';
+import { googleBtn, $, $$, esc, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, shareFile, fmtDate, fmtTime, waitDone } from '../ui.js';
 import { route, go, rerender } from '../router.js';
 import { sessionsCSV } from '../export.js';
 import { aiEnabled, aiAskExecution, PROVIDERS, aiProvider, aiKey, aiModel, setAiConfig, listModels } from '../ai.js';
@@ -377,12 +377,13 @@ actions.wipeAsk = () => {
     </ul>
     ${n ? `<button class="btn block" data-act="backupNow">${t('Salvar um backup antes')}</button>` : ''}
     <label class="check"><input type="checkbox" data-change="wipeCheck">${n > 1 ? t('Entendo que meus {n} treinos serão apagados para sempre.', { n }) : n === 1 ? t('Entendo que meu treino será apagado para sempre.') : t('Entendo que tudo será apagado para sempre.')}</label>
-    <button class="btn danger block" id="wipeBtn" data-act="wipeNow" disabled>${t('Apagar tudo')}</button>
+    <p class="small muted">${t('Por segurança, o botão de confirmar libera em 5 segundos.')}</p>
+    <button class="btn danger block" id="wipeBtn" data-act="wipeNow" data-wait="5" data-gate="#sheet input[data-change=wipeCheck]" disabled>${t('Apagar tudo')}</button>
     <button class="btn block" data-act="closeSheet">${t('Cancelar')}</button>`);
 };
-changes.wipeCheck = el => { $('#wipeBtn').disabled = !el.checked; };
+changes.wipeCheck = el => { const b = $('#wipeBtn'); b.disabled = !(el.checked && waitDone(b)); };
 actions.wipeNow = el => {
-  if (!$('#sheet input[data-change=wipeCheck]')?.checked) return;
+  if (!$('#sheet input[data-change=wipeCheck]')?.checked || !waitDone(el)) return;
   const connected = driveConnected();
   // a renovação da conta precisa partir deste toque
   const ready = connected ? refreshIfNeeded() : Promise.resolve(true);
