@@ -970,6 +970,7 @@ const ui = {
   "Seu corpo e nível de força": "Your body and strength level",
   "Atualize seu peso de vez em quando (por exemplo, toda semana, em jejum) para ver o gráfico.": "Update your weight now and then (for example, weekly, before eating) to see the chart.",
   "Dica: pese-se sempre no mesmo horário, de preferência ao acordar. Cada mudança de peso entra no gráfico.": "Tip: weigh yourself at the same time, ideally right after waking up. Every weight change goes into the chart.",
+  "Salvar este treino em Meus treinos salvos": "Save this workout to My saved workouts",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };

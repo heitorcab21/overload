@@ -970,6 +970,7 @@ const ui = {
   "Seu corpo e nível de força": "Tu cuerpo y nivel de fuerza",
   "Atualize seu peso de vez em quando (por exemplo, toda semana, em jejum) para ver o gráfico.": "Actualiza tu peso de vez en cuando (por ejemplo, cada semana, en ayunas) para ver el gráfico.",
   "Dica: pese-se sempre no mesmo horário, de preferência ao acordar. Cada mudança de peso entra no gráfico.": "Consejo: pésate siempre a la misma hora, preferiblemente al despertar. Cada cambio de peso entra en el gráfico.",
+  "Salvar este treino em Meus treinos salvos": "Guardar este entrenamiento en Mis entrenamientos guardados",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
