@@ -600,7 +600,7 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 
 /* atalhos do treino em destaque, acima da carga */
 .quick-acts { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; }
-.quick-acts .qa { display: grid; place-items: center; align-content: center; gap: 2px; min-height: 50px; padding: 6px 6px; border-radius: 14px;
+.quick-acts .qa { display: grid; place-items: center; align-content: center; gap: 2px; min-height: 46px; padding: 5px 6px; border-radius: 14px;
   border: 1px solid var(--line); background: var(--surface-2); text-align: center; }
 .quick-acts .qa.warm { border: 1.5px solid color-mix(in srgb, var(--warm) 60%, transparent); background: color-mix(in srgb, var(--warm) 14%, var(--surface)); }
 .quick-acts .qa.warm b { color: var(--warm); }
@@ -731,6 +731,6 @@ body.no-tabs #view:has(.w-done) { padding-bottom: calc(320px + var(--safe-b)); }
 .note-link { display: inline-flex; align-items: center; gap: 4px; border: 0; background: none; padding: 0; color: #e6b450; font: inherit; font-weight: 600; }
 .note-link .ic { width: 14px; height: 14px; }
 .ex-info { margin: 12px 0 6px; line-height: 1.5; }
-.target-mini { display: inline-flex; align-items: baseline; gap: 10px; margin: 10px 0 12px; padding: 8px 14px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
+.target-mini { display: flex; align-items: baseline; gap: 10px; margin: 4px 0 10px; padding: 8px 14px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
 .target-mini span { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .target-mini b { font-size: 17px; }
