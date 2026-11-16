@@ -12,10 +12,11 @@ import { t, tn, lang, LANGS } from '../i18n.js';
 /** Aplica o idioma às partes fixas da página (abas, atributo lang). */
 export function applyLang() {
   document.documentElement.lang = { pt: 'pt-BR', en: 'en', es: 'es' }[lang()];
-  const labels = { hoje: t('Hoje'), metas: t('Metas'), progresso: t('Progresso'), exercicios: t('Treinos'), cardio: t('Cardio'), ajustes: t('Ajustes') };
+  const labels = { hoje: t('Hoje'), metas: t('Metas'), progresso: t('Progresso'), exercicios: t('Treinos'), cardio: t('Cardio'), ajustes: t('Ajustes/Ajuda') };
   for (const a of $$('#tabbar a')) {
     const l = a.querySelector('.tab-label');
-    if (l) l.textContent = labels[a.dataset.tab];
+    // "Ajustes/Ajuda" quebra depois da barra quando não cabe
+    if (l) l.innerHTML = esc(labels[a.dataset.tab]).replace('/', '/<wbr>');
   }
   $('#tabbar')?.setAttribute('aria-label', t('Seções'));
   const ib = $('#installTop');

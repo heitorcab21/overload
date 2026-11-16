@@ -864,6 +864,7 @@ const ui = {
   "Natação": "Natación",
   "HIIT": "HIIT",
   "Outro": "Otro",
+  "Ajustes/Ajuda": "Ajustes/Ayuda",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
