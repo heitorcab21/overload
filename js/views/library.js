@@ -128,8 +128,8 @@ actions.planPick = el => {
     <div class="card flat"><div class="list">${p.routines.map(r => `<div class="item"><span class="grow"><span class="t">${esc(routineName(r))}</span><br>
       <span class="d">${tn(r.ex.length, '{n} exercício', '{n} exercícios')}</span></span></div>`).join('')}</div></div>
     ${has ? `<p class="small muted">${t('Você já tem {n} na sua lista. Escolha como usar este:', { n: tn(state.routines.length, '{n} treino', '{n} treinos') })}</p>` : ''}
-    <button class="btn primary block" data-act="planApply" data-kind="${el.dataset.kind}" data-id="${el.dataset.id}" data-mode="add">${icon.plus}${has ? t('Adicionar aos meus treinos') : t('Usar estes treinos')}</button>
-    ${has ? `<button class="btn danger-soft block" data-act="planApply" data-kind="${el.dataset.kind}" data-id="${el.dataset.id}" data-mode="replace">${icon.sync}${t('Substituir meus treinos')}</button>
+    <button class="btn primary block" data-act="planApply" data-kind="${el.dataset.kind}" data-id="${el.dataset.id}" data-mode="add">${icon.plus}${has ? t('Acrescentar ao meu treino atual') : t('Usar estes treinos')}</button>
+    ${has ? `<button class="btn danger-soft block" data-act="planApply" data-kind="${el.dataset.kind}" data-id="${el.dataset.id}" data-mode="replace">${icon.sync}${t('Substituir meu treino atual')}</button>
       ${canSavePlan() ? `<p class="small muted">${t('Ao substituir, seus treinos atuais saem da lista (o histórico não muda). Se quiser guardá-los para voltar depois, salve antes:')}</p>
       <button class="btn block" data-act="planSaveAsk">${icon.download}${t('Salvar meus treinos atuais')}</button>` : `<p class="small muted">${t('Ao substituir, seus treinos atuais saem da lista. O histórico não muda.')}</p>`}` : ''}
     <button class="btn block" data-act="addTemplate">${t('Voltar')}</button>`);

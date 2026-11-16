@@ -976,6 +976,8 @@ const ui = {
   "Novo Treino {l}": "Nuevo Entreno {l}",
   "Pode completar o nome, por exemplo \"{x} · Braços\".": "Puedes completar el nombre, por ejemplo \"{x} · Brazos\".",
   "Novo dia de treino": "Nuevo día de entrenamiento",
+  "Acrescentar ao meu treino atual": "Agregar a mi entrenamiento actual",
+  "Substituir meu treino atual": "Reemplazar mi entrenamiento actual",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
