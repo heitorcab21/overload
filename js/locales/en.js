@@ -968,6 +968,8 @@ const ui = {
   "A carga que você já usa hoje. Vira a sugestão do primeiro treino; depois o app calcula pelo seu histórico.": "The load you already use today. It becomes the first workout's suggestion; after that the app works it out from your history.",
   "Definir carga inicial": "Set starting load",
   "Seu corpo e nível de força": "Your body and strength level",
+  "Atualize seu peso de vez em quando (por exemplo, toda semana, em jejum) para ver o gráfico.": "Update your weight now and then (for example, weekly, before eating) to see the chart.",
+  "Dica: pese-se sempre no mesmo horário, de preferência ao acordar. Cada mudança de peso entra no gráfico.": "Tip: weigh yourself at the same time, ideally right after waking up. Every weight change goes into the chart.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -1076,7 +1078,7 @@ const help = [
       <li><b>Lean and fat mass</b>: your weight split by the estimated body fat percentage.</li>
       <li><b>Strength percentile</b>: tap the <b>Your strength level</b> card in Progress to see the top % for each exercise. It compares your estimated 1RM with standards for lifters, adjusted for sex, age and weight, and is recalculated whenever you update your profile or log your weight. Top 10% = stronger than 90% of them. Under <b>Check any exercise</b>, pick an exercise (upper body, arms or legs), enter load and reps and see your percentile instantly, without saving anything. It only applies to barbell, dumbbell and bodyweight exercises; machines and cables vary too much between gyms.</li>
       <li><b>Where the 1RM comes from</b>: the exercise's strength card shows the set used (your best in the last 90 days) and the formula. For a more reliable number, tap <b>Take a strength test</b>: after warming up, do one set to failure and enter the load and reps. The test does not change your workout progression.</li>
-      <li><b>Body weight</b>: on the Your body card, tap <b>Log weight</b> to follow the chart. One entry per day.</li>
+      <li><b>Body weight</b>: on the Your body card, tap <b>Update</b> and change your weight to follow the chart. One entry per day.</li>
     </ul>
     <p class="tip">These are estimates. For a reliable body fat number, get a body composition assessment (bioimpedance, skinfolds or DEXA). Update your weight now and then to keep the calculations right.</p>`],
   ['Spreadsheets (Excel and Google Sheets)', 'Export and import', `

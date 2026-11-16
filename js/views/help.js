@@ -116,7 +116,7 @@ const TOPICS = [
       <li><b>Massa magra e gorda</b>: o peso dividido pelo percentual de gordura estimado.</li>
       <li><b>Top de força</b>: toque no cartão <b>Seu nível de força</b>, no Progresso, para ver o top % de cada exercício. Ele compara o seu 1RM estimado com padrões de quem treina musculação, ajustados por sexo, idade e peso, e é recalculado sempre que você atualiza o perfil ou registra o peso. Top 10% = mais forte que 90% dessas pessoas. Em <b>Consultar qualquer exercício</b>, escolha um exercício (tronco, braços ou pernas), informe carga e reps e veja o top na hora, sem salvar nada. Só vale para exercícios com barra, halteres ou peso corporal; aparelhos e polias variam demais entre academias.</li>
       <li><b>De onde vem o 1RM</b>: o cartão de força do exercício mostra a série usada no cálculo (a melhor dos últimos 90 dias) e a fórmula. Para um número mais confiável, toque em <b>Fazer teste de força</b>: depois de aquecer, faça uma série até não aguentar mais e informe carga e reps. O teste não mexe na progressão dos treinos.</li>
-      <li><b>Peso corporal</b>: no cartão Seu corpo, toque em <b>Registrar peso</b> para acompanhar o gráfico. Um registro por dia.</li>
+      <li><b>Peso corporal</b>: no cartão Seu corpo, toque em <b>Atualizar</b> e mude o peso para acompanhar o gráfico. Um registro por dia.</li>
     </ul>
     <p class="tip">São estimativas. Para um número confiável de gordura corporal, faça uma avaliação física (bioimpedância, dobras cutâneas ou DEXA). Atualize o peso de vez em quando para manter os cálculos certos.</p>`],
 

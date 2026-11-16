@@ -431,8 +431,8 @@ function weightBlock(p) {
     const d = Math.round((ws.at(-1).kg - ws[0].kg) * 10) / 10;
     delta = t('{d} kg desde {data}', { d: (d > 0 ? '+' : '') + fmt(d), data: fmtDate(ws[0].date, false) });
   }
-  return `<div class="row between"><b>${t('Peso corporal')}</b><button class="btn sm" data-act="logWeight">${icon.plus}${t('Registrar peso')}</button></div>
-    ${chart ? `<p class="small muted">${delta}</p><div class="chart" id="bwChart"></div>` : `<p class="small muted">${t('Registre seu peso de vez em quando (por exemplo, toda semana, em jejum) para ver o gráfico.')}</p>`}`;
+  return `<b>${t('Peso corporal')}</b>
+    ${chart ? `<p class="small muted">${delta}</p><div class="chart" id="bwChart"></div>` : `<p class="small muted">${t('Atualize seu peso de vez em quando (por exemplo, toda semana, em jejum) para ver o gráfico.')}</p>`}`;
 }
 function mountWeightChart() {
   const box = $('#bwChart');
@@ -440,28 +440,6 @@ function mountWeightChart() {
   if (!box || ws.length < 2) return;
   lineChart(box, ws.map(w => ({ label: fmtDate(w.date, false), value: w.kg, tip: `${fmtDate(w.date)} · ${fmt(w.kg)} kg` })), { unit: ' kg' });
 }
-
-actions.logWeight = () => {
-  sheet(`<h2>${t('Registrar peso')}</h2>
-    <form class="stack" data-submit="saveWeight">
-      ${stepper('weight', state.profile.weight, 0.1, t('Peso (kg)'), 30)}
-      <p class="small muted">${t('Dica: pese-se sempre no mesmo horário, de preferência ao acordar.')}</p>
-      <button class="btn primary big">${t('Salvar')}</button>
-    </form>`);
-};
-submits.saveWeight = form => {
-  const kg = Math.round(Number(form.weight.value) * 10) / 10;
-  if (!(kg >= 30 && kg <= 300)) { toast(t('Confira idade, altura e peso.'), 4000); return; }
-  const p = state.profile;
-  const ws = [...(p.weights || [])];
-  const today = new Date().toDateString();
-  // um registro por dia: pesar de novo no mesmo dia substitui
-  if (ws.length && new Date(ws.at(-1).date).toDateString() === today) ws.pop();
-  ws.push({ date: new Date().toISOString(), kg });
-  p.weight = kg;
-  p.weights = ws.slice(-200);
-  save(); closeSheet(); rerender();
-};
 
 actions.editProfile = () => {
   const p = state.profile || {};
@@ -479,6 +457,7 @@ actions.editProfile = () => {
         ${stepper('height', p.height || 170, 1, t('Altura (cm)'), 100)}
       </div>
       ${stepper('weight', p.weight || 70, 0.5, t('Peso (kg)'), 30)}
+      <p class="small muted">${t('Dica: pese-se sempre no mesmo horário, de preferência ao acordar. Cada mudança de peso entra no gráfico.')}</p>
       <h3>${t('Medidas opcionais (mais precisão)')}</h3>
       <p class="small muted">${t('Com fita métrica, sem apertar. Cintura: na altura do umbigo. Pescoço: logo abaixo do pomo de adão. Quadril (mulheres): na parte mais larga.')}</p>
       <div class="two">

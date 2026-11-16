@@ -968,6 +968,8 @@ const ui = {
   "A carga que você já usa hoje. Vira a sugestão do primeiro treino; depois o app calcula pelo seu histórico.": "La carga que ya usas hoy. Será la sugerencia del primer entrenamiento; después la app calcula según tu historial.",
   "Definir carga inicial": "Definir carga inicial",
   "Seu corpo e nível de força": "Tu cuerpo y nivel de fuerza",
+  "Atualize seu peso de vez em quando (por exemplo, toda semana, em jejum) para ver o gráfico.": "Actualiza tu peso de vez en cuando (por ejemplo, cada semana, en ayunas) para ver el gráfico.",
+  "Dica: pese-se sempre no mesmo horário, de preferência ao acordar. Cada mudança de peso entra no gráfico.": "Consejo: pésate siempre a la misma hora, preferiblemente al despertar. Cada cambio de peso entra en el gráfico.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -1076,7 +1078,7 @@ const help = [
       <li><b>Masa magra y grasa</b>: tu peso repartido según el porcentaje de grasa estimado.</li>
       <li><b>Top de fuerza</b>: toca la tarjeta <b>Tu nivel de fuerza</b>, en Progreso, para ver el top % de cada ejercicio. Compara tu 1RM estimado con estándares de quienes entrenan musculación, ajustados por sexo, edad y peso, y se recalcula cada vez que actualizas el perfil o registras tu peso. Top 10% = más fuerte que el 90% de esas personas. En <b>Consultar cualquier ejercicio</b>, elige un ejercicio (tronco, brazos o piernas), indica carga y reps y mira el top al instante, sin guardar nada. Solo vale para ejercicios con barra, mancuernas o peso corporal; las máquinas y poleas varían demasiado entre gimnasios.</li>
       <li><b>De dónde viene el 1RM</b>: la tarjeta de fuerza del ejercicio muestra la serie usada (tu mejor de los últimos 90 días) y la fórmula. Para un número más fiable, toca <b>Hacer prueba de fuerza</b>: después de calentar, haz una serie hasta no poder más e indica carga y reps. La prueba no cambia la progresión de los entrenamientos.</li>
-      <li><b>Peso corporal</b>: en la tarjeta Tu cuerpo, toca <b>Registrar peso</b> para seguir el gráfico. Un registro por día.</li>
+      <li><b>Peso corporal</b>: en la tarjeta Tu cuerpo, toca <b>Actualizar</b> y cambia el peso para seguir el gráfico. Un registro por día.</li>
     </ul>
     <p class="tip">Son estimaciones. Para un número fiable de grasa corporal, haz una evaluación física (bioimpedancia, pliegues cutáneos o DEXA). Actualiza el peso de vez en cuando para mantener los cálculos al día.</p>`],
   ['Hojas de cálculo (Excel y Google Sheets)', 'Exportar e importar', `
