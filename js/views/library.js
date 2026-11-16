@@ -22,7 +22,7 @@ function renderRoutines() {
     <div class="head"><h1>${t('Treinos')}</h1></div>
     <div class="stack">
       <div class="two top-acts">
-        <button class="btn accent-soft" data-act="addTemplate">${icon.list}${t('Adicionar ou substituir')}</button>
+        <button class="btn accent-soft" data-act="addTemplate">${icon.list}${t('Adicionar ou substituir treino pronto/salvo')}</button>
         <a class="btn accent-soft" href="#/importar">${icon.edit}${t('Importar do bloco de notas')}</a>
       </div>
       <button class="btn primary block" data-act="newRoutine">${icon.plus}${t('Novo dia de treino')}</button>
@@ -210,7 +210,7 @@ actions.planSaveAsk = () => {
 submits.planSave = form => {
   const p = savePlan(form.name.value.trim() || t('Meus treinos'));
   save(); closeSheet(); rerender();
-  if (p) toast(t('Salvo em "Meus treinos salvos". Para restaurar: Adicionar ou substituir.'), 4500);
+  if (p) toast(t('Salvo em "Meus treinos salvos". Para restaurar: Adicionar ou substituir treino pronto/salvo.'), 4500);
 };
 actions.planDelAsk = el => {
   const p = plans().find(x => x.id === el.dataset.id);
