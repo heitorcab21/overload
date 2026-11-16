@@ -149,7 +149,7 @@ eq(parseSet('12 reps'), { w: 0, r: 12 });
 eq(parseCSV('a,b\n"1,5",x'), [['a', 'b'], ['1,5', 'x']], 'CSV com vírgula e aspas');
 
 const before = JSON.stringify(state.goals);
-eq(importGoalsCSV(goalsCSV(), now), { groups: 0, ex: 0, weeks: 0, unknown: [] }, 'exportar e importar sem mudar nada não altera metas');
+eq(importGoalsCSV(goalsCSV(now), now), { groups: 0, ex: 0, weeks: 0, unknown: [] }, 'exportar e importar sem mudar nada não altera metas');
 eq(JSON.stringify(state.goals), before);
 
 const sheetTxt = `Tipo;Nome;Grupamento;Meta da semana;Feito na semana;Meta do mês;Feito no mês;Situação
