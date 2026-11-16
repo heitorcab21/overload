@@ -951,7 +951,7 @@ const ui = {
   "Guarda todos os seus treinos atuais ({x}) para você restaurar com um toque depois, mesmo que troque de ficha.": "Guarda todos tus entrenamientos actuales ({x}) para restaurarlos con un toque después, aunque cambies de rutina.",
   "Meus treinos · {d}": "Mis entrenamientos · {d}",
   "Meus treinos": "Mis entrenamientos",
-  "Salvo em \"Meus treinos salvos\". Para restaurar: Adicionar treino pronto.": "Guardado en \"Mis entrenamientos guardados\". Para restaurar: Agregar rutina lista.",
+  "Salvo em \"Meus treinos salvos\". Para restaurar: Adicionar treino pronto.": "Guardado en \"Mis entrenamientos guardados\". Para restaurar: Agregar rutina lista/guardada.",
   "Só o conjunto salvo é apagado. Seus treinos atuais e o histórico não mudam.": "Solo se borra el conjunto guardado. Tus entrenamientos actuales y el historial no cambian.",
   "Exercícios ativos": "Ejercicios activos",
   "Nenhum exercício nos seus treinos. Adicione em Treinos.": "Ningún ejercicio en tus entrenamientos. Agrégalos en Entrenos.",
@@ -994,6 +994,27 @@ const ui = {
   "Por segurança, o botão de confirmar libera em 5 segundos.": "Por seguridad, el botón de confirmar se habilita en 5 segundos.",
   "Sim, substituir": "Sí, reemplazar",
   "Sim, acrescentar": "Sí, agregar",
+  "Todos os seus treinos e dados salvos serão apagados:": "Se borrarán todos tus entrenamientos y datos guardados:",
+  "{n} treino registrado no histórico": "{n} entrenamiento registrado en el historial",
+  "{n} treinos registrados no histórico": "{n} entrenamientos registrados en el historial",
+  "{n} dia de treino": "{n} día de entrenamiento",
+  "{n} dias de treino": "{n} días de entrenamiento",
+  "{n} treino em \"Meus treinos salvos\"": "{n} entrenamiento en \"Mis entrenamientos guardados\"",
+  "{n} treinos em \"Meus treinos salvos\"": "{n} entrenamientos en \"Mis entrenamientos guardados\"",
+  "{n} exercício, com cargas e anotações": "{n} ejercicio, con cargas y notas",
+  "{n} exercícios, com cargas e anotações": "{n} ejercicios, con cargas y notas",
+  "{n} registro de cardio": "{n} registro de cardio",
+  "{n} registros de cardio": "{n} registros de cardio",
+  "{n} rotina de cardio": "{n} rutina de cardio",
+  "{n} rotinas de cardio": "{n} rutinas de cardio",
+  "Seu perfil: peso, medidas e histórico de peso": "Tu perfil: peso, medidas e historial de peso",
+  "Entendo que todos os meus treinos e dados salvos serão apagados para sempre.": "Entiendo que todos mis entrenamientos y datos guardados se borrarán para siempre.",
+  "Depois de marcar, o botão libera em 5 segundos, por segurança.": "Después de marcarla, el botón se habilita en 5 segundos, por seguridad.",
+  "Adicionar treino pronto/salvo": "Agregar rutina lista/guardada",
+  "Salvo em \"Meus treinos salvos\". Para restaurar: Adicionar treino pronto/salvo.": "Guardado en \"Mis entrenamientos guardados\". Para restaurar: Agregar rutina lista/guardada.",
+  "Tem certeza?": "¿Estás seguro?",
+  "Todos os seus treinos e dados salvos serão apagados para sempre. Não dá para desfazer.": "Todos tus entrenamientos y datos guardados se borrarán para siempre. No se puede deshacer.",
+  "Sim, apagar tudo": "Sí, borrar todo",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -1002,7 +1023,7 @@ const help = [
   ['Primeros pasos', 'Del primer acceso al primer entrenamiento', `
     <ol class="steps">
       <li><b>Inicia sesión con tu cuenta de Google</b> en la primera pantalla para que tus entrenamientos se guarden en tu Drive. Si prefieres, toca "Usar sin cuenta".</li>
-      <li><b>Elige un punto de partida</b>: ABC, Empuje/Tracción/Piernas, Superior/Inferior, Arnold split, ABCDE, tres opciones con foco en glúteos y piernas, Cuerpo completo o de cero. Después puedes agregar otros en <b>Entrenos &gt; Agregar rutina lista</b>.</li>
+      <li><b>Elige un punto de partida</b>: ABC, Empuje/Tracción/Piernas, Superior/Inferior, Arnold split, ABCDE, tres opciones con foco en glúteos y piernas, Cuerpo completo o de cero. Después puedes agregar otros en <b>Entrenos &gt; Agregar rutina lista/guardada</b>.</li>
       <li><b>Indica las cargas que ya usas</b> en la pantalla de cargas iniciales. Es opcional: lo que quede en blanco lo eliges en el primer entrenamiento.</li>
       <li>En la pestaña <b>Hoy</b>, toca <b>Empezar entrenamiento</b>.</li>
     </ol>
@@ -1033,7 +1054,7 @@ const help = [
       <li><b>Biseries y triseries</b>: en Entrenos, toca el ícono de cadena junto a un ejercicio para unirlo al siguiente. En el entrenamiento, tras cada serie la app va directo al siguiente del grupo, sin descanso; tras el último, descansas y vuelves al primero.</li>
       <li><b>Nota</b>: toca <b>Agregar nota</b> debajo del nombre ("asiento en la altura 4", "agarre cerrado"). Aparece siempre que abras el ejercicio.</li>
       <li><b>Agregar ejercicio</b>: incluye un ejercicio justo después del actual, sin tocar la rutina (o también en ella, si marcas la casilla).</li>
-      <li><b>Guardar mis entrenamientos</b>: en Entrenos, guarda tus rutinas (creadas de cero o adaptadas) con un nombre. El botón aparece cuando tus entrenamientos tienen al menos un ejercicio distinto de todas las rutinas listas y guardadas. Quedan en <b>Agregar rutina lista &gt; Mis entrenamientos guardados</b> y vuelven con un toque. Caben hasta 10. Al elegir una rutina lista o guardada, la app pregunta si quieres <b>agregarla</b> o <b>reemplazar</b> las tuyas; antes de reemplazar, guarda las actuales si quieres volver a ellas.</li>
+      <li><b>Guardar mis entrenamientos</b>: en Entrenos, guarda tus rutinas (creadas de cero o adaptadas) con un nombre. El botón aparece cuando tus entrenamientos tienen al menos un ejercicio distinto de todas las rutinas listas y guardadas. Quedan en <b>Agregar rutina lista/guardada &gt; Mis entrenamientos guardados</b> y vuelven con un toque. Caben hasta 10. Al elegir una rutina lista o guardada, la app pregunta si quieres <b>agregarla</b> o <b>reemplazar</b> las tuyas; antes de reemplazar, guarda las actuales si quieres volver a ellas.</li>
       <li><b>Entrenamiento libre</b>: en la pestaña Hoy, empieza un entrenamiento vacío y agregas los ejercicios a medida que entrenas.</li>
       <li><b>¿Olvidaste anotar un día?</b> En la pantalla Hoy, toca ese día de la semana y registra su entrenamiento; queda guardado en esa fecha.</li>
       <li><b>Fue calentamiento</b>: registra la serie como calentamiento. Queda guardada, pero no cuenta para la progresión, las metas, el volumen ni los récords. ¿Olvidaste marcarla? Si la 1.ª serie tiene menos del 70% de la carga sugerida, la app la cuenta como calentamiento sola; y las series muy ligeras nunca entran en las métricas. Toca la serie para borrarla o indicar que era válida. Y si una serie válida era calentamiento, tócala y elige <b>Era calentamiento</b>. <b>Deshacer</b> siempre deshace el último registro, sea calentamiento o serie.</li>

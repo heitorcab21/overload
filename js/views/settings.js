@@ -1,6 +1,6 @@
 // Ajustes: idioma, descanso, tema, IA, conta, dados e instalação.
 import { state, save, exportJSON, importJSON, emptyData, resetKeepAccount } from '../store.js';
-import { googleBtn, $, $$, esc, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, shareFile, fmtDate, fmtTime, waitDone } from '../ui.js';
+import { googleBtn, $, $$, esc, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, shareFile, fmtDate, fmtTime, waitDone, startWait, stopWait } from '../ui.js';
 import { route, go, rerender } from '../router.js';
 import { sessionsCSV } from '../export.js';
 import { aiEnabled, aiAskExecution, PROVIDERS, aiProvider, aiKey, aiModel, setAiConfig, listModels } from '../ai.js';
@@ -360,14 +360,20 @@ actions.wipeAsk = () => {
   const ex = Object.keys(state.exercises).length;
   const rt = state.routines.length;
   const goals = Object.keys(state.goals.ex).length + Object.keys(state.goals.groups).length;
+  const plans = (state.savedPlans || []).length;
+  const cardio = (state.cardio || []).length;
   const connected = driveConnected();
   sheet(`<h2>${t('Apagar tudo e começar do zero?')}</h2>
     <p class="muted">${t('O que vai acontecer:')}</p>
     <ul class="errs">
-      <li>${t('<b>{treinos}</b>, {exercicios}, {rotinas} e {metas} serão apagados.', {
-        treinos: tn(n, '{n} treino', '{n} treinos'), exercicios: tn(ex, '{n} exercício', '{n} exercícios'),
-        rotinas: tn(rt, '{n} rotina', '{n} rotinas'), metas: tn(goals, '{n} meta', '{n} metas'),
-      })}</li>
+      <li><b>${t('Todos os seus treinos e dados salvos serão apagados:')}</b>
+        <ul class="wipe-what">
+          <li>${tn(n, '{n} treino registrado no histórico', '{n} treinos registrados no histórico')}</li>
+          <li>${tn(rt, '{n} dia de treino', '{n} dias de treino')} · ${tn(plans, '{n} treino em "Meus treinos salvos"', '{n} treinos em "Meus treinos salvos"')}</li>
+          <li>${tn(ex, '{n} exercício, com cargas e anotações', '{n} exercícios, com cargas e anotações')} · ${tn(goals, '{n} meta', '{n} metas')}</li>
+          <li>${tn(cardio, '{n} registro de cardio', '{n} registros de cardio')}${(state.cardioRoutines || []).length ? ` · ${tn(state.cardioRoutines.length, '{n} rotina de cardio', '{n} rotinas de cardio')}` : ''}</li>
+          ${state.profile ? `<li>${t('Seu perfil: peso, medidas e histórico de peso')}</li>` : ''}
+        </ul></li>
       ${connected
         ? `<li>${t('Também no seu Google Drive (<b>{email}</b>). Outros aparelhos com esta conta ficam vazios na próxima sincronização.', { email: esc(state.sync.email) })}</li>
            <li>${t('Você continua conectado com esta conta e escolhe os treinos de novo.')}</li>`
@@ -376,14 +382,27 @@ actions.wipeAsk = () => {
       <li><b>${t('Não dá para desfazer.')}</b></li>
     </ul>
     ${n ? `<button class="btn block" data-act="backupNow">${t('Salvar um backup antes')}</button>` : ''}
-    <label class="check"><input type="checkbox" data-change="wipeCheck">${n > 1 ? t('Entendo que meus {n} treinos serão apagados para sempre.', { n }) : n === 1 ? t('Entendo que meu treino será apagado para sempre.') : t('Entendo que tudo será apagado para sempre.')}</label>
-    <p class="small muted">${t('Por segurança, o botão de confirmar libera em 5 segundos.')}</p>
-    <button class="btn danger block" id="wipeBtn" data-act="wipeNow" data-wait="5" data-gate="#sheet input[data-change=wipeCheck]" disabled>${t('Apagar tudo')}</button>
+    <label class="check"><input type="checkbox" data-change="wipeCheck">${t('Entendo que todos os meus treinos e dados salvos serão apagados para sempre.')}</label>
+    <p class="small muted">${t('Depois de marcar, o botão libera em 5 segundos, por segurança.')}</p>
+    <button class="btn danger block" id="wipeBtn" data-act="wipeFinal" data-wait="5" data-gate="#sheet input[data-change=wipeCheck]" disabled>${t('Apagar tudo')}</button>
     <button class="btn block" data-act="closeSheet">${t('Cancelar')}</button>`);
 };
-changes.wipeCheck = el => { const b = $('#wipeBtn'); b.disabled = !(el.checked && waitDone(b)); };
-actions.wipeNow = el => {
+// a contagem de 5 segundos só começa depois de marcar que entendeu; desmarcar trava de novo
+changes.wipeCheck = el => (el.checked ? startWait : stopWait)($('#wipeBtn'));
+// última janela: só abre depois da caixa marcada e dos 5 segundos
+let wipeArmed = false;
+actions.wipeFinal = el => {
   if (!$('#sheet input[data-change=wipeCheck]')?.checked || !waitDone(el)) return;
+  wipeArmed = true;
+  sheet(`<h2>${t('Tem certeza?')}</h2>
+    <p class="muted">${t('Todos os seus treinos e dados salvos serão apagados para sempre. Não dá para desfazer.')}</p>
+    <button class="btn block" data-act="wipeCancel">${t('Cancelar')}</button>
+    <button class="btn danger block" data-act="wipeNow">${t('Sim, apagar tudo')}</button>`);
+};
+actions.wipeCancel = () => { wipeArmed = false; closeSheet(); };
+actions.wipeNow = el => {
+  if (!wipeArmed) return;
+  wipeArmed = false;
   const connected = driveConnected();
   // a renovação da conta precisa partir deste toque
   const ready = connected ? refreshIfNeeded() : Promise.resolve(true);
@@ -404,8 +423,9 @@ actions.wipeNow = el => {
     go('#/inicio');
   }, e => {
     toast(`${e.message} ${t('Nada foi apagado.')}`, 6000);
+    wipeArmed = true;
     el.disabled = false;
-    el.textContent = t('Apagar tudo');
+    el.textContent = t('Sim, apagar tudo');
   });
 };
 

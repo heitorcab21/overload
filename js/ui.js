@@ -99,28 +99,39 @@ export function sheet(html) {
 
 /**
  * Botões com data-wait="5" ficam travados por alguns segundos, com contagem, para dar tempo de ler
- * antes de confirmar algo que não dá para desfazer. Com data-gate="seletor", também exigem a caixa marcada.
+ * antes de confirmar algo que não dá para desfazer. Com data-gate, a contagem só começa quando
+ * a caixa de "entendo" é marcada (quem chama usa startWait/stopWait).
  */
 function armWaits(root) {
   root.querySelectorAll('[data-wait]').forEach(b => {
-    let n = Number(b.dataset.wait) || 5;
-    const label = b.innerHTML;
     b.disabled = true;
     delete b.dataset.ready;
-    const tick = () => {
-      if (!b.isConnected) return;
-      if (n <= 0) {
-        b.innerHTML = label;
-        b.dataset.ready = '1';
-        b.disabled = b.dataset.gate ? !document.querySelector(b.dataset.gate)?.checked : false;
-        return;
-      }
-      b.innerHTML = `${label}<span class="wait-n">${n}</span>`;
-      n--;
-      setTimeout(tick, 1000);
-    };
-    tick();
+    if (!b.dataset.gate) startWait(b);
   });
+}
+/** Começa (ou recomeça) a contagem de um botão data-wait. */
+export function startWait(b) {
+  if (!b) return;
+  stopWait(b);
+  const label = b.dataset.label ??= b.innerHTML;
+  const token = (b._wait = (b._wait || 0) + 1);
+  let n = Number(b.dataset.wait) || 5;
+  const tick = () => {
+    if (!b.isConnected || b._wait !== token) return;
+    if (n <= 0) { b.innerHTML = label; b.dataset.ready = '1'; b.disabled = false; return; }
+    b.innerHTML = `${label}<span class="wait-n">${n}</span>`;
+    n--;
+    setTimeout(tick, 1000);
+  };
+  tick();
+}
+/** Para a contagem e trava o botão de novo. */
+export function stopWait(b) {
+  if (!b) return;
+  b._wait = (b._wait || 0) + 1;
+  if (b.dataset.label) b.innerHTML = b.dataset.label;
+  delete b.dataset.ready;
+  b.disabled = true;
 }
 /** O botão de contagem já liberou? */
 export const waitDone = el => !el?.dataset.wait || el.dataset.ready === '1';

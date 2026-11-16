@@ -8,7 +8,7 @@ const TOPICS = [
   ['Primeiros passos', 'Do primeiro acesso ao primeiro treino', `
     <ol class="steps">
       <li><b>Entre com sua conta Google</b> na primeira tela. Assim seus treinos ficam salvos no seu Drive. Se preferir, toque em "Usar sem conta".</li>
-      <li><b>Escolha um ponto de partida</b>: ABC, Push/Pull/Legs, Superior/Inferior, Arnold split, ABCDE, três opções com foco em glúteos e pernas, Corpo inteiro ou do zero. Depois dá para adicionar outros em <b>Treinos &gt; Adicionar treino pronto</b>.</li>
+      <li><b>Escolha um ponto de partida</b>: ABC, Push/Pull/Legs, Superior/Inferior, Arnold split, ABCDE, três opções com foco em glúteos e pernas, Corpo inteiro ou do zero. Depois dá para adicionar outros em <b>Treinos &gt; Adicionar treino pronto/salvo</b>.</li>
       <li><b>Informe as cargas que você já usa</b> na tela de cargas iniciais. É opcional: o que ficar em branco você escolhe no primeiro treino.</li>
       <li>Na aba <b>Hoje</b>, toque em <b>Começar treino</b>.</li>
     </ol>
@@ -42,7 +42,7 @@ const TOPICS = [
       <li><b>Bi-set e tri-set</b>: em Treinos, toque no ícone de corrente ao lado de um exercício para juntá-lo ao próximo. No treino, depois de cada série o app vai direto para o próximo do grupo, sem descanso; no último, descansa e volta ao primeiro.</li>
       <li><b>Anotação</b>: toque em <b>Adicionar anotação</b> abaixo do nome ("banco na altura 4", "pegada fechada"). Ela aparece sempre que você abrir o exercício.</li>
       <li><b>Adicionar exercício</b>: inclui um exercício logo depois do atual, sem mexer na ficha (ou também nela, se marcar).</li>
-      <li><b>Salvar meus treinos</b>: em Treinos, guarde suas fichas (criadas do zero ou adaptadas) com um nome. O botão aparece quando seus treinos têm ao menos um exercício diferente de todos os prontos e salvos. Elas ficam em <b>Adicionar treino pronto &gt; Meus treinos salvos</b> e voltam com um toque. Cabem até 10. Ao escolher um treino pronto ou salvo, o app pergunta se é para <b>adicionar</b> aos seus treinos ou <b>substituir</b>; antes de substituir, salve os atuais se quiser voltar a eles.</li>
+      <li><b>Salvar meus treinos</b>: em Treinos, guarde suas fichas (criadas do zero ou adaptadas) com um nome. O botão aparece quando seus treinos têm ao menos um exercício diferente de todos os prontos e salvos. Elas ficam em <b>Adicionar treino pronto/salvo &gt; Meus treinos salvos</b> e voltam com um toque. Cabem até 10. Ao escolher um treino pronto ou salvo, o app pergunta se é para <b>adicionar</b> aos seus treinos ou <b>substituir</b>; antes de substituir, salve os atuais se quiser voltar a eles.</li>
       <li><b>Treino livre</b>: na aba Hoje, começa um treino vazio e você adiciona os exercícios conforme treina.</li>
       <li><b>Esqueceu de anotar um dia?</b> Na tela Hoje, toque no dia da semana e registre o treino dele; ele fica salvo naquela data.</li>
       <li><b>Foi aquecimento</b>: registra a série como aquecimento. Ela fica guardada, mas não conta na progressão, nas metas, no volume nem nos recordes. Esqueceu de marcar? Se a 1ª série vier com menos de 70% da carga sugerida, o app já conta como aquecimento sozinho; e séries muito leves nunca entram nas métricas. Toque na série para excluir ou dizer que era válida. E se uma série válida era aquecimento, toque nela e escolha <b>Era aquecimento</b>. O <b>Desfazer</b> sempre desfaz o último registro, seja aquecimento ou série.</li>
