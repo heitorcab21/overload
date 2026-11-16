@@ -26,7 +26,7 @@ function renderRoutines() {
         <a class="btn accent-soft" href="#/importar">${icon.edit}${t('Importar do bloco de notas')}</a>
       </div>
       <button class="btn primary block" data-act="newRoutine">${icon.plus}${t('Novo treino')}</button>
-      ${canSavePlan() ? `<button class="btn block" data-act="planSaveAsk">${icon.download}${t('Salvar este treino em Meus treinos salvos')}</button>` : ''}
+      ${canSavePlan() ? `<button class="btn block" data-act="planSaveAsk">${icon.download}${t('Salvar treino atual em "Meus treinos salvos"')}</button>` : ''}
       ${state.routines.map((r, ri) => `<div class="card flat">
         <div class="row" style="padding:12px 8px 4px 16px">
           <h2 class="grow">${esc(routineName(r))}</h2>

@@ -970,7 +970,7 @@ const ui = {
   "Seu corpo e nível de força": "Your body and strength level",
   "Atualize seu peso de vez em quando (por exemplo, toda semana, em jejum) para ver o gráfico.": "Update your weight now and then (for example, weekly, before eating) to see the chart.",
   "Dica: pese-se sempre no mesmo horário, de preferência ao acordar. Cada mudança de peso entra no gráfico.": "Tip: weigh yourself at the same time, ideally right after waking up. Every weight change goes into the chart.",
-  "Salvar este treino em Meus treinos salvos": "Save this workout to My saved workouts",
+  "Salvar treino atual em \"Meus treinos salvos\"": "Save current workout to \"My saved workouts\"",
   "Ao substituir, seus treinos atuais saem da lista. O histórico não muda.": "Replacing removes your current workouts from the list. Your history doesn't change.",
   "Esses treinos já estão nos prontos ou nos salvos.": "These workouts are already among the ready-made or saved ones.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
