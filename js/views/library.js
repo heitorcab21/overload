@@ -106,7 +106,7 @@ function savePlan(name) {
 actions.addTemplate = () => {
   const saved = plans();
   sheet(`<h2>${t('Treinos prontos e salvos')}</h2>
-    <p class="muted small">${t('Escolha um para acrescentar ao seu treino atual ou substituí-lo.')}</p>
+    <p class="plan-lead">${t('Aqui você <b>adiciona</b> ao seu treino atual ou <b>substitui</b> ele por um treino pronto ou salvo.')}</p>
     ${saved.length ? `<h3>${t('Meus treinos salvos')} <span class="muted small">${saved.length}/${MAX_PLANS}</span></h3>
       <div class="card flat"><div class="list">${saved.map(p => `<div class="item">
         <button class="grow plain" data-act="planPick" data-kind="saved" data-id="${p.id}"><span class="t">${esc(p.name)}</span><br>

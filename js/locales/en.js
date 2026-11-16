@@ -1023,6 +1023,7 @@ const ui = {
   "Editar anotação": "Edit note",
   "Salvo em \"Meus treinos salvos\". Para restaurar: Treinos prontos e salvos.": "Saved in \"My saved workouts\". To restore: Ready-made and saved workouts.",
   "Escolha um para acrescentar ao seu treino atual ou substituí-lo.": "Pick one to add to your current workout or replace it.",
+  "Aqui você <b>adiciona</b> ao seu treino atual ou <b>substitui</b> ele por um treino pronto ou salvo.": "Here you <b>add</b> a ready-made or saved workout to your current one, or <b>replace</b> it.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };

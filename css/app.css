@@ -734,3 +734,5 @@ body.no-tabs #view:has(.w-done) { padding-bottom: calc(320px + var(--safe-b)); }
 .target-mini { display: flex; align-items: baseline; gap: 10px; margin: 4px 0 10px; padding: 8px 14px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); }
 .target-mini span { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 .target-mini b { font-size: 17px; }
+.plan-lead { font-size: 17px; line-height: 1.4; color: var(--ink); margin: 2px 0 6px; }
+.plan-lead b { color: var(--accent); }

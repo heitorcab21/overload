@@ -1023,6 +1023,7 @@ const ui = {
   "Editar anotação": "Editar nota",
   "Salvo em \"Meus treinos salvos\". Para restaurar: Treinos prontos e salvos.": "Guardado en \"Mis entrenamientos guardados\". Para restaurar: Entrenamientos listos y guardados.",
   "Escolha um para acrescentar ao seu treino atual ou substituí-lo.": "Elige una para agregarla a tu entrenamiento actual o reemplazarlo.",
+  "Aqui você <b>adiciona</b> ao seu treino atual ou <b>substitui</b> ele por um treino pronto ou salvo.": "Aquí <b>agregas</b> a tu entrenamiento actual o lo <b>reemplazas</b> por uno listo o guardado.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
