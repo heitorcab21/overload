@@ -27,8 +27,8 @@ function renderRoutines() {
     <div class="head"><h1>${t('Treinos')}</h1></div>
     <div class="stack">
       <div class="two top-acts">
-        <a class="btn accent-soft" href="#/importar">${icon.edit}${t('Importar do bloco de notas')}</a>
         <button class="btn accent-soft" data-act="addTemplate">${icon.list}${t('Adicionar treino pronto')}</button>
+        <a class="btn accent-soft" href="#/importar">${icon.edit}${t('Importar do bloco de notas')}</a>
       </div>
       ${state.routines.map((r, ri) => `<div class="card flat">
         <div class="row" style="padding:12px 8px 4px 16px">

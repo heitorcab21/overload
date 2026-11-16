@@ -95,9 +95,9 @@ function render() {
       <div class="card stack">
         <h3>${t('Planilhas e importação')}</h3>
         <p class="muted small">${t('Abra no Excel ou no Google Planilhas. A planilha de metas pode ser editada e importada de volta.')}</p>
-        <button class="btn block sheet-green" data-act="exportCSV">${icon.download}${t('Exportar treinos (planilha CSV)')}</button>
-        <button class="btn block sheet-green" data-act="exportGoals">${icon.download}${t('Exportar metas (CSV)')}</button>
-        <label class="btn block sheet-green-soft">${icon.share}${t('Importar metas (CSV)')}<input type="file" accept=".csv,text/csv,text/plain" data-change="importGoals" class="sr"></label>
+        <button class="btn block sheet-green" data-act="exportCSV">${icon.share}${t('Exportar treinos (planilha CSV)')}</button>
+        <button class="btn block sheet-green" data-act="exportGoals">${icon.share}${t('Exportar metas (CSV)')}</button>
+        <label class="btn block sheet-green-soft">${icon.download}${t('Importar metas (CSV)')}<input type="file" accept=".csv,text/csv,text/plain" data-change="importGoals" class="sr"></label>
         <a class="btn block" href="#/importar">${icon.edit}${t('Importar do bloco de notas')}</a>
       </div>
 

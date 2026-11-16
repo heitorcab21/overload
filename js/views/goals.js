@@ -68,8 +68,8 @@ function render() {
     <div class="head"><div class="grow"><h1>${t('Metas')}</h1><p class="sub">${period}</p></div></div>
     <div class="stack">
       <div class="two top-acts">
-        <button class="btn sheet-green-soft" data-act="exportGoals">${icon.download}${t('Exportar planilha')}</button>
-        <label class="btn sheet-green-soft">${icon.share}${t('Importar planilha')}<input type="file" accept=".csv,text/csv,text/plain" data-change="importGoals" class="sr"></label>
+        <button class="btn sheet-green-soft" data-act="exportGoals">${icon.share}${t('Exportar planilha')}</button>
+        <label class="btn sheet-green-soft">${icon.download}${t('Importar planilha')}<input type="file" accept=".csv,text/csv,text/plain" data-change="importGoals" class="sr"></label>
       </div>
       <div class="seg" role="tablist">
         <button role="tab" aria-selected="${isWeek}" class="${isWeek ? 'on' : ''}" data-act="goalMode" data-m="week">${t('Semana')}</button>
