@@ -2,7 +2,7 @@
 import { state, save } from '../store.js';
 import { $, esc, setStr, compact, icon, actions, changes, submits, toast, sheet, closeSheet, meter, stepper, fmtDate, monthName, shareFile } from '../ui.js';
 import { route, rerender } from '../router.js';
-import { GROUPS, exName, tg, loadLabel, loadHint } from '../data.js';
+import { BODY_PARTS, GROUPS, exName, tg, loadLabel, loadHint } from '../data.js';
 import {
   groupGoalStatus, exGoalStatus, suggestGoal, weekStart, addDays, monthKey, daysInMonth, entriesFor,
   setExGoal, setWeekOverride, autoWeekSet, routineGroupSets,
@@ -36,11 +36,11 @@ function render() {
 
   const exs = Object.values(state.exercises)
     .sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group) || exName(a).localeCompare(exName(b)));
-  const exRows = exs.map(ex => {
+  const exRow = ex => {
     const st = exGoalStatus(ex, now);
     if (!st) {
       return `<tr data-act="editExGoal" data-id="${esc(ex.id)}" tabindex="0">
-        <td class="n">${esc(exName(ex))}<span class="sub">${esc(tg(ex.group))}</span></td>
+        <td class="n">${esc(exName(ex))}</td>
         <td class="v muted">${t('definir meta')}</td></tr>`;
     }
     if (st.expired) {
@@ -60,6 +60,15 @@ function render() {
         ${meter(pct, ok)}</td>
       <td class="v">${setStr(target)}${ok ? `<br><span class="badge good">${icon.check}${t('batida')}</span>` : ''}</td>
     </tr>`;
+  };
+  // separados como em Treinos: parte do corpo > músculo
+  const exSections = BODY_PARTS.map(([part, groups]) => {
+    if (!exs.some(ex => groups.includes(ex.group))) return '';
+    return `<section class="part-card"><h3 class="part-title">${esc(t(part))}</h3>${groups.map(g => {
+      const list = exs.filter(ex => ex.group === g);
+      return list.length ? `<p class="muscle-title">${esc(tg(g))}</p>
+        <div class="card flat"><table class="sheet-table"><tbody>${list.map(exRow).join('')}</tbody></table></div>` : '';
+    }).join('')}</section>`;
   }).join('');
 
   const noGoal = exs.filter(ex => { const st = exGoalStatus(ex, now); return (!st || st.expired) && entriesFor(ex.id).length; }).length;
@@ -83,12 +92,8 @@ function render() {
         </table>
       </div>
 
-      <div class="card flat">
-        <table class="sheet-table">
-          <thead><tr><th>${t('Exercício')}</th><th class="v">${isWeek ? t('Meta da semana') : t('Meta do mês')}</th></tr></thead>
-          <tbody>${exRows || `<tr><td colspan="2" class="empty">${t('Nenhum exercício cadastrado.')}</td></tr>`}</tbody>
-        </table>
-      </div>
+      <div class="row between ex-goals-head"><h3>${t('Exercício')}</h3><span class="small muted">${isWeek ? t('Meta da semana') : t('Meta do mês')}</span></div>
+      ${exSections || `<div class="card"><p class="empty">${t('Nenhum exercício cadastrado.')}</p></div>`}
       <p class="small muted">${t('A meta da semana é calculada sozinha, em degraus até a meta do mês, e você pode trocá-la quando quiser. Toque em uma linha para editar.')}</p>
 
       ${noGoal ? `<button class="btn block" data-act="suggestAll">${icon.spark}${tn(noGoal, 'Sugerir metas para {n} exercício', 'Sugerir metas para {n} exercícios')}</button>` : ''}

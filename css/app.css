@@ -708,3 +708,8 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 .crun .meter { width: 100%; margin: 6px 0; }
 .crun-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
 .crun-btns .big { grid-column: 1 / -1; }
+
+/* treinos salvos */
+button.plain { background: none; border: 0; padding: 0; text-align: left; color: inherit; }
+.btn.danger-soft { background: transparent; border: 1.5px solid color-mix(in srgb, #d03b3b 60%, var(--line)); color: #e05555; font-weight: 700; }
+.ex-goals-head { padding: 6px 4px 0; }

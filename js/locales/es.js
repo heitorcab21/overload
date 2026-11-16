@@ -936,6 +936,23 @@ const ui = {
   "Zona 2 contínuo": "Zona 2 continuo",
   "Aquecer": "Calentar",
   "Desaquecer": "Enfriar",
+  "Salvar meus treinos": "Guardar mis entrenamientos",
+  "Treinos prontos e salvos": "Entrenamientos listos y guardados",
+  "Meus treinos salvos": "Mis entrenamientos guardados",
+  "Treinos prontos": "Entrenamientos listos",
+  "Você já tem {n} na sua lista. Escolha como usar este:": "Ya tienes {n} en tu lista. Elige cómo usar este:",
+  "Adicionar aos meus treinos": "Agregar a mis entrenamientos",
+  "Usar estes treinos": "Usar estos entrenamientos",
+  "Substituir meus treinos": "Reemplazar mis entrenamientos",
+  "Ao substituir, seus treinos atuais são guardados em \"Meus treinos salvos\", para você voltar a eles quando quiser. O histórico não muda.": "Al reemplazar, tus entrenamientos actuales se guardan en \"Mis entrenamientos guardados\" para volver a ellos cuando quieras. El historial no cambia.",
+  "Antes da troca · {d}": "Antes del cambio · {d}",
+  "Treinos substituídos. Os anteriores estão em \"Meus treinos salvos\".": "Entrenamientos reemplazados. Los anteriores están en \"Mis entrenamientos guardados\".",
+  "Crie ou adicione treinos primeiro.": "Crea o agrega entrenamientos primero.",
+  "Guarda todos os seus treinos atuais ({x}) para você restaurar com um toque depois, mesmo que troque de ficha.": "Guarda todos tus entrenamientos actuales ({x}) para restaurarlos con un toque después, aunque cambies de rutina.",
+  "Meus treinos · {d}": "Mis entrenamientos · {d}",
+  "Meus treinos": "Mis entrenamientos",
+  "Salvo em \"Meus treinos salvos\". Para restaurar: Adicionar treino pronto.": "Guardado en \"Mis entrenamientos guardados\". Para restaurar: Agregar rutina lista.",
+  "Só o conjunto salvo é apagado. Seus treinos atuais e o histórico não mudam.": "Solo se borra el conjunto guardado. Tus entrenamientos actuales y el historial no cambian.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -975,6 +992,7 @@ const help = [
       <li><b>Biseries y triseries</b>: en Entrenos, toca el ícono de cadena junto a un ejercicio para unirlo al siguiente. En el entrenamiento, tras cada serie la app va directo al siguiente del grupo, sin descanso; tras el último, descansas y vuelves al primero.</li>
       <li><b>Nota</b>: toca <b>Agregar nota</b> debajo del nombre ("asiento en la altura 4", "agarre cerrado"). Aparece siempre que abras el ejercicio.</li>
       <li><b>Agregar ejercicio</b>: incluye un ejercicio justo después del actual, sin tocar la rutina (o también en ella, si marcas la casilla).</li>
+      <li><b>Guardar mis entrenamientos</b>: en Entrenos, guarda tus rutinas (creadas de cero o adaptadas) con un nombre. Quedan en <b>Agregar rutina lista &gt; Mis entrenamientos guardados</b> y vuelven con un toque. Al elegir una rutina lista o guardada, la app pregunta si quieres <b>agregarla</b> o <b>reemplazar</b> las tuyas; al reemplazar, las actuales se guardan antes.</li>
       <li><b>Entrenamiento libre</b>: en la pestaña Hoy, empieza un entrenamiento vacío y agregas los ejercicios a medida que entrenas.</li>
       <li><b>¿Olvidaste anotar un día?</b> En la pantalla Hoy, toca ese día de la semana y registra su entrenamiento; queda guardado en esa fecha.</li>
       <li><b>Fue calentamiento</b>: registra la serie como calentamiento. Queda guardada, pero no cuenta para la progresión, las metas, el volumen ni los récords. ¿Olvidaste marcarla? Si la 1.ª serie tiene menos del 70% de la carga sugerida, la app la cuenta como calentamiento sola; y las series muy ligeras nunca entran en las métricas. Toca la serie para borrarla o indicar que era válida. Y si una serie válida era calentamiento, tócala y elige <b>Era calentamiento</b>. <b>Deshacer</b> siempre deshace el último registro, sea calentamiento o serie.</li>

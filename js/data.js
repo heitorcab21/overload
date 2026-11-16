@@ -666,3 +666,10 @@ export function supGroups(r) {
   });
   return out;
 }
+
+/** Divisão do corpo usada nas listas de exercícios: [chave de tradução, grupamentos]. */
+export const BODY_PARTS = [
+  ['Tronco', ['Peito', 'Costas', 'Abdômen']],
+  ['Braços', ['Ombros', 'Bíceps', 'Tríceps']],
+  ['Inferiores', ['Quadríceps', 'Posteriores', 'Glúteos', 'Panturrilhas']],
+];

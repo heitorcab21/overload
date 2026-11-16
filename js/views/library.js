@@ -2,7 +2,7 @@
 import { state, save, uid } from '../store.js';
 import { $, esc, kg, fmt, fmtDate, setStr, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, meter } from '../ui.js';
 import { route, go, rerender } from '../router.js';
-import { supGroups, TEMPLATES, exPhotos, GROUPS, LIB, exName, exCues, tg, loadHint, loadShort, routineName } from '../data.js';
+import { BODY_PARTS as BODY_PARTS_DATA, supGroups, TEMPLATES, exPhotos, GROUPS, LIB, exName, exCues, tg, loadHint, loadShort, routineName } from '../data.js';
 import { t, tn, exPack } from '../i18n.js';
 import { planFor, exGoalStatus, entriesFor, defaultGroupGoals } from '../logic.js';
 import { ensureExercise, planStr } from './home.js';
@@ -12,12 +12,7 @@ import { aiEnabled, aiAskExecution, aiCuesFor } from '../ai.js';
 
 // ---------- Treinos ----------
 
-// divisão do corpo para a lista de exercícios
-const BODY_PARTS = () => [
-  [t('Tronco'), ['Peito', 'Costas', 'Abdômen']],
-  [t('Braços'), ['Ombros', 'Bíceps', 'Tríceps']],
-  [t('Inferiores'), ['Quadríceps', 'Posteriores', 'Glúteos', 'Panturrilhas']],
-];
+const BODY_PARTS = () => BODY_PARTS_DATA.map(([k, g]) => [t(k), g]);
 
 function renderRoutines() {
   if (!state.onboarded) { go('#/inicio'); return; }
@@ -52,6 +47,7 @@ function renderRoutines() {
         <div style="padding:8px 12px 12px"><button class="btn block" data-act="pickEx" data-r="${ri}">${icon.plus}${t('Adicionar exercício')}</button></div>
       </div>`).join('')}
       <button class="btn primary block" data-act="newRoutine">${icon.plus}${t('Novo treino')}</button>
+      ${state.routines.length ? `<button class="btn block" data-act="planSaveAsk">${icon.download}${t('Salvar meus treinos')}</button>` : ''}
       ${noHistory().length ? `<a class="btn block" href="#/cargas">${t('Definir cargas iniciais')}</a>` : ''}
 
       ${all.length ? `<h3 class="group-title">${t('Todos os exercícios')}</h3>
@@ -80,22 +76,99 @@ actions.toggleLink = el => {
   toast(g.length === 3 ? t('Tri-set criado: os 3 exercícios são feitos em sequência, sem descanso entre eles.') : t('Bi-set criado: os 2 exercícios são feitos em sequência, sem descanso entre eles.'), 4000);
 };
 
+// ---------- Treinos prontos e treinos salvos: adicionar ou substituir, sempre com confirmação ----------
+
+const plans = () => (state.savedPlans ??= []);
+const snapshot = () => state.routines.map(({ name, tpl, ex, link }) => ({ name, tpl: !!tpl, ex: ex.slice(), ...(link ? { link: { ...link } } : {}) }));
+
+/** Guarda os treinos atuais como um conjunto salvo (para restaurar depois com um toque). */
+function savePlan(name) {
+  if (!state.routines.length) return null;
+  const p = { id: uid(), name: name.slice(0, 40), date: new Date().toISOString(), routines: snapshot() };
+  plans().unshift(p);
+  state.savedPlans = plans().slice(0, 20);
+  return p;
+}
+
 actions.addTemplate = () => {
-  sheet(`<h2>${t('Adicionar treino pronto')}</h2>
-    <p class="muted small">${t('Os treinos do modelo entram na sua lista. Os que você já tem continuam iguais.')}</p>
-    <div class="list">${TEMPLATES.map(tp => `<button class="item" data-act="addTemplateNow" data-id="${tp.id}">
-      <span class="grow"><span class="t">${esc(t(tp.name))}</span><br><span class="d">${esc(t(tp.desc))}</span></span>${icon.plus}</button>`).join('')}</div>`);
+  const saved = plans();
+  sheet(`<h2>${t('Treinos prontos e salvos')}</h2>
+    ${saved.length ? `<h3>${t('Meus treinos salvos')}</h3>
+      <div class="card flat"><div class="list">${saved.map(p => `<div class="item">
+        <button class="grow plain" data-act="planPick" data-kind="saved" data-id="${p.id}"><span class="t">${esc(p.name)}</span><br>
+          <span class="d">${esc(p.routines.map(r => routineName(r)).join(' · '))}</span></button>
+        <button class="icon-btn" data-act="planDelAsk" data-id="${p.id}" aria-label="${t('Excluir')}">${icon.trash}</button></div>`).join('')}</div></div>` : ''}
+    <h3>${t('Treinos prontos')}</h3>
+    <div class="card flat"><div class="list">${TEMPLATES.map(tp => `<button class="item" data-act="planPick" data-kind="tpl" data-id="${tp.id}">
+      <span class="grow"><span class="t">${esc(t(tp.name))}</span><br><span class="d">${esc(t(tp.desc))}</span></span>${icon.next}</button>`).join('')}</div></div>`);
 };
-actions.addTemplateNow = el => {
-  const tp = TEMPLATES.find(x => x.id === el.dataset.id);
-  if (!tp) return;
-  for (const [name, ids] of tp.routines) {
-    ids.forEach(ensureExercise);
-    state.routines.push({ id: uid(), name, tpl: true, ex: ids.slice() });
+
+function planOf(kind, id) {
+  if (kind === 'saved') {
+    const p = plans().find(x => x.id === id);
+    return p && { name: p.name, routines: p.routines.map(r => ({ ...r, ex: r.ex.filter(e => state.exercises[e] || LIB.some(l => l.id === e)) })) };
+  }
+  const tp = TEMPLATES.find(x => x.id === id);
+  return tp && { name: t(tp.name), routines: tp.routines.map(([name, ex]) => ({ name, tpl: true, ex })) };
+}
+
+actions.planPick = el => {
+  const p = planOf(el.dataset.kind, el.dataset.id);
+  if (!p) return;
+  const has = state.routines.length;
+  sheet(`<h2>${esc(p.name)}</h2>
+    <div class="card flat"><div class="list">${p.routines.map(r => `<div class="item"><span class="grow"><span class="t">${esc(routineName(r))}</span><br>
+      <span class="d">${tn(r.ex.length, '{n} exercício', '{n} exercícios')}</span></span></div>`).join('')}</div></div>
+    ${has ? `<p class="small muted">${t('Você já tem {n} na sua lista. Escolha como usar este:', { n: tn(state.routines.length, '{n} treino', '{n} treinos') })}</p>` : ''}
+    <button class="btn primary block" data-act="planApply" data-kind="${el.dataset.kind}" data-id="${el.dataset.id}" data-mode="add">${icon.plus}${has ? t('Adicionar aos meus treinos') : t('Usar estes treinos')}</button>
+    ${has ? `<button class="btn danger-soft block" data-act="planApply" data-kind="${el.dataset.kind}" data-id="${el.dataset.id}" data-mode="replace">${icon.sync}${t('Substituir meus treinos')}</button>
+      <p class="small muted">${t('Ao substituir, seus treinos atuais são guardados em "Meus treinos salvos", para você voltar a eles quando quiser. O histórico não muda.')}</p>` : ''}
+    <button class="btn block" data-act="addTemplate">${t('Voltar')}</button>`);
+};
+
+actions.planApply = el => {
+  const p = planOf(el.dataset.kind, el.dataset.id);
+  if (!p) return;
+  if (el.dataset.mode === 'replace' && state.routines.length) {
+    savePlan(t('Antes da troca · {d}', { d: new Date().toLocaleDateString() }));
+    state.routines = [];
+    state.next = 0;
+  }
+  for (const r of p.routines) {
+    r.ex.forEach(id => { if (!state.exercises[id]) ensureExercise(id); });
+    const ex = r.ex.filter(id => state.exercises[id]);
+    if (!ex.length) continue;
+    state.routines.push({ id: uid(), name: r.name, tpl: !!r.tpl, ex, ...(r.link ? { link: { ...r.link } } : {}) });
   }
   defaultGroupGoals();
   save(); closeSheet(); rerender();
-  toast(tn(tp.routines.length, '{n} treino adicionado.', '{n} treinos adicionados.'));
+  toast(el.dataset.mode === 'replace' ? t('Treinos substituídos. Os anteriores estão em "Meus treinos salvos".') : tn(p.routines.length, '{n} treino adicionado.', '{n} treinos adicionados.'), 4500);
+};
+
+actions.planSaveAsk = () => {
+  if (!state.routines.length) { toast(t('Crie ou adicione treinos primeiro.')); return; }
+  sheet(`<h2>${t('Salvar meus treinos')}</h2>
+    <p class="muted small">${t('Guarda todos os seus treinos atuais ({x}) para você restaurar com um toque depois, mesmo que troque de ficha.', { x: state.routines.map(r => routineName(r)).join(', ') })}</p>
+    <form class="stack" data-submit="planSave">
+      <label class="field">${t('Nome')}<input type="text" name="name" required maxlength="40" value="${esc(t('Meus treinos · {d}', { d: new Date().toLocaleDateString() }))}"></label>
+      <button class="btn primary big">${t('Salvar')}</button>
+    </form>`);
+};
+submits.planSave = form => {
+  const p = savePlan(form.name.value.trim() || t('Meus treinos'));
+  save(); closeSheet();
+  if (p) toast(t('Salvo em "Meus treinos salvos". Para restaurar: Adicionar treino pronto.'), 4500);
+};
+actions.planDelAsk = el => {
+  const p = plans().find(x => x.id === el.dataset.id);
+  sheet(`<h2>${t('Excluir "{x}"?', { x: esc(p?.name || '') })}</h2>
+    <p class="muted">${t('Só o conjunto salvo é apagado. Seus treinos atuais e o histórico não mudam.')}</p>
+    <button class="btn danger block" data-act="planDel" data-id="${el.dataset.id}">${t('Excluir')}</button>
+    <button class="btn block" data-act="addTemplate">${t('Cancelar')}</button>`);
+};
+actions.planDel = el => {
+  state.savedPlans = plans().filter(x => x.id !== el.dataset.id);
+  save(); actions.addTemplate();
 };
 
 actions.newRoutine = () => {

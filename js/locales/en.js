@@ -936,6 +936,23 @@ const ui = {
   "Zona 2 contínuo": "Steady zone 2",
   "Aquecer": "Warm up",
   "Desaquecer": "Cool down",
+  "Salvar meus treinos": "Save my workouts",
+  "Treinos prontos e salvos": "Ready-made and saved workouts",
+  "Meus treinos salvos": "My saved workouts",
+  "Treinos prontos": "Ready-made workouts",
+  "Você já tem {n} na sua lista. Escolha como usar este:": "You already have {n} in your list. Choose how to use this one:",
+  "Adicionar aos meus treinos": "Add to my workouts",
+  "Usar estes treinos": "Use these workouts",
+  "Substituir meus treinos": "Replace my workouts",
+  "Ao substituir, seus treinos atuais são guardados em \"Meus treinos salvos\", para você voltar a eles quando quiser. O histórico não muda.": "When you replace, your current workouts are kept in \"My saved workouts\" so you can go back to them anytime. Your history doesn't change.",
+  "Antes da troca · {d}": "Before the switch · {d}",
+  "Treinos substituídos. Os anteriores estão em \"Meus treinos salvos\".": "Workouts replaced. The previous ones are in \"My saved workouts\".",
+  "Crie ou adicione treinos primeiro.": "Create or add workouts first.",
+  "Guarda todos os seus treinos atuais ({x}) para você restaurar com um toque depois, mesmo que troque de ficha.": "Keeps all your current workouts ({x}) so you can restore them with one tap later, even if you switch routines.",
+  "Meus treinos · {d}": "My workouts · {d}",
+  "Meus treinos": "My workouts",
+  "Salvo em \"Meus treinos salvos\". Para restaurar: Adicionar treino pronto.": "Saved in \"My saved workouts\". To restore: Add a ready-made routine.",
+  "Só o conjunto salvo é apagado. Seus treinos atuais e o histórico não mudam.": "Only the saved set is deleted. Your current workouts and history don't change.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -975,6 +992,7 @@ const help = [
       <li><b>Supersets and tri-sets</b>: in Workouts, tap the chain icon next to an exercise to pair it with the next one. During the workout, after each set the app goes straight to the next one in the group, with no rest; after the last one, you rest and go back to the first.</li>
       <li><b>Note</b>: tap <b>Add a note</b> below the name ("seat at height 4", "close grip"). It shows up every time you open the exercise.</li>
       <li><b>Add exercise</b>: adds an exercise right after the current one, without changing the routine (or in it too, if you tick the box).</li>
+      <li><b>Save my workouts</b>: in Workouts, keep your routines (built from scratch or adapted) under a name. They go to <b>Add a ready-made routine &gt; My saved workouts</b> and come back with one tap. When you pick a ready-made or saved set, the app asks whether to <b>add</b> it to your workouts or <b>replace</b> them; when replacing, the current ones are saved first.</li>
       <li><b>Free workout</b>: on the Today tab, starts an empty workout and you add exercises as you train.</li>
       <li><b>Forgot to log a day?</b> On the Today screen, tap that day of the week and log its workout; it's saved on that date.</li>
       <li><b>It was a warm-up</b>: logs the set as a warm-up. It is kept, but does not count toward progression, goals, volume or records. Forgot to mark it? If the 1st set has less than 70% of the suggested load, the app counts it as a warm-up on its own; and very light sets never enter the stats. Tap the set to delete it or say it was a working set. And if a working set was actually a warm-up, tap it and choose <b>It was a warm-up</b>. <b>Undo</b> always undoes the last entry, warm-up or set.</li>
