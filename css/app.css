@@ -655,3 +655,4 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 .icon-btn-space { width: 44px; flex: none; }
 .subs .item .ic { color: var(--accent); }
 .btn.warm-soft { background: color-mix(in srgb, var(--warm) 14%, var(--surface)); border: 1.5px solid color-mix(in srgb, var(--warm) 55%, transparent); color: var(--warm); font-weight: 700; }
+.muscle-title { font-size: 13px; font-weight: 700; color: var(--ink-2); margin: 6px 4px 0; }

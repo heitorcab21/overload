@@ -56,10 +56,13 @@ function renderRoutines() {
 
       ${all.length ? `<h3 class="group-title">${t('Todos os exercícios')}</h3>
       ${BODY_PARTS().map(([label, groups]) => {
-        const list = all.filter(ex => groups.includes(ex.group));
-        return list.length ? `<h3 class="part-title">${esc(label)}</h3>
+        if (!all.some(ex => groups.includes(ex.group))) return '';
+        return `<h3 class="part-title">${esc(label)}</h3>${groups.map(g => {
+          const list = all.filter(ex => ex.group === g);
+          return list.length ? `<p class="muscle-title">${esc(tg(g))}</p>
       <div class="card flat"><div class="list">${list.map(ex => `<a class="item" href="#/exercicio/${encodeURIComponent(ex.id)}">
-        <span class="grow"><span class="t">${esc(exName(ex))}</span><br><span class="d">${esc(tg(ex.group))} · ${t('próxima')}: ${planStr(planFor(ex))}</span></span>${icon.next}</a>`).join('')}</div></div>` : '';
+        <span class="grow"><span class="t">${esc(exName(ex))}</span><br><span class="d">${t('próxima')}: ${planStr(planFor(ex))}</span></span>${icon.next}</a>`).join('')}</div></div>` : '';
+        }).join('')}`;
       }).join('')}` : ''}
     </div>`;
 }
