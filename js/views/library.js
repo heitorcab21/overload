@@ -28,7 +28,7 @@ function renderRoutines() {
     <div class="stack">
       <div class="two top-acts">
         <button class="btn accent-soft" data-act="addTemplate">${icon.list}${t('Treinos prontos e salvos')}</button>
-        <a class="btn accent-soft" href="#/importar">${icon.edit}${t('Importar do bloco de notas')}</a>
+        <a class="btn accent-soft dashed" href="#/importar">${icon.edit}${t('Importar do bloco de notas')}</a>
       </div>
       <button class="btn primary block" data-act="newRoutine">${icon.plus}${t('Novo dia de treino')}</button>
       ${state.routines.length ? saveBtn() : ''}
