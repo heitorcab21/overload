@@ -146,7 +146,7 @@ const ui = {
   'Hoje esta meta segue a sua rotina e se ajusta sozinha quando você muda os exercícios. Se salvar um valor, ela passa a ser fixa.': `Right now this goal follows your routine and adjusts itself when you change exercises. If you save a value, it becomes fixed.`,
   'Deixe o mês em 0 para calcular a partir da semana.': `Leave the month at 0 to calculate it from the week.`,
   'Salvar': `Save`,
-  'Seguir a rotina ({n} séries por semana)': `Follow the routine ({n} sets per week)`,
+  'Seguir a rotina ({n} séries por semana)': `Follow your workouts ({n} sets per week)`,
   'Meta do mês (até o fim de {mes})': `Monthly goal (by the end of {mes})`,
   'Sugestão do app (cerca de 5% acima do seu melhor recente): <b>{set}</b>': `App suggestion (about 5% above your recent best): <b>{set}</b>`,
   'Sem histórico ainda: defina uma meta realista e ajuste depois do primeiro treino.': `No history yet: set a realistic goal and adjust it after your first workout.`,
@@ -596,8 +596,8 @@ const ui = {
   "Adicione os exercícios conforme for treinando. A carga sugerida vem do seu histórico.": "Add exercises as you train. The suggested load comes from your history.",
   "Nada encontrado.": "Nothing found.",
   "Trocar {x} por…": "Swap {x} for…",
-  "Trocar também na ficha {x}": "Also swap it in the routine {x}",
-  "Adicionar também na ficha {x}": "Also add it to the routine {x}",
+  "Trocar também na ficha {x}": "Also swap it in workout {x}",
+  "Adicionar também na ficha {x}": "Also add it to workout {x}",
   "Este exercício já tem séries registradas. Use \"Adicionar exercício\" para fazer outro.": "This exercise already has logged sets. Use \"Add exercise\" to do another one.",
   "Trocado por {x}.": "Swapped for {x}.",
   "Fazer teste de força": "Take a strength test",
@@ -640,7 +640,7 @@ const ui = {
   "Entre {grupo} que treinam musculação, com {idade} anos e cerca de {peso} kg.": "Among {grupo} who lift, aged {idade} and around {peso} kg.",
   "Toque num exercício para ver de onde vem o número e fazer um teste de força.": "Tap an exercise to see where the number comes from and take a strength test.",
   "Top {n}% de força": "Top {n}% strength",
-  "Adicionar treino pronto": "Add a ready-made routine",
+  "Adicionar treino pronto": "Add a ready-made workout",
   "Os treinos do modelo entram na sua lista. Os que você já tem continuam iguais.": "The template's workouts are added to your list. The ones you already have stay the same.",
   "{n} treino adicionado.": "{n} workout added.",
   "{n} treinos adicionados.": "{n} workouts added.",
@@ -681,7 +681,7 @@ const ui = {
   "Treino importado": "Imported workout",
   "Você escreveu": "You wrote",
   "Remover": "Remove",
-  "Criar também fichas de treino com esses exercícios": "Also create workout routines with these exercises",
+  "Criar também fichas de treino com esses exercícios": "Also create workouts with these exercises",
   "Voltar ao texto": "Back to the text",
   "Não encontrei séries no texto. Use algo como \"40kg 12 rep\" ou \"40x12\".": "No sets found in the text. Use something like \"40kg 12 reps\" or \"40x12\".",
   "A IA não encontrou séries no texto.": "The AI found no sets in the text.",
@@ -698,7 +698,7 @@ const ui = {
   "Informe a carga e as repetições.": "Enter the load and reps.",
   "Pelos seus treinos": "From your workouts",
   "Importar treinos de texto (bloco de notas, WhatsApp)": "Import workouts from text (notes, WhatsApp)",
-  "Ou escolha um treino pronto": "Or pick a ready-made routine",
+  "Ou escolha um treino pronto": "Or pick a ready-made workout",
   "TREINO CONCLUÍDO": "WORKOUT DONE",
   "minutos": "minutes",
   "de volume": "volume",
@@ -770,18 +770,18 @@ const ui = {
   "Nenhum treino registrado neste dia.": "No workout logged on this day.",
   "Termine o treino em andamento para registrar outro dia.": "Finish the workout in progress to log another day.",
   "Registrar treino neste dia": "Log a workout on this day",
-  "Esqueceu de anotar? Escolha a ficha e registre as séries como num treino normal; ele fica salvo nesta data.": "Forgot to log it? Pick the routine and log the sets like a normal workout; it's saved on this date.",
-  "Cada treino vira uma ficha. As cargas ficam como o seu treino anterior: ao começar a ficha, você já vê e ajusta.": "Each workout becomes a routine. The loads are kept as your previous workout: when you start the routine, you see and adjust them.",
+  "Esqueceu de anotar? Escolha a ficha e registre as séries como num treino normal; ele fica salvo nesta data.": "Forgot to log it? Pick the workout and log the sets as usual; it's saved on this date.",
+  "Cada treino vira uma ficha. As cargas ficam como o seu treino anterior: ao começar a ficha, você já vê e ajusta.": "Each workout becomes a training day. The loads are kept as your previous workout: when you start it, you see and adjust them.",
   "Usar com o meu nome (exercício próprio)": "Use my name for it (own exercise)",
   "Nome do exercício": "Exercise name",
   "Mesmo exercício que \"{x}\". Se forem diferentes, marque \"Usar com o meu nome\".": "Same exercise as \"{x}\". If they're different, tick \"Use my name for it\".",
   "Também registrar como treino feito, na data de cada treino": "Also log them as completed workouts, on each workout's date",
-  "Salvar {n} ficha": "Save {n} routine",
-  "Salvar {n} fichas": "Save {n} routines",
-  "{n} ficha salva e treinos registrados.": "{n} routine saved and workouts logged.",
-  "{n} fichas salvas e treinos registrados.": "{n} routines saved and workouts logged.",
-  "{n} ficha salva. Ao começar, as cargas do texto já aparecem como o treino anterior.": "{n} routine saved. When you start it, the loads from the text show up as your previous workout.",
-  "{n} fichas salvas. Ao começar, as cargas do texto já aparecem como o treino anterior.": "{n} routines saved. When you start them, the loads from the text show up as your previous workout.",
+  "Salvar {n} ficha": "Save {n} workout",
+  "Salvar {n} fichas": "Save {n} workouts",
+  "{n} ficha salva e treinos registrados.": "{n} workout saved and logged.",
+  "{n} fichas salvas e treinos registrados.": "{n} workouts saved and logged.",
+  "{n} ficha salva. Ao começar, as cargas do texto já aparecem como o treino anterior.": "{n} workout saved. When you start it, the loads from the text show up as your previous workout.",
+  "{n} fichas salvas. Ao começar, as cargas do texto já aparecem como o treino anterior.": "{n} workouts saved. When you start them, the loads from the text show up as your previous workout.",
   "Registrando o treino de {d}": "Logging the workout for {d}",
   "Exportar planilha": "Export spreadsheet",
   "Importar planilha": "Import spreadsheet",
@@ -948,10 +948,10 @@ const ui = {
   "Antes da troca · {d}": "Before the switch · {d}",
   "Treinos substituídos. Os anteriores estão em \"Meus treinos salvos\".": "Workouts replaced. The previous ones are in \"My saved workouts\".",
   "Crie ou adicione treinos primeiro.": "Create or add workouts first.",
-  "Guarda todos os seus treinos atuais ({x}) para você restaurar com um toque depois, mesmo que troque de ficha.": "Keeps all your current workouts ({x}) so you can restore them with one tap later, even if you switch routines.",
+  "Guarda todos os seus treinos atuais ({x}) para você restaurar com um toque depois, mesmo que troque de ficha.": "Keeps all your current workouts ({x}) so you can restore them with one tap later, even if you switch plans.",
   "Meus treinos · {d}": "My workouts · {d}",
   "Meus treinos": "My workouts",
-  "Salvo em \"Meus treinos salvos\". Para restaurar: Adicionar treino pronto.": "Saved in \"My saved workouts\". To restore: Add a ready-made/saved routine.",
+  "Salvo em \"Meus treinos salvos\". Para restaurar: Adicionar treino pronto.": "Saved in \"My saved workouts\". To restore: Add a ready-made/saved workout.",
   "Só o conjunto salvo é apagado. Seus treinos atuais e o histórico não mudam.": "Only the saved set is deleted. Your current workouts and history don't change.",
   "Exercícios ativos": "Active exercises",
   "Nenhum exercício nos seus treinos. Adicione em Treinos.": "No exercises in your workouts. Add them in Workouts.",
@@ -1010,15 +1010,15 @@ const ui = {
   "Seu perfil: peso, medidas e histórico de peso": "Your profile: weight, measurements and weight history",
   "Entendo que todos os meus treinos e dados salvos serão apagados para sempre.": "I understand that all my workouts and saved data will be deleted forever.",
   "Depois de marcar, o botão libera em 5 segundos, por segurança.": "After you tick it, the button unlocks in 5 seconds, for safety.",
-  "Adicionar treino pronto/salvo": "Add a ready-made/saved routine",
-  "Salvo em \"Meus treinos salvos\". Para restaurar: Adicionar treino pronto/salvo.": "Saved in \"My saved workouts\". To restore: Add a ready-made/saved routine.",
+  "Adicionar treino pronto/salvo": "Add a ready-made/saved workout",
+  "Salvo em \"Meus treinos salvos\". Para restaurar: Adicionar treino pronto/salvo.": "Saved in \"My saved workouts\". To restore: Add a ready-made/saved workout.",
   "Tem certeza?": "Are you sure?",
   "Todos os seus treinos e dados salvos serão apagados para sempre. Não dá para desfazer.": "All your workouts and saved data will be deleted forever. This cannot be undone.",
   "Sim, apagar tudo": "Yes, delete everything",
   "Adicionar ou substituir": "Add or replace",
   "Salvo em \"Meus treinos salvos\". Para restaurar: Adicionar ou substituir.": "Saved in \"My saved workouts\". To restore: Add or replace.",
-  "Adicionar ou substituir treino pronto/salvo": "Add or replace a ready-made/saved routine",
-  "Salvo em \"Meus treinos salvos\". Para restaurar: Adicionar ou substituir treino pronto/salvo.": "Saved in \"My saved workouts\". To restore: Add or replace a ready-made/saved routine.",
+  "Adicionar ou substituir treino pronto/salvo": "Add or replace a ready-⁠made/saved workout",
+  "Salvo em \"Meus treinos salvos\". Para restaurar: Adicionar ou substituir treino pronto/salvo.": "Saved in \"My saved workouts\". To restore: Add or replace a ready-made/saved workout.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -1027,7 +1027,7 @@ const help = [
   ['Getting started', 'From first launch to your first workout', `
     <ol class="steps">
       <li><b>Sign in with your Google account</b> on the first screen so your workouts are saved to your Drive. If you prefer, tap "Use without an account".</li>
-      <li><b>Choose a starting point</b>: ABC, Push/Pull/Legs, Upper/Lower, Arnold split, Bro split, three glute-and-leg focused options, Full body or from scratch. You can add others later in <b>Workouts &gt; Add or replace a ready-made/saved routine</b>.</li>
+      <li><b>Choose a starting point</b>: ABC, Push/Pull/Legs, Upper/Lower, Arnold split, Bro split, three glute-and-leg focused options, Full body or from scratch. You can add others later in <b>Workouts &gt; Add or replace a ready-made/saved workout</b>.</li>
       <li><b>Enter the loads you already use</b> on the starting loads screen. It's optional: anything left blank you choose in your first workout.</li>
       <li>On the <b>Today</b> tab, tap <b>Start workout</b>.</li>
     </ol>
@@ -1038,7 +1038,7 @@ const help = [
       <li>On first launch, tap <b>I already log my workouts</b>. Later, use the orange <b>Import from notes</b> button at the top of the Workouts tab.</li>
       <li>Paste the text and tap <b>Read text</b>. It understands "15kg 10 reps", "40x12", "3x10 with 50kg", "50kg 12/10/8", rest ("1:30 min"), dates ("11/12") and muscle groups ("• Triceps").</li>
       <li>Check it: the app shows what you wrote and the exercise it recognized. If it got it wrong, pick another one from the list; if it doesn't exist, a new exercise is created.</li>
-      <li>Tap <b>Save</b>. Each workout becomes a <b>routine</b>, and the loads are kept as your previous workout: when you start the routine, you see the loads and adjust them. You can also tick the box to log them as completed workouts on the text's date.</li>
+      <li>Tap <b>Save</b>. Each workout becomes a <b>training day</b>, and the loads are kept as your previous workout: when you start it, you see the loads and adjust them. You can also tick the box to log them as completed workouts on the text's date.</li>
       <li>Two different exercises ended up as the same one (e.g. "high cable fly" and "low cable fly")? Tick <b>Use my name for it</b> to create your own exercise.</li>
     </ol>
     <p class="tip">Very messy text? With the AI coach on, use <b>Organize with AI</b>.</p>`],
@@ -1054,11 +1054,11 @@ const help = [
     <p class="tip">Typed a wrong number? Tap a logged set to correct or delete it. The list icon at the top shows every exercise in the workout.</p>`],
   ['Swap, warm up and RIR', 'Changes mid-workout', `
     <ul class="errs">
-      <li><b>Swap exercise</b>: machine taken? Tap <b>Swap exercise</b>. At the top you get 2 or 3 <b>equivalent options</b> with the load already adjusted (yours, if you've done that exercise before). Tick the box to also swap it in the routine.</li>
+      <li><b>Swap exercise</b>: machine taken? Tap <b>Swap exercise</b>. At the top you get 2 or 3 <b>equivalent options</b> with the load already adjusted (yours, if you've done that exercise before). Tick the box to also swap it in the workout.</li>
       <li><b>Supersets and tri-sets</b>: in Workouts, tap the chain icon next to an exercise to pair it with the next one. During the workout, after each set the app goes straight to the next one in the group, with no rest; after the last one, you rest and go back to the first.</li>
       <li><b>Note</b>: tap <b>Add a note</b> below the name ("seat at height 4", "close grip"). It shows up every time you open the exercise.</li>
-      <li><b>Add exercise</b>: adds an exercise right after the current one, without changing the routine (or in it too, if you tick the box).</li>
-      <li><b>Save my workouts</b>: in Workouts, keep your routines (built from scratch or adapted) under a name. The button shows up when your workouts differ in at least one exercise from every ready-made and saved set. They go to <b>Add or replace a ready-made/saved routine &gt; My saved workouts</b> and come back with one tap. Up to 10 fit. When you pick a ready-made or saved set, the app asks whether to <b>add</b> it to your workouts or <b>replace</b> them; before replacing, save your current ones if you want to come back to them.</li>
+      <li><b>Add exercise</b>: adds an exercise right after the current one, without changing the workout (or in it too, if you tick the box).</li>
+      <li><b>Save my workouts</b>: in Workouts, keep your workouts (built from scratch or adapted) under a name. The button shows up when your workouts differ in at least one exercise from every ready-made and saved set. They go to <b>Add or replace a ready-made/saved workout &gt; My saved workouts</b> and come back with one tap. Up to 10 fit. When you pick a ready-made or saved set, the app asks whether to <b>add</b> it to your workouts or <b>replace</b> them; before replacing, save your current ones if you want to come back to them.</li>
       <li><b>Free workout</b>: on the Today tab, starts an empty workout and you add exercises as you train.</li>
       <li><b>Forgot to log a day?</b> On the Today screen, tap that day of the week and log its workout; it's saved on that date.</li>
       <li><b>It was a warm-up</b>: logs the set as a warm-up. It is kept, but does not count toward progression, goals, volume or records. Forgot to mark it? If the 1st set has less than 70% of the suggested load, the app counts it as a warm-up on its own; and very light sets never enter the stats. Tap the set to delete it or say it was a working set. And if a working set was actually a warm-up, tap it and choose <b>It was a warm-up</b>. <b>Undo</b> always undoes the last entry, warm-up or set.</li>
@@ -1112,7 +1112,7 @@ const help = [
       <li><b>Changed machine</b>: that workout doesn't count toward the next load.</li>
     </ul>`],
   ['Weekly and monthly goals', 'Muscle groups and exercises', `
-    <p><b>Muscle groups</b> (chest, back...): number of sets per week and per month. They follow your routine on their own: completing your workouts hits the goal. If you change the number by hand, it stays fixed.</p>
+    <p><b>Muscle groups</b> (chest, back...): number of sets per week and per month. They follow your workouts on their own: completing your workouts hits the goal. If you change the number by hand, it stays fixed.</p>
     <p><b>Exercises</b>: the best set you want to reach by the end of the month (for example, 45 kg × 10). The app splits the way there into <b>weekly steps</b>.</p>
     <ol class="steps">
       <li>On the <b>Goals</b> tab, switch between <b>Week</b> and <b>Month</b>.</li>
