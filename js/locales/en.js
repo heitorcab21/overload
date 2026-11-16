@@ -971,6 +971,8 @@ const ui = {
   "Atualize seu peso de vez em quando (por exemplo, toda semana, em jejum) para ver o gráfico.": "Update your weight now and then (for example, weekly, before eating) to see the chart.",
   "Dica: pese-se sempre no mesmo horário, de preferência ao acordar. Cada mudança de peso entra no gráfico.": "Tip: weigh yourself at the same time, ideally right after waking up. Every weight change goes into the chart.",
   "Salvar este treino em Meus treinos salvos": "Save this workout to My saved workouts",
+  "Ao substituir, seus treinos atuais saem da lista. O histórico não muda.": "Replacing removes your current workouts from the list. Your history doesn't change.",
+  "Esses treinos já estão nos prontos ou nos salvos.": "These workouts are already among the ready-made or saved ones.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -1010,7 +1012,7 @@ const help = [
       <li><b>Supersets and tri-sets</b>: in Workouts, tap the chain icon next to an exercise to pair it with the next one. During the workout, after each set the app goes straight to the next one in the group, with no rest; after the last one, you rest and go back to the first.</li>
       <li><b>Note</b>: tap <b>Add a note</b> below the name ("seat at height 4", "close grip"). It shows up every time you open the exercise.</li>
       <li><b>Add exercise</b>: adds an exercise right after the current one, without changing the routine (or in it too, if you tick the box).</li>
-      <li><b>Save my workouts</b>: in Workouts, keep your routines (built from scratch or adapted) under a name. They go to <b>Add a ready-made routine &gt; My saved workouts</b> and come back with one tap. Up to 10 fit. When you pick a ready-made or saved set, the app asks whether to <b>add</b> it to your workouts or <b>replace</b> them; before replacing, save your current ones if you want to come back to them.</li>
+      <li><b>Save my workouts</b>: in Workouts, keep your routines (built from scratch or adapted) under a name. The button shows up when your workouts differ in at least one exercise from every ready-made and saved set. They go to <b>Add a ready-made routine &gt; My saved workouts</b> and come back with one tap. Up to 10 fit. When you pick a ready-made or saved set, the app asks whether to <b>add</b> it to your workouts or <b>replace</b> them; before replacing, save your current ones if you want to come back to them.</li>
       <li><b>Free workout</b>: on the Today tab, starts an empty workout and you add exercises as you train.</li>
       <li><b>Forgot to log a day?</b> On the Today screen, tap that day of the week and log its workout; it's saved on that date.</li>
       <li><b>It was a warm-up</b>: logs the set as a warm-up. It is kept, but does not count toward progression, goals, volume or records. Forgot to mark it? If the 1st set has less than 70% of the suggested load, the app counts it as a warm-up on its own; and very light sets never enter the stats. Tap the set to delete it or say it was a working set. And if a working set was actually a warm-up, tap it and choose <b>It was a warm-up</b>. <b>Undo</b> always undoes the last entry, warm-up or set.</li>

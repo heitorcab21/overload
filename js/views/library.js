@@ -26,7 +26,7 @@ function renderRoutines() {
         <a class="btn accent-soft" href="#/importar">${icon.edit}${t('Importar do bloco de notas')}</a>
       </div>
       <button class="btn primary block" data-act="newRoutine">${icon.plus}${t('Novo treino')}</button>
-      ${state.routines.length ? `<button class="btn block" data-act="planSaveAsk">${icon.download}${t('Salvar este treino em Meus treinos salvos')}</button>` : ''}
+      ${canSavePlan() ? `<button class="btn block" data-act="planSaveAsk">${icon.download}${t('Salvar este treino em Meus treinos salvos')}</button>` : ''}
       ${state.routines.map((r, ri) => `<div class="card flat">
         <div class="row" style="padding:12px 8px 4px 16px">
           <h2 class="grow">${esc(routineName(r))}</h2>
@@ -78,6 +78,15 @@ actions.toggleLink = el => {
 // ---------- Treinos prontos e treinos salvos: adicionar ou substituir, sempre com confirmação ----------
 
 const plans = () => (state.savedPlans ??= []);
+/** Assinatura dos exercícios de um conjunto de treinos (a ordem das fichas e dos exercícios não conta). */
+const exSig = list => list.map(ex => [...ex].sort().join(',')).sort().join('|');
+/** Só faz sentido salvar se os treinos atuais diferem, em ao menos um exercício, de todo treino pronto e salvo. */
+function canSavePlan() {
+  if (!state.routines.length) return false;
+  const cur = exSig(state.routines.map(r => r.ex));
+  return !TEMPLATES.some(tp => exSig(tp.routines.map(([, ex]) => ex)) === cur)
+    && !plans().some(p => exSig(p.routines.map(r => r.ex)) === cur);
+}
 const snapshot = () => state.routines.map(({ name, tpl, ex, link }) => ({ name, tpl: !!tpl, ex: ex.slice(), ...(link ? { link: { ...link } } : {}) }));
 
 /** Guarda os treinos atuais como um conjunto salvo (para restaurar depois com um toque). */
@@ -121,8 +130,8 @@ actions.planPick = el => {
     ${has ? `<p class="small muted">${t('Você já tem {n} na sua lista. Escolha como usar este:', { n: tn(state.routines.length, '{n} treino', '{n} treinos') })}</p>` : ''}
     <button class="btn primary block" data-act="planApply" data-kind="${el.dataset.kind}" data-id="${el.dataset.id}" data-mode="add">${icon.plus}${has ? t('Adicionar aos meus treinos') : t('Usar estes treinos')}</button>
     ${has ? `<button class="btn danger-soft block" data-act="planApply" data-kind="${el.dataset.kind}" data-id="${el.dataset.id}" data-mode="replace">${icon.sync}${t('Substituir meus treinos')}</button>
-      <p class="small muted">${t('Ao substituir, seus treinos atuais saem da lista (o histórico não muda). Se quiser guardá-los para voltar depois, salve antes:')}</p>
-      <button class="btn block" data-act="planSaveAsk">${icon.download}${t('Salvar meus treinos atuais')}</button>` : ''}
+      ${canSavePlan() ? `<p class="small muted">${t('Ao substituir, seus treinos atuais saem da lista (o histórico não muda). Se quiser guardá-los para voltar depois, salve antes:')}</p>
+      <button class="btn block" data-act="planSaveAsk">${icon.download}${t('Salvar meus treinos atuais')}</button>` : `<p class="small muted">${t('Ao substituir, seus treinos atuais saem da lista. O histórico não muda.')}</p>`}` : ''}
     <button class="btn block" data-act="addTemplate">${t('Voltar')}</button>`);
 };
 
@@ -146,6 +155,7 @@ actions.planApply = el => {
 
 actions.planSaveAsk = () => {
   if (!state.routines.length) { toast(t('Crie ou adicione treinos primeiro.')); return; }
+  if (!canSavePlan()) { toast(t('Esses treinos já estão nos prontos ou nos salvos.')); return; }
   if (plans().length >= MAX_PLANS) {
     sheet(`<h2>${t('Limite de {n} treinos salvos', { n: MAX_PLANS })}</h2>
       <p class="muted">${t('Exclua um dos treinos salvos para guardar este. Toque na lixeira ao lado dele.')}</p>
@@ -162,7 +172,7 @@ actions.planSaveAsk = () => {
 };
 submits.planSave = form => {
   const p = savePlan(form.name.value.trim() || t('Meus treinos'));
-  save(); closeSheet();
+  save(); closeSheet(); rerender();
   if (p) toast(t('Salvo em "Meus treinos salvos". Para restaurar: Adicionar treino pronto.'), 4500);
 };
 actions.planDelAsk = el => {
