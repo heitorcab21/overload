@@ -1015,6 +1015,8 @@ const ui = {
   "Tem certeza?": "¿Estás seguro?",
   "Todos os seus treinos e dados salvos serão apagados para sempre. Não dá para desfazer.": "Todos tus entrenamientos y datos guardados se borrarán para siempre. No se puede deshacer.",
   "Sim, apagar tudo": "Sí, borrar todo",
+  "Adicionar ou substituir": "Agregar o reemplazar",
+  "Salvo em \"Meus treinos salvos\". Para restaurar: Adicionar ou substituir.": "Guardado en \"Mis entrenamientos guardados\". Para restaurar: Agregar o reemplazar.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -1023,7 +1025,7 @@ const help = [
   ['Primeros pasos', 'Del primer acceso al primer entrenamiento', `
     <ol class="steps">
       <li><b>Inicia sesión con tu cuenta de Google</b> en la primera pantalla para que tus entrenamientos se guarden en tu Drive. Si prefieres, toca "Usar sin cuenta".</li>
-      <li><b>Elige un punto de partida</b>: ABC, Empuje/Tracción/Piernas, Superior/Inferior, Arnold split, ABCDE, tres opciones con foco en glúteos y piernas, Cuerpo completo o de cero. Después puedes agregar otros en <b>Entrenos &gt; Agregar rutina lista/guardada</b>.</li>
+      <li><b>Elige un punto de partida</b>: ABC, Empuje/Tracción/Piernas, Superior/Inferior, Arnold split, ABCDE, tres opciones con foco en glúteos y piernas, Cuerpo completo o de cero. Después puedes agregar otros en <b>Entrenos &gt; Agregar o reemplazar</b>.</li>
       <li><b>Indica las cargas que ya usas</b> en la pantalla de cargas iniciales. Es opcional: lo que quede en blanco lo eliges en el primer entrenamiento.</li>
       <li>En la pestaña <b>Hoy</b>, toca <b>Empezar entrenamiento</b>.</li>
     </ol>
@@ -1054,7 +1056,7 @@ const help = [
       <li><b>Biseries y triseries</b>: en Entrenos, toca el ícono de cadena junto a un ejercicio para unirlo al siguiente. En el entrenamiento, tras cada serie la app va directo al siguiente del grupo, sin descanso; tras el último, descansas y vuelves al primero.</li>
       <li><b>Nota</b>: toca <b>Agregar nota</b> debajo del nombre ("asiento en la altura 4", "agarre cerrado"). Aparece siempre que abras el ejercicio.</li>
       <li><b>Agregar ejercicio</b>: incluye un ejercicio justo después del actual, sin tocar la rutina (o también en ella, si marcas la casilla).</li>
-      <li><b>Guardar mis entrenamientos</b>: en Entrenos, guarda tus rutinas (creadas de cero o adaptadas) con un nombre. El botón aparece cuando tus entrenamientos tienen al menos un ejercicio distinto de todas las rutinas listas y guardadas. Quedan en <b>Agregar rutina lista/guardada &gt; Mis entrenamientos guardados</b> y vuelven con un toque. Caben hasta 10. Al elegir una rutina lista o guardada, la app pregunta si quieres <b>agregarla</b> o <b>reemplazar</b> las tuyas; antes de reemplazar, guarda las actuales si quieres volver a ellas.</li>
+      <li><b>Guardar mis entrenamientos</b>: en Entrenos, guarda tus rutinas (creadas de cero o adaptadas) con un nombre. El botón aparece cuando tus entrenamientos tienen al menos un ejercicio distinto de todas las rutinas listas y guardadas. Quedan en <b>Agregar o reemplazar &gt; Mis entrenamientos guardados</b> y vuelven con un toque. Caben hasta 10. Al elegir una rutina lista o guardada, la app pregunta si quieres <b>agregarla</b> o <b>reemplazar</b> las tuyas; antes de reemplazar, guarda las actuales si quieres volver a ellas.</li>
       <li><b>Entrenamiento libre</b>: en la pestaña Hoy, empieza un entrenamiento vacío y agregas los ejercicios a medida que entrenas.</li>
       <li><b>¿Olvidaste anotar un día?</b> En la pantalla Hoy, toca ese día de la semana y registra su entrenamiento; queda guardado en esa fecha.</li>
       <li><b>Fue calentamiento</b>: registra la serie como calentamiento. Queda guardada, pero no cuenta para la progresión, las metas, el volumen ni los récords. ¿Olvidaste marcarla? Si la 1.ª serie tiene menos del 70% de la carga sugerida, la app la cuenta como calentamiento sola; y las series muy ligeras nunca entran en las métricas. Toca la serie para borrarla o indicar que era válida. Y si una serie válida era calentamiento, tócala y elige <b>Era calentamiento</b>. <b>Deshacer</b> siempre deshace el último registro, sea calentamiento o serie.</li>
