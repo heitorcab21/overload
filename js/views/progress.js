@@ -297,8 +297,8 @@ function strengthOverview() {
 
 // consulta rápida: qualquer exercício comparável, sem salvar nada
 const QUICK_PARTS = () => [
-  [t('Tronco'), ['Peito', 'Costas', 'Ombros']],
-  [t('Braços'), ['Bíceps', 'Tríceps']],
+  [t('Tronco'), ['Peito', 'Costas']],
+  [t('Braços'), ['Ombros', 'Bíceps', 'Tríceps']],
   [t('Pernas'), ['Quadríceps', 'Posteriores', 'Glúteos', 'Panturrilhas']],
 ];
 const libName = id => exPack(id)?.name ?? LIB_BY_ID[id].name;
