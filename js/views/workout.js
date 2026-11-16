@@ -141,7 +141,8 @@ function render() {
     return `<div class="set todo"><span class="i">${i + 1}</span><span class="v">${setStr({ w: en.cur.w, r: p.reps[i] ?? p.reps.at(-1) })}</span></div>`;
   }).join('');
 
-  const target = p.first && !p.w ? '' : `<div class="target">
+  // sem carga ainda: só uma caixinha com séries × reps; com carga, o cartão completo
+  const target = p.first && !p.w ? `<div class="target-mini"><span>${t('Meta de hoje')}</span><b class="num">${ex.sets} × ${ex.repMin}–${ex.repMax} reps</b></div>` : `<div class="target">
     <h3>${t('Meta de hoje')}</h3>
     <div class="big num">${kg(p.w)} × ${p.reps.join(' · ')}</div>
     ${p.last ? `<div class="small muted num">${t('Último')} (${fmtDate(p.last.date)}): ${kg(p.last.w)} × ${p.last.reps.join(' · ')}</div>` : ''}
