@@ -68,6 +68,8 @@ const TOPICS = [
       <li>Fez cardio junto com a musculação? No treino, abra a lista de exercícios e toque em <b>Adicionar cardio</b>. Ele aparece no resumo e no card dos stories.</li>
       <li>A <b>meta da semana</b> começa em 150 minutos (recomendação da OMS) e pode ser mudada no lápis.</li>
       <li>Na tela Hoje, dias só com cardio aparecem com um coração azul. Esqueceu de anotar? Toque no dia e use <b>Registrar cardio neste dia</b>.</li>
+      <li><b>Rotinas com cronômetro</b>: monte blocos contínuos e intervalados (ex.: aquecer 5 min, 8× 30 s forte / 30 s leve), com velocidade, inclinação e nível opcionais, ou comece por um modelo pronto. O cronômetro avisa cada troca com bipe e vibração.</li>
+      <li>No fim, dê uma <b>nota de esforço de 1 a 10</b>. Se ficou fácil (até 6), o app sugere o próximo avanço: mais uma rodada, +0,5 km/h, +1% de inclinação ou mais tempo. Toque em <b>Aplicar</b> para atualizar a rotina.</li>
     </ol>`],
 
   ['Registrar por voz', 'Fale em vez de tocar', `

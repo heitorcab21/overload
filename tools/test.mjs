@@ -419,6 +419,27 @@ eq(parseUtterance('40 quilos 12 repetições'), [set(40, 12)], 'série normal co
   st.state.cardio = [];
 }
 
+// ---- rotinas de cardio ----
+{
+  const cp = await import('../js/cardioplan.js');
+  const st = await import('../js/store.js');
+  const hiit = cp.CARDIO_TEMPLATES[0];
+  eq(cp.planSeconds(hiit.blocks), 300 + 8 * 60 + 300, 'duração do HIIT 30/30');
+  eq(cp.segmentsOf(hiit.blocks).length, 1 + 16 + 1, 'etapas: aquecer, 8 fortes, 8 descansos, desaquecer');
+  const r = { id: 'cr1', name: 'x', type: 'bike', blocks: JSON.parse(JSON.stringify(hiit.blocks)) };
+  st.state.cardio = [{ id: 'k1', date: new Date().toISOString(), type: 'bike', min: 18, routineId: 'cr1', rpe: 5 }];
+  const s1 = cp.nextStep(r);
+  eq([s1.kind, s1.key, s1.n], ['up', 'round', 9], 'fácil: mais uma rodada');
+  s1.apply(r.blocks);
+  eq(r.blocks[1].rounds, 9);
+  st.state.cardio[0].rpe = 9;
+  eq(cp.nextStep(r).kind, 'down', 'pesado: não avança');
+  const tm = { id: 'cr2', type: 'esteira', blocks: [{ kind: 'cont', sec: 1800, speed: 4.8, incline: 12 }] };
+  st.state.cardio = [{ id: 'k2', date: new Date().toISOString(), type: 'esteira', min: 30, routineId: 'cr2', rpe: 4 }];
+  eq([cp.nextStep(tm).key, cp.nextStep(tm).v], ['speed', 5.3], 'contínuo com velocidade: +0,5 km/h');
+  st.state.cardio = [];
+}
+
 // ---- todos os arquivos carregam sem erro de sintaxe (inclusive telas que os testes não usam) ----
 {
   const { readdirSync } = await import('node:fs');

@@ -12,6 +12,8 @@ const defaults = () => ({
   sessions: [],    // { id, date, routineId, name, dur, entries: [{ exId, sets:[{w,r,t?}], feel, flags, skipped }] }
   cardio: [],      // { id, date, type, min, km?, int: 'leve'|'moderado'|'forte', kcal, sessionId? }
   cardioGoal: 150, // minutos de cardio por semana
+  cardioRoutines: [], // rotinas com cronômetro: { id, name, type, blocks }
+  cardioRun: null,    // cronômetro em andamento
   active: null,    // treino em andamento
   goals: { ex: {}, groups: {} },
   lastBackup: null, // data do último backup salvo ou compartilhado

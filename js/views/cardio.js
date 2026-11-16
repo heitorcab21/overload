@@ -6,6 +6,7 @@ import { t, tn } from '../i18n.js';
 import { weekStart, addDays } from '../logic.js';
 import { columnChart } from '../charts.js';
 import { CARDIO_TYPES, INTENSITIES, cardioKcal, cardioIn, cardioMinutes, cardioWeeks } from '../cardio.js';
+import { routinesCard } from './cardiorun.js';
 
 export const cardioName = type => t((CARDIO_TYPES[type] || CARDIO_TYPES.outro).name);
 const intName = i => ({ leve: t('Leve'), moderado: t('Moderado'), forte: t('Forte') })[i] || t('Moderado');
@@ -33,6 +34,7 @@ function render() {
       </div>
       <button class="btn primary big" data-act="cardioNew">${icon.plus}${t('Registrar cardio')}</button>
       ${last ? `<button class="btn block" data-act="cardioRepeat">${icon.sync}${t('Repetir: {x}', { x: cardioLine(last) })}</button>` : ''}
+      ${routinesCard()}
       ${state.cardio.length ? `<div class="card"><h3>${t('Minutos por semana')}</h3><div class="chart" id="cardioChart"></div></div>` : ''}
       <div class="card flat">
         <h3 style="padding:16px 16px 4px">${t('Histórico')}</h3>

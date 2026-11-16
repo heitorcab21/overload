@@ -681,3 +681,30 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 .help-btn .ic:first-child { color: var(--accent); }
 #tabbar .tab-label { text-align: center; line-height: 1.1; }
 #tabbar a[data-tab="ajustes"] .tab-label { font-size: 10px; }
+
+/* rotinas de cardio */
+.croutine { display: grid; gap: 6px; padding: 12px 0; border-top: 1px solid var(--line); }
+.croutine:first-of-type { border-top: 0; padding-top: 0; }
+.step-up { color: var(--good); font-weight: 600; }
+.step-hold { color: var(--ink-2); }
+.step-down { color: #d97706; }
+.cblock { display: grid; gap: 8px; padding: 12px; border-radius: 16px; background: var(--surface); border: 1px solid var(--line); }
+.cblock.int { border-color: color-mix(in srgb, var(--accent) 45%, var(--line)); }
+.cblock b { display: inline-flex; align-items: center; gap: 6px; }
+.cblock b .ic { width: 16px; height: 16px; color: var(--accent); }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.field.mini { font-size: 12px; gap: 4px; }
+.field.mini input { min-height: 40px; padding: 0 8px; }
+.rpe { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.rpe .chip { justify-content: center; }
+/* cronômetro */
+.crun { display: grid; justify-items: center; gap: 6px; padding: 28px 16px; margin-top: 8px; border-radius: 24px; background: var(--surface); text-align: center; }
+.crun.phase-work { background: color-mix(in srgb, var(--accent) 28%, var(--surface)); }
+.crun.phase-rest { background: color-mix(in srgb, var(--warm) 22%, var(--surface)); }
+.crun-phase { font-size: 30px; font-weight: 800; letter-spacing: -.01em; }
+.crun-round { font-weight: 600; color: var(--ink-2); min-height: 1.2em; }
+.crun-clock { font-size: 96px; font-weight: 800; line-height: 1; letter-spacing: -.03em; margin: 8px 0; }
+.crun-target { font-size: 18px; font-weight: 700; color: var(--ink); min-height: 1.3em; }
+.crun .meter { width: 100%; margin: 6px 0; }
+.crun-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.crun-btns .big { grid-column: 1 / -1; }
