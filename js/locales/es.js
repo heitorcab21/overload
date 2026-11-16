@@ -805,6 +805,26 @@ const ui = {
   "2 treinos completos alternados, para 2 a 3 vezes por semana.": "2 entrenamientos completos alternados, de 2 a 3 veces por semana.",
   "Treino A · Corpo inteiro": "Entreno A · Cuerpo completo",
   "Treino B · Corpo inteiro": "Entreno B · Cuerpo completo",
+  "Tri-set": "Triserie",
+  "Bi-set": "Biserie",
+  "Juntar com o próximo em bi-set": "Unir con el siguiente en biserie",
+  "Máximo de 3 exercícios juntos (tri-set).": "Máximo de 3 ejercicios juntos (triserie).",
+  "Tri-set criado: os 3 exercícios são feitos em sequência, sem descanso entre eles.": "Triserie creada: los 3 ejercicios se hacen seguidos, sin descanso entre ellos.",
+  "Bi-set criado: os 2 exercícios são feitos em sequência, sem descanso entre eles.": "Biserie creada: los 2 ejercicios se hacen seguidos, sin descanso entre ellos.",
+  "Adicionar anotação (ex.: banco na altura 4)": "Agregar nota (ej.: asiento en la altura 4)",
+  "sem descanso até o próximo do {x}": "sin descanso hasta el siguiente de la {x}",
+  "Agora: {x}, sem descanso": "Ahora: {x}, sin descanso",
+  "Descanse e volte para {x}": "Descansa y vuelve a {x}",
+  "Era aquecimento": "Era calentamiento",
+  "Anotação": "Nota",
+  "Aparece sempre que você abrir este exercício: regulagem do aparelho, pegada, lado da academia...": "Aparece siempre que abras este ejercicio: ajuste de la máquina, agarre, lado del gimnasio...",
+  "Ex.: banco na altura 4, pegada fechada": "Ej.: asiento en la altura 4, agarre cerrado",
+  "Apagar anotação": "Borrar nota",
+  "sua carga": "tu carga",
+  "carga sugerida": "carga sugerida",
+  "ajuste a carga na primeira série": "ajusta la carga en la primera serie",
+  "Sugestões equivalentes": "Opciones equivalentes",
+  "Ou escolha outro": "O elige otro",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -840,11 +860,13 @@ const help = [
     <p class="tip">¿Te equivocaste de número? Toca la serie registrada para corregirla o eliminarla. El icono de lista arriba muestra todos los ejercicios del entrenamiento.</p>`],
   ['Cambiar, calentar y RIR', 'Ajustes en medio del entrenamiento', `
     <ul class="errs">
-      <li><b>Cambiar ejercicio</b>: ¿máquina ocupada? Toca <b>Cambiar ejercicio</b> debajo del nombre y elige otro. Marca la casilla para cambiarlo también en la rutina.</li>
+      <li><b>Cambiar ejercicio</b>: ¿máquina ocupada? Toca <b>Cambiar ejercicio</b>. Arriba aparecen 2 o 3 <b>opciones equivalentes</b> con la carga ya ajustada (la tuya, si ya hiciste el ejercicio). Marca la casilla para cambiarlo también en la rutina.</li>
+      <li><b>Biseries y triseries</b>: en Entrenos, toca el ícono de cadena junto a un ejercicio para unirlo al siguiente. En el entrenamiento, tras cada serie la app va directo al siguiente del grupo, sin descanso; tras el último, descansas y vuelves al primero.</li>
+      <li><b>Nota</b>: toca <b>Agregar nota</b> debajo del nombre ("asiento en la altura 4", "agarre cerrado"). Aparece siempre que abras el ejercicio.</li>
       <li><b>Agregar ejercicio</b>: incluye un ejercicio justo después del actual, sin tocar la rutina (o también en ella, si marcas la casilla).</li>
       <li><b>Entrenamiento libre</b>: en la pestaña Hoy, empieza un entrenamiento vacío y agregas los ejercicios a medida que entrenas.</li>
       <li><b>¿Olvidaste anotar un día?</b> En la pantalla Hoy, toca ese día de la semana y registra su entrenamiento; queda guardado en esa fecha.</li>
-      <li><b>Fue calentamiento</b>: registra la serie como calentamiento. Queda guardada, pero no cuenta para la progresión, las metas, el volumen ni los récords. ¿Olvidaste marcarla? Si la 1.ª serie tiene menos del 70% de la carga sugerida, la app la cuenta como calentamiento sola; y las series muy ligeras nunca entran en las métricas. Toca la serie para borrarla o indicar que era válida.</li>
+      <li><b>Fue calentamiento</b>: registra la serie como calentamiento. Queda guardada, pero no cuenta para la progresión, las metas, el volumen ni los récords. ¿Olvidaste marcarla? Si la 1.ª serie tiene menos del 70% de la carga sugerida, la app la cuenta como calentamiento sola; y las series muy ligeras nunca entran en las métricas. Toca la serie para borrarla o indicar que era válida. Y si una serie válida era calentamiento, tócala y elige <b>Era calentamiento</b>. <b>Deshacer</b> siempre deshace el último registro, sea calentamiento o serie.</li>
       <li><b>RIR (reps en reserva)</b>: después de una serie, toca 0, 1, 2, 3 o 4+. Es opcional. Con 3 o más sobrando en todas las series, la app sugiere +2 reps; con 0 en la última, repite los números. El RIR también mejora la estimación de fuerza máxima.</li>
       <li><b>Descanso por ejercicio</b>: en Entrenos, abre el ejercicio y define su descanso (0 usa el predeterminado de Ajustes).</li>
     </ul>`],

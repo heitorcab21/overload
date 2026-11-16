@@ -635,3 +635,23 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 .top-acts label.btn { cursor: pointer; }
 .week .missed i { border: 2px dashed var(--muted); opacity: .7; }
 .part-title { color: var(--accent); padding: 6px 4px 2px; }
+
+/* anotação do exercício */
+.ex-note { display: flex; align-items: flex-start; gap: 8px; width: 100%; text-align: left; margin: 4px 0 8px; padding: 10px 12px; border-radius: 12px;
+  border: 1px solid color-mix(in srgb, #e6b450 45%, var(--line)); background: color-mix(in srgb, #e6b450 10%, var(--surface)); color: var(--ink); font-size: 15px; }
+.ex-note .ic { width: 16px; height: 16px; flex: none; margin-top: 2px; color: #e6b450; }
+.ex-note.empty { border-style: dashed; background: transparent; color: var(--muted); font-size: 14px; }
+.ex-note.empty .ic { color: var(--muted); }
+
+/* bi-set e tri-set */
+.sup-tag { display: block; color: var(--accent); font-size: 14px; margin: 4px 0 2px; line-height: 1.35; }
+.sup-tag .ic { width: 16px; height: 16px; vertical-align: -3px; margin-right: 4px; }
+.sup-tag b { white-space: nowrap; margin-right: 4px; }
+.item.in-sup { box-shadow: inset 4px 0 0 var(--accent); }
+.sup-label { color: var(--accent); }
+.link-btn .ic { width: 18px; height: 18px; }
+.link-btn { color: var(--muted); }
+.link-btn.on { color: var(--accent); background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.icon-btn-space { width: 44px; flex: none; }
+.subs .item .ic { color: var(--accent); }
+.btn.warm-soft { background: color-mix(in srgb, var(--warm) 14%, var(--surface)); border: 1.5px solid color-mix(in srgb, var(--warm) 55%, transparent); color: var(--warm); font-weight: 700; }

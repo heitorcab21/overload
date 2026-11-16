@@ -601,3 +601,68 @@ export function exPhotos(ex) {
     <figcaption>${t('Início e fim do movimento')}</figcaption></figure>`;
 }
 export const exImages = ex => { const id = ex?.lib || ex?.base; return id && IMG[id] ? [0, 1].map(n => `img/ex/${id}-${n}.jpg`) : []; };
+
+// ---------- Substitutos: exercícios equivalentes e quanto de carga cada um costuma usar ----------
+// k = carga relativa ao primeiro da família (ex.: dois halteres no supino ≈ 80% da barra).
+// Sem k: equivalente, mas sem estimativa de carga (peso corporal).
+const FAMILIES = [
+  { 'supino-reto': 1, 'supino-reto-halteres': 0.8, 'supino-maquina': 1, 'supino-declinado': 1.05, 'supino-inclinado-barra': 0.85, 'supino-inclinado-halteres': 0.7, 'supino-fechado': 0.9, flexao: null },
+  { 'supino-inclinado-barra': 1, 'supino-inclinado-halteres': 0.82, 'supino-maquina': 1.1, 'supino-reto-halteres': 0.95 },
+  { 'peck-deck': 1, crossover: 0.7, 'crucifixo-halteres': 0.45 },
+  { 'puxada-frente': 1, 'puxada-supinada': 1, 'puxada-triangulo': 1, 'pulldown-braco-reto': 0.5, 'barra-fixa': null },
+  { 'remada-curvada': 1, 'remada-baixa': 1, 'remada-maquina': 1, 'remada-cavalinho': 0.8, 'remada-unilateral': 0.45 },
+  { 'desenvolvimento-barra': 1, 'desenvolvimento-halteres': 0.8, 'desenvolvimento-maquina': 1 },
+  { 'elevacao-lateral': 1, 'elevacao-lateral-polia': 0.5, 'elevacao-frontal': 1 },
+  { 'crucifixo-inverso': 1, 'face-pull': 1.5 },
+  { encolhimento: 1, 'remada-alta': 0.8 },
+  { 'rosca-direta': 1, 'rosca-alternada': 0.9, 'rosca-martelo': 1, 'rosca-scott': 0.9, 'rosca-polia': 1, 'rosca-inclinada': 0.75, 'rosca-concentrada': 0.45 },
+  { 'triceps-corda': 1, 'triceps-barra': 1.15, 'triceps-testa': 1, 'triceps-frances': 0.6, 'triceps-coice': 0.3, mergulho: null, 'triceps-banco': null },
+  { 'agachamento-livre': 1, 'agachamento-smith': 1, hack: 1.3, 'leg-press': 2.2, 'agachamento-goblet': 0.35, 'agachamento-bulgaro': 0.45, afundo: 0.45 },
+  { 'cadeira-extensora': 1, 'leg-press': 3, 'agachamento-bulgaro': 0.6 },
+  { 'mesa-flexora': 1, 'cadeira-flexora': 1.1, stiff: 1.8 },
+  { stiff: 1, 'levantamento-terra': 1.3, 'terra-sumo': 1.3, 'elevacao-pelvica': 1.4, hiperextensao: null },
+  { 'elevacao-pelvica': 1, 'gluteo-polia': 0.2, 'agachamento-sumo': 0.3, 'agachamento-bulgaro': 0.4 },
+  { 'cadeira-abdutora': 1, 'gluteo-polia': 0.4 },
+  { 'cadeira-adutora': 1, 'agachamento-sumo': 0.4 },
+  { 'panturrilha-em-pe': 1, 'panturrilha-sentado': 0.7, 'panturrilha-leg-press': 1.5 },
+  { 'abdominal-polia': null, 'abdominal-supra': null, 'abdominal-infra': null, 'elevacao-pernas': null, prancha: null, 'abdominal-obliquo': null },
+];
+
+/**
+ * Até n exercícios equivalentes a este, do mais parecido para o menos, com a carga estimada a partir de w.
+ * Exercício próprio "parecido com" um da biblioteca usa as equivalências dele. Devolve [{ id, w }] (w pode ser null).
+ */
+export function substitutes(ex, w = 0, n = 3, skip = new Set()) {
+  const id = ex?.lib || ex?.base;
+  const seen = new Set([ex?.id, id, ...skip]);
+  const out = [];
+  for (const fam of FAMILIES) {
+    if (!(id in fam)) continue;
+    const k0 = fam[id];
+    for (const [other, k] of Object.entries(fam)) {
+      if (seen.has(other) || !LIB_BY_ID[other]) continue;
+      seen.add(other);
+      let est = null;
+      if (w > 0 && k0 && k) {
+        const step = LIB_BY_ID[other].step || 1;
+        est = Math.max(step, Math.round((w * k / k0) / step) * step);
+      }
+      out.push({ id: other, w: est });
+    }
+  }
+  // completa com o mesmo grupamento se a família for pequena
+  const group = ex?.group || LIB_BY_ID[id]?.group;
+  for (const l of LIB) if (out.length < n && l.group === group && !seen.has(l.id)) { seen.add(l.id); out.push({ id: l.id, w: null }); }
+  return out.slice(0, n);
+}
+
+/** Bi-sets e tri-sets de uma ficha: grupos de exercícios seguidos ligados (r.link[exId] = ligado ao próximo). */
+export function supGroups(r) {
+  const out = [];
+  let cur = [];
+  (r?.ex || []).forEach((id, i, all) => {
+    cur.push(id);
+    if (!r.link?.[id] || i === all.length - 1) { if (cur.length > 1) out.push(cur); cur = []; }
+  });
+  return out;
+}

@@ -394,6 +394,19 @@ eq(parseUtterance('40 quilos 12 repetições'), [set(40, 12)], 'série normal co
   eq(bad, [], 'todo exercício dos treinos prontos existe na biblioteca');
 }
 
+// ---- substitutos e bi-sets ----
+{
+  const dm = await import('../js/data.js');
+  const sb = dm.substitutes(dm.ensureExercise('supino-reto'), 100, 3);
+  eq(sb.length, 3, 'três sugestões para o supino');
+  eq(sb.find(x => x.id === 'supino-reto-halteres')?.w, 80, 'halteres ≈ 80% da barra');
+  eq(sb.every(x => dm.LIB_BY_ID[x.id] && x.id !== 'supino-reto'), true);
+  eq(dm.substitutes(dm.ensureExercise('cadeira-extensora'), 50, 3).length, 3, 'família pequena completa com o mesmo grupamento');
+  const r = { ex: ['a', 'b', 'c', 'd', 'e'], link: { a: true, c: true, d: true } };
+  eq(dm.supGroups(r), [['a', 'b'], ['c', 'd', 'e']], 'bi-set a+b e tri-set c+d+e');
+  eq(dm.supGroups({ ex: ['a', 'b'], link: { b: true } }), [], 'ligação no último não forma grupo');
+}
+
 // ---- todos os arquivos carregam sem erro de sintaxe (inclusive telas que os testes não usam) ----
 {
   const { readdirSync } = await import('node:fs');

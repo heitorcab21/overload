@@ -805,6 +805,26 @@ const ui = {
   "2 treinos completos alternados, para 2 a 3 vezes por semana.": "2 alternating full-body workouts, 2 to 3 times a week.",
   "Treino A · Corpo inteiro": "Workout A · Full body",
   "Treino B · Corpo inteiro": "Workout B · Full body",
+  "Tri-set": "Tri-set",
+  "Bi-set": "Superset",
+  "Juntar com o próximo em bi-set": "Pair with the next one as a superset",
+  "Máximo de 3 exercícios juntos (tri-set).": "At most 3 exercises together (tri-set).",
+  "Tri-set criado: os 3 exercícios são feitos em sequência, sem descanso entre eles.": "Tri-set created: the 3 exercises are done back to back, with no rest between them.",
+  "Bi-set criado: os 2 exercícios são feitos em sequência, sem descanso entre eles.": "Superset created: the 2 exercises are done back to back, with no rest between them.",
+  "Adicionar anotação (ex.: banco na altura 4)": "Add a note (e.g. seat at height 4)",
+  "sem descanso até o próximo do {x}": "no rest before the next one in the {x}",
+  "Agora: {x}, sem descanso": "Now: {x}, no rest",
+  "Descanse e volte para {x}": "Rest, then back to {x}",
+  "Era aquecimento": "It was a warm-up",
+  "Anotação": "Note",
+  "Aparece sempre que você abrir este exercício: regulagem do aparelho, pegada, lado da academia...": "Shows up every time you open this exercise: machine settings, grip, which side of the gym...",
+  "Ex.: banco na altura 4, pegada fechada": "E.g. seat at height 4, close grip",
+  "Apagar anotação": "Delete note",
+  "sua carga": "your load",
+  "carga sugerida": "suggested load",
+  "ajuste a carga na primeira série": "set the load on the first set",
+  "Sugestões equivalentes": "Equivalent options",
+  "Ou escolha outro": "Or pick another one",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -840,11 +860,13 @@ const help = [
     <p class="tip">Typed a wrong number? Tap a logged set to correct or delete it. The list icon at the top shows every exercise in the workout.</p>`],
   ['Swap, warm up and RIR', 'Changes mid-workout', `
     <ul class="errs">
-      <li><b>Swap exercise</b>: machine taken? Tap <b>Swap exercise</b> below the name and pick another one. Tick the box to also swap it in the routine.</li>
+      <li><b>Swap exercise</b>: machine taken? Tap <b>Swap exercise</b>. At the top you get 2 or 3 <b>equivalent options</b> with the load already adjusted (yours, if you've done that exercise before). Tick the box to also swap it in the routine.</li>
+      <li><b>Supersets and tri-sets</b>: in Workouts, tap the chain icon next to an exercise to pair it with the next one. During the workout, after each set the app goes straight to the next one in the group, with no rest; after the last one, you rest and go back to the first.</li>
+      <li><b>Note</b>: tap <b>Add a note</b> below the name ("seat at height 4", "close grip"). It shows up every time you open the exercise.</li>
       <li><b>Add exercise</b>: adds an exercise right after the current one, without changing the routine (or in it too, if you tick the box).</li>
       <li><b>Free workout</b>: on the Today tab, starts an empty workout and you add exercises as you train.</li>
       <li><b>Forgot to log a day?</b> On the Today screen, tap that day of the week and log its workout; it's saved on that date.</li>
-      <li><b>It was a warm-up</b>: logs the set as a warm-up. It is kept, but does not count toward progression, goals, volume or records. Forgot to mark it? If the 1st set has less than 70% of the suggested load, the app counts it as a warm-up on its own; and very light sets never enter the stats. Tap the set to delete it or say it was a working set.</li>
+      <li><b>It was a warm-up</b>: logs the set as a warm-up. It is kept, but does not count toward progression, goals, volume or records. Forgot to mark it? If the 1st set has less than 70% of the suggested load, the app counts it as a warm-up on its own; and very light sets never enter the stats. Tap the set to delete it or say it was a working set. And if a working set was actually a warm-up, tap it and choose <b>It was a warm-up</b>. <b>Undo</b> always undoes the last entry, warm-up or set.</li>
       <li><b>RIR (reps in reserve)</b>: after a set, tap 0, 1, 2, 3 or 4+. It is optional. With 3 or more left in every set, the app suggests +2 reps; with 0 in the last one, it repeats the numbers. RIR also improves the max strength estimate.</li>
       <li><b>Rest per exercise</b>: in Workouts, open the exercise and set its rest (0 uses the default from Settings).</li>
     </ul>`],

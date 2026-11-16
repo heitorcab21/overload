@@ -1,9 +1,9 @@
 // Treino ativo: registro de séries com um toque, cenários prontos e voz.
 import { state, save, uid } from '../store.js';
 import { $, esc, kg, setStr, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, fmtDate } from '../ui.js';
-import { route, go, current } from '../router.js';
-import { exPhotos, exName, exCues, tg, loadLabel, loadHint, routineName, GROUPS, LIB, ensureExercise, restOf } from '../data.js';
-import { planFor, defaultGroupGoals } from '../logic.js';
+import { route, go, current, rerender } from '../router.js';
+import { exPhotos, exName, exCues, tg, loadLabel, loadHint, routineName, GROUPS, LIB, ensureExercise, restOf, substitutes, supGroups } from '../data.js';
+import { planFor, defaultGroupGoals, entriesFor } from '../logic.js';
 import { strengthLevel } from '../body.js';
 import { parseUtterance, voiceSupported, listen, stopListening, abortListening } from '../voice.js';
 import { aiEnabled, aiParseVoice } from '../ai.js';
@@ -27,6 +27,10 @@ export function startWorkout(routineId, onDate = null) {
   if (!r) return;
   const entries = r.ex.map(id => state.exercises[id]).filter(Boolean).map(newEntry);
   if (!entries.length) { toast(t('Este treino não tem exercícios.')); return; }
+  supGroups(r).forEach((ids, g) => ids.forEach((id, k) => {
+    const e = entries.find(x => x.exId === id);
+    if (e) Object.assign(e, { sg: g + 1, sgi: k, sgn: ids.length });
+  }));
   // Renova a autorização do Google agora, no toque de "Começar": ela cobre o treino inteiro
   refreshIfNeeded();
   state.active = { id: uid(), routineId: r.id, name: r.name, tpl: !!r.tpl, startedAt: Date.now(), idx: 0, restEnd: 0, entries, ...(onDate ? { onDate } : {}) };
@@ -56,6 +60,7 @@ let popSet = -1; // índice da série recém-registrada, para a animação
 
 function logSet(en, w, r, tag) {
   en.sets.push(tag ? { w, r, t: tag } : { w, r });
+  en.lastLog = 'set';
   popSet = en.sets.length - 1;
   en.skipped = false;
   en.extra = false;
@@ -66,10 +71,41 @@ function logSet(en, w, r, tag) {
   restFired = false;
 }
 
+/** Série de aquecimento: fica à parte (fora de progressão, metas, volume e recordes) e o descanso é a metade. */
+function logWarm(en, w, r) {
+  en.warmup ??= [];
+  en.warmup.push({ w, r });
+  en.lastLog = 'warm';
+  state.active.restEnd = Date.now() + Math.round(restOf(state.exercises[en.exId]) / 2) * 1000;
+  restFired = false;
+}
+
+/**
+ * Registra uma série pela regra única do app (botão Feito e voz usam a mesma):
+ * 1ª série com menos de 70% da carga sugerida conta como aquecimento. Devolve 'warm' ou 'set'.
+ */
+function record(en, ex, w, r, tag) {
+  if (warmByLoad(en, ex, w)) { logWarm(en, w, r); return 'warm'; }
+  logSet(en, w, r, tag);
+  return 'set';
+}
+
+/** Desfaz o último registro deste exercício, seja série válida ou aquecimento. */
 function undo(en) {
+  if (en.lastLog === 'warm' && en.warmup?.length) {
+    const s = en.warmup.pop();
+    en.cur = { w: s.w, r: s.r };
+    en.lastLog = en.sets.length ? 'set' : null;
+    state.active.restEnd = 0;
+    return true;
+  }
   const s = en.sets.pop();
-  if (!s) return false;
+  if (!s) {
+    if (en.warmup?.length) { const w = en.warmup.pop(); en.cur = { w: w.w, r: w.r }; state.active.restEnd = 0; return true; }
+    return false;
+  }
   en.cur = { w: s.w, r: s.r };
+  en.lastLog = null;
   state.active.restEnd = 0;
   return true;
 }
@@ -119,7 +155,7 @@ function render() {
     body = `<div class="log">
       <div class="quick-acts">
         ${en.sets.length < ex.sets ? `<button class="qa" data-act="wAll"><b>${t('Todas como a meta')}</b></button>` : ''}
-        ${en.sets.length ? `<button class="qa" data-act="wUndo"><b>${icon.undo}${t('Desfazer')}</b></button>` : `<button class="qa" data-act="wSkip"><b>${t('Pular exercício')}</b></button>`}
+        ${en.sets.length || en.warmup.length ? `<button class="qa" data-act="wUndo"><b>${icon.undo}${t('Desfazer')}</b></button>` : `<button class="qa" data-act="wSkip"><b>${t('Pular exercício')}</b></button>`}
         <button class="qa warm" data-act="wWarm"><b>${t('Foi aquecimento')}</b><small>${t('importante marcar se foi')}</small></button>
       </div>
       <div class="two">
@@ -161,7 +197,9 @@ function render() {
       <h1>${esc(exName(ex))}</h1>
       ${cues ? `<button class="how-btn" data-act="wHow" aria-label="${t('Como executar')}">${icon.info}<span>${t('Tutorial')}</span></button>` : ''}
     </div>
-    <p class="muted">${esc(tg(ex.group))} · ${ex.sets} × ${ex.repMin}–${ex.repMax} reps · ${t('descanso {s} s', { s: restOf(ex) })}${(() => { const lv = strengthLevel(ex); return lv.top ? ` · <a class="top-link" href="#/exercicio/${encodeURIComponent(ex.id)}">${t('Top {n}% de força', { n: lv.top })}</a>` : ''; })()}</p>
+    ${en.sg ? `<p class="sup-tag">${icon.link}<b>${en.sgn === 3 ? t('Tri-set') : t('Bi-set')}</b> ${esc(a.entries.filter(e => e.sg === en.sg).map(e => exName(state.exercises[e.exId])).join(' + '))}</p>` : ''}
+    <button class="ex-note${ex.note ? '' : ' empty'}" data-act="editNote" data-id="${esc(ex.id)}">${icon.edit}<span>${ex.note ? esc(ex.note) : t('Adicionar anotação (ex.: banco na altura 4)')}</span></button>
+    <p class="muted">${esc(tg(ex.group))} · ${ex.sets} × ${ex.repMin}–${ex.repMax} reps · ${en.sg && en.sgi < en.sgn - 1 ? t('sem descanso até o próximo do {x}', { x: en.sgn === 3 ? t('Tri-set') : t('Bi-set') }) : t('descanso {s} s', { s: restOf(ex) })}${(() => { const lv = strengthLevel(ex); return lv.top ? ` · <a class="top-link" href="#/exercicio/${encodeURIComponent(ex.id)}">${t('Top {n}% de força', { n: lv.top })}</a>` : ''; })()}</p>
     <div class="ex-actions">
       <button class="btn sm ghost" data-act="wSwap">${icon.sync}${t('Trocar exercício')}</button>
       <button class="btn sm ghost" data-act="wAdd">${icon.plus}${t('Adicionar exercício')}</button>
@@ -234,6 +272,32 @@ document.addEventListener('visibilitychange', () => {
 // como alteração a enviar ao Drive (senão o selo ficaria vermelho o treino inteiro).
 const done = () => { save({ touch: false }); render(); };
 
+/** Depois de uma série válida. Em bi-set/tri-set: vai para o próximo exercício do grupo sem descanso;
+ *  no último do grupo, descansa e volta para o primeiro que ainda tem séries. */
+function afterWorkSet(said = []) {
+  const a = state.active;
+  const { en } = cur();
+  if (!en.sg) { done(); if (said.length) toast(said.join(' · '), 3500); return; }
+  const group = a.entries.map((e, i) => ({ e, i })).filter(x => x.e.sg === en.sg);
+  const pos = group.findIndex(x => x.i === a.idx);
+  const pending = x => { const ex = state.exercises[x.e.exId]; return ex && !x.e.skipped && x.e.sets.length < ex.sets; };
+  const ahead = group.slice(pos + 1).find(pending);
+  let msg = '';
+  if (ahead) {
+    a.restEnd = 0;
+    a.idx = ahead.i;
+    msg = t('Agora: {x}, sem descanso', { x: exName(state.exercises[ahead.e.exId]) });
+  } else {
+    const back = group.find(pending);
+    if (back && back.i !== a.idx) { a.idx = back.i; msg = t('Descanse e volte para {x}', { x: exName(state.exercises[back.e.exId]) }); }
+  }
+  save({ touch: false });
+  render();
+  if (msg) window.scrollTo(0, 0);
+  const all = [...said, msg].filter(Boolean);
+  if (all.length) toast(all.join(' · '), 3500);
+}
+
 // ---------- Ações de toque ----------
 
 changes.wCur = el => {
@@ -246,11 +310,12 @@ changes.wCur = el => {
   paintDone(en, ex);
 };
 
-/** A próxima série vai contar como aquecimento? (1ª série com menos de 70% da carga sugerida) */
-function willBeWarmup(en, ex) {
+/** Com esta carga, a série conta como aquecimento? (1ª série com menos de 70% da carga sugerida) */
+function warmByLoad(en, ex, w) {
   const ref = en.plan.first ? 0 : en.plan.w;
-  return !en.sets.length && ref > 0 && en.cur.w > 0 && en.cur.w < ref * 0.7 && !ex.bw;
+  return !en.sets.length && ref > 0 && w > 0 && w < ref * 0.7 && !ex.bw;
 }
+const willBeWarmup = (en, ex) => warmByLoad(en, ex, en.cur.w);
 const doneText = (en, ex) => `${willBeWarmup(en, ex) ? t('Aquecimento') : t('Feito')} · ${setStr(en.cur)}`;
 function paintDone(en, ex) {
   const b = $('[data-act="wDone"]');
@@ -263,18 +328,14 @@ function paintDone(en, ex) {
 
 actions.wDone = () => {
   const { en, ex } = cur();
-  // 1ª série com carga bem abaixo da sugerida (menos de 70%): quase certo que é aquecimento.
-  // Conta à parte sozinha; se não era, um toque na série devolve.
-  if (willBeWarmup(en, ex)) {
-    en.warmup.push({ w: en.cur.w, r: en.cur.r });
-    state.active.restEnd = Date.now() + Math.round(restOf(ex) / 2) * 1000;
-    restFired = false;
+  // 1ª série com carga bem abaixo da sugerida (menos de 70%): conta como aquecimento sozinha;
+  // se não era, um toque na série devolve.
+  if (record(en, ex, en.cur.w, en.cur.r) === 'warm') {
     toast(t('Carga bem abaixo da meta: contei como aquecimento. Se não era, toque na série.'), 4500);
     done();
     return;
   }
-  logSet(en, en.cur.w, en.cur.r);
-  done();
+  afterWorkSet();
 };
 
 // Corrigir ou excluir uma série já registrada neste treino
@@ -292,6 +353,7 @@ actions.wEditSet = el => {
       <label class="field">${t('Reps que sobraram (RIR)')}
         <select name="rir"><option value="">${t('não informado')}</option>${[0, 1, 2, 3, 4].map(v => `<option value="${v}"${s.rir === v ? ' selected' : ''}>${v === 4 ? '4+' : v}</option>`).join('')}</select></label>
       <button class="btn primary big">${t('Salvar')}</button>
+      <button type="button" class="btn warm-soft block" data-act="wSetToWarm" data-i="${i}">${t('Era aquecimento')}</button>
       <button type="button" class="btn ghost danger block" data-act="wDelSet" data-i="${i}">${t('Excluir série')}</button>
     </form>`);
 };
@@ -309,6 +371,20 @@ actions.wDelSet = el => {
   en.sets.splice(Number(el.dataset.i), 1);
   const pr = en.plan.reps;
   if (!en.plan.first) en.cur.r = pr[en.sets.length] ?? pr.at(-1) ?? en.cur.r;
+  closeSheet();
+  done();
+};
+
+actions.wSetToWarm = el => {
+  const { en } = cur();
+  const [s] = en.sets.splice(Number(el.dataset.i), 1);
+  if (s) {
+    en.warmup ??= [];
+    en.warmup.push({ w: s.w, r: s.r });
+    const pr = en.plan.reps;
+    if (!en.plan.first) en.cur.r = pr[en.sets.length] ?? pr.at(-1) ?? en.cur.r;
+    en.lastLog = null;
+  }
   closeSheet();
   done();
 };
@@ -399,7 +475,7 @@ function finish() {
   const ready = refreshIfNeeded();
   const a = state.active;
   // séries de aquecimento ficam guardadas à parte: não entram na progressão, nas metas, no volume nem nos recordes
-  const entries = a.entries.filter(e => e.sets.length || e.skipped)
+  const entries = a.entries.filter(e => e.sets.length || e.skipped || e.warmup?.length)
     .map(({ exId, sets, warmup, feel, flags, skipped }) => ({ exId, sets, ...(warmup?.length ? { warmup } : {}), feel, flags, skipped: skipped && !sets.length }));
   // treino registrado depois (dia esquecido): fica salvo na data escolhida, sem duração
   state.sessions.push({
@@ -447,9 +523,7 @@ actions.wRir = el => {
 
 actions.wWarm = () => {
   const { en } = cur();
-  en.warmup.push({ w: en.cur.w, r: en.cur.r });
-  state.active.restEnd = Date.now() + Math.round(restOf(state.exercises[en.exId]) / 2) * 1000;
-  restFired = false;
+  logWarm(en, en.cur.w, en.cur.r);
   toast(t('Série de aquecimento registrada. Ela não conta na progressão nem nas metas.'), 3000);
   done();
 };
@@ -464,10 +538,32 @@ actions.wDelWarm = el => {
 actions.wWarmToWork = el => {
   const { en } = cur();
   const [w] = en.warmup.splice(Number(el.dataset.i), 1);
-  if (w) { en.sets.unshift(w); en.cur = { ...en.cur, r: en.plan.reps[en.sets.length] ?? en.cur.r }; }
+  if (w) { en.sets.unshift(w); en.lastLog = null; en.cur = { ...en.cur, r: en.plan.reps[en.sets.length] ?? en.cur.r }; }
   closeSheet(); done();
 };
 actions.wDelWarmNow = el => { cur().en.warmup.splice(Number(el.dataset.i), 1); closeSheet(); done(); };
+
+// ---------- Anotação do exercício ("banco na altura 4", "pegada fechada") ----------
+
+actions.editNote = el => {
+  const ex = state.exercises[el.dataset.id];
+  if (!ex) return;
+  sheet(`<h2>${t('Anotação')}</h2>
+    <p class="muted small">${esc(exName(ex))}. ${t('Aparece sempre que você abrir este exercício: regulagem do aparelho, pegada, lado da academia...')}</p>
+    <form class="stack" data-submit="saveNote" data-id="${esc(ex.id)}">
+      <textarea name="note" maxlength="160" rows="3" placeholder="${t('Ex.: banco na altura 4, pegada fechada')}">${esc(ex.note || '')}</textarea>
+      <button class="btn primary big">${t('Salvar')}</button>
+      ${ex.note ? `<button type="button" class="btn ghost danger block" data-act="delNote" data-id="${esc(ex.id)}">${t('Apagar anotação')}</button>` : ''}
+    </form>`);
+  setTimeout(() => $('textarea[name="note"]')?.focus(), 50);
+};
+submits.saveNote = form => {
+  const ex = state.exercises[form.dataset.id];
+  const v = form.note.value.trim().slice(0, 160);
+  if (v) ex.note = v; else delete ex.note;
+  save(); closeSheet(); rerender();
+};
+actions.delNote = el => { delete state.exercises[el.dataset.id].note; save(); closeSheet(); rerender(); };
 
 // ---------- Trocar ou adicionar exercício ----------
 
@@ -511,7 +607,21 @@ function openPicker(mode) {
   const a = state.active;
   const r = a.routineId && state.routines.find(x => x.id === a.routineId);
   const curEx = a.entries.length ? state.exercises[a.entries[a.idx].exId] : null;
+  const curEn = a.entries.length ? a.entries[a.idx] : null;
+  const used = new Set(a.entries.map(e => e.exId));
+  const subs = mode === 'swap' && curEx ? substitutes(curEx, curEn?.cur?.w || curEn?.plan?.w || 0, 3, used) : [];
+  const subLine = s => {
+    const ex = state.exercises[s.id];
+    const own = ex && entriesFor(ex.id).length ? planFor(ex).w : null; // já fez esse exercício: vale a carga dele
+    const w = own ?? s.w;
+    return { w: own == null ? s.w : null, label: w ? `${own != null ? t('sua carga') : t('carga sugerida')}: ${kg(w)}` : t('ajuste a carga na primeira série') };
+  };
   sheet(`<h2>${mode === 'swap' ? t('Trocar {x} por…', { x: esc(exName(curEx)) }) : t('Adicionar exercício')}</h2>
+    ${subs.length ? `<h3>${t('Sugestões equivalentes')}</h3><div class="card flat subs"><div class="list">${subs.map(s => {
+      const l = subLine(s);
+      return `<button class="item" data-act="wPick" data-id="${esc(s.id)}"${l.w ? ` data-w="${l.w}"` : ''}>
+        <span class="grow"><span class="t">${esc(exPack(s.id)?.name ?? LIB.find(x => x.id === s.id)?.name)}</span><br><span class="d">${esc(l.label)}</span></span>${icon.sync}</button>`;
+    }).join('')}</div></div><h3>${t('Ou escolha outro')}</h3>` : ''}
     ${r ? `<label class="check"><input type="checkbox" id="pickSave">${mode === 'swap' ? t('Trocar também na ficha {x}', { x: esc(routineName(r)) }) : t('Adicionar também na ficha {x}', { x: esc(routineName(r)) })}</label>` : ''}
     <input type="search" placeholder="${t('Buscar exercício ou grupamento')}" data-change="wPickFilter" aria-label="${t('Buscar exercício')}" autocomplete="off">
     <div id="wPickList">${pickerItems()}</div>`);
@@ -536,8 +646,13 @@ actions.wPick = el => {
   const r = a.routineId && state.routines.find(x => x.id === a.routineId);
   let routineChanged = false;
   if (pickMode === 'swap' && a.entries.length) {
-    const oldId = a.entries[a.idx].exId;
-    a.entries[a.idx] = newEntry(ex);
+    const old = a.entries[a.idx];
+    const oldId = old.exId;
+    const ne = newEntry(ex);
+    if (old.sg) Object.assign(ne, { sg: old.sg, sgi: old.sgi, sgn: old.sgn });
+    // substituto sugerido sem histórico próprio: começa na carga estimada
+    if (el.dataset.w && ne.plan.first) ne.cur.w = Number(el.dataset.w);
+    a.entries[a.idx] = ne;
     if (alsoRoutine && r) {
       const i = r.ex.indexOf(oldId);
       if (i >= 0) r.ex[i] = ex.id; else r.ex.push(ex.id);
@@ -629,29 +744,32 @@ async function applyVoice(text) {
   }
   const said = [];
   let move = null;
+  let worked = false;
   for (const act of acts) {
     const { en, ex } = cur();
     if (act.type === 'set' && act.warm) {
       const w = act.w ?? en.cur.w, r = act.r ?? en.cur.r;
-      en.warmup.push({ w, r });
+      logWarm(en, w, r);
       said.push(`${setStr({ w, r })} (${t('aquecimento')})`);
     } else if (act.type === 'set') {
       const w = act.w ?? en.cur.w, r = act.r ?? en.cur.r;
-      logSet(en, w, r, act.fail ? 'F' : undefined);
-      said.push(setStr({ w, r }) + (act.fail ? ` (${t('falhou')})` : ''));
+      const kind = record(en, ex, w, r, act.fail ? 'F' : undefined);
+      said.push(setStr({ w, r }) + (kind === 'warm' ? ` (${t('aquecimento')})` : act.fail ? ` (${t('falhou')})` : ''));
+      if (kind === 'set') worked = true;
     } else if (act.type === 'warm') {
-      // já registrou séries: a última vira aquecimento; senão, registra a próxima como aquecimento
-      const last = en.sets.pop();
+      // acabou de registrar uma série válida: ela vira aquecimento; senão, registra a atual como aquecimento
+      const last = en.lastLog === 'set' ? en.sets.pop() : null;
       const s = last ? { w: last.w, r: last.r } : { w: en.cur.w, r: en.cur.r };
-      en.warmup.push(s);
+      logWarm(en, s.w, s.r);
       said.push(`${setStr(s)} ${t('contada como aquecimento')}`);
     } else if (act.type === 'unwarm') {
       const w = en.warmup.pop();
-      if (w) { en.sets.push(w); said.push(`${setStr(w)} ${t('contada como série válida')}`); }
+      if (w) { en.sets.push(w); en.lastLog = null; said.push(`${setStr(w)} ${t('contada como série válida')}`); }
       else said.push(t('nenhum aquecimento para desfazer'));
     } else if (act.type === 'planned') {
       const n = act.all ? Math.max(1, ex.sets - en.sets.length) : 1;
       for (let i = 0; i < n; i++) { said.push(setStr(en.cur)); logSet(en, en.cur.w, en.cur.r); }
+      worked = true;
     } else if (act.type === 'delta') {
       if (act.dw) { en.cur.w = Math.max(0, en.cur.w + act.dw); said.push(t('carga ajustada para {w}', { w: kg(en.cur.w) })); }
       else { const r = Math.max(0, en.cur.r + act.dr); said.push(setStr({ w: en.cur.w, r })); logSet(en, en.cur.w, r); }
@@ -666,8 +784,10 @@ async function applyVoice(text) {
     }
   }
   save({ touch: false });
-  if (move === 'next') nextExercise(); else render();
-  if (said.length) toast(said.join(' · '), 3500);
+  if (move === 'next') nextExercise();
+  else if (worked && !move) afterWorkSet(said);
+  else render();
+  if (said.length && !(worked && state.active?.entries[state.active.idx]?.sg)) toast(said.join(' · '), 3500);
 }
 
 route('treino', render, { noTabs: true });

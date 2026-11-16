@@ -2,7 +2,7 @@
 import { state, save, uid } from '../store.js';
 import { $, esc, kg, fmt, fmtDate, setStr, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, meter } from '../ui.js';
 import { route, go, rerender } from '../router.js';
-import { TEMPLATES, exPhotos, GROUPS, LIB, exName, exCues, tg, loadHint, loadShort, routineName } from '../data.js';
+import { supGroups, TEMPLATES, exPhotos, GROUPS, LIB, exName, exCues, tg, loadHint, loadShort, routineName } from '../data.js';
 import { t, tn, exPack } from '../i18n.js';
 import { planFor, exGoalStatus, entriesFor, defaultGroupGoals } from '../logic.js';
 import { ensureExercise, planStr } from './home.js';
@@ -38,9 +38,13 @@ function renderRoutines() {
         <div class="list">${r.ex.map((id, i) => {
           const ex = state.exercises[id];
           if (!ex) return '';
-          return `<div class="item">
+          const grp = supGroups(r).find(g => g.includes(id));
+          const pos = grp ? grp.indexOf(id) : -1;
+          const tag = grp ? `<b class="sup-label">${grp.length === 3 ? t('Tri-set') : t('Bi-set')}</b> · ` : '';
+          return `<div class="item${grp ? ` in-sup${pos === 0 ? ' sup-first' : ''}${pos === grp.length - 1 ? ' sup-last' : ''}` : ''}">
             <a class="grow" href="#/exercicio/${encodeURIComponent(id)}" style="text-decoration:none">
-              <span class="t">${esc(exName(ex))}</span><br><span class="d">${esc(tg(ex.group))} · ${ex.sets} × ${ex.repMin}–${ex.repMax}</span></a>
+              <span class="t">${esc(exName(ex))}</span><br><span class="d">${tag}${esc(tg(ex.group))} · ${ex.sets} × ${ex.repMin}–${ex.repMax}</span></a>
+            ${i < r.ex.length - 1 ? `<button class="icon-btn link-btn${r.link?.[id] ? ' on' : ''}" data-act="toggleLink" data-r="${ri}" data-i="${i}" aria-pressed="${!!r.link?.[id]}" aria-label="${t('Juntar com o próximo em bi-set')}">${icon.link}</button>` : '<span class="icon-btn-space"></span>'}
             <button class="icon-btn" data-act="moveEx" data-r="${ri}" data-i="${i}" ${i === 0 ? 'disabled' : ''} aria-label="${t('Subir {x}', { x: esc(exName(ex)) })}">${icon.up}</button>
             <button class="icon-btn" data-act="removeEx" data-r="${ri}" data-i="${i}" aria-label="${t('Tirar {x} do treino', { x: esc(exName(ex)) })}">${icon.x}</button>
           </div>`;
@@ -59,6 +63,19 @@ function renderRoutines() {
       }).join('')}` : ''}
     </div>`;
 }
+
+actions.toggleLink = el => {
+  const r = state.routines[Number(el.dataset.r)];
+  const id = r.ex[Number(el.dataset.i)];
+  r.link ??= {};
+  if (r.link[id]) { delete r.link[id]; save(); rerender(); return; }
+  r.link[id] = true;
+  // no máximo 3 exercícios seguidos (tri-set)
+  if (supGroups(r).some(g => g.length > 3)) { delete r.link[id]; toast(t('Máximo de 3 exercícios juntos (tri-set).'), 3500); return; }
+  save(); rerender();
+  const g = supGroups(r).find(x => x.includes(id));
+  toast(g.length === 3 ? t('Tri-set criado: os 3 exercícios são feitos em sequência, sem descanso entre eles.') : t('Bi-set criado: os 2 exercícios são feitos em sequência, sem descanso entre eles.'), 4000);
+};
 
 actions.addTemplate = () => {
   sheet(`<h2>${t('Adicionar treino pronto')}</h2>
@@ -119,7 +136,9 @@ actions.moveEx = el => {
   if (i > 0) { [r.ex[i - 1], r.ex[i]] = [r.ex[i], r.ex[i - 1]]; save(); rerender(); }
 };
 actions.removeEx = el => {
-  state.routines[Number(el.dataset.r)].ex.splice(Number(el.dataset.i), 1);
+  const r = state.routines[Number(el.dataset.r)];
+  const [gone] = r.ex.splice(Number(el.dataset.i), 1);
+  if (r.link) delete r.link[gone];
   defaultGroupGoals();
   save(); rerender();
 };
@@ -238,6 +257,7 @@ function renderExercise(id) {
 
       <div class="tip"><b>${t('Como anotar a carga')}:</b> ${esc(loadHint(ex))}</div>
 
+      <button class="ex-note${ex.note ? '' : ' empty'}" data-act="editNote" data-id="${esc(ex.id)}">${icon.edit}<span>${ex.note ? esc(ex.note) : t('Adicionar anotação (ex.: banco na altura 4)')}</span></button>
       ${strengthCard(ex)}
 
       ${st && !st.expired ? `<a class="card" href="#/metas" style="text-decoration:none">
