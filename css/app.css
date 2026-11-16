@@ -599,14 +599,12 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 .builder-tabs .chip .ic { width: 16px; height: 16px; }
 
 /* atalhos do treino em destaque, acima da carga */
-.quick-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.quick-acts .qa.warm { grid-column: 1 / -1; min-height: 52px; }
-.quick-acts .qa:only-child { grid-column: 1 / -1; }
-.quick-acts .qa { display: grid; place-items: center; align-content: center; gap: 2px; min-height: 58px; padding: 8px 6px; border-radius: 14px;
+.quick-acts { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 8px; }
+.quick-acts .qa { display: grid; place-items: center; align-content: center; gap: 2px; min-height: 50px; padding: 6px 6px; border-radius: 14px;
   border: 1px solid var(--line); background: var(--surface-2); text-align: center; }
 .quick-acts .qa.warm { border: 1.5px solid color-mix(in srgb, var(--warm) 60%, transparent); background: color-mix(in srgb, var(--warm) 14%, var(--surface)); }
 .quick-acts .qa.warm b { color: var(--warm); }
-.quick-acts .qa b { font-size: 14px; line-height: 1.2; display: inline-flex; align-items: center; gap: 4px; }
+.quick-acts .qa b { font-size: 13px; line-height: 1.2; text-align: center; display: inline-flex; align-items: center; gap: 4px; }
 .quick-acts .qa b .ic { width: 16px; height: 16px; }
 .quick-acts .qa small { font-size: 11px; color: var(--muted); line-height: 1.2; }
 .quick-acts .qa:active { transform: scale(.97); }
@@ -637,8 +635,8 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 .part-title { color: var(--accent); padding: 6px 4px 2px; }
 
 /* anotação do exercício */
-.ex-note { display: flex; align-items: flex-start; gap: 8px; width: 100%; text-align: left; margin: 4px 0 8px; padding: 10px 12px; border-radius: 12px;
-  border: 1px solid color-mix(in srgb, #e6b450 45%, var(--line)); background: color-mix(in srgb, #e6b450 10%, var(--surface)); color: var(--ink); font-size: 15px; }
+.ex-note { display: flex; align-items: flex-start; gap: 8px; width: 100%; text-align: left; margin: 2px 0 6px; padding: 6px 10px; border-radius: 10px;
+  border: 1px solid color-mix(in srgb, #e6b450 45%, var(--line)); background: color-mix(in srgb, #e6b450 10%, var(--surface)); color: var(--ink); font-size: 14px; }
 .ex-note .ic { width: 16px; height: 16px; flex: none; margin-top: 2px; color: #e6b450; }
 .ex-note.empty { border-style: dashed; background: transparent; color: var(--muted); font-size: 14px; }
 .ex-note.empty .ic { color: var(--muted); }
@@ -719,3 +717,9 @@ button.plain { background: none; border: 0; padding: 0; text-align: left; color:
 .wait-n { display: inline-grid; place-items: center; min-width: 1.6em; height: 1.6em; margin-left: 8px; border-radius: 99px; background: color-mix(in srgb, currentColor 18%, transparent); font-variant-numeric: tabular-nums; font-size: .85em; }
 .confirm-list { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
 .wipe-what { margin: 6px 0 0; padding-left: 18px; display: grid; gap: 3px; font-weight: 400; }
+
+/* tela de treino: Feito fixo na barra de baixo */
+.w-bar .w-done { width: 100%; max-width: 528px; min-height: 54px; }
+body.no-tabs #view:has(.w-done) { padding-bottom: calc(236px + var(--safe-b)); }
+.note-link { display: inline-flex; align-items: center; gap: 4px; border: 0; background: none; padding: 0; color: #e6b450; font: inherit; font-weight: 600; }
+.note-link .ic { width: 14px; height: 14px; }

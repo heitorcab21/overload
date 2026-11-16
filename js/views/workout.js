@@ -141,9 +141,9 @@ function render() {
     return `<div class="set todo"><span class="i">${i + 1}</span><span class="v">${setStr({ w: en.cur.w, r: p.reps[i] ?? p.reps.at(-1) })}</span></div>`;
   }).join('');
 
-  const target = `<div class="target">
+  const target = p.first && !p.w ? '' : `<div class="target">
     <h3>${t('Meta de hoje')}</h3>
-    <div class="big num">${p.first && !p.w ? `${ex.sets} × ${ex.repMin}–${ex.repMax} reps` : `${kg(p.w)} × ${p.reps.join(' · ')}`}</div>
+    <div class="big num">${kg(p.w)} × ${p.reps.join(' · ')}</div>
     ${p.last ? `<div class="small muted num">${t('Último')} (${fmtDate(p.last.date)}): ${kg(p.last.w)} × ${p.last.reps.join(' · ')}</div>` : ''}
     ${p.first ? '' : `<div class="note">${esc(p.note)}</div>`}
   </div>`;
@@ -157,13 +157,12 @@ function render() {
       <div class="quick-acts">
         ${en.sets.length < ex.sets ? `<button class="qa" data-act="wAll"><b>${t('Todas como a meta')}</b></button>` : ''}
         ${en.sets.length || en.warmup.length ? `<button class="qa" data-act="wUndo"><b>${icon.undo}${t('Desfazer')}</b></button>` : `<button class="qa" data-act="wSkip"><b>${t('Pular exercício')}</b></button>`}
-        <button class="qa warm" data-act="wWarm"><b>${t('Foi aquecimento')}</b><small>${t('importante marcar se foi')}</small></button>
+        <button class="qa warm" data-act="wWarm"><b>${t('Foi aquecimento')}</b></button>
       </div>
       <div class="two">
         ${stepper('w', en.cur.w, ex.step || 1, loadLabel(ex), 0, 'wCur').replace('data-change="wCur"', 'data-change="wCur" data-live')}
         ${stepper('r', en.cur.r, 1, t('Repetições'), 0, 'wCur').replace('data-change="wCur"', 'data-change="wCur" data-live')}
       </div>
-      <button class="btn primary big${willBeWarmup(en, ex) ? ' warm-mode' : ''}" data-act="wDone">${icon.check}<span id="doneLabel">${doneText(en, ex)}</span></button>
       <p class="small warm-hint" id="warmHint"${willBeWarmup(en, ex) ? '' : ' hidden'}>${t('Carga abaixo de 70% da meta: esta série vai contar como aquecimento. Suba a carga para registrar como série válida.')}</p>
       <p class="small muted load-hint">${esc(loadHint(ex))}</p>
       ${rirRow(en)}
@@ -199,8 +198,8 @@ function render() {
       ${cues ? `<button class="how-btn" data-act="wHow" aria-label="${t('Como executar')}">${icon.info}<span>${t('Tutorial')}</span></button>` : ''}
     </div>
     ${en.sg ? `<p class="sup-tag">${icon.link}<b>${en.sgn === 3 ? t('Tri-set') : t('Bi-set')}</b> ${esc(a.entries.filter(e => e.sg === en.sg).map(e => exName(state.exercises[e.exId])).join(' + '))}</p>` : ''}
-    <button class="ex-note${ex.note ? '' : ' empty'}" data-act="editNote" data-id="${esc(ex.id)}">${icon.edit}<span>${ex.note ? esc(ex.note) : t('Adicionar anotação (ex.: banco na altura 4)')}</span></button>
-    <p class="muted">${esc(tg(ex.group))} · ${ex.sets} × ${ex.repMin}–${ex.repMax} reps · ${en.sg && en.sgi < en.sgn - 1 ? t('sem descanso até o próximo do {x}', { x: en.sgn === 3 ? t('Tri-set') : t('Bi-set') }) : t('descanso {s} s', { s: restOf(ex) })}${(() => { const lv = strengthLevel(ex); return lv.top ? ` · <a class="top-link" href="#/exercicio/${encodeURIComponent(ex.id)}">${t('Top {n}% de força', { n: lv.top })}</a>` : ''; })()}</p>
+    ${ex.note ? `<button class="ex-note" data-act="editNote" data-id="${esc(ex.id)}" aria-label="${t('Editar anotação')}">${icon.edit}<span>${esc(ex.note)}</span></button>` : ''}
+    <p class="muted">${esc(tg(ex.group))} · ${ex.sets} × ${ex.repMin}–${ex.repMax} reps · ${en.sg && en.sgi < en.sgn - 1 ? t('sem descanso até o próximo do {x}', { x: en.sgn === 3 ? t('Tri-set') : t('Bi-set') }) : t('descanso {s} s', { s: restOf(ex) })}${(() => { const lv = strengthLevel(ex); return lv.top ? ` · <a class="top-link" href="#/exercicio/${encodeURIComponent(ex.id)}">${t('Top {n}% de força', { n: lv.top })}</a>` : ''; })()}${ex.note ? '' : ` · <button class="note-link" data-act="editNote" data-id="${esc(ex.id)}">${icon.edit}${t('Anotar')}</button>`}</p>
     <div class="ex-actions">
       <button class="btn sm ghost" data-act="wSwap">${icon.sync}${t('Trocar exercício')}</button>
       <button class="btn sm ghost" data-act="wAdd">${icon.plus}${t('Adicionar exercício')}</button>
@@ -214,6 +213,7 @@ function render() {
         <button data-act="restAdd" data-s="-15">−15s</button><button data-act="restAdd" data-s="15">+15s</button>
         <button data-act="restSkip">${t('Pular')}</button>
       </div>
+      ${logging && !en.skipped ? `<button class="btn primary big w-done${willBeWarmup(en, ex) ? ' warm-mode' : ''}" data-act="wDone">${icon.check}<span id="doneLabel">${doneText(en, ex)}</span></button>` : ''}
       <div class="w-nav">
         <button class="btn" data-act="wPrev" ${a.idx === 0 ? 'disabled' : ''}>${icon.back}${t('Anterior')}</button>
         <button class="mic" data-act="mic" aria-label="${t('Registrar por voz')}">${icon.mic}</button>
