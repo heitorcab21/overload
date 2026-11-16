@@ -825,6 +825,7 @@ const ui = {
   "ajuste a carga na primeira série": "set the load on the first set",
   "Sugestões equivalentes": "Equivalent options",
   "Ou escolha outro": "Or pick another one",
+  "carga a definir": "load to set",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };

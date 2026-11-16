@@ -57,12 +57,12 @@ function renderRoutines() {
       ${all.length ? `<h3 class="group-title">${t('Todos os exercícios')}</h3>
       ${BODY_PARTS().map(([label, groups]) => {
         if (!all.some(ex => groups.includes(ex.group))) return '';
-        return `<h3 class="part-title">${esc(label)}</h3>${groups.map(g => {
+        return `<section class="part-card"><h3 class="part-title">${esc(label)}</h3>${groups.map(g => {
           const list = all.filter(ex => ex.group === g);
           return list.length ? `<p class="muscle-title">${esc(tg(g))}</p>
       <div class="card flat"><div class="list">${list.map(ex => `<a class="item" href="#/exercicio/${encodeURIComponent(ex.id)}">
-        <span class="grow"><span class="t">${esc(exName(ex))}</span><br><span class="d">${t('próxima')}: ${planStr(planFor(ex))}</span></span>${icon.next}</a>`).join('')}</div></div>` : '';
-        }).join('')}`;
+        <span class="grow"><span class="t">${esc(exName(ex))}</span><br><span class="d">${t('próxima')}: ${planStr(planFor(ex), ex)}</span></span>${icon.next}</a>`).join('')}</div></div>` : '';
+        }).join('')}</section>`;
       }).join('')}` : ''}
     </div>`;
 }
@@ -254,7 +254,7 @@ function renderExercise(id) {
     <div class="stack">
       <div class="target" style="margin:0">
         <h3>${t('Próximo treino')}</h3>
-        <div class="big num">${planStr(p)}</div>
+        <div class="big num">${planStr(p, ex)}</div>
         <div class="note">${esc(p.note)}</div>
       </div>
 

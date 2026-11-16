@@ -656,3 +656,9 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 .subs .item .ic { color: var(--accent); }
 .btn.warm-soft { background: color-mix(in srgb, var(--warm) 14%, var(--surface)); border: 1.5px solid color-mix(in srgb, var(--warm) 55%, transparent); color: var(--warm); font-weight: 700; }
 .muscle-title { font-size: 13px; font-weight: 700; color: var(--ink-2); margin: 6px 4px 0; }
+
+/* base de cada parte do corpo (Tronco, Braços, Inferiores) agrupando os músculos */
+.part-card { display: grid; gap: 8px; padding: 12px; border-radius: 20px; background: color-mix(in srgb, var(--accent) 6%, var(--surface)); border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line)); }
+.part-card .part-title { padding: 2px 4px 0; }
+.part-card .muscle-title { margin: 4px 4px -2px; }
+.part-card .card.flat { background: var(--bg); }

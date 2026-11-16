@@ -34,7 +34,12 @@ export function migrateLoadSteps() {
 
 export { ensureExercise };
 
-export const planStr = p => (p.first && !p.w ? t('definir carga') : `${kg(p.w)} × ${p.reps.join(' · ')}`);
+export const planStr = (p, ex) => {
+  if (p.first && !p.w) return t('definir carga');
+  // carga 0 num exercício que usa carga: falta informar o peso (não é peso corporal)
+  if (!p.w && ex && !ex.bw) return `${t('carga a definir')} × ${p.reps.join(' · ')}`;
+  return `${kg(p.w)} × ${p.reps.join(' · ')}`;
+};
 
 // ---------- Primeiro acesso ----------
 
@@ -148,7 +153,7 @@ function renderHome() {
         const p = planFor(ex);
         return `<div class="plan-line"><span class="n">${esc(exName(ex))}</span>
           ${p.kind === 'up' ? `<span class="badge up">${icon.up}${t('subir')}</span>` : ''}
-          <span class="v num">${planStr(p)}</span></div>`;
+          <span class="v num">${planStr(p, ex)}</span></div>`;
       }).join('') || `<p class="muted">${t('Este treino ainda não tem exercícios.')}</p>`}</div>
       <button class="btn primary big" data-act="start" data-id="${r.id}" ${exs.length ? '' : 'disabled'}>${icon.play}${t('Começar treino')}</button>
       <button class="btn ghost block" data-act="freeWorkout">${icon.plus}${t('Treino livre')}</button>
