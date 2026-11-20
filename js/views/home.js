@@ -121,6 +121,7 @@ function renderHome() {
   if (!state.onboarded) { go('#/inicio'); return; }
   // primeiro acesso: pede o perfil uma vez (libera nível de força e composição corporal)
   if (!state.profile && !state.settings.profileAsked) { go('#/perfil'); return; }
+  if (!state.intent && !state.settings.intentAsked) { go('#/objetivo'); return; }
   const now = new Date();
   const ws = weekStart(now);
   const trained = new Set(sessionsIn(ws, addDays(ws, 7)).map(s => (new Date(s.date).getDay() + 6) % 7));
@@ -322,6 +323,10 @@ export function buildSummary() {
     const st = exGoalStatus(ex, now);
     if (!st || st.expired) continue;
     L.push(`- ${ex.name}: meta ${w(st.goal)}, melhor do mês ${st.monthBest ? w(st.monthBest) : 'sem registro'}, meta desta semana ${w(st.weekSet)} (${st.weekDone ? 'batida' : 'pendente'})`);
+  }
+  if (state.intent) {
+    const names = { massa: 'ganhar massa', forca: 'ficar mais forte', emagrecer: 'emagrecer e definir', saude: 'saúde e condicionamento' };
+    L.push('', `OBJETIVO DA PESSOA: ${names[state.intent.goal] || state.intent.goal}; ${state.intent.days} treinos por semana${state.intent.focus?.length ? `; prioriza ${state.intent.focus.join(', ')}` : ''}.`);
   }
   L.push('', 'FICHAS (DIAS DE TREINO) ATUAIS:');
   for (const r of state.routines) L.push(`- ${routineName(r)}: ${r.ex.map(id => state.exercises[id]?.name).filter(Boolean).join(', ')}`);

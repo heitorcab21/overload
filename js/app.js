@@ -1,5 +1,6 @@
 // Ponto de entrada: liga as telas, os eventos globais e o modo offline.
-import { state } from './store.js';
+import { state, save } from './store.js';
+import { autoExGoals } from './intent.js';
 import { $, $$, icon, actions, changes, submits, closeSheet } from './ui.js';
 import { rerender } from './router.js';
 import './views/home.js';
@@ -52,6 +53,8 @@ document.addEventListener('submit', ev => {
   submits[form.dataset.submit]?.(form, ev);
 });
 
+// metas de carga do mês: cria as que faltam e renova as vencidas, conforme o objetivo
+if (state.intent && autoExGoals()) save();
 initInstall();
 applyTheme();
 applyLang();

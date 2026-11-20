@@ -157,12 +157,12 @@ export function currentWeight(ex) {
   return last ? workWeight(last.sets) : (ex.startW ?? 0);
 }
 
-/** Sugestão de meta mensal: cerca de 5% acima do melhor resultado recente. */
-export function suggestGoal(ex) {
+/** Sugestão de meta mensal: um pouco acima do melhor resultado recente (padrão +5%; growth 1 = manter). */
+export function suggestGoal(ex, growth = 1.05) {
   const now = new Date();
   const best = bestInRange(ex.id, addDays(now, -45), addDays(now, 1));
   if (!best) return null;
-  const E = e1rm(best.w, best.r) * 1.05;
+  const E = e1rm(best.w, best.r) * growth;
   if (best.w <= 0) return { w: 0, r: Math.ceil(E) };
   // tenta manter a carga e ganhar reps; se passar da faixa, sobe a carga
   return toSet(E, ex, best.w);
@@ -267,7 +267,44 @@ export function routineGroupSets() {
  * Metas de grupamento que acompanham a rotina (cumprir o plano = bater a meta).
  * As automáticas mudam quando a rotina muda; as que você editou ficam como estão.
  */
+/**
+ * Planos por objetivo: séries por semana em cada grupo (base e priorizados), crescimento da meta de carga
+ * do mês e minutos de cardio por semana. Grupos pequenos (braços, panturrilhas, abdômen) recebem 3/4.
+ */
+export const GOAL_PLANS = {
+  massa: { base: 12, focus: 18, growth: 1.05, cardio: 90 },
+  forca: { base: 8, focus: 12, growth: 1.05, cardio: 60 },
+  emagrecer: { base: 10, focus: 14, growth: 1, cardio: 225 },
+  saude: { base: 8, focus: 10, growth: 1.025, cardio: 150 },
+};
+/** Opções de prioridade e os grupamentos que cada uma inclui. */
+export const FOCUS_GROUPS = {
+  Peito: ['Peito'], Costas: ['Costas'], Ombros: ['Ombros'], 'Braços': ['Bíceps', 'Tríceps'],
+  Pernas: ['Quadríceps', 'Posteriores'], 'Glúteos': ['Glúteos'], Panturrilhas: ['Panturrilhas'], 'Abdômen': ['Abdômen'],
+};
+const SMALL_GROUPS = ['Bíceps', 'Tríceps', 'Panturrilhas', 'Abdômen'];
+/** Meta semanal de séries de um grupo para o objetivo (null sem objetivo). */
+export function intentWeekSets(group, it = state.intent) {
+  const plan = it && GOAL_PLANS[it.goal];
+  if (!plan) return null;
+  const focus = (it.focus || []).flatMap(f => FOCUS_GROUPS[f] || []).includes(group);
+  const n = focus ? plan.focus : plan.base;
+  return Math.round(SMALL_GROUPS.includes(group) ? n * 0.75 : n);
+}
+
 export function defaultGroupGoals(now = new Date()) {
+  const it = state.intent && GOAL_PLANS[state.intent.goal] ? state.intent : null;
+  if (it) {
+    // com objetivo: os grupos dos treinos e os priorizados recebem a meta do objetivo
+    const groups = new Set([...Object.keys(routineGroupSets()), ...(it.focus || []).flatMap(f => FOCUS_GROUPS[f] || [])]);
+    for (const g of groups) {
+      if (state.goals.groups[g]?.auto === false) continue;
+      const n = intentWeekSets(g, it);
+      state.goals.groups[g] = { week: n, month: Math.round(n * daysInMonth(now) / 7), auto: true };
+    }
+    for (const [g, cur] of Object.entries(state.goals.groups)) if (cur.auto !== false && !groups.has(g)) delete state.goals.groups[g];
+    return;
+  }
   const per = routineGroupSets();
   for (const [g, n] of Object.entries(per)) {
     const cur = state.goals.groups[g];

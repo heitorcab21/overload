@@ -164,6 +164,32 @@ state.routines[0].ex = ['x'];
 defaultGroupGoals(now);
 eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [3, { week: 10, month: 40, auto: false }], 'meta editada fica; automática ajusta');
 
+// ---- metas pelo objetivo ----
+{
+  const { saveIntent, autoExGoals } = await import('../js/intent.js');
+  const { intentWeekSets } = await import('../js/logic.js');
+  const keepSessions = state.sessions, keepGoals = state.goals, keepCardio = state.cardioGoal;
+  state.goals = { ex: {}, groups: { Costas: { week: 10, month: 40, auto: false } } };
+  state.routines = [{ id: 'r', name: 'A', ex: ['x', 'y'] }];
+  state.sessions = [sess(10, [{ w: 40, r: 10 }, { w: 40, r: 10 }, { w: 40, r: 10 }])];
+  const made = saveIntent({ goal: 'massa', focus: ['Glúteos', 'Braços'], days: 4 }, now);
+  eq([state.goals.groups.Peito.week, state.goals.groups['Glúteos'].week, state.goals.groups['Bíceps'].week, state.goals.groups.Costas.week], [12, 18, 14, 10],
+    'massa: 12 séries nos grupos dos treinos, 18 nos priorizados (braços 3/4) e a meta editada à mão fica');
+  eq([state.cardioGoal, made, state.goals.ex.x.auto], [90, 1, true], 'cardio pelo objetivo e meta de carga criada sozinha para quem tem histórico');
+  eq(state.goals.ex.x.w * (1 + state.goals.ex.x.r / 30) > 40 * (1 + 10 / 30), true, 'massa: meta acima do melhor recente');
+  eq([intentWeekSets('Peito', { goal: 'forca', focus: [] }), intentWeekSets('Panturrilhas', { goal: 'emagrecer', focus: ['Panturrilhas'] })], [8, 11], 'força: 8 séries; panturrilha priorizada no emagrecer: 14 × 3/4');
+  // mês seguinte sem bater a meta, duas vezes: a meta alivia para manter o melhor recente
+  const dec = new Date(2026, 11, 3, 12), jan = new Date(2027, 0, 3, 12);
+  state.sessions = [sess(10, [{ w: 40, r: 10 }, { w: 40, r: 10 }, { w: 40, r: 10 }]), { ...sess(1, [{ w: 40, r: 10 }]), date: new Date(2026, 11, 1, 18).toISOString() }];
+  autoExGoals(dec);
+  eq(state.goals.ex.x.misses, 1, 'não bateu: conta 1 falha e mantém o crescimento');
+  state.sessions.push({ ...sess(2, [{ w: 40, r: 10 }]), id: 'sj', date: new Date(2027, 0, 2, 18).toISOString() });
+  autoExGoals(jan);
+  eq([state.goals.ex.x.misses, state.goals.ex.x.w, state.goals.ex.x.r], [2, 40, 10], 'duas falhas: a meta vira manter o melhor recente');
+  state.intent = null; state.sessions = keepSessions; state.goals = keepGoals; state.cardioGoal = keepCardio;
+  state.routines = [{ id: 'r', name: 'A', ex: ['x'] }];
+}
+
 // ---- meta da semana à mão ----
 const auto = autoWeekSet(ex, now);
 setWeekOverride(ex, 44, 9, now);

@@ -1,7 +1,7 @@
 // Metas semanais e mensais por grupamento e por exercício, em formato de planilha.
 import { state, save } from '../store.js';
 import { $, esc, setStr, compact, icon, actions, changes, submits, toast, sheet, closeSheet, meter, stepper, fmtDate, monthName, shareFile } from '../ui.js';
-import { route, rerender } from '../router.js';
+import { route, go, current, rerender } from '../router.js';
 import { activeExercises, BODY_PARTS, GROUPS, exName, tg, loadLabel, loadHint } from '../data.js';
 import {
   groupGoalStatus, exGoalStatus, suggestGoal, weekStart, addDays, monthKey, daysInMonth, entriesFor,
@@ -10,6 +10,8 @@ import {
 import { goalsCSV, importGoalsCSV } from '../export.js';
 import { t, tn } from '../i18n.js';
 import { toW, fromW, toStep } from '../units.js';
+import { intent, saveIntent, trainedDaysThisWeek, GOAL_IDS } from '../intent.js';
+import { GOAL_PLANS, FOCUS_GROUPS, intentWeekSets } from '../logic.js';
 
 let mode = 'week';
 const cap = s => s[0].toUpperCase() + s.slice(1);
@@ -81,6 +83,7 @@ function render() {
         <button class="btn sheet-green-soft" data-act="exportGoals">${icon.share}${t('Exportar planilha')}</button>
         <label class="btn sheet-green-soft">${icon.download}${t('Importar planilha')}<input type="file" accept=".csv,text/csv,text/plain" data-change="importGoals" class="sr"></label>
       </div>
+      ${intentCard()}
       <div class="seg" role="tablist">
         <button role="tab" aria-selected="${isWeek}" class="${isWeek ? 'on' : ''}" data-act="goalMode" data-m="week">${t('Semana')}</button>
         <button role="tab" aria-selected="${!isWeek}" class="${!isWeek ? 'on' : ''}" data-act="goalMode" data-m="month">${t('Mês')}</button>
@@ -190,7 +193,7 @@ submits.saveExGoal = form => {
   const r = Math.round(num(form.r.value, 1));
   const st = exGoalStatus(ex, now);
   // só recria a meta do mês se ela mudou: recriar reinicia os degraus semanais
-  if (!st || st.expired || st.goal.w !== w || st.goal.r !== r) setExGoal(ex, w, r, now);
+  if (!st || st.expired || st.goal.w !== w || st.goal.r !== r) { setExGoal(ex, w, r, now); state.goals.ex[ex.id].auto = false; }
   if (form.ww) {
     const ww = fromW(num(form.ww.value, 0));
     const wr = Math.round(num(form.wr.value, 1));
@@ -243,3 +246,77 @@ changes.importGoals = async el => {
 };
 
 route('metas', render);
+
+// ---------- Objetivo ----------
+
+const GOAL_NAME = () => ({ massa: t('Ganhar massa'), forca: t('Ficar mais forte'), emagrecer: t('Emagrecer e definir'), saude: t('Saúde e condicionamento') });
+const GOAL_DESC = () => ({
+  massa: t('Mais séries por grupo e cargas subindo aos poucos.'),
+  forca: t('Foco em subir a carga nos movimentos principais.'),
+  emagrecer: t('Manter a força e mais cardio na semana.'),
+  saude: t('Volume moderado e 150 min de cardio por semana.'),
+});
+
+function intentCard() {
+  const it = intent();
+  if (!it) {
+    return `<div class="card stack intent-card">
+      <p>${t('Diga o seu objetivo e o app monta as metas de séries, cargas e cardio para você.')}</p>
+      <a class="btn primary block" href="#/objetivo/editar">${t('Definir meu objetivo')}</a></div>`;
+  }
+  const days = trainedDaysThisWeek();
+  const focus = (it.focus || []).map(f => t(f)).join(', ');
+  return `<div class="card stack intent-card">
+    <div class="row between"><span class="grow"><span class="small muted">${t('Seu objetivo')}</span><br><b>${esc(GOAL_NAME()[it.goal])}</b>${focus ? `<br><span class="small muted">${t('Prioridade: {x}', { x: esc(focus) })}</span>` : ''}</span>
+      <a class="btn sm ghost" href="#/objetivo/editar">${t('Mudar')}</a></div>
+    <div class="row between small"><span>${t('Treinos nesta semana')}</span><b>${days} / ${it.days}</b></div>
+    ${meter(days / it.days, days >= it.days)}
+  </div>`;
+}
+
+let idraft = null;
+function renderIntent(arg) {
+  const it = intent();
+  idraft ??= it ? { ...it, focus: [...(it.focus || [])] } : { goal: '', focus: [], days: Math.max(2, Math.min(6, state.routines.length || 3)) };
+  const editing = arg === 'editar';
+  const plan = idraft.goal && GOAL_PLANS[idraft.goal];
+  const preview = plan ? t('Metas: {a} séries por semana em cada grupo{b}, cargas {c} e {d} min de cardio por semana.', {
+    a: plan.base, b: idraft.focus.length ? t(' e {n} nos priorizados', { n: plan.focus }) : '',
+    c: plan.growth > 1 ? t('subindo cerca de {p}% por mês', { p: Math.round((plan.growth - 1) * 100) }) : t('mantidas'), d: plan.cardio,
+  }) : '';
+  $('#view').innerHTML = `
+    <div class="head">${editing ? `<a class="icon-btn" href="#/metas" aria-label="${t('Voltar')}">${icon.back}</a>` : ''}<div class="grow"><h1>${t('Seu objetivo')}</h1>
+      <p class="sub">${t('O app usa isso para montar as suas metas de séries, cargas e cardio.')}</p></div></div>
+    <div class="stack">
+      <div class="goal-opts">${GOAL_IDS.map(g => `<button class="goal-opt${idraft.goal === g ? ' on' : ''}" data-act="intentGoal" data-g="${g}" aria-pressed="${idraft.goal === g}">
+        <b>${esc(GOAL_NAME()[g])}</b><span class="small muted">${esc(GOAL_DESC()[g])}</span></button>`).join('')}</div>
+      <h3>${t('Grupos para priorizar (opcional)')}</h3>
+      <div class="chips wrap">${Object.keys(FOCUS_GROUPS).map(f => `<button class="chip${idraft.focus.includes(f) ? ' on' : ''}" data-act="intentFocus" data-f="${esc(f)}" aria-pressed="${idraft.focus.includes(f)}">${esc(t(f))}</button>`).join('')}</div>
+      ${stepper('days', idraft.days, 1, t('Treinos por semana'), 1, 'intentDays')}
+      ${preview ? `<p class="small intent-preview">${esc(preview)}</p>` : ''}
+      <button class="btn primary big" data-act="intentSave" ${idraft.goal ? '' : 'disabled'}>${t('Definir minhas metas')}</button>
+      ${editing ? '' : `<button class="btn ghost block" data-act="intentSkip">${t('Preencher depois')}</button>`}
+      <p class="small muted center">${t('As metas que você editar à mão ficam como estão.')}</p>
+    </div>`;
+}
+actions.intentGoal = el => { idraft.goal = el.dataset.g; rerender(); };
+actions.intentFocus = el => {
+  const f = el.dataset.f;
+  idraft.focus = idraft.focus.includes(f) ? idraft.focus.filter(x => x !== f) : [...idraft.focus, f];
+  rerender();
+};
+changes.intentDays = el => { idraft.days = Math.max(1, Math.min(7, Math.round(Number(el.value) || 1))); };
+actions.intentSave = () => {
+  if (!idraft?.goal) return;
+  const days = Number($('#view input[name="days"]')?.value) || idraft.days;
+  const n = saveIntent({ ...idraft, days });
+  state.settings.intentAsked = true;
+  save();
+  const editing = current().arg === 'editar';
+  idraft = null;
+  toast(n ? tn(n, 'Metas montadas pelo seu objetivo ({n} de carga).', 'Metas montadas pelo seu objetivo ({n} de carga).') : t('Metas montadas pelo seu objetivo.'), 4000);
+  go(editing ? '#/metas' : '#/hoje');
+};
+actions.intentSkip = () => { state.settings.intentAsked = true; idraft = null; save(); go('#/hoje'); };
+
+route('objetivo', renderIntent, { noTabs: true, tab: 'metas' });
