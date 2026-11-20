@@ -249,8 +249,8 @@ actions.weekDay = el => {
       : cc.length ? '' : `<p class="muted">${t('Nenhum treino registrado neste dia.')}</p>`}
     ${cc.length ? `<h3>${t('Cardio')}</h3><div class="card flat"><div class="list">${cc.map(c => `<button class="item" data-act="cardioEdit" data-id="${c.id}">
       <span class="grow t">${esc(cardioLine(c))}</span>${icon.edit}</button>`).join('')}</div></div>` : ''}
-    ${!isToday && state.routines.length ? `<button class="btn primary block" data-act="pickOnDay" data-day="${at.toISOString()}">${icon.plus}${t('Registrar treino neste dia')}</button>` : ''}
-    <button class="btn block" data-act="cardioOnDay" data-day="${at.toISOString()}">${icon.heart}${t('Registrar cardio neste dia')}</button>`);
+    ${!isToday && state.routines.length ? `<button class="btn accent-soft block" data-act="pickOnDay" data-day="${at.toISOString()}">${icon.plus}${t('Registrar treino neste dia')}</button>` : ''}
+    <button class="btn cardio-soft block" data-act="cardioOnDay" data-day="${at.toISOString()}">${icon.heart}${t('Registrar cardio neste dia')}</button>`);
 };
 /** Escolher a ficha do treino de outro dia (ou resolver antes o treino aberto com séries). */
 actions.pickOnDay = el => {

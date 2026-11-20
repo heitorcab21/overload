@@ -761,3 +761,5 @@ body.no-tabs #view:has(.w-done) { padding-bottom: calc(320px + var(--safe-b)); }
 .rest .rest-bell { display: grid; place-items: center; width: 38px; padding: 0; color: var(--accent); }
 .rest .rest-bell .ic { width: 18px; height: 18px; }
 #view > .quick-acts { margin: 2px 0 10px; }
+/* mesma forma do botão de treino, na cor do cardio (a mesma da semana) */
+.btn.cardio-soft { background: color-mix(in srgb, var(--warm) 14%, var(--surface)); border: 1.5px solid color-mix(in srgb, var(--warm) 55%, transparent); color: var(--warm); font-weight: 700; font-size: 14px; }
