@@ -76,14 +76,15 @@ async function claudeClient() {
   return new Anthropic({ apiKey: aiKey('claude'), dangerouslyAllowBrowser: true });
 }
 
-async function askClaude({ system, user, effort, schema }) {
+async function askClaude({ system, user, messages, effort, schema, cache }) {
   const client = await claudeClient();
   const model = aiModel('claude');
   const params = {
     model,
     max_tokens: 16000,
-    system,
-    messages: [{ role: 'user', content: user }],
+    // na conversa, o contexto do app (longo e igual em todas as perguntas) fica em cache
+    system: cache ? [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }] : system,
+    messages: messages ?? [{ role: 'user', content: user }],
     output_config: { effort, ...(schema ? { format: { type: 'json_schema', schema } } : {}) },
   };
   let res;
@@ -112,10 +113,10 @@ async function askClaude({ system, user, effort, schema }) {
 
 const jsonRule = schema => `\n\nResponda somente com um objeto JSON válido (sem texto antes ou depois) que siga este JSON Schema:\n${JSON.stringify(schema)}`;
 
-async function askOpenAI({ system, user, schema }) {
+async function askOpenAI({ system, user, messages, schema }) {
   const body = {
     model: aiModel('openai'),
-    messages: [{ role: 'system', content: system + (schema ? jsonRule(schema) : '') }, { role: 'user', content: user }],
+    messages: [{ role: 'system', content: system + (schema ? jsonRule(schema) : '') }, ...(messages ?? [{ role: 'user', content: user }])],
     ...(schema ? { response_format: { type: 'json_object' } } : {}),
   };
   const data = await http('https://api.openai.com/v1/chat/completions', {
@@ -129,14 +130,14 @@ async function askOpenAI({ system, user, schema }) {
   return (c.message?.content || '').trim();
 }
 
-async function askGemini({ system, user, schema }) {
+async function askGemini({ system, user, messages, schema }) {
   const model = aiModel('gemini');
   const data = await http(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-goog-api-key': aiKey('gemini') },
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: system + (schema ? jsonRule(schema) : '') }] },
-      contents: [{ role: 'user', parts: [{ text: user }] }],
+      contents: (messages ?? [{ role: 'user', content: user }]).map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })),
       ...(schema ? { generationConfig: { responseMimeType: 'application/json' } } : {}),
     }),
   });
@@ -279,6 +280,26 @@ const COACH = () => `Você é um treinador de musculação experiente e direto, 
 Responda em ${REPLY()}, em texto simples, sem markdown, sem tabelas e sem emojis.
 As cargas anotadas são a carga total levantada (barra + anilhas, ou os dois halteres somados).
 Baseie-se apenas nos dados fornecidos. Não dê diagnóstico médico: se houver relato de dor persistente, recomende procurar um profissional de saúde.`;
+
+/**
+ * Conversa com o Treinador: messages = [{ role: 'user' | 'assistant', content }], começando e terminando
+ * numa mensagem da pessoa. context = os dados do app (treinos, fichas, perfil, metas, cardio).
+ */
+export function aiChat(messages, context) {
+  return ask({
+    effort: 'low',
+    cache: true,
+    messages,
+    system: `${COACH()}
+Você conversa com a pessoa dentro do app Overload, como o treinador dela. Use os dados abaixo, que são os registros reais dela no app:
+cite exercícios, cargas, datas e metas concretas. Se faltar informação para responder, diga o que falta e peça.
+Seja direto: respostas curtas (até 150 palavras), salvo se a pessoa pedir algo maior, como montar um treino.
+Pode usar listas simples começadas por "- " e destacar termos com **negrito**; nada de tabelas.
+
+DADOS DO APP:
+${context}`,
+  });
+}
 
 /** Análise da semana a partir do resumo dos treinos e das metas. */
 export function aiWeeklyAnalysis(summary) {

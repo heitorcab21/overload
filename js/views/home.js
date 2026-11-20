@@ -11,6 +11,7 @@ import { startWorkout, startFreeWorkout, askNotifyOnce } from './workout.js';
 import { openCardioSheet, cardioLine } from './cardio.js';
 import { cardioIn } from '../cardio.js';
 import { aiEnabled, aiWeeklyAnalysis } from '../ai.js';
+import './coach.js';
 import { profile, bodyComposition, overallStrength, strengthLevel } from '../body.js';
 import { driveAvailable, driveConnected, driveDirty, hasToken } from '../drive.js';
 import { t, tn, lang, LANGS } from '../i18n.js';
@@ -189,16 +190,10 @@ function renderHome() {
       <button class="btn primary block" data-act="backupNow">${t('Salvar backup agora')}</button>
     </div>` : '';
 
-  const la = state.lastAnalysis;
-  const ai = `<div class="card stack">
-    <div class="row between"><h3>${t('Treinador IA')}</h3>${la ? `<span class="small muted">${fmtDate(la.date)}</span>` : ''}</div>
-    ${la ? `<p class="ai-text">${esc(la.text)}</p>` : ''}
-    ${aiEnabled()
-      ? `<button class="btn block" data-act="aiWeek" ${state.sessions.length ? '' : 'disabled'}>${icon.spark}${la ? t('Atualizar análise') : t('Analisar minha semana')}</button>
-         ${state.sessions.length ? '' : `<p class="small muted">${t('Registre um treino para liberar a análise.')}</p>`}`
-      : `<p class="muted">${t('Opcional: adicione em Ajustes uma chave de API da sua IA favorita (Claude, ChatGPT ou Gemini) para receber análises da semana e tirar dúvidas de execução. O app funciona normalmente sem ela.')}</p>
-         <a class="btn block" href="#/ajustes">${t('Configurar IA')}</a>`}
-  </div>`;
+  const ai = `<button class="coach-btn" data-act="coachOpen">
+    <span class="coach-ic">${icon.spark}</span>
+    <span class="grow"><b>${t('Treinador')}</b><br><span class="small muted">${t('Converse com a IA sobre os seus treinos')}</span></span>${icon.next}
+  </button>`;
 
   $('#view').innerHTML = `
     <div class="head"><div class="brand grow"><b>Overload</b><span class="muted small">${fmtDate(now)}</span></div></div>
@@ -293,7 +288,8 @@ actions.chooseRoutine = () => {
 actions.setNext = el => { state.next = Number(el.dataset.i); save(); closeSheet(); rerender(); };
 
 /** Resumo em texto dos últimos treinos e metas, enviado à IA (em português; a IA responde no idioma escolhido). */
-function buildSummary() {
+/** Contexto para a IA: treinos recentes, fichas, perfil, força, metas, cardio e próximas cargas. */
+export function buildSummary() {
   const now = new Date();
   const from = addDays(now, -14);
   const L = [`Data de hoje: ${now.toLocaleDateString('pt-BR')}`, '', 'TREINOS DOS ÚLTIMOS 14 DIAS:'];
@@ -328,6 +324,14 @@ function buildSummary() {
     if (!st || st.expired) continue;
     L.push(`- ${ex.name}: meta ${w(st.goal)}, melhor do mês ${st.monthBest ? w(st.monthBest) : 'sem registro'}, meta desta semana ${w(st.weekSet)} (${st.weekDone ? 'batida' : 'pendente'})`);
   }
+  L.push('', 'FICHAS (DIAS DE TREINO) ATUAIS:');
+  for (const r of state.routines) L.push(`- ${routineName(r)}: ${r.ex.map(id => state.exercises[id]?.name).filter(Boolean).join(', ')}`);
+  const cc = cardioIn(from, addDays(now, 1));
+  L.push('', `CARDIO DOS ÚLTIMOS 14 DIAS (meta semanal: ${state.cardioGoal || 150} min):`);
+  if (!cc.length) L.push('- nenhum registro');
+  for (const c of cc) L.push(`- ${d(c.date)} · ${cardioLine(c)}`);
+  const old = state.sessions.filter(x => new Date(x.date) < from);
+  if (old.length) L.push('', `HISTÓRICO ANTERIOR: ${old.length} treinos registrados desde ${d(old[0].date)}.`);
   L.push('', 'PRÓXIMAS CARGAS SUGERIDAS PELO APP:');
   for (const ex of Object.values(state.exercises)) {
     if (!entriesFor(ex.id).length) continue;
