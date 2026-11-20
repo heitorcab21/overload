@@ -441,7 +441,7 @@ function mountWeightChart() {
   lineChart(box, ws.map(w => ({ label: fmtDate(w.date, false), value: w.kg, tip: `${fmtDate(w.date)} · ${fmt(w.kg)} kg` })), { unit: ' kg' });
 }
 
-// valores de partida dos campos +/− quando ainda estão vazios (perfil novo)
+// perfil novo: valores de partida para ajustar no + e no − (o sexo continua obrigatório de escolher)
 const START = { age: 25, height: 170, weight: 70 };
 const reqOk = form => ['m', 'f'].includes(form.sex.value)
   && Number(form.age.value) >= 10 && Number(form.age.value) <= 100
@@ -450,12 +450,13 @@ const reqOk = form => ['m', 'f'].includes(form.sex.value)
 
 actions.editProfile = () => {
   const p = state.profile || {};
-  const age = p.birthYear ? new Date().getFullYear() - p.birthYear : '';
+  const age = p.birthYear ? new Date().getFullYear() - p.birthYear : START.age;
   const start = (html, k) => html.replace('class="stepper"', `class="stepper" data-start="${START[k]}"`);
   sheet(`<h2>${t('Seu perfil')}</h2>
     <form class="stack" data-submit="saveProfile" data-change="profReq" data-live>
       <h3>${t('Obrigatórios')}</h3>
       <p class="small muted">${t('Sexo, idade, altura e peso: o app precisa deles para calcular seu corpo e seu nível de força.')}</p>
+      ${p.sex ? '' : `<p class="small start-hint">${t('Os números abaixo são só um ponto de partida: ajuste para os seus no + e no −.')}</p>`}
       <label class="field">${t('Sexo')}
         <select name="sex" required>
           ${p.sex ? '' : `<option value="" selected disabled>${t('Escolha')}</option>`}
@@ -465,9 +466,9 @@ actions.editProfile = () => {
       <p class="small muted">${t('As fórmulas de composição corporal e os padrões de força usam o sexo biológico.')}</p>
       <div class="two">
         ${start(stepper('age', age, 1, t('Idade (anos)'), 10), 'age')}
-        ${start(stepper('height', p.height || '', 1, t('Altura (cm)'), 100), 'height')}
+        ${start(stepper('height', p.height || START.height, 1, t('Altura (cm)'), 100), 'height')}
       </div>
-      ${start(stepper('weight', p.weight || '', 0.5, t('Peso (kg)'), 30), 'weight')}
+      ${start(stepper('weight', p.weight || START.weight, 0.5, t('Peso (kg)'), 30), 'weight')}
       <p class="small muted">${t('Dica: pese-se sempre no mesmo horário, de preferência ao acordar. Cada mudança de peso entra no gráfico.')}</p>
       <fieldset class="opt-fields" id="optFields"${p.sex && p.height && p.weight ? '' : ' disabled'}>
       <h3>${t('Opcionais')}</h3>

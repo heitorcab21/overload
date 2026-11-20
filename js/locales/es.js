@@ -1058,6 +1058,7 @@ const ui = {
   "Primeira notificação enviada. Saia do app: em 10 segundos chega a segunda.": "Primera notificación enviada. Sal de la app: en 10 segundos llega la segunda.",
   "Há um treino aberto com séries registradas. Finalize ou descarte ele para registrar outro dia.": "Hay un entrenamiento abierto con series registradas. Termínalo o descártalo para registrar otro día.",
   "Escolha a ficha e registre as séries como num treino normal; ele fica salvo nesta data.": "Elige la rutina y registra las series como en un entrenamiento normal; queda guardado en esta fecha.",
+  "Os números abaixo são só um ponto de partida: ajuste para os seus no + e no −.": "Los números de abajo son solo un punto de partida: ajústalos a los tuyos con + y −.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
