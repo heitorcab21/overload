@@ -740,7 +740,7 @@ body.no-tabs #view:has(.w-done) { padding-bottom: calc(320px + var(--safe-b)); }
 
 /* perfil: opcionais travados até os obrigatórios */
 .opt-fields { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: 12px; }
-.opt-fields[disabled] > *:not(.opt-lock):not(h3) { opacity: .4; }
+.opt-fields[disabled] .field { opacity: .4; }
 .opt-fields:not([disabled]) .opt-lock { display: none; }
 .opt-lock { color: var(--accent) !important; font-weight: 600; }
 
@@ -764,3 +764,4 @@ body.no-tabs #view:has(.w-done) { padding-bottom: calc(320px + var(--safe-b)); }
 /* mesma forma do botão de treino, na cor do cardio (a mesma da semana) */
 .btn.cardio-soft { background: color-mix(in srgb, var(--warm) 14%, var(--surface)); border: 1.5px solid color-mix(in srgb, var(--warm) 55%, transparent); color: var(--warm); font-weight: 700; font-size: 14px; }
 .start-hint { color: var(--accent); font-weight: 600; }
+.opt-why { text-transform: none; letter-spacing: 0; font-weight: 600; color: var(--muted); }

@@ -455,7 +455,6 @@ actions.editProfile = () => {
   sheet(`<h2>${t('Seu perfil')}</h2>
     <form class="stack" data-submit="saveProfile" data-change="profReq" data-live>
       <h3>${t('Obrigatórios')}</h3>
-      <p class="small muted">${t('Sexo, idade, altura e peso: o app precisa deles para calcular seu corpo e seu nível de força.')}</p>
       ${p.sex ? '' : `<p class="small start-hint">${t('Os números abaixo são só um ponto de partida: ajuste para os seus no + e no −.')}</p>`}
       <label class="field">${t('Sexo')}
         <select name="sex" required>
@@ -463,23 +462,22 @@ actions.editProfile = () => {
           <option value="m"${p.sex === 'm' ? ' selected' : ''}>${t('Masculino')}</option>
           <option value="f"${p.sex === 'f' ? ' selected' : ''}>${t('Feminino')}</option>
         </select></label>
-      <p class="small muted">${t('As fórmulas de composição corporal e os padrões de força usam o sexo biológico.')}</p>
+      <p class="small muted">${t('Sexo biológico, usado nas fórmulas de corpo e de força.')}</p>
       <div class="two">
         ${start(stepper('age', age, 1, t('Idade (anos)'), 10), 'age')}
         ${start(stepper('height', p.height || START.height, 1, t('Altura (cm)'), 100), 'height')}
       </div>
       ${start(stepper('weight', p.weight || START.weight, 0.5, t('Peso (kg)'), 30), 'weight')}
-      <p class="small muted">${t('Dica: pese-se sempre no mesmo horário, de preferência ao acordar. Cada mudança de peso entra no gráfico.')}</p>
+      <p class="small muted">${t('Pese-se sempre no mesmo horário, de preferência ao acordar.')}</p>
       <fieldset class="opt-fields" id="optFields"${p.sex && p.height && p.weight ? '' : ' disabled'}>
-      <h3>${t('Opcionais')}</h3>
-      <p class="small muted opt-lock">${t('Preencha os obrigatórios acima para liberar.')}</p>
-      <p class="small muted">${t('Cintura, pescoço e quadril não são obrigatórios: servem só para deixar a estimativa de gordura corporal mais precisa.')}</p>
-      <p class="small muted">${t('Com fita métrica, sem apertar. Cintura: na altura do umbigo. Pescoço: logo abaixo do pomo de adão. Quadril (mulheres): na parte mais larga.')}</p>
+      <h3>${t('Opcionais')} <span class="opt-why">${t('(para medições mais precisas)')}</span></h3>
+      <p class="small opt-lock">${t('Preencha os obrigatórios acima para liberar.')}</p>
       <div class="two">
         <label class="field">${t('Cintura (cm)')}<input type="number" inputmode="decimal" step="any" min="0" name="waist" value="${p.waist || ''}"></label>
         <label class="field">${t('Pescoço (cm)')}<input type="number" inputmode="decimal" step="any" min="0" name="neck" value="${p.neck || ''}"></label>
       </div>
       <label class="field">${t('Quadril (cm)')}<input type="number" inputmode="decimal" step="any" min="0" name="hip" value="${p.hip || ''}"></label>
+      <p class="small muted">${t('Com fita métrica, sem apertar. Cintura: na altura do umbigo. Pescoço: logo abaixo do pomo de adão. Quadril (mulheres): na parte mais larga.')}</p>
       </fieldset>
       <button class="btn primary big" id="profSave"${p.sex && p.height && p.weight ? '' : ' disabled'}>${t('Salvar')}</button>
     </form>`);

@@ -1059,6 +1059,9 @@ const ui = {
   "Há um treino aberto com séries registradas. Finalize ou descarte ele para registrar outro dia.": "There is an open workout with logged sets. Finish or discard it to log another day.",
   "Escolha a ficha e registre as séries como num treino normal; ele fica salvo nesta data.": "Pick the routine and log the sets as usual; it is saved on this date.",
   "Os números abaixo são só um ponto de partida: ajuste para os seus no + e no −.": "The numbers below are just a starting point: adjust them to yours with + and −.",
+  "Sexo biológico, usado nas fórmulas de corpo e de força.": "Biological sex, used in the body and strength formulas.",
+  "Pese-se sempre no mesmo horário, de preferência ao acordar.": "Weigh yourself at the same time, ideally right after waking up.",
+  "(para medições mais precisas)": "(for more precise measurements)",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
