@@ -1031,6 +1031,8 @@ const ui = {
   "Preencha os obrigatórios acima para liberar.": "Fill in the required fields above to unlock.",
   "Cintura, pescoço e quadril não são obrigatórios: servem só para deixar a estimativa de gordura corporal mais precisa.": "Waist, neck and hip are not required: they only make the body fat estimate more precise.",
   "Escolha o sexo.": "Choose your sex.",
+  "Série a mais": "One more set",
+  "Tirar a série acrescentada": "Remove the added set",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };

@@ -1031,6 +1031,8 @@ const ui = {
   "Preencha os obrigatórios acima para liberar.": "Completa los obligatorios de arriba para habilitar.",
   "Cintura, pescoço e quadril não são obrigatórios: servem só para deixar a estimativa de gordura corporal mais precisa.": "Cintura, cuello y cadera no son obligatorios: solo sirven para que la estimación de grasa corporal sea más precisa.",
   "Escolha o sexo.": "Elige el sexo.",
+  "Série a mais": "Una serie más",
+  "Tirar a série acrescentada": "Quitar la serie agregada",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

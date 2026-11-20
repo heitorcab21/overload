@@ -55,7 +55,9 @@ function cur() {
   return { a, en, ex: state.exercises[en.exId] };
 }
 
-const isDone = (en, ex) => en.skipped || en.sets.length >= ex.sets;
+/** Séries previstas neste treino: as do exercício + as acrescentadas com "+ Série a mais". */
+const goal = (en, ex) => ex.sets + (en.more || 0);
+const isDone = (en, ex) => en.skipped || en.sets.length >= goal(en, ex);
 
 let popSet = -1; // índice da série recém-registrada, para a animação
 
@@ -122,8 +124,8 @@ function render() {
   if (!ex) { a.entries.splice(a.idx, 1); a.idx = Math.max(0, a.idx - 1); save({ touch: false }); render(); return; }
   en.warmup ??= [];
   const cues = exCues(ex);
-  const logging = !en.skipped && (en.sets.length < ex.sets || en.extra);
-  const total = Math.max(ex.sets, en.sets.length + (en.extra ? 1 : 0));
+  const logging = !en.skipped && (en.sets.length < goal(en, ex) || en.extra);
+  const total = Math.max(goal(en, ex), en.sets.length + (en.extra ? 1 : 0));
   const p = en.plan;
 
   const warm = en.warmup.map((s, i) => `<button class="set warm" data-act="wDelWarm" data-i="${i}" aria-label="${t('Série de aquecimento')}: ${setStr(s)}">
@@ -135,15 +137,19 @@ function render() {
         <span class="i">${icon.check}</span><span class="v">${setStr(s)}</span>
         ${s.t ? `<span class="badge warn">${t('falhou')}</span>` : s.rir != null ? `<span class="badge">RIR ${s.rir}${s.rir >= 4 ? '+' : ''}</span>` : ''}<span class="edit-ic">${icon.edit}</span></button>`;
     }
+    const del = en.more > 0 && i === total - 1 && i >= ex.sets
+      ? `<button class="set-del" data-act="wLess" aria-label="${t('Tirar a série acrescentada')}">${icon.x}</button>` : '';
     if (i === en.sets.length && logging) {
-      return `<div class="set cur"><span class="i">${i + 1}</span><span class="v" id="curLabel">${setStr(en.cur)}</span><span class="badge">${t('agora')}</span></div>`;
+      return `<div class="set cur"><span class="i">${i + 1}</span><span class="v" id="curLabel">${setStr(en.cur)}</span><span class="badge">${t('agora')}</span>${del}</div>`;
     }
-    return `<div class="set todo"><span class="i">${i + 1}</span><span class="v">${setStr({ w: en.cur.w, r: p.reps[i] ?? p.reps.at(-1) })}</span></div>`;
+    return `<div class="set todo"><span class="i">${i + 1}</span><span class="v">${setStr({ w: en.cur.w, r: p.reps[i] ?? p.reps.at(-1) })}</span>${del}</div>`;
   }).join('');
 
   // sem carga ainda: só uma caixinha com séries × reps; com carga, o cartão completo
-  const target = p.first && !p.w ? `<div class="target-mini"><span>${t('Meta de hoje')}</span><b class="num">${ex.sets} × ${ex.repMin}–${ex.repMax} reps</b></div>` : `<div class="target">
-    <h3>${t('Meta de hoje')}</h3>
+  // "+ Série": acrescenta uma série só neste treino, a qualquer momento
+  const more = en.skipped ? '' : `<button class="meta-add" data-act="wMore" aria-label="${t('Série a mais')}">${icon.plus}${t('Série')}</button>`;
+  const target = p.first && !p.w ? `<div class="target-mini"><span>${t('Meta de hoje')}</span><b class="num">${goal(en, ex)} × ${ex.repMin}–${ex.repMax} reps</b>${more}</div>` : `<div class="target">
+    <div class="target-head"><h3>${t('Meta de hoje')}</h3>${more}</div>
     <div class="big num">${kg(p.w)} × ${p.reps.join(' · ')}</div>
     ${p.last ? `<div class="small muted num">${t('Último')} (${fmtDate(p.last.date)}): ${kg(p.last.w)} × ${p.last.reps.join(' · ')}</div>` : ''}
     ${p.first ? '' : `<div class="note">${esc(p.note)}</div>`}
@@ -156,7 +162,7 @@ function render() {
   } else if (logging) {
     body = `<div class="log">
       <div class="quick-acts">
-        ${en.sets.length < ex.sets ? `<button class="qa" data-act="wAll"><b>${t('Todas como a meta')}</b></button>` : ''}
+        ${en.sets.length < goal(en, ex) ? `<button class="qa" data-act="wAll"><b>${t('Todas como a meta')}</b></button>` : ''}
         ${en.sets.length || en.warmup.length ? `<button class="qa" data-act="wUndo"><b>${icon.undo}${t('Desfazer')}</b></button>` : `<button class="qa" data-act="wSkip"><b>${t('Pular exercício')}</b></button>`}
         <button class="qa warm" data-act="wWarm"><b>${t('Foi aquecimento')}</b></button>
       </div>
@@ -170,10 +176,7 @@ function render() {
       <h3>${t('Aconteceu algo?')}</h3>
       <div class="chips">${Object.entries(FLAGS()).filter(([k]) => k === 'dor' || k === 'troca').map(([k, v]) =>
         `<button class="chip${en.flags.includes(k) ? ' on' : ''}" data-act="wFlag" data-v="${k}" aria-pressed="${en.flags.includes(k)}">${v}</button>`).join('')}</div>
-      <div class="row wrap">
-        <button class="btn grow" data-act="wExtra">${icon.plus}${t('Série extra')}</button>
-        <button class="btn" data-act="wUndo">${icon.undo}${t('Desfazer')}</button>
-      </div>
+      <button class="btn block" data-act="wUndo">${icon.undo}${t('Desfazer')}</button>
     </div>`;
   }
 
@@ -240,22 +243,36 @@ function tickRest() {
   }
 }
 
+let audioCtx = null;
+/** Fim do descanso: bipe, bipe, biiipe, como numa largada, mais vibração. */
 function restAlert() {
-  try { navigator.vibrate?.([180, 90, 180]); } catch { /* sem vibração */ }
+  try { navigator.vibrate?.([120, 230, 120, 230, 450]); } catch { /* sem vibração */ }
   try {
     const Ctx = window.AudioContext || window.webkitAudioContext;
-    const ctx = new Ctx();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.frequency.value = 880;
-    g.gain.setValueAtTime(0.15, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
-    o.connect(g).connect(ctx.destination);
-    o.start();
-    o.stop(ctx.currentTime + 0.5);
-    o.onended = () => ctx.close();
+    audioCtx ??= new Ctx();
+    audioCtx.resume?.();
+    const now = audioCtx.currentTime + 0.05;
+    // [início (s), frequência (Hz), duração (s)]: sobe a cada bipe e o último é mais agudo e mais longo
+    [[0, 660, 0.16], [0.5, 784, 0.16], [1.0, 1320, 0.55]].forEach(([at, f, dur]) => {
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = 'square';
+      o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, now + at);
+      g.gain.exponentialRampToValueAtTime(0.22, now + at + 0.015);
+      g.gain.setValueAtTime(0.22, now + at + dur - 0.06);
+      g.gain.exponentialRampToValueAtTime(0.0001, now + at + dur);
+      o.connect(g).connect(audioCtx.destination);
+      o.start(now + at);
+      o.stop(now + at + dur + 0.02);
+    });
   } catch { /* sem áudio */ }
 }
+/** Destrava o áudio no primeiro toque (celulares só tocam som depois de uma interação). */
+function unlockAudio() {
+  try { const Ctx = window.AudioContext || window.webkitAudioContext; audioCtx ??= new Ctx(); audioCtx.resume?.(); } catch { /* sem áudio */ }
+}
+document.addEventListener('pointerdown', unlockAudio, { once: true });
 
 async function keepAwake() {
   try {
@@ -282,7 +299,7 @@ function afterWorkSet(said = []) {
   if (!en.sg) { done(); if (said.length) toast(said.join(' · '), 3500); return; }
   const group = a.entries.map((e, i) => ({ e, i })).filter(x => x.e.sg === en.sg);
   const pos = group.findIndex(x => x.i === a.idx);
-  const pending = x => { const ex = state.exercises[x.e.exId]; return ex && !x.e.skipped && x.e.sets.length < ex.sets; };
+  const pending = x => { const ex = state.exercises[x.e.exId]; return ex && !x.e.skipped && x.e.sets.length < goal(x.e, ex); };
   const ahead = group.slice(pos + 1).find(pending);
   let msg = '';
   if (ahead) {
@@ -393,7 +410,7 @@ actions.wSetToWarm = el => {
 
 actions.wAll = () => {
   const { en, ex } = cur();
-  while (en.sets.length < ex.sets) logSet(en, en.cur.w, en.cur.r);
+  while (en.sets.length < goal(en, ex)) logSet(en, en.cur.w, en.cur.r);
   state.active.restEnd = 0;
   done();
 };
@@ -401,6 +418,9 @@ actions.wUndo = () => { const { en } = cur(); if (undo(en)) done(); };
 actions.wSkip = () => { const { en } = cur(); en.skipped = true; save({ touch: false }); nextExercise(); };
 actions.wUnskip = () => { cur().en.skipped = false; done(); };
 actions.wExtra = () => { cur().en.extra = true; done(); };
+// "+ Série a mais": acrescenta uma série a este exercício só neste treino (a ficha não muda)
+actions.wMore = () => { const { en } = cur(); en.more = (en.more || 0) + 1; done(); };
+actions.wLess = () => { const { en, ex } = cur(); if (en.more > 0 && en.sets.length < goal(en, ex)) { en.more--; done(); } };
 actions.wFeel = el => { const { en } = cur(); en.feel = en.feel === el.dataset.v ? null : el.dataset.v; done(); };
 actions.wFlag = el => {
   const { en } = cur();
@@ -777,7 +797,7 @@ async function applyVoice(text) {
       if (w) { en.sets.push(w); en.lastLog = null; said.push(`${setStr(w)} ${t('contada como série válida')}`); }
       else said.push(t('nenhum aquecimento para desfazer'));
     } else if (act.type === 'planned') {
-      const n = act.all ? Math.max(1, ex.sets - en.sets.length) : 1;
+      const n = act.all ? Math.max(1, goal(en, ex) - en.sets.length) : 1;
       for (let i = 0; i < n; i++) { said.push(setStr(en.cur)); logSet(en, en.cur.w, en.cur.r); }
       worked = true;
     } else if (act.type === 'delta') {

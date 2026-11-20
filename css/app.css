@@ -743,3 +743,16 @@ body.no-tabs #view:has(.w-done) { padding-bottom: calc(320px + var(--safe-b)); }
 .opt-fields[disabled] > *:not(.opt-lock):not(h3) { opacity: .4; }
 .opt-fields:not([disabled]) .opt-lock { display: none; }
 .opt-lock { color: var(--accent) !important; font-weight: 600; }
+
+/* "+ Série a mais" e o × da série acrescentada */
+.set.add-set { width: 100%; justify-content: center; gap: 6px; border: 1.5px dashed var(--line); background: transparent; color: var(--muted); font-weight: 600; font-size: 14px; min-height: 44px; }
+.set.add-set .ic { width: 16px; height: 16px; }
+.set.add-set:active { transform: scale(.98); }
+.set .set-del { margin-left: auto; border: 0; background: transparent; color: var(--muted); width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; }
+.set .set-del .ic { width: 16px; height: 16px; }
+.set.cur .set-del { margin-left: 6px; }
+.meta-add { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; border: 1.5px dashed var(--line); background: transparent; color: var(--ink); font: inherit; font-size: 13px; font-weight: 700; border-radius: 99px; padding: 5px 11px; }
+.meta-add .ic { width: 14px; height: 14px; }
+.meta-add:active { transform: scale(.96); }
+.target-mini { align-items: center; }
+.target-head { display: flex; align-items: center; gap: 8px; }
