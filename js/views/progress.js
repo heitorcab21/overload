@@ -2,7 +2,7 @@
 import { state, save } from '../store.js';
 import { $, esc, fmt, setStr, compact, icon, actions, changes, submits, sheet, closeSheet, fmtDate, stepper, toast, meter } from '../ui.js';
 import { profile, bodyComposition, overallStrength, strengthLevel, quickLevel, STRENGTH_LIFTS } from '../body.js';
-import { route, rerender } from '../router.js';
+import { route, go, rerender } from '../router.js';
 import { GROUPS, LIB, LIB_BY_ID, exName, routineName, loadHint } from '../data.js';
 import { exPack } from '../i18n.js';
 import { t, tn, locale } from '../i18n.js';
@@ -451,12 +451,12 @@ const reqOk = form => ['m', 'f'].includes(form.sex.value)
   && fromLen(form.height.value) >= 100 && fromLen(form.height.value) <= 250
   && fromW(form.weight.value) >= 30 && fromW(form.weight.value) <= 300;
 
-actions.editProfile = () => {
+/** Formulário do perfil (janela do Progresso e tela do primeiro acesso). */
+function profileForm(next = '') {
   const p = state.profile || {};
   const age = p.birthYear ? new Date().getFullYear() - p.birthYear : START.age;
   const start = (html, k) => html.replace('class="stepper"', `class="stepper" data-start="${START[k]}"`);
-  sheet(`<h2>${t('Seu perfil')}</h2>
-    <form class="stack" data-submit="saveProfile" data-change="profReq" data-live>
+  return `<form class="stack" data-submit="saveProfile" data-change="profReq" data-live${next ? ` data-next="${next}"` : ''}>
       <h3>${t('Obrigatórios')}</h3>
       <label class="field">${t('Sexo')}
         <select name="sex" required>
@@ -481,9 +481,11 @@ actions.editProfile = () => {
       <label class="field">${ul(t('Quadril (cm)'))}<input type="number" inputmode="decimal" step="any" min="0" name="hip" value="${p.hip ? toLen(p.hip) : ''}"></label>
       <p class="small muted">${t('Com fita métrica, sem apertar. Cintura: na altura do umbigo. Pescoço: logo abaixo do pomo de adão. Quadril (mulheres): na parte mais larga.')}</p>
       </fieldset>
-      <button class="btn primary big" id="profSave"${p.sex && p.height && p.weight ? '' : ' disabled'}>${t('Salvar')}</button>
-    </form>`);
-};
+      <button class="btn primary big" id="profSave"${p.sex && p.height && p.weight ? '' : ' disabled'}>${next ? t('Continuar') : t('Salvar')}</button>
+    </form>`;
+}
+actions.editProfile = () => sheet(`<h2>${t('Seu perfil')}</h2>${profileForm()}`);
+
 // os opcionais e o Salvar só liberam com sexo, idade, altura e peso preenchidos
 changes.profReq = form => {
   const ok = reqOk(form);
@@ -506,8 +508,31 @@ submits.saveProfile = form => {
     sex: form.sex.value, birthYear: new Date().getFullYear() - Math.round(age), height, weight,
     waist: n('waist', 40, 200, fromLen), neck: n('neck', 20, 70, fromLen), hip: n('hip', 50, 200, fromLen), weights: weights.slice(-200),
   };
-  save(); closeSheet(); rerender();
+  state.settings.profileAsked = true;
+  save();
+  if (form.dataset.next) { go(form.dataset.next); return; }
+  closeSheet(); rerender();
 };
 
+// ---------- Primeiro acesso: "Seu corpo" ----------
+// Pedido uma vez só, logo depois de montar os treinos: libera nível de força, composição corporal e gráfico do peso.
+function renderBodyIntro() {
+  $('#view').innerHTML = `
+    <div class="head"><div class="grow"><h1>${t('Seu corpo')}</h1>
+      <p class="sub">${t('Com estes dados o app libera:')}</p></div></div>
+    <div class="stack">
+      <ul class="perks">
+        <li>${icon.trophy}<span><b>${t('Nível de força')}</b><br><span class="small muted">${t('Em que top você está em cada exercício (ex.: Top 20%), comparado a quem tem seu sexo, idade e peso.')}</span></span></li>
+        <li>${icon.target || icon.chart}<span><b>${t('Metas para subir de nível')}</b><br><span class="small muted">${t('Veja quanto falta para o próximo degrau e acompanhe a evolução.')}</span></span></li>
+        <li>${icon.chart}<span><b>${t('Composição corporal')}</b><br><span class="small muted">${t('Estimativa de massa magra, gordura e gráfico do seu peso.')}</span></span></li>
+      </ul>
+      ${profileForm('#/hoje')}
+      <button class="btn ghost block" data-act="skipBodyIntro">${t('Preencher depois')}</button>
+      <p class="small muted center">${t('Dá para mudar quando quiser em Progresso.')}</p>
+    </div>`;
+}
+actions.skipBodyIntro = () => { state.settings.profileAsked = true; save(); go('#/hoje'); };
+
+route('perfil', renderBodyIntro, { noTabs: true });
 route('progresso', render);
 route('forca', renderStrength, { tab: 'progresso' });

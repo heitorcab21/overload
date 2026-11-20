@@ -119,6 +119,8 @@ actions.pickTemplate = el => {
 
 function renderHome() {
   if (!state.onboarded) { go('#/inicio'); return; }
+  // primeiro acesso: pede o perfil uma vez (libera nível de força e composição corporal)
+  if (!state.profile && !state.settings.profileAsked) { go('#/perfil'); return; }
   const now = new Date();
   const ws = weekStart(now);
   const trained = new Set(sessionsIn(ws, addDays(ws, 7)).map(s => (new Date(s.date).getDay() + 6) % 7));
