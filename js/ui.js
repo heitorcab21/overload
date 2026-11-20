@@ -40,6 +40,7 @@ export const icon = {
   check: I('<path d="M5 12.5l4.5 4.5L19 7.5"/>'),
   mic: I('<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/>'),
   plus: I('<path d="M12 5v14M5 12h14"/>'),
+  bell: I('<path d="M6 9a6 6 0 0112 0c0 5 2 6.5 2 6.5H4S6 14 6 9z"/><path d="M10 19a2 2 0 004 0"/>'),
   minus: I('<path d="M5 12h14"/>'),
   back: I('<path d="M15 5l-7 7 7 7"/>'),
   next: I('<path d="M9 5l7 7-7 7"/>'),

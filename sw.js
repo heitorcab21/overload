@@ -1,6 +1,6 @@
 // Service worker: deixa o Overload funcionando sem internet.
 // Ao publicar uma versão nova, troque o número abaixo para atualizar o cache dos aparelhos.
-const VERSION = 'overload-v93';
+const VERSION = 'overload-v94';
 
 const CORE = [
   './', 'index.html', 'manifest.webmanifest', 'css/app.css',
@@ -22,6 +22,16 @@ self.addEventListener('activate', ev => {
       .then(keys => Promise.all(keys.filter(k => k !== VERSION).map(k => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
+});
+
+// Toque na notificação do descanso: volta para o app (ou abre no treino).
+self.addEventListener('notificationclick', ev => {
+  ev.notification.close();
+  const url = new URL(ev.notification.data?.url || './', self.registration.scope).href;
+  ev.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+    const win = list.find(c => c.url.startsWith(self.registration.scope));
+    return win ? win.focus() : self.clients.openWindow(url);
+  }));
 });
 
 // Arquivos do próprio app: responde do cache na hora e atualiza em segundo plano.

@@ -130,6 +130,7 @@ function renderHome() {
 
   let main;
   if (state.active) {
+    const empty = activeEmpty();
     const a = state.active;
     const done = a.entries.filter(e => e.sets.length || e.skipped).length;
     main = `<div class="card stack">
@@ -137,6 +138,7 @@ function renderHome() {
       <h2>${esc(routineName(a))}</h2>
       <p class="muted">${t('{done} de {total} exercícios registrados', { done, total: a.entries.length })}</p>
       <button class="btn primary big" data-act="resume">${icon.play}${t('Continuar treino')}</button>
+      ${empty ? `<button class="btn ghost block" data-act="dropEmpty">${t('Descartar (nada foi registrado)')}</button>` : ''}
     </div>`;
   } else if (!state.routines.length) {
     main = `<div class="card stack">
@@ -247,14 +249,23 @@ actions.weekDay = el => {
     ${cc.length ? `<h3>${t('Cardio')}</h3><div class="card flat"><div class="list">${cc.map(c => `<button class="item" data-act="cardioEdit" data-id="${c.id}">
       <span class="grow t">${esc(cardioLine(c))}</span>${icon.edit}</button>`).join('')}</div></div>` : ''}
     <button class="btn block" data-act="cardioOnDay" data-day="${at.toISOString()}">${icon.heart}${t('Registrar cardio neste dia')}</button>
-    ${isToday ? '' : state.active ? `<p class="small muted">${t('Termine o treino em andamento para registrar outro dia.')}</p>`
+    ${isToday ? '' : state.active && !activeEmpty() ? `<p class="small muted">${t('Há um treino em andamento com séries registradas. Finalize ou descarte ele para registrar outro dia.')}</p>
+      <button class="btn block" data-act="resume">${icon.play}${t('Ir para o treino em andamento')}</button>`
       : state.routines.length ? `<h3>${t('Registrar treino neste dia')}</h3>
       <p class="small muted">${t('Esqueceu de anotar? Escolha a ficha e registre as séries como num treino normal; ele fica salvo nesta data.')}</p>
       <div class="card flat"><div class="list">${state.routines.map(r => `<button class="item" data-act="startOnDay" data-id="${r.id}" data-day="${at.toISOString()}">
         <span class="grow t">${esc(routineName(r))}</span>${icon.plus}</button>`).join('')}</div></div>` : ''}`);
 };
 actions.cardioOnDay = el => { closeSheet(); openCardioSheet({ date: el.dataset.day }); };
+// um treino aberto sem nenhuma série é substituído sem perguntar: não há nada a perder
 actions.startOnDay = el => { closeSheet(); startWorkout(el.dataset.id, el.dataset.day); };
+actions.dropEmpty = () => { if (!activeEmpty()) return; state.active = null; save({ touch: false }); rerender(); toast(t('Treino vazio descartado.')); };
+
+/** Treino em andamento sem nenhuma série, aquecimento ou cardio registrado. */
+function activeEmpty() {
+  const a = state.active;
+  return !!a && !a.entries.some(e => e.sets.length || e.warmup?.length) && !(state.cardio || []).some(c => c.sessionId === a.id);
+}
 
 actions.start = el => startWorkout(el.dataset.id);
 actions.freeWorkout = () => startFreeWorkout();

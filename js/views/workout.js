@@ -212,6 +212,7 @@ function render() {
         <span class="grow">${t('Descanso')} <b class="num" id="restNum"></b></span>
         <button data-act="restAdd" data-s="-15">−15s</button><button data-act="restAdd" data-s="15">+15s</button>
         <button data-act="restSkip">${t('Pular')}</button>
+        ${bellAsk() ? `<button class="rest-bell" data-act="restBell" aria-label="${t('Avisar o fim do descanso com o app fora da tela')}">${icon.bell}</button>` : ''}
       </div>
       ${logging && !en.skipped ? `<div class="two w-steps">
         ${stepper('w', en.cur.w, ex.step || 1, loadLabel(ex), 0, 'wCur').replace('data-change="wCur"', 'data-change="wCur" data-live')}
@@ -286,6 +287,60 @@ function releaseAwake() { try { wakeLock?.release(); } catch { /* ok */ } wakeLo
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible' && state.active && current().name === 'treino') keepAwake();
 });
+
+// ---------- Aviso do fim do descanso com o app fora da tela ----------
+// Apps instalados pelo navegador não acessam a ilha dinâmica nem as notificações "ao vivo" do sistema.
+// O possível: ao sair do app durante o descanso, uma notificação discreta com a hora em que ele acaba;
+// quando acaba, ela vira um alerta com som e vibração. Funciona bem no Android; no iPhone o sistema
+// pausa o app em segundo plano e o alerta pode não chegar.
+const NOTE_TAG = 'overload-rest';
+const notifySupported = () => 'Notification' in window && 'serviceWorker' in navigator;
+const notifyOn = () => notifySupported() && Notification.permission === 'granted' && state.settings.restNotify !== false;
+const bellAsk = () => notifySupported() && Notification.permission === 'default' && !state.settings.restNotifyAsked;
+let noteTimer = 0;
+
+async function restNote(title, opts) {
+  try {
+    const reg = await navigator.serviceWorker.ready;
+    await reg.showNotification(title, { tag: NOTE_TAG, icon: 'icons/icon-192.png', badge: 'icons/icon-192.png', data: { url: './#/treino' }, ...opts });
+  } catch { /* sem notificação */ }
+}
+async function clearRestNote() {
+  clearTimeout(noteTimer);
+  try { (await (await navigator.serviceWorker.ready).getNotifications({ tag: NOTE_TAG })).forEach(n => n.close()); } catch { /* ok */ }
+}
+function nextSetText() {
+  if (!state.active?.entries?.length) return '';
+  const { en, ex } = cur();
+  return en && ex ? `${exName(ex)} · ${t('série {n}', { n: en.sets.length + 1 })}` : '';
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') { clearRestNote(); return; }
+  const a = state.active;
+  if (!a || !notifyOn()) return;
+  const left = a.restEnd - Date.now();
+  if (left <= 1500) return;
+  const end = new Date(a.restEnd).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  restNote(t('Descansando até {h}', { h: end }), { body: t('Próxima: {x}', { x: nextSetText() }), silent: true, timestamp: a.restEnd });
+  noteTimer = setTimeout(() => {
+    if (document.visibilityState === 'visible' || !state.active) return;
+    restNote(t('Descanso acabou!'), { body: t('Próxima: {x}', { x: nextSetText() }), renotify: true, silent: false, requireInteraction: true, vibrate: [120, 230, 120, 230, 450] });
+  }, left);
+});
+
+/** Pede a permissão (precisa partir de um toque) e liga o aviso. */
+export async function askRestNotify() {
+  state.settings.restNotifyAsked = true;
+  let p = 'denied';
+  try { p = await Notification.requestPermission(); } catch { /* navegador antigo */ }
+  state.settings.restNotify = p === 'granted';
+  save({ touch: false });
+  toast(p === 'granted'
+    ? t('Pronto: no fim do descanso você recebe uma notificação, mesmo com o app fora da tela.')
+    : t('Sem permissão para notificar. Dá para liberar depois nas configurações do navegador.'), 5000);
+  return p;
+}
+actions.restBell = async () => { await askRestNotify(); render(); };
 
 // O treino em andamento fica só neste aparelho até ser finalizado: mexer nele não conta
 // como alteração a enviar ao Drive (senão o selo ficaria vermelho o treino inteiro).

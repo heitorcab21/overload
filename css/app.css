@@ -756,3 +756,7 @@ body.no-tabs #view:has(.w-done) { padding-bottom: calc(320px + var(--safe-b)); }
 .meta-add:active { transform: scale(.96); }
 .target-mini { align-items: center; }
 .target-head { display: flex; align-items: center; gap: 8px; }
+
+/* sininho na barra do descanso */
+.rest .rest-bell { display: grid; place-items: center; width: 38px; padding: 0; color: var(--accent); }
+.rest .rest-bell .ic { width: 18px; height: 18px; }

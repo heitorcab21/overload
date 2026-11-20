@@ -3,6 +3,7 @@ import { state, save, exportJSON, importJSON, emptyData, resetKeepAccount } from
 import { googleBtn, $, $$, esc, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, shareFile, fmtDate, fmtTime, waitDone, startWait, stopWait } from '../ui.js';
 import { route, go, rerender } from '../router.js';
 import { sessionsCSV } from '../export.js';
+import { askRestNotify } from './workout.js';
 import { aiEnabled, aiAskExecution, PROVIDERS, aiProvider, aiKey, aiModel, setAiConfig, listModels } from '../ai.js';
 import { driveAvailable, driveConnected, driveDirty, connect, sync, hasToken, refreshIfNeeded, logout, wipeRemote } from '../drive.js';
 import { isInstalled } from '../install.js';
@@ -73,6 +74,7 @@ function render() {
       <div class="card stack">
         <h3>${t('Treino')}</h3>
         ${stepper('rest', s.rest, 15, t('Descanso entre séries (segundos)'), 0, 'setRest')}
+        ${restNotifyRow()}
         <label class="field">${t('Aparência')}
           <select data-change="setTheme">
             <option value="auto"${s.theme === 'auto' ? ' selected' : ''}>${t('Seguir o sistema')}</option>
@@ -237,6 +239,16 @@ changes.setLang = el => {
   applyLang();
   rerender();
 };
+/** Aviso do fim do descanso com o app fora da tela (notificação). */
+function restNotifyRow() {
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) return `<p class="small muted">${t('Este navegador não permite notificações; o aviso do fim do descanso toca só com o app aberto.')}</p>`;
+  const p = Notification.permission;
+  if (p === 'granted') return `<label class="check"><input type="checkbox" data-change="setRestNotify"${state.settings.restNotify !== false ? ' checked' : ''}>${t('Avisar o fim do descanso com o app fora da tela')}</label>`;
+  if (p === 'denied') return `<p class="small muted">${t('Notificações bloqueadas. Para receber o aviso do fim do descanso com o app fora da tela, libere as notificações do Overload nas configurações do navegador.')}</p>`;
+  return `<button class="btn block" data-act="askRestNotify">${icon.bell}${t('Avisar o fim do descanso com o app fora da tela')}</button>`;
+}
+changes.setRestNotify = el => { state.settings.restNotify = el.checked; save(); };
+actions.askRestNotify = async () => { await askRestNotify(); rerender(); };
 changes.setRest = el => { state.settings.rest = Math.max(0, Math.round(Number(el.value) || 0)); save(); };
 changes.setTheme = el => { state.settings.theme = el.value; save(); applyTheme(); };
 
