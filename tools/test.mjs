@@ -64,6 +64,27 @@ eq([planFor(ex).w, planFor(ex).reps], [40, [12, 10, 9]], '+1 rep na série mais 
 state.sessions = [sess(2, [{ w: 40, r: 12 }, { w: 40, r: 12 }, { w: 40, r: 12 }])];
 eq([planFor(ex).w, planFor(ex).reps, planFor(ex).kind], [42.5, [8, 8, 8], 'up'], 'sobe a carga no topo da faixa');
 
+// ---- sistema imperial: guarda em kg, mostra em lb e sobe em degraus de libra ----
+{
+  const U = await import('../js/units.js');
+  const { setsOfLine } = await import('../js/textimport.js');
+  const { parseSet } = await import('../js/export.js');
+  state.settings.units = 'imperial';
+  const lb = v => Math.round(v * U.LB * 10000) / 10000;
+  eq([U.toW(80), U.fromW(176.4), U.toStep(2.5), U.toStep(2), U.toStep(5)], [176.4, 80.0137, 5, 5, 10], 'conversões de carga e degraus em lb');
+  eq([U.heightStr(181), U.toLen(80), U.toDist(5), U.toSpeed(10)], ['5\'11"', 31.5, 3.11, 6.2], 'altura, medidas, distância e velocidade');
+  state.sessions = [sess(2, [{ w: lb(135), r: 12 }, { w: lb(135), r: 12 }, { w: lb(135), r: 12 }])];
+  eq(U.toW(planFor(ex).w), 140, 'imperial: 135 lb no topo da faixa sobe para 140 lb, não para 140,5');
+  eq(planFor(ex).note, 'Você fez 12 reps em todas as séries: hora de subir para 140 lb.', 'aviso de subida em lb');
+  eq(setsOfLine('135 lb x 10').map(s => U.toW(s.w)), [135], 'texto em libras vira kg');
+  eq(setsOfLine('3x10 com 95').map(s => U.toW(s.w)), [95, 95, 95], 'imperial: número sem unidade é libra');
+  eq(U.toW(parseSet('135 lb x 10').w), 135, 'planilha em libras');
+  state.settings.units = 'metric';
+  eq([U.toW(80), U.toStep(2.5), U.heightStr(181)], [80, 2.5, '181 cm'], 'métrico continua igual');
+  eq(setsOfLine('3x10 com 50kg').map(s => s.w), [50, 50, 50], 'métrico: kg sem conversão');
+  delete state.settings.units;
+}
+
 // RIR: folga grande acelera, zero de folga segura; aquecimento não vira base da progressão
 state.sessions = [sess(2, [{ w: 40, r: 9, rir: 3 }, { w: 40, r: 9, rir: 3 }, { w: 40, r: 8, rir: 4 }])];
 eq([planFor(ex).w, planFor(ex).reps], [40, [11, 11, 10]], 'RIR 3+ em tudo: +2 reps');

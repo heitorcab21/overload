@@ -10,6 +10,7 @@ import {
   weekSeries, sessionsIn, monthStart, monthEnd, monthPRCount, entriesFor, bestOf, e1rm, exGoalStatus, tonnage, workSets, addDays,
 } from '../logic.js';
 import { columnChart, lineChart } from '../charts.js';
+import { imperial, toW, fromW, wUnit, toLen, fromLen, heightStr, ul } from '../units.js';
 
 
 // modo do gráfico de cada exercício: métrica (força ou volume) e período (por treino ou por mês)
@@ -51,13 +52,13 @@ export function exerciseProgress(ex, { box = 'exChart', table = true } = {}) {
   const repsOnly = ex.bw && hist.every(h => h.sets.every(s => !s.w));
   const mode = modeOf(ex.id);
   const pts = evoPoints(hist, mode);
-  const unit = repsOnly ? ' reps' : ' kg';
+  const unit = repsOnly ? ' reps' : ` ${wUnit()}`;
   const caption = mode.m === 'f'
-    ? (repsOnly ? t('Melhor série de cada treino, em repetições.') : t('Força estimada (1RM calculado da melhor série de cada treino), em kg.'))
+    ? (repsOnly ? t('Melhor série de cada treino, em repetições.') : ul(t('Força estimada (1RM calculado da melhor série de cada treino), em kg.')))
     : (repsOnly ? t('Repetições somadas, sem contar aquecimento.') : t('Volume: carga × repetições somadas, sem contar aquecimento.'));
   const seg = (k, v, label) => `<button type="button" class="${mode[k] === v ? 'on' : ''}" data-act="evoMode" data-id="${esc(ex.id)}" data-k="${k}" data-v="${v}" aria-pressed="${mode[k] === v}">${label}</button>`;
   const rows = hist.slice(-8).reverse().map(h => `<tr><td class="n">${fmtDate(h.date)}</td>
-    <td class="v">${h.sets.map(s => (s.w > 0 ? `${fmt(s.w)}×${s.r}` : s.r)).join(' · ')}</td></tr>`).join('');
+    <td class="v">${h.sets.map(s => (s.w > 0 ? `${fmt(toW(s.w))}×${s.r}` : s.r)).join(' · ')}</td></tr>`).join('');
   return {
     html: `<div class="row evo-modes">
         <div class="seg sm" role="group" aria-label="${t('Métrica')}">${seg('m', 'f', t('Força'))}${seg('m', 'v', t('Volume'))}</div>
@@ -67,9 +68,11 @@ export function exerciseProgress(ex, { box = 'exChart', table = true } = {}) {
       <div class="chart" id="${box}"></div>
       ${table ? `<table class="sheet-table"><thead><tr><th>${t('Treino')}</th><th class="v">${t('Séries')}</th></tr></thead><tbody>${rows}</tbody></table>` : ''}`,
     mount() {
-      lineChart($('#' + box), pts, {
-        goal: mode.m === 'f' && mode.p === 't' && st && !st.expired ? Math.round(e1rm(st.goal.w, st.goal.r) * 10) / 10 : null,
-        unit: mode.m === 'v' && !repsOnly ? ' kg' : unit,
+      // os valores ficam em kg; na tela vão para a unidade escolhida
+      const cv = v => (repsOnly || v == null ? v : Math.round(toW(v) * 10) / 10);
+      lineChart($('#' + box), pts.map(x => ({ ...x, value: cv(x.value) })), {
+        goal: mode.m === 'f' && mode.p === 't' && st && !st.expired ? cv(Math.round(e1rm(st.goal.w, st.goal.r) * 10) / 10) : null,
+        unit: mode.m === 'v' && !repsOnly ? ` ${wUnit()}` : unit,
       });
     },
   };
@@ -184,8 +187,8 @@ function entrySheet() {
       <p class="small muted">${t('Toque em "Aquec." para marcar ou desmarcar uma série como aquecimento.')}</p>
       ${draft.sets.map((x, i) => `<div class="set-edit${x.warm ? ' is-warm' : ''}">
         <span class="i">${x.warm ? 'A' : draft.sets.slice(0, i + 1).filter(y => !y.warm).length}</span>
-        <input type="number" inputmode="decimal" step="any" min="0" name="w${i}" value="${x.w}" aria-label="${t('Carga da série {n} em kg', { n: i + 1 })}">
-        <span class="muted">kg ×</span>
+        <input type="number" inputmode="decimal" step="any" min="0" name="w${i}" value="${toW(x.w)}" aria-label="${ul(t('Carga da série {n} em kg', { n: i + 1 }))}">
+        <span class="muted">${wUnit()} ×</span>
         <input type="number" inputmode="numeric" step="1" min="0" name="r${i}" value="${x.r}" aria-label="${t('Repetições da série {n}', { n: i + 1 })}">
         <button type="button" class="warm-toggle${x.warm ? ' on' : ''}" data-act="entryWarm" data-i="${i}" aria-pressed="${!!x.warm}">${t('Aquec.')}</button>
         <button type="button" class="icon-btn" data-act="entryDelSet" data-i="${i}" aria-label="${t('Excluir série {n}', { n: i + 1 })}">${icon.x}</button>
@@ -199,7 +202,7 @@ function entrySheet() {
 function readDraft() {
   const f = $('#sheet form');
   draft.sets.forEach((x, i) => {
-    x.w = Math.max(0, Number(f[`w${i}`].value) || 0);
+    x.w = fromW(Math.max(0, Number(f[`w${i}`].value) || 0));
     x.r = Math.max(0, Math.round(Number(f[`r${i}`].value) || 0));
   });
 }
@@ -332,7 +335,7 @@ actions.quickLevel = el => {
   sheet(`<h2>${esc(libName(id))}</h2>
     <form class="stack" data-quick="${id}" onsubmit="return false">
       <div class="two">
-        ${stepper('w', bw ? 0 : 40, bw ? 2.5 : 2.5, bw ? t('Peso extra (kg)') : t('Carga total (kg)'), 0, 'quickCalc')}
+        ${stepper('w', bw ? 0 : (imperial() ? 95 : 40), imperial() ? 5 : 2.5, ul(bw ? t('Peso extra (kg)') : t('Carga total (kg)')), 0, 'quickCalc')}
         ${stepper('r', 8, 1, t('Repetições'), 1, 'quickCalc')}
       </div>
       <p class="small muted">${esc(loadHint({ lib: id }))}</p>
@@ -345,11 +348,11 @@ actions.quickLevel = el => {
 };
 function showQuick(form) {
   const id = form.dataset.quick;
-  const w = Number(form.w.value) || 0, r = Math.round(Number(form.r.value) || 0);
+  const w = fromW(Number(form.w.value) || 0), r = Math.round(Number(form.r.value) || 0);
   const q = quickLevel(id, w, r);
   $('#quickOut').innerHTML = q
     ? `<span class="top-chip big">${t('Top {n}%', { n: q.top })}</span>${meter(q.pct / 100)}
-       <span class="small muted">${t('1RM estimado: {w} kg', { w: Math.round(q.oneRM) })}</span>`
+       <span class="small muted">${ul(t('1RM estimado: {w} kg', { w: Math.round(toW(q.oneRM)) }))}</span>`
     : `<span class="small muted">${t('Informe a carga e as repetições.')}</span>`;
 }
 changes.quickCalc = el => showQuick(el.closest('form'));
@@ -363,14 +366,14 @@ function renderStrength() {
     <div class="stack">
       ${!p ? `<div class="card stack"><p>${t('Descubra em que top de força você está em cada exercício, comparado a pessoas do seu sexo, idade e peso que treinam musculação.')}</p>
         <button class="btn primary block" data-act="editProfile">${t('Preencher perfil')}</button></div>` : `
-      <p class="muted small">${t('Entre {grupo} que treinam musculação, com {idade} anos e cerca de {peso} kg.', { grupo: groupWord(p), idade: p.age, peso: Math.round(p.weight) })}
+      <p class="muted small">${ul(t('Entre {grupo} que treinam musculação, com {idade} anos e cerca de {peso} kg.', { grupo: groupWord(p), idade: p.age, peso: Math.round(toW(p.weight)) }))}
         ${t('Top 10% quer dizer que você é mais forte que 90% dessas pessoas.')}</p>
       ${quickCalc()}
       ${rows.length ? `<h3 class="group-title">${t('Pelos seus treinos')}</h3>` : ''}
       ${rows.map(({ ex, lv }) => `<a class="card stack strength-row" href="#/exercicio/${encodeURIComponent(ex.id)}">
         <div class="row between"><b class="grow">${esc(exName(ex))}</b><span class="top-chip">${t('Top {n}%', { n: lv.top })}</span></div>
         ${meter(lv.pct / 100)}
-        <span class="small muted">${t('1RM estimado: {w} kg', { w: Math.round(lv.oneRM) })} · ${lv.src.test ? t('teste de força') : `${fmt(lv.src.w)} kg × ${lv.src.r}`} · ${fmtDate(lv.src.date, false)}</span>
+        <span class="small muted">${ul(t('1RM estimado: {w} kg', { w: Math.round(toW(lv.oneRM)) }))} · ${lv.src.test ? t('teste de força') : setStr(lv.src)} · ${fmtDate(lv.src.date, false)}</span>
       </a>`).join('') || `<div class="card"><p class="muted">${t('Registre exercícios com barra, halteres ou peso corporal (supino, agachamento, terra, remada, barra fixa...) para ver em que top de força você está.')}</p></div>`}
       ${pending.length ? `<h3 class="group-title">${t('Ainda sem registro')}</h3>
         <div class="card flat"><div class="list">${pending.map(ex => `<a class="item" href="#/exercicio/${encodeURIComponent(ex.id)}">
@@ -403,11 +406,11 @@ function bodyCard() {
       + ` ${t('Informe cintura e pescoço para uma estimativa mais precisa.')}`;
   return `<div class="card stack">
     <div class="row between"><h3>${t('Seu corpo')}</h3><button class="btn sm ghost" data-act="editProfile">${t('Atualizar')}</button></div>
-    <p class="small muted">${p.sex === 'm' ? t('Homem') : t('Mulher')} · ${t('{n} anos', { n: p.age })} · ${fmt(p.height)} cm · ${fmt1(p.weight)} kg</p>
+    <p class="small muted">${p.sex === 'm' ? t('Homem') : t('Mulher')} · ${t('{n} anos', { n: p.age })} · ${heightStr(p.height)} · ${fmt1(toW(p.weight))} ${wUnit()}</p>
     ${weightBlock(p)}
     <div class="tiles">
-      <div class="tile"><span class="l">${t('Massa magra')}</span><span class="v">${fmt1(c.leanKg)} kg</span></div>
-      <div class="tile"><span class="l">${t('Massa gorda')}</span><span class="v">${fmt1(c.fatKg)} kg</span></div>
+      <div class="tile"><span class="l">${t('Massa magra')}</span><span class="v">${fmt1(toW(c.leanKg))} ${wUnit()}</span></div>
+      <div class="tile"><span class="l">${t('Massa gorda')}</span><span class="v">${fmt1(toW(c.fatKg))} ${wUnit()}</span></div>
       <div class="tile"><span class="l">${t('Gordura estimada')}</span><span class="v">${fmt1(c.bf)}%</span><span class="small muted">±${fmt(c.margin)} ${t('pontos')}</span></div>
       <div class="tile"><span class="l">${t('IMC')}</span><span class="v">${fmt1(c.bmi)}</span></div>
     </div>
@@ -428,8 +431,8 @@ function weightBlock(p) {
   const chart = ws.length >= 2;
   let delta = '';
   if (chart) {
-    const d = Math.round((ws.at(-1).kg - ws[0].kg) * 10) / 10;
-    delta = t('{d} kg desde {data}', { d: (d > 0 ? '+' : '') + fmt(d), data: fmtDate(ws[0].date, false) });
+    const d = Math.round((toW(ws.at(-1).kg) - toW(ws[0].kg)) * 10) / 10;
+    delta = ul(t('{d} kg desde {data}', { d: (d > 0 ? '+' : '') + fmt(d), data: fmtDate(ws[0].date, false) }));
   }
   return `<b>${t('Peso corporal')}</b>
     ${chart ? `<p class="small muted">${delta}</p><div class="chart" id="bwChart"></div>` : `<p class="small muted">${t('Atualize seu peso de vez em quando (por exemplo, toda semana, em jejum) para ver o gráfico.')}</p>`}`;
@@ -438,15 +441,15 @@ function mountWeightChart() {
   const box = $('#bwChart');
   const ws = (state.profile?.weights || []).slice(-30);
   if (!box || ws.length < 2) return;
-  lineChart(box, ws.map(w => ({ label: fmtDate(w.date, false), value: w.kg, tip: `${fmtDate(w.date)} · ${fmt(w.kg)} kg` })), { unit: ' kg' });
+  lineChart(box, ws.map(w => ({ label: fmtDate(w.date, false), value: toW(w.kg), tip: `${fmtDate(w.date)} · ${kg(w.kg)}` })), { unit: ` ${wUnit()}` });
 }
 
 // perfil novo: valores de partida para ajustar no + e no − (o sexo continua obrigatório de escolher)
-const START = { age: 25, height: 170, weight: 70 };
+const START = { age: 25, height: 170, weight: 70 }; // métrico; na tela vai para a unidade escolhida
 const reqOk = form => ['m', 'f'].includes(form.sex.value)
   && Number(form.age.value) >= 10 && Number(form.age.value) <= 100
-  && Number(form.height.value) >= 100 && Number(form.height.value) <= 250
-  && Number(form.weight.value) >= 30 && Number(form.weight.value) <= 300;
+  && fromLen(form.height.value) >= 100 && fromLen(form.height.value) <= 250
+  && fromW(form.weight.value) >= 30 && fromW(form.weight.value) <= 300;
 
 actions.editProfile = () => {
   const p = state.profile || {};
@@ -464,18 +467,18 @@ actions.editProfile = () => {
       <p class="small muted">${t('Sexo biológico, usado nas fórmulas de corpo e de força.')}</p>
       <div class="two">
         ${start(stepper('age', age, 1, t('Idade (anos)'), 10), 'age')}
-        ${start(stepper('height', p.height || START.height, 1, t('Altura (cm)'), 100), 'height')}
+        ${start(stepper('height', Math.round(toLen(p.height || START.height)), 1, ul(t('Altura (cm)')), Math.round(toLen(100))), 'height')}
       </div>
-      ${start(stepper('weight', p.weight || START.weight, 0.5, t('Peso (kg)'), 30), 'weight')}
+      ${start(stepper('weight', toW(p.weight || START.weight), imperial() ? 1 : 0.5, ul(t('Peso (kg)')), Math.round(toW(30))), 'weight')}
       <p class="small muted">${t('Pese-se sempre no mesmo horário, de preferência ao acordar.')}</p>
       <fieldset class="opt-fields" id="optFields"${p.sex && p.height && p.weight ? '' : ' disabled'}>
       <h3>${t('Opcionais')} <span class="opt-why">${t('(para medições mais precisas)')}</span></h3>
       <p class="small opt-lock">${t('Preencha os obrigatórios acima para liberar.')}</p>
       <div class="two">
-        <label class="field">${t('Cintura (cm)')}<input type="number" inputmode="decimal" step="any" min="0" name="waist" value="${p.waist || ''}"></label>
-        <label class="field">${t('Pescoço (cm)')}<input type="number" inputmode="decimal" step="any" min="0" name="neck" value="${p.neck || ''}"></label>
+        <label class="field">${ul(t('Cintura (cm)'))}<input type="number" inputmode="decimal" step="any" min="0" name="waist" value="${p.waist ? toLen(p.waist) : ''}"></label>
+        <label class="field">${ul(t('Pescoço (cm)'))}<input type="number" inputmode="decimal" step="any" min="0" name="neck" value="${p.neck ? toLen(p.neck) : ''}"></label>
       </div>
-      <label class="field">${t('Quadril (cm)')}<input type="number" inputmode="decimal" step="any" min="0" name="hip" value="${p.hip || ''}"></label>
+      <label class="field">${ul(t('Quadril (cm)'))}<input type="number" inputmode="decimal" step="any" min="0" name="hip" value="${p.hip ? toLen(p.hip) : ''}"></label>
       <p class="small muted">${t('Com fita métrica, sem apertar. Cintura: na altura do umbigo. Pescoço: logo abaixo do pomo de adão. Quadril (mulheres): na parte mais larga.')}</p>
       </fieldset>
       <button class="btn primary big" id="profSave"${p.sex && p.height && p.weight ? '' : ' disabled'}>${t('Salvar')}</button>
@@ -488,8 +491,9 @@ changes.profReq = form => {
   $('#profSave').disabled = !ok;
 };
 submits.saveProfile = form => {
-  const n = (k, min, max) => { const v = Number(form[k].value); return v >= min && v <= max ? v : null; };
-  const age = n('age', 10, 100), height = n('height', 100, 250), weight = n('weight', 30, 300);
+  // o que se digita está na unidade da tela; guarda sempre em cm e kg
+  const n = (k, min, max, conv = v => v) => { const v = conv(Number(form[k].value)); return v >= min && v <= max ? v : null; };
+  const age = n('age', 10, 100), height = n('height', 100, 250, v => Math.round(fromLen(v))), weight = n('weight', 30, 300, v => Math.round(fromW(v) * 10) / 10);
   if (!['m', 'f'].includes(form.sex.value)) { toast(t('Escolha o sexo.'), 4000); return; }
   if (!age || !height || !weight) { toast(t('Confira idade, altura e peso.'), 4000); return; }
   const old = state.profile || {};
@@ -500,7 +504,7 @@ submits.saveProfile = form => {
   }
   state.profile = {
     sex: form.sex.value, birthYear: new Date().getFullYear() - Math.round(age), height, weight,
-    waist: n('waist', 40, 200), neck: n('neck', 20, 70), hip: n('hip', 50, 200), weights: weights.slice(-200),
+    waist: n('waist', 40, 200, fromLen), neck: n('neck', 20, 70, fromLen), hip: n('hip', 50, 200, fromLen), weights: weights.slice(-200),
   };
   save(); closeSheet(); rerender();
 };

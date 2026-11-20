@@ -5,6 +5,7 @@ import { CARDIO_TYPES } from './cardio.js';
 import { GROUPS, exName, tg, routineName } from './data.js';
 import { groupGoalStatus, exGoalStatus, setExGoal, setWeekOverride, daysInMonth } from './logic.js';
 import { t, lang, locale, allLangs, exNamesAll } from './i18n.js';
+import { imperial, toW, wUnit, toDist, distUnit, ul, LB } from './units.js';
 
 const BOM = '\ufeff';
 const dec = () => (lang() === 'en' ? '.' : ',');
@@ -19,7 +20,7 @@ const csv = rows => BOM + rows.map(r => r.map(cell).join(sepChar())).join('\r\n'
 export function sessionsCSV() {
   const FEEL = { easy: t('fácil'), ok: t('na medida'), hard: t('pesado'), fail: t('até a falha') };
   const FLAG = { dor: t('dor ou desconforto'), troca: t('trocou o aparelho'), execucao: t('execução ruim'), tempo: t('sem tempo') };
-  const rows = [[t('Data'), t('Treino'), t('Exercício'), t('Grupamento'), t('Série'), t('Carga total (kg)'), t('Repetições'), t('Falhou'), 'RIR', t('Sensação'), t('Observações')]];
+  const rows = [[t('Data'), t('Treino'), t('Exercício'), t('Grupamento'), t('Série'), ul(t('Carga total (kg)')), t('Repetições'), t('Falhou'), 'RIR', t('Sensação'), t('Observações')]];
   for (const s of state.sessions) {
     const date = new Date(s.date).toLocaleDateString(locale());
     for (const e of s.entries) {
@@ -27,14 +28,14 @@ export function sessionsCSV() {
       const name = ex ? exName(ex) : e.exId, group = ex ? tg(ex.group) : '';
       const obs = (e.flags || []).map(f => FLAG[f]).filter(Boolean).join(', ');
       if (e.skipped) { rows.push([date, routineName(s), name, group, '', '', '', '', '', '', t('pulado')]); continue; }
-      (e.warmup || []).forEach((x, i) => rows.push([date, routineName(s), name, group, `A${i + 1}`, x.w, x.r, '', '', '', t('aquecimento')]));
-      e.sets.forEach((x, i) => rows.push([date, routineName(s), name, group, i + 1, x.w, x.r, x.t ? t('sim') : '', x.rir ?? '', FEEL[e.feel] || '', obs]));
+      (e.warmup || []).forEach((x, i) => rows.push([date, routineName(s), name, group, `A${i + 1}`, toW(x.w), x.r, '', '', '', t('aquecimento')]));
+      e.sets.forEach((x, i) => rows.push([date, routineName(s), name, group, i + 1, toW(x.w), x.r, x.t ? t('sim') : '', x.rir ?? '', FEEL[e.feel] || '', obs]));
     }
   }
   for (const c of state.cardio || []) {
     const date = new Date(c.date).toLocaleDateString(locale());
     rows.push([date, t('Cardio'), t((CARDIO_TYPES[c.type] || CARDIO_TYPES.outro).name), t('Cardio'), '', '', '', '', '', '',
-      `${c.min} min${c.km ? ` · ${c.km} km` : ''} · ${c.kcal || 0} kcal`]);
+      `${c.min} min${c.km ? ` · ${toDist(c.km)} ${distUnit()}` : ''} · ${c.kcal || 0} kcal`]);
   }
   return csv(rows);
 }
@@ -47,7 +48,7 @@ export function goalsCSV(now = new Date()) {
     rows.push([t('Grupamento'), tg(g.group), tg(g.group), series(g.weekGoal), series(g.weekDone), series(g.monthGoal), series(g.monthDone),
       status(g.monthGoal && g.monthDone >= g.monthGoal, g.weekGoal && g.weekDone >= g.weekGoal)]);
   }
-  const f = s => (s ? (s.w > 0 ? `${num(s.w)} kg x ${s.r}` : `${s.r} reps`) : '');
+  const f = s => (s ? (s.w > 0 ? `${num(toW(s.w))} ${wUnit()} x ${s.r}` : `${s.r} reps`) : '');
   // a coluna "Meta da semana" de exercício também aceita edição e volta na importação
   for (const ex of Object.values(state.exercises)) {
     const st = exGoalStatus(ex, now);
@@ -87,8 +88,10 @@ export function parseCSV(text) {
 /** "42,5 kg x 10", "42.5x10", "42,5 × 10" -> { w, r };  "12 reps" -> { w: 0, r: 12 }. */
 export function parseSet(s) {
   const t = norm(s).replace(/(\d),(\d)/g, '$1.$2');
-  let m = t.match(/(\d+(?:\.\d+)?)\s*(?:kg)?\s*[x×*]\s*(\d+)/);
-  if (m) return { w: Number(m[1]), r: Number(m[2]) };
+  // em libras ("135 lb x 10") ou, no sistema imperial, sem unidade: converte para kg
+  const lb = /\d\s*(lbs?|libras?)\b/.test(t) || (imperial() && !/\d\s*kg\b/.test(t));
+  let m = t.replace(/(\d)\s*(lbs?|libras?)\b/g, '$1kg').match(/(\d+(?:\.\d+)?)\s*(?:kg)?\s*[x×*]\s*(\d+)/);
+  if (m) return { w: lb ? Math.round(Number(m[1]) * LB * 10000) / 10000 : Number(m[1]), r: Number(m[2]) };
   m = t.match(/^(\d+)\s*(?:reps?|repeticoes)?$/);
   return m ? { w: 0, r: Number(m[1]) } : null;
 }

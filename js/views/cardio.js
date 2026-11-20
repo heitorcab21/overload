@@ -7,10 +7,11 @@ import { weekStart, addDays } from '../logic.js';
 import { columnChart } from '../charts.js';
 import { CARDIO_TYPES, INTENSITIES, cardioKcal, cardioIn, cardioMinutes, cardioWeeks } from '../cardio.js';
 import { routinesCard } from './cardiorun.js';
+import { toDist, fromDist, distUnit, ul } from '../units.js';
 
 export const cardioName = type => t((CARDIO_TYPES[type] || CARDIO_TYPES.outro).name);
 const intName = i => ({ leve: t('Leve'), moderado: t('Moderado'), forte: t('Forte') })[i] || t('Moderado');
-export const cardioLine = c => `${cardioName(c.type)} · ${c.min} min${c.km ? ` · ${fmt(c.km)} km` : ''}`;
+export const cardioLine = c => `${cardioName(c.type)} · ${c.min} min${c.km ? ` · ${fmt(toDist(c.km))} ${distUnit()}` : ''}`;
 
 function render() {
   state.cardio ??= [];
@@ -68,7 +69,7 @@ function drawSheet(editing) {
       <div class="cardio-types">${Object.keys(CARDIO_TYPES).map(k => `<button type="button" class="chip${draft.type === k ? ' on' : ''}" data-act="cardioType" data-k="${k}" aria-pressed="${draft.type === k}">${esc(cardioName(k))}</button>`).join('')}</div>
       <div class="two">
         ${stepper('min', draft.min, 5, t('Tempo (min)'), 1)}
-        ${stepper('km', draft.km ?? '', 0.5, t('Distância (km, opcional)'), 0)}
+        ${stepper('km', draft.km != null ? toDist(draft.km) : '', 0.5, ul(t('Distância (km, opcional)')), 0)}
       </div>
       <div class="seg" role="group" aria-label="${t('Intensidade')}">${INTENSITIES.map(i => `<button type="button" class="${draft.int === i ? 'on' : ''}" data-act="cardioInt" data-i="${i}" aria-pressed="${draft.int === i}">${intName(i)}</button>`).join('')}</div>
       <p class="small muted" id="cardioKcal"></p>
@@ -84,7 +85,7 @@ function readForm() {
   const f = $('#sheet form');
   if (!f) return;
   draft.min = Math.max(1, Math.round(Number(f.min.value) || 0));
-  const km = Number(String(f.km.value).replace(',', '.'));
+  const km = fromDist(Number(String(f.km.value).replace(',', '.')));
   draft.km = km > 0 ? Math.round(km * 100) / 100 : null;
   if (f.date?.value) draft.date = new Date(`${f.date.value}T${new Date().toTimeString().slice(0, 8)}`).toISOString();
 }

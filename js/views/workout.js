@@ -10,6 +10,7 @@ import { parseUtterance, voiceSupported, listen, stopListening, abortListening }
 import { aiEnabled, aiParseVoice } from '../ai.js';
 import { refreshIfNeeded, sync, driveConnected } from '../drive.js';
 import { t, tn, exPack } from '../i18n.js';
+import { toW, fromW, toStep } from '../units.js';
 
 const FEEL = () => ({ easy: t('Fácil'), ok: t('Na medida'), hard: t('Pesado'), fail: t('Até a falha') });
 const FLAGS = () => ({ dor: t('Dor ou desconforto'), troca: t('Troquei o aparelho'), execucao: t('Execução ruim'), tempo: t('Sem tempo') });
@@ -211,7 +212,7 @@ function render() {
         ${bellAsk() ? `<button class="rest-bell" data-act="restBell" aria-label="${t('Avisar o fim do descanso com o app fora da tela')}">${icon.bell}</button>` : ''}
       </div>
       ${logging && !en.skipped ? `<div class="two w-steps">
-        ${stepper('w', en.cur.w, ex.step || 1, loadLabel(ex), 0, 'wCur').replace('data-change="wCur"', 'data-change="wCur" data-live')}
+        ${stepper('w', toW(en.cur.w), toStep(ex.step || 1), loadLabel(ex), 0, 'wCur').replace('data-change="wCur"', 'data-change="wCur" data-live')}
         ${stepper('r', en.cur.r, 1, t('Repetições'), 0, 'wCur').replace('data-change="wCur"', 'data-change="wCur" data-live')}
       </div>` : ''}
       ${logging && !en.skipped ? `<button class="btn primary big w-done${willBeWarmup(en, ex) ? ' warm-mode' : ''}" data-act="wDone">${icon.check}<span id="doneLabel">${doneText(en, ex)}</span></button>` : ''}
@@ -390,7 +391,7 @@ function afterWorkSet(said = []) {
 changes.wCur = el => {
   const { en, ex } = cur();
   const v = Math.max(0, Number(el.value) || 0);
-  if (el.name === 'w') en.cur.w = v; else en.cur.r = Math.round(v);
+  if (el.name === 'w') en.cur.w = fromW(v); else en.cur.r = Math.round(v);
   save({ touch: false });
   const label = setStr(en.cur);
   if ($('#curLabel')) $('#curLabel').textContent = label;
@@ -434,7 +435,7 @@ actions.wEditSet = el => {
   sheet(`<h2>${t('Corrigir série {n}', { n: i + 1 })}</h2>
     <form class="stack" data-submit="wEditSave" data-i="${i}">
       <div class="two">
-        ${stepper('w', s.w, ex.step || 1, loadLabel(ex))}
+        ${stepper('w', toW(s.w), toStep(ex.step || 1), loadLabel(ex))}
         ${stepper('r', s.r, 1, t('Repetições'))}
       </div>
       <label class="field">${t('Reps que sobraram (RIR)')}
@@ -446,7 +447,7 @@ actions.wEditSet = el => {
 };
 submits.wEditSave = form => {
   const { en } = cur();
-  const w = Math.max(0, Number(form.w.value) || 0);
+  const w = fromW(Math.max(0, Number(form.w.value) || 0));
   const r = Math.max(0, Math.round(Number(form.r.value) || 0));
   const rir = form.rir.value === '' ? null : Number(form.rir.value);
   en.sets[Number(form.dataset.i)] = rir != null ? { w, r, rir } : { w, r };
@@ -846,11 +847,11 @@ async function applyVoice(text) {
   for (const act of acts) {
     const { en, ex } = cur();
     if (act.type === 'set' && act.warm) {
-      const w = act.w ?? en.cur.w, r = act.r ?? en.cur.r;
+      const w = act.w != null ? fromW(act.w) : en.cur.w, r = act.r ?? en.cur.r;
       logWarm(en, w, r);
       said.push(`${setStr({ w, r })} (${t('aquecimento')})`);
     } else if (act.type === 'set') {
-      const w = act.w ?? en.cur.w, r = act.r ?? en.cur.r;
+      const w = act.w != null ? fromW(act.w) : en.cur.w, r = act.r ?? en.cur.r;
       const kind = record(en, ex, w, r, act.fail ? 'F' : undefined);
       said.push(setStr({ w, r }) + (kind === 'warm' ? ` (${t('aquecimento')})` : act.fail ? ` (${t('falhou')})` : ''));
       if (kind === 'set') worked = true;

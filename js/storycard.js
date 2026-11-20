@@ -6,6 +6,7 @@ import { weekLetters, fmt, compact } from './ui.js';
 import { tonnage, bestOf, e1rm, sessionPRs, weekStart, sessionsIn, addDays } from './logic.js';
 import { strengthLevel } from './body.js';
 import { CARDIO_TYPES } from './cardio.js';
+import { toW, wUnit, toDist, distUnit } from './units.js';
 
 const W = 1080, H = 1920;
 const ACCENT = '#eb6834';
@@ -44,7 +45,7 @@ function roundRect(ctx, x, y, w, h, r) {
 }
 
 const bestSet = sets => sets.reduce((a, b) => (e1rm(b.w, b.r) > e1rm(a.w, a.r) ? b : a));
-const setTxt = s => (s.w > 0 ? `${fmt(s.w)} kg × ${s.r}` : `${s.r} reps`);
+const setTxt = s => (s.w > 0 ? `${fmt(toW(s.w))} ${wUnit()} × ${s.r}` : `${s.r} reps`);
 
 /** Desenha o card do treino e devolve um Blob PNG. */
 export async function storyCard(session) {
@@ -134,7 +135,7 @@ export async function storyCard(session) {
   const fit = Math.max(1, Math.floor((by - 70 - y) / 84));
   // cardio feito no treino entra como mais uma linha
   const cardio = (state.cardio || []).filter(c => c.sessionId === session.id)
-    .map(c => ({ cardio: true, name: t((CARDIO_TYPES[c.type] || CARDIO_TYPES.outro).name), right: `${c.min} min${c.km ? ` · ${fmt(c.km)} km` : ''}` }));
+    .map(c => ({ cardio: true, name: t((CARDIO_TYPES[c.type] || CARDIO_TYPES.outro).name), right: `${c.min} min${c.km ? ` · ${fmt(toDist(c.km))} ${distUnit()}` : ''}` }));
   const all = [...done, ...cardio];
   const show = all.slice(0, all.length > fit ? fit - 1 : fit);
   for (const e of show) {

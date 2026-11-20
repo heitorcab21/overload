@@ -81,7 +81,7 @@ const VOCAB = {
 
 const norm = s => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
   .replace(/(\d),(\d)/g, '$1.$2')
-  .replace(/(\d)\s*(kg|kgs|kilos?|quilos?)\b/g, '$1 kg')
+  .replace(/(\d)\s*(kg|kgs|kilos?|quilos?|lbs?|libras?|pounds?)\b/g, '$1 kg') // unidade: a carga vale na unidade escolhida no app
   .replace(/[×*]/g, ' x ')
   .replace(/(\d)x(\d)/g, '$1 x $2')
   .replace(/[^a-z0-9. ]/g, ' ')

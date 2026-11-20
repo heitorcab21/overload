@@ -1,5 +1,6 @@
 // Utilitários de interface: formatação, ícones, toast e folha modal.
 import { t, lang, locale } from './i18n.js';
+import { toW, wUnit, imperial, LB } from './units.js';
 
 export const $ = (s, r = document) => r.querySelector(s);
 export const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -8,9 +9,11 @@ export const esc = s => String(s ?? '').replace(/[&<>"']/g,
   c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 export const fmt = n => (Math.round(n * 100) / 100).toLocaleString(locale());
-export const kg = w => (w > 0 ? `${fmt(w)} kg` : t('peso corporal'));
-export const setStr = s => (s.w > 0 ? `${fmt(s.w)} kg × ${s.r}` : `${s.r} reps`);
-export const compact = n => (n >= 10000 ? `${fmt(Math.round(n / 100) / 10)} t` : `${fmt(Math.round(n))} kg`);
+export const kg = w => (w > 0 ? `${fmt(toW(w))} ${wUnit()}` : t('peso corporal'));
+export const setStr = s => (s.w > 0 ? `${fmt(toW(s.w))} ${wUnit()} × ${s.r}` : `${s.r} reps`);
+export const compact = n => (imperial()
+  ? (n / LB >= 10000 ? `${fmt(Math.round(n / LB / 100) / 10)}k lb` : `${fmt(Math.round(n / LB))} lb`)
+  : (n >= 10000 ? `${fmt(Math.round(n / 100) / 10)} t` : `${fmt(Math.round(n))} kg`));
 
 const WD = {
   pt: ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'],

@@ -69,6 +69,12 @@ function render() {
           <select data-change="setLang">
             ${LANGS.map(([id, name]) => `<option value="${id}"${lang() === id ? ' selected' : ''}>${name}</option>`).join('')}
           </select></label>
+        <label class="field">${t('Unidades')}
+          <select data-change="setUnits">
+            <option value="metric"${state.settings.units === 'imperial' ? '' : ' selected'}>${t('Métrico (kg, cm, km)')}</option>
+            <option value="imperial"${state.settings.units === 'imperial' ? ' selected' : ''}>${t('Imperial (lb, pés e polegadas, milhas)')}</option>
+          </select></label>
+        ${state.settings.units === 'imperial' ? `<p class="small muted">${t('Seus dados continuam guardados do mesmo jeito: só a exibição muda. Os exemplos da Ajuda usam kg; a regra é a mesma em libras.')}</p>` : ''}
       </div>
 
       <div class="card stack">
@@ -233,6 +239,7 @@ actions.quickLang = el => {
   rerender();
 };
 
+changes.setUnits = el => { state.settings.units = el.value === 'imperial' ? 'imperial' : 'metric'; save(); rerender(); };
 changes.setLang = el => {
   state.settings.lang = el.value;
   save();

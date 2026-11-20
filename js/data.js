@@ -2,6 +2,7 @@
 // Os textos aqui estão em português; as traduções ficam em js/locales/.
 import { t, exPack, allLangs } from './i18n.js';
 import { state } from './store.js';
+import { imperial, ul } from './units.js';
 
 export const GROUPS = [
   'Peito', 'Costas', 'Ombros', 'Bíceps', 'Tríceps',
@@ -564,6 +565,16 @@ export function loadHint(ex) {
     mixed: t('Na máquina: o valor marcado no aparelho. Com halteres: os dois somados (ex.: 5 kg em cada mão = 10 kg).'),
     bw: t('Sem peso extra, deixe 0. Com cinto ou colete de carga, anote só o peso extra.'),
   };
+  // em libras, exemplos com os pesos de academia americana (barra de 45 lb)
+  const HI = {
+    bar: t('Carga total = barra + anilhas dos dois lados. Ex.: barra de 45 lb com 45 lb de cada lado = 135 lb.'),
+    db2: t('Carga total = os dois halteres somados. Ex.: 45 lb em cada mão = 90 lb.'),
+    db1: t('Um halter só: anote o peso dele. Ex.: halter de 45 lb = 45 lb.'),
+    cable2: t('Some as duas polias. Ex.: 30 lb de cada lado = 60 lb.'),
+    plate: t('Some as anilhas dos dois lados, sem contar o peso do aparelho. Ex.: 2 anilhas de 45 lb de cada lado = 180 lb.'),
+    mixed: t('Na máquina: o valor marcado no aparelho. Com halteres: os dois somados (ex.: 10 lb em cada mão = 20 lb).'),
+  };
+  if (imperial() && HI[k]) return HI[k];
   return H[k] ?? t('Anote sempre a carga total levantada: barra + anilhas dos dois lados, os dois halteres somados ou o valor do aparelho.');
 }
 
@@ -578,7 +589,7 @@ export function loadShort(ex) {
 }
 
 /** Rótulo do campo de carga. */
-export const loadLabel = ex => (ex?.bw ? t('Carga extra (kg)') : t('Carga total (kg)'));
+export const loadLabel = ex => ul(ex?.bw ? t('Carga extra (kg)') : t('Carga total (kg)'));
 
 /** Execução ideal do exercício no idioma atual (biblioteca) ou a gerada para exercício próprio. */
 export function exCues(ex) {

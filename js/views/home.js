@@ -15,6 +15,7 @@ import './coach.js';
 import { profile, bodyComposition, overallStrength, strengthLevel } from '../body.js';
 import { driveAvailable, driveConnected, driveDirty, hasToken } from '../drive.js';
 import { t, tn, lang, LANGS } from '../i18n.js';
+import { imperial, heightStr } from '../units.js';
 
 /**
  * Atualiza o passo de aumento dos exercícios com halteres criados antes de a carga
@@ -288,11 +289,11 @@ actions.setNext = el => { state.next = Number(el.dataset.i); save(); closeSheet(
 export function buildSummary() {
   const now = new Date();
   const from = addDays(now, -14);
-  const L = [`Data de hoje: ${now.toLocaleDateString('pt-BR')}`, '', 'TREINOS DOS ÚLTIMOS 14 DIAS:'];
+  const L = [`Data de hoje: ${now.toLocaleDateString('pt-BR')}`, imperial() ? 'Unidades: a pessoa usa o sistema imperial (libras, pés/polegadas, milhas). Responda nessas unidades.' : 'Unidades: sistema métrico.', '', 'TREINOS DOS ÚLTIMOS 14 DIAS:'];
   const feel = { easy: 'fácil', ok: 'na medida', hard: 'pesado', fail: 'até a falha' };
   const flag = { dor: 'dor ou desconforto', troca: 'trocou o aparelho', execucao: 'execução ruim', tempo: 'sem tempo' };
   const d = x => new Date(x).toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' });
-  const w = s => (s.w > 0 ? `${s.w} kg × ${s.r}` : `${s.r} reps`);
+  const w = s => setStr(s);
   for (const s of sessionsIn(from, addDays(now, 1))) {
     L.push(`- ${d(s.date)} · ${s.name} (${s.dur || '?'} min)`);
     for (const e of s.entries) {
@@ -306,9 +307,9 @@ export function buildSummary() {
   const p = profile();
   if (p) {
     const c = bodyComposition(p, overallStrength(p));
-    L.push('', 'PERFIL:', `- ${p.sex === 'm' ? 'homem' : 'mulher'}, ${p.age} anos, ${p.height} cm, ${p.weight} kg, gordura estimada ${Math.round(c.bf)}%, massa magra ${Math.round(c.leanKg)} kg`);
+    L.push('', 'PERFIL:', `- ${p.sex === 'm' ? 'homem' : 'mulher'}, ${p.age} anos, ${heightStr(p.height)}, ${kg(p.weight)}, gordura estimada ${Math.round(c.bf)}%, massa magra ${kg(Math.round(c.leanKg))}`);
     const lv = Object.values(state.exercises).map(ex => [ex, strengthLevel(ex, p)]).filter(([, l]) => l.top);
-    if (lv.length) L.push('NÍVEL DE FORÇA (top % entre praticantes do mesmo sexo, idade e peso):', ...lv.map(([ex, l]) => `- ${ex.name}: top ${l.top}% (1RM estimado ${Math.round(l.oneRM)} kg)`));
+    if (lv.length) L.push('NÍVEL DE FORÇA (top % entre praticantes do mesmo sexo, idade e peso):', ...lv.map(([ex, l]) => `- ${ex.name}: top ${l.top}% (1RM estimado ${kg(Math.round(l.oneRM))})`));
   }
   L.push('', 'METAS DE SÉRIES POR GRUPAMENTO (feito / meta):');
   for (const g of groupGoalStatus(now)) {
@@ -332,7 +333,7 @@ export function buildSummary() {
   for (const ex of Object.values(state.exercises)) {
     if (!entriesFor(ex.id).length) continue;
     const p = planFor(ex);
-    L.push(`- ${ex.name}: ${p.w > 0 ? `${p.w} kg` : 'peso corporal'} × ${p.reps.join(' · ')}`);
+    L.push(`- ${ex.name}: ${p.w > 0 ? kg(p.w) : 'peso corporal'} × ${p.reps.join(' · ')}`);
   }
   return L.join('\n');
 }

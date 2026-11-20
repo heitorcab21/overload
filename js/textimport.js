@@ -4,6 +4,7 @@
 import { LIB, GROUPS } from './data.js';
 import { exNamesAll, allLangs } from './i18n.js';
 import { state } from './store.js';
+import { imperial, LB } from './units.js';
 
 export const norm = s => String(s ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
   .replace(/[^a-z0-9.,:/x×\s-]/g, ' ').replace(/\s+/g, ' ').trim();
@@ -125,8 +126,18 @@ export function matchExercise(raw, group = null) {
 const NUM = '(\\d+(?:[.,]\\d+)?)';
 const num = s => Number(String(s).replace(',', '.'));
 
-/** Séries de uma linha. "15kg 10 rep", "40x12", "40 kg x 12", "3x10 com 50", "50kg 12/10/8", "12 reps". */
+/**
+ * Séries de uma linha, com a carga sempre em kg. Aceita libras ("135 lb x 10"); no sistema imperial,
+ * números sem unidade são libras.
+ */
 export function setsOfLine(line) {
+  const lb = /\d\s*(lbs?|libras?|pounds?)\b/i.test(line) || (imperial() && !/\d\s*(kg|kgs|kilos?|quilos?)\b/i.test(line));
+  const sets = rawSetsOfLine(String(line).replace(/(\d)\s*(lbs?|libras?|pounds?)\b/gi, '$1kg'));
+  return lb ? sets.map(s => (s.w > 0 ? { ...s, w: Math.round(s.w * LB * 10000) / 10000 } : s)) : sets;
+}
+
+/** Séries de uma linha. "15kg 10 rep", "40x12", "40 kg x 12", "3x10 com 50", "50kg 12/10/8", "12 reps". */
+function rawSetsOfLine(line) {
   const s = norm(line).replace(/×/g, 'x');
   let m;
   // 3x10 com 50kg | 4 x 12 50kg | 3x10 @ 40

@@ -9,6 +9,7 @@ import {
 } from '../logic.js';
 import { goalsCSV, importGoalsCSV } from '../export.js';
 import { t, tn } from '../i18n.js';
+import { toW, fromW, toStep } from '../units.js';
 
 let mode = 'week';
 const cap = s => s[0].toUpperCase() + s.slice(1);
@@ -162,7 +163,7 @@ actions.editExGoal = el => {
       data-week0="${active ? `${st.weekSet.w}|${st.weekSet.r}` : ''}">
       <h3>${t('Meta do mês (até o fim de {mes})', { mes: monthName(now.getMonth()) })}</h3>
       <div class="two">
-        ${stepper('w', start.w, ex.step || 1, wLabel)}
+        ${stepper('w', toW(start.w), toStep(ex.step || 1), wLabel)}
         ${stepper('r', start.r, 1, t('Repetições'), 1)}
       </div>
       <p class="small muted">${esc(loadHint(ex))}</p>
@@ -170,7 +171,7 @@ actions.editExGoal = el => {
             : `<p class="small muted">${t('Sem histórico ainda: defina uma meta realista e ajuste depois do primeiro treino.')}</p>`}
       ${active ? `<h3>${t('Meta desta semana')}</h3>
       <div class="two">
-        ${stepper('ww', st.weekSet.w, ex.step || 1, wLabel)}
+        ${stepper('ww', toW(st.weekSet.w), toStep(ex.step || 1), wLabel)}
         ${stepper('wr', st.weekSet.r, 1, t('Repetições'), 1)}
       </div>
       <p class="small muted">${st.weekManual
@@ -185,13 +186,13 @@ submits.saveExGoal = form => {
   const ex = state.exercises[form.dataset.id];
   const now = new Date();
   const num = (v, min) => Math.max(min, Number(v) || 0);
-  const w = num(form.w.value, 0);
+  const w = fromW(num(form.w.value, 0));
   const r = Math.round(num(form.r.value, 1));
   const st = exGoalStatus(ex, now);
   // só recria a meta do mês se ela mudou: recriar reinicia os degraus semanais
   if (!st || st.expired || st.goal.w !== w || st.goal.r !== r) setExGoal(ex, w, r, now);
   if (form.ww) {
-    const ww = num(form.ww.value, 0);
+    const ww = fromW(num(form.ww.value, 0));
     const wr = Math.round(num(form.wr.value, 1));
     if (`${ww}|${wr}` !== form.dataset.week0) setWeekOverride(ex, ww, wr, now);
   }

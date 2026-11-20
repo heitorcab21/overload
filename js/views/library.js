@@ -9,6 +9,7 @@ import { ensureExercise, planStr } from './home.js';
 import { exerciseProgress, groupWord } from './progress.js';
 import { strengthLevel, profile, oneRepMax } from '../body.js';
 import { aiEnabled, aiAskExecution, aiCuesFor } from '../ai.js';
+import { imperial, toW, fromW, toStep, wUnit, ul } from '../units.js';
 
 // ---------- Treinos ----------
 
@@ -325,7 +326,7 @@ function exerciseForm(ex) {
     <label class="field">${t('Grupamento')}<select name="group">${GROUPS.map(g => `<option value="${esc(g)}"${g === e.group ? ' selected' : ''}>${esc(tg(g))}</option>`).join('')}</select></label>
     <div class="two">
       ${stepper('sets', e.sets, 1, t('Séries'), 1)}
-      ${stepper('step', e.step, 0.5, t('Aumento (kg)'))}
+      ${stepper('step', toW(e.step), imperial() ? 2.5 : 0.5, ul(t('Aumento (kg)')))}
     </div>
     <div class="two">
       ${stepper('repMin', e.repMin, 1, t('Reps mínimas'), 1)}
@@ -334,7 +335,7 @@ function exerciseForm(ex) {
     <p class="small muted">${t('Quando você bate as reps máximas em todas as séries, o app sugere subir a carga pelo valor de aumento.')}</p>
     ${stepper('rest', e.rest || 0, 15, t('Descanso (segundos)'), 0)}
     <p class="small muted">${t('0 usa o descanso padrão dos Ajustes ({s} s).', { s: state.settings.rest })}</p>
-    ${!ex || !entriesFor(ex.id).length ? `${stepper('startW', e.startW || 0, e.step || 1, ex?.bw ? t('Carga extra inicial (kg)') : t('Carga inicial (kg)'), 0)}
+    ${!ex || !entriesFor(ex.id).length ? `${stepper('startW', toW(e.startW || 0), toStep(e.step || 1), ul(ex?.bw ? t('Carga extra inicial (kg)') : t('Carga inicial (kg)')), 0)}
     <p class="small muted">${t('A carga que você já usa hoje. Vira a sugestão do primeiro treino; depois o app calcula pelo seu histórico.')}</p>` : ''}
     <button class="btn primary big">${ex ? t('Salvar') : t('Criar exercício')}</button>
   </form>`;
@@ -348,10 +349,10 @@ submits.saveExercise = form => {
   const repMin = Math.max(1, Math.round(n('repMin')));
   const data = {
     name, group: form.group.value, sets: Math.max(1, Math.round(n('sets'))),
-    repMin, repMax: Math.max(repMin, Math.round(n('repMax'))), step: Math.max(0, n('step')),
+    repMin, repMax: Math.max(repMin, Math.round(n('repMax'))), step: Math.max(0, fromW(n('step'))),
     rest: Math.max(0, Math.round(n('rest'))),
   };
-  if (form.startW) data.startW = Math.max(0, n('startW')) || undefined;
+  if (form.startW) data.startW = fromW(Math.max(0, n('startW'))) || undefined;
   let ex = state.exercises[form.dataset.id];
   // nome de exercício da biblioteca não mudou: mantém o original (assim ele segue o idioma escolhido)
   if (ex && name === exName(ex)) data.name = ex.name;
@@ -385,7 +386,7 @@ function renderExercise(id) {
       <button class="icon-btn" data-act="editExercise" data-id="${esc(ex.id)}" aria-label="${t('Configurar exercício')}">${icon.edit}</button>
     </div>
     <h1>${esc(exName(ex))}</h1>
-    <p class="muted" style="margin-bottom:16px">${ex.sets} × ${ex.repMin}–${ex.repMax} reps · ${t('aumento de {w}', { w: ex.step > 0 ? kg(ex.step) : '0 kg' })}</p>
+    <p class="muted" style="margin-bottom:16px">${ex.sets} × ${ex.repMin}–${ex.repMax} reps · ${t('aumento de {w}', { w: ex.step > 0 ? kg(ex.step) : `0 ${wUnit()}` })}</p>
     <div class="stack">
       <div class="target" style="margin:0">
         <h3>${t('Próximo treino')}</h3>
@@ -444,16 +445,16 @@ function strengthCard(ex) {
   }
   const p = profile();
   const s = lv.src;
-  const load = lv.bw ? (s.w ? t('peso corporal + {w} kg', { w: fmt(s.w) }) : t('peso corporal')) : `${fmt(s.w)} kg`;
+  const load = lv.bw ? (s.w ? ul(t('peso corporal + {w} kg', { w: fmt(toW(s.w)) })) : t('peso corporal')) : kg(s.w);
   const setTxt = `${load} × ${s.r}${s.rir ? ` (${t('sobraram {n}', { n: s.rir >= 4 ? '4+' : s.rir })})` : ''}`;
   const reps = s.r + Math.min(4, s.rir || 0);
   const how = reps <= 1 ? t('Uma repetição máxima: o 1RM é a própria carga.')
     : t('Calculado pela fórmula de Epley: carga × (1 + reps ÷ 30).');
   return `<div class="card stack">
     <h3>${t('Seu nível de força')}</h3>
-    <div class="row between"><span class="big-num">${t('Top {n}%', { n: lv.top })}</span><span class="small muted">${t('1RM estimado: {w} kg', { w: Math.round(lv.oneRM) })}</span></div>
+    <div class="row between"><span class="big-num">${t('Top {n}%', { n: lv.top })}</span><span class="small muted">${ul(t('1RM estimado: {w} kg', { w: Math.round(toW(lv.oneRM)) }))}</span></div>
     ${meter(lv.pct / 100)}
-    <p class="small muted">${t('Entre {grupo} que treinam musculação, com {idade} anos e cerca de {peso} kg. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.', { grupo: groupWord(p), idade: p.age, peso: Math.round(p.weight) })}</p>
+    <p class="small muted">${ul(t('Entre {grupo} que treinam musculação, com {idade} anos e cerca de {peso} kg. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.', { grupo: groupWord(p), idade: p.age, peso: Math.round(toW(p.weight)) }))}</p>
     <div class="src-box small">
       <b>${s.test ? t('Base: teste de força de {d}', { d: fmtDate(s.date, false) }) : t('Base: sua melhor série dos últimos 90 dias ({d})', { d: fmtDate(s.date, false) })}</b><br>
       ${esc(setTxt)}. ${how}${lv.bw ? ` ${t('Nos exercícios de peso corporal, seu peso entra na conta.')}` : ''}
@@ -479,19 +480,19 @@ actions.strengthTest = el => {
     </ol>
     <form class="stack" data-submit="saveStrengthTest" data-id="${esc(ex.id)}">
       <div class="two">
-        ${stepper('w', w0, ex.step > 0 ? ex.step : 1, ex.bw ? t('Peso extra (kg)') : t('Carga total (kg)'))}
+        ${stepper('w', toW(w0), toStep(ex.step > 0 ? ex.step : 1), ul(ex.bw ? t('Peso extra (kg)') : t('Carga total (kg)')))}
         ${stepper('r', 5, 1, t('Repetições'), 1)}
       </div>
       <p class="small muted">${esc(loadHint(ex))}</p>
       <p class="small muted">${t('Fez 1 rep máxima? Coloque 1: o app usa a carga como seu 1RM real. O teste não altera a progressão dos treinos.')}</p>
       <button class="btn primary big">${t('Salvar teste')}</button>
     </form>
-    ${tests.length ? `<h3>${t('Testes anteriores')}</h3><div class="list">${tests.map(x => `<div class="item"><span class="grow">${fmtDate(x.date, false)} · ${ex.bw ? `+${fmt(x.w)}` : fmt(x.w)} kg × ${x.r}</span>
+    ${tests.length ? `<h3>${t('Testes anteriores')}</h3><div class="list">${tests.map(x => `<div class="item"><span class="grow">${fmtDate(x.date, false)} · ${ex.bw ? `+${fmt(toW(x.w))}` : fmt(toW(x.w))} ${wUnit()} × ${x.r}</span>
       <button class="icon-btn" data-act="delStrengthTest" data-id="${esc(ex.id)}" data-date="${esc(x.date)}" aria-label="${t('Excluir teste')}">${icon.trash}</button></div>`).join('')}</div>` : ''}`);
 };
 submits.saveStrengthTest = form => {
   const ex = state.exercises[form.dataset.id];
-  const w = Math.max(0, Number(form.w.value) || 0), r = Math.round(Number(form.r.value) || 0);
+  const w = fromW(Math.max(0, Number(form.w.value) || 0)), r = Math.round(Number(form.r.value) || 0);
   if (r < 1 || r > 30 || (!ex.bw && !(w > 0))) { toast(t('Confira a carga e as repetições.'), 4000); return; }
   ex.tests = [...(ex.tests || []), { date: new Date().toISOString(), w, r }].slice(-20);
   save(); closeSheet(); rerender();
@@ -561,12 +562,12 @@ function renderLoads() {
     <div class="head"><div class="grow"><h1>${t('Cargas iniciais')}</h1>
       <p class="sub">${t('Opcional. Informe a carga que você usa hoje para o primeiro treino já vir preenchido. O que ficar em branco você ajusta na hora.')}</p></div></div>
     <div class="stack">
-      <div class="tip">${t('Anote sempre a <b>carga total</b> levantada. Barra: some a barra e as anilhas dos dois lados (barra de 20 kg + 30 kg de cada lado = 80 kg). Halteres: some os dois (20 kg em cada mão = 40 kg). Aparelho e polia: o valor marcado. Cada exercício mostra a regra embaixo do nome.')}</div>
+      <div class="tip">${imperial() ? t('Anote sempre a <b>carga total</b> levantada. Barra: some a barra e as anilhas dos dois lados (barra de 45 lb + 45 lb de cada lado = 135 lb). Halteres: some os dois (45 lb em cada mão = 90 lb). Aparelho e polia: o valor marcado. Cada exercício mostra a regra embaixo do nome.') : t('Anote sempre a <b>carga total</b> levantada. Barra: some a barra e as anilhas dos dois lados (barra de 20 kg + 30 kg de cada lado = 80 kg). Halteres: some os dois (20 kg em cada mão = 40 kg). Aparelho e polia: o valor marcado. Cada exercício mostra a regra embaixo do nome.')}</div>
       ${pending.length ? `<div class="card flat"><div class="list">${pending.map(ex => `<label class="item load-row">
         <span class="grow"><span class="t">${esc(exName(ex))}</span><br>
           <span class="d">${esc(tg(ex.group))} · ${ex.sets} × ${ex.repMin}–${ex.repMax} · ${esc(loadShort(ex))}</span></span>
-        <input type="number" inputmode="decimal" step="any" min="0" value="${ex.startW || ''}" placeholder="kg"
-          data-change="setStartW" data-id="${esc(ex.id)}" aria-label="${t('Carga inicial de {x} em kg', { x: esc(exName(ex)) })}">
+        <input type="number" inputmode="decimal" step="any" min="0" value="${ex.startW ? toW(ex.startW) : ''}" placeholder="${wUnit()}"
+          data-change="setStartW" data-id="${esc(ex.id)}" aria-label="${ul(t('Carga inicial de {x} em kg', { x: esc(exName(ex)) }))}">
       </label>`).join('')}</div></div>`
       : `<p class="empty">${t('Todos os seus exercícios já têm histórico. A carga agora vem dos treinos.')}</p>`}
       <a class="btn primary big" href="#/hoje">${t('Concluir')}</a>
@@ -575,7 +576,7 @@ function renderLoads() {
 changes.setStartW = el => {
   const ex = state.exercises[el.dataset.id];
   if (!ex) return;
-  const v = Number(el.value);
+  const v = fromW(Number(el.value));
   if (v > 0) ex.startW = v; else delete ex.startW;
   save();
 };

@@ -1,6 +1,7 @@
 // Regras de progressão de carga, metas e estatísticas.
 import { state } from './store.js';
 import { t as tr, locale } from './i18n.js';
+import { imperial, toW, fromW, toStep, snapW, ul } from './units.js';
 
 export const DAY = 864e5;
 
@@ -96,9 +97,10 @@ export function planFor(ex) {
   const allTop = last.sets.length >= n && lr.every(r => r >= ex.repMax);
   if (allTop) {
     if (ex.step > 0) {
-      const w2 = w + ex.step;
+      // em libras sobe um degrau de libra (135 -> 140 lb), sem cair em pesos quebrados
+      const w2 = imperial() ? fromW(toW(w) + toStep(ex.step)) : w + ex.step;
       return out(w2, Array(n).fill(ex.repMin),
-        tr('Você fez {n} reps em todas as séries: hora de subir para {w} kg.', { n: ex.repMax, w: w2.toLocaleString(locale()) }), 'up');
+        ul(tr('Você fez {n} reps em todas as séries: hora de subir para {w} kg.', { n: ex.repMax, w: toW(w2).toLocaleString(locale()) })), 'up');
     }
     return out(w, lr.map(r => r + 1), tr('Topo da faixa em todas as séries: tente mais uma rep ou adicione carga.'), 'up');
   }
@@ -107,7 +109,7 @@ export function planFor(ex) {
     const prev = hist.at(-2);
     const prevBelow = prev && workWeight(workSets(prev.sets)) >= w && workSets(prev.sets).every(s => s.r < ex.repMin);
     if (prevBelow && w > 0) {
-      const w2 = Math.max(0, roundStep(w * 0.9, ex.step));
+      const w2 = Math.max(0, imperial() ? snapW(w * 0.9, ex.step) : roundStep(w * 0.9, ex.step));
       return out(w2, Array(n).fill(Math.round((ex.repMin + ex.repMax) / 2)),
         tr('Duas sessões abaixo da faixa de reps: reduza cerca de 10% e reconstrua com boa execução.'), 'down');
     }

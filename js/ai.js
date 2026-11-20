@@ -380,7 +380,7 @@ export async function aiParseWorkoutText(text, library) {
                         type: 'object',
                         additionalProperties: false,
                         required: ['w', 'r'],
-                        properties: { w: { type: 'number', description: 'Carga total em kg (0 se peso corporal).' }, r: { type: 'integer', description: 'Repetições.' } },
+                        properties: { w: { type: 'number', description: 'Carga total em kg (0 se peso corporal). Se o texto estiver em libras (lb), converta para kg (1 lb = 0,4536 kg).' }, r: { type: 'integer', description: 'Repetições.' } },
                       },
                     },
                   },

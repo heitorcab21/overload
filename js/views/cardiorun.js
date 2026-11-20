@@ -6,6 +6,7 @@ import { t, tn } from '../i18n.js';
 import { lineChart } from '../charts.js';
 import { CARDIO_TYPES, INTENSITIES } from '../cardio.js';
 import { CARDIO_TEMPLATES, segmentsOf, planSeconds, planKcal, planIntensity, routineHistory, nextStep, blocksSummary, fmtSec, clock } from '../cardioplan.js';
+import { toSpeed, fromSpeed, speedUnit, toDist, fromDist, distUnit, ul } from '../units.js';
 
 const typeName = k => t((CARDIO_TYPES[k] || CARDIO_TYPES.outro).name);
 const intName = i => ({ leve: t('Leve'), moderado: t('Moderado'), forte: t('Forte') })[i] || t('Moderado');
@@ -16,7 +17,7 @@ export function stepText(st) {
   if (!st) return '';
   return {
     round: t('Ficou fácil: suba para {n} rodadas.', { n: st.n }),
-    speed: t('Ficou fácil: suba a velocidade para {v} km/h.', { v: fmt(st.v) }),
+    speed: ul(t('Ficou fácil: suba a velocidade para {v} km/h.', { v: fmt(toSpeed(st.v)) })),
     incline: t('Ficou fácil: suba a inclinação para {v}%.', { v: st.v }),
     level: t('Ficou fácil: suba para o nível {v}.', { v: st.v }),
     time: t('Ficou fácil: aumente o bloco principal para {x}.', { x: fmtSec(st.sec) }),
@@ -89,13 +90,13 @@ function blockHtml(b, i, n) {
       <div class="three">${num('rounds', b.rounds, t('Rodadas'), 1)}${num('work', b.work, t('Forte (s)'), 5)}${num('rest', b.rest, t('Descanso (s)'), 5)}</div>
       ${seg('int', b.int || 'forte')}
       <p class="small muted">${t('Metas no forte (opcional)')}</p>
-      <div class="three">${num('speed', b.speed, 'km/h')}${num('incline', b.incline, t('Inclinação %'), 1)}${num('level', b.level, t('Nível'), 1)}</div>
+      <div class="three">${num('speed', b.speed != null ? toSpeed(b.speed) : b.speed, speedUnit())}${num('incline', b.incline, t('Inclinação %'), 1)}${num('level', b.level, t('Nível'), 1)}</div>
       <p class="small muted">${t('No descanso (opcional)')}</p>
-      <div class="three">${num('restSpeed', b.restSpeed, 'km/h')}${num('restIncline', b.restIncline, t('Inclinação %'), 1)}${num('restLevel', b.restLevel, t('Nível'), 1)}</div>
+      <div class="three">${num('restSpeed', b.restSpeed != null ? toSpeed(b.restSpeed) : b.restSpeed, speedUnit())}${num('restIncline', b.restIncline, t('Inclinação %'), 1)}${num('restLevel', b.restLevel, t('Nível'), 1)}</div>
     </div>`;
   }
   return `<div class="cblock"><div class="row between"><b>${icon.play}${t('Contínuo')}</b>${tools}</div>
-    <div class="three">${num('min', Math.round((b.sec / 60) * 100) / 100, t('Minutos'), 0.5)}${num('speed', b.speed, 'km/h')}${num('incline', b.incline, t('Inclinação %'), 1)}</div>
+    <div class="three">${num('min', Math.round((b.sec / 60) * 100) / 100, t('Minutos'), 0.5)}${num('speed', b.speed != null ? toSpeed(b.speed) : b.speed, speedUnit())}${num('incline', b.incline, t('Inclinação %'), 1)}</div>
     <div class="three">${num('level', b.level, t('Nível'), 1)}<label class="field mini">${t('Nome (opcional)')}<input type="text" maxlength="20" name="b${i}_label" value="${esc(b.label ? t(b.label) : '')}" data-change="cField"></label></div>
     ${seg('int', b.int || 'moderado')}
   </div>`;
@@ -123,12 +124,12 @@ function renderEditor(id) {
       ${r ? `<button class="btn ghost danger block" data-act="cDelRoutine" data-id="${r.id}">${icon.trash}${t('Excluir rotina')}</button>` : ''}
       ${hist.length ? `<div class="card stack"><h3>${t('Evolução')}</h3>
         ${hist.length > 1 ? '<div class="chart" id="cChart"></div>' : ''}
-        <div class="list">${hist.slice().reverse().slice(0, 10).map(c => `<div class="item"><span class="grow">${fmtDate(c.date, false)} · ${c.min} min${c.km ? ` · ${fmt(c.km)} km` : ''}</span><span class="badge">${t('esforço {n}', { n: c.rpe ?? '—' })}</span></div>`).join('')}</div>
+        <div class="list">${hist.slice().reverse().slice(0, 10).map(c => `<div class="item"><span class="grow">${fmtDate(c.date, false)} · ${c.min} min${c.km ? ` · ${fmt(toDist(c.km))} ${distUnit()}` : ''}</span><span class="badge">${t('esforço {n}', { n: c.rpe ?? '—' })}</span></div>`).join('')}</div>
       </div>` : ''}
     </div>`;
   if (hist.length > 1) {
-    lineChart($('#cChart'), hist.slice(-20).map(c => ({ label: fmtDate(c.date, false), value: c.km || c.min, tip: `${fmtDate(c.date)} · ${c.min} min${c.km ? ` · ${fmt(c.km)} km` : ''} · ${t('esforço {n}', { n: c.rpe ?? '—' })}` })),
-      { unit: hist.some(c => c.km) ? ' km' : ' min' });
+    lineChart($('#cChart'), hist.slice(-20).map(c => ({ label: fmtDate(c.date, false), value: c.km ? toDist(c.km) : c.min, tip: `${fmtDate(c.date)} · ${c.min} min${c.km ? ` · ${fmt(toDist(c.km))} ${distUnit()}` : ''} · ${t('esforço {n}', { n: c.rpe ?? '—' })}` })),
+      { unit: hist.some(c => c.km) ? ` ${distUnit()}` : ' min' });
   }
 }
 
@@ -145,7 +146,7 @@ function readEditor() {
       b.rounds = Math.max(1, Math.round(num(`b${i}_rounds`) || 1));
       b.work = Math.max(5, Math.round(num(`b${i}_work`) || 30));
       b.rest = Math.max(0, Math.round(Number(v(`b${i}_rest`)) || 0));
-      for (const k of ['speed', 'incline', 'level', 'restSpeed', 'restIncline', 'restLevel']) { const x = num(`b${i}_${k}`); if (x == null) delete b[k]; else b[k] = x; }
+      for (const k of ['speed', 'incline', 'level', 'restSpeed', 'restIncline', 'restLevel']) { let x = num(`b${i}_${k}`); if (x != null && /speed/i.test(k)) x = fromSpeed(x); if (x == null) delete b[k]; else b[k] = x; }
     } else {
       b.sec = Math.max(30, Math.round((num(`b${i}_min`) || 1) * 60));
       for (const k of ['speed', 'incline', 'level']) { const x = num(`b${i}_${k}`); if (x == null) delete b[k]; else b[k] = x; }
@@ -217,7 +218,7 @@ actions.cStart = async el => {
 };
 
 const phaseName = s => (s.phase === 'work' ? t('Forte') : s.phase === 'rest' ? t('Descanso') : s.label ? t(s.label) : `${t('Contínuo')} · ${intName(s.int)}`);
-const targets = s => [s.speed && `${fmt(s.speed)} km/h`, s.incline != null && `${t('inclinação')} ${fmt(s.incline)}%`, s.level && `${t('nível')} ${s.level}`].filter(Boolean).join(' · ');
+const targets = s => [s.speed && `${fmt(toSpeed(s.speed))} ${speedUnit()}`, s.incline != null && `${t('inclinação')} ${fmt(s.incline)}%`, s.level && `${t('nível')} ${s.level}`].filter(Boolean).join(' · ');
 
 function renderRun() {
   const run = state.cardioRun;
@@ -344,7 +345,7 @@ function finishRun(complete) {
       <div class="rpe">${Array.from({ length: 10 }, (_, i) => `<button type="button" class="chip" data-act="cRpe" data-v="${i + 1}" title="${rpeLabel(i + 1)}">${i + 1}</button>`).join('')}</div>
       <p class="small muted">${t('1 a 4 fácil · 5 e 6 moderado · 7 e 8 difícil · 9 e 10 no limite. É com essa nota que o app sugere o próximo avanço.')}</p>
       <input type="hidden" name="rpe" value="">
-      ${stepper('km', '', 0.1, t('Distância (km, opcional)'), 0)}
+      ${stepper('km', '', 0.1, ul(t('Distância (km, opcional)')), 0)}
       <button class="btn primary big">${t('Salvar')}</button>
     </form>`);
 }
@@ -357,7 +358,7 @@ submits.cRunSave = form => {
   if (!run) { closeSheet(); return; }
   const rpe = Number(form.rpe.value) || null;
   if (!rpe) { toast(t('Escolha a nota de esforço.'), 2500); return; }
-  const km = Number(String(form.km.value).replace(',', '.'));
+  const km = fromDist(Number(String(form.km.value).replace(',', '.')));
   const rec = {
     id: uid(), date: new Date(run.startedAt).toISOString(), type: run.type,
     min: Math.max(1, Math.round(run.doneSec / 60)), int: planIntensity(run.blocks), kcal: planKcal(run.type, run.segs, run.doneSec),
