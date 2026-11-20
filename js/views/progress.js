@@ -455,7 +455,6 @@ actions.editProfile = () => {
   sheet(`<h2>${t('Seu perfil')}</h2>
     <form class="stack" data-submit="saveProfile" data-change="profReq" data-live>
       <h3>${t('Obrigatórios')}</h3>
-      ${p.sex ? '' : `<p class="small start-hint">${t('Os números abaixo são só um ponto de partida: ajuste para os seus no + e no −.')}</p>`}
       <label class="field">${t('Sexo')}
         <select name="sex" required>
           ${p.sex ? '' : `<option value="" selected disabled>${t('Escolha')}</option>`}

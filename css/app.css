@@ -763,5 +763,4 @@ body.no-tabs #view:has(.w-done) { padding-bottom: calc(320px + var(--safe-b)); }
 #view > .quick-acts { margin: 2px 0 10px; }
 /* mesma forma do botão de treino, na cor do cardio (a mesma da semana) */
 .btn.cardio-soft { background: color-mix(in srgb, var(--warm) 14%, var(--surface)); border: 1.5px solid color-mix(in srgb, var(--warm) 55%, transparent); color: var(--warm); font-weight: 700; font-size: 14px; }
-.start-hint { color: var(--accent); font-weight: 600; }
 .opt-why { text-transform: none; letter-spacing: 0; font-weight: 600; color: var(--muted); }
