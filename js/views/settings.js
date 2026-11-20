@@ -4,7 +4,7 @@ import { googleBtn, $, $$, esc, icon, actions, changes, submits, toast, sheet, c
 import { route, go, rerender } from '../router.js';
 import { sessionsCSV } from '../export.js';
 import { askRestNotify, testRestNotify } from './workout.js';
-import { aiEnabled, aiAskExecution, PROVIDERS, aiProvider, aiKey, aiModel, setAiConfig, listModels } from '../ai.js';
+import { aiEnabled, aiAskExecution, PROVIDERS, aiProvider, aiKey, aiModel, setAiConfig, listModels, effortLevels, aiEffort, setAiEffort } from '../ai.js';
 import { driveAvailable, driveConnected, driveDirty, connect, sync, hasToken, refreshIfNeeded, logout, wipeRemote } from '../drive.js';
 import { isInstalled } from '../install.js';
 import { syncState, syncLabel, updateSyncBadge } from '../syncbadge.js';
@@ -142,6 +142,26 @@ function showVersion() {
 
 const loadedModels = {}; // provedor -> lista de modelos buscada na chave
 
+const EFFORT_NAME = () => ({
+  auto: t('Automático (o app escolhe por tarefa)'), minimal: t('Mínimo'), low: t('Baixo · mais rápido e barato'),
+  medium: t('Médio'), high: t('Alto'), xhigh: t('Extra alto'), max: t('Máximo · mais lento e caro'),
+});
+/** Campo de esforço com os níveis que o modelo aceita. */
+function effortField(p, model) {
+  const levels = effortLevels(p, model);
+  if (!levels.length) return model ? `<p class="small muted">${t('Este modelo não tem ajuste de esforço.')}</p>` : '';
+  const cur = levels.includes(aiEffort(p)) ? aiEffort(p) : 'auto';
+  const N = EFFORT_NAME();
+  return `<label class="field">${t('Esforço')}
+    <select name="effort">${['auto', ...levels].map(e => `<option value="${e}"${e === cur ? ' selected' : ''}>${N[e]}</option>`).join('')}</select></label>
+    <p class="small muted">${t('Mais esforço: respostas mais pensadas, porém mais lentas e caras.')}</p>`;
+}
+changes.aiModelPick = el => {
+  const form = el.closest('form');
+  const box = form.querySelector('#effortBox');
+  if (box) box.innerHTML = effortField(form.provider.value, el.value);
+};
+
 function aiCard() {
   const p = aiProvider();
   const info = PROVIDERS[p];
@@ -163,11 +183,12 @@ function aiCard() {
       <label class="field">${t('Chave da API')}
         <input type="password" name="key" value="${esc(aiKey(p))}" placeholder="${info.keyHint}" autocomplete="off" spellcheck="false"></label>
       <label class="field">${t('Modelo')}
-        <select name="model">
+        <select name="model" data-change="aiModelPick">
           ${models.length ? models.map(m => `<option value="${esc(m)}"${m === current ? ' selected' : ''}>${esc(m)}</option>`).join('')
             : `<option value="">${t('Escolhido ao salvar a chave')}</option>`}
         </select></label>
-      ${aiKey(p) ? `<button type="button" class="btn ghost block" data-act="loadModels">${t('Atualizar lista de modelos')}</button>` : ''}
+      <button type="button" class="btn ghost block" data-act="loadModels">${t('Atualizar lista de modelos')}</button>
+      <div id="effortBox">${effortField(p, current)}</div>
       <div class="row">
         <button class="btn primary grow">${t('Salvar')}</button>
         ${aiEnabled() ? `<button type="button" class="btn" data-act="testAI">${t('Testar')}</button>` : ''}
@@ -193,6 +214,7 @@ async function fetchModels(p, key, keepModel) {
 actions.loadModels = async el => {
   const form = el.closest('form');
   const p = form.provider.value, key = form.key.value.trim();
+  if (!key) { toast(t('Cole a chave da API primeiro.'), 4000); return; }
   el.disabled = true;
   el.textContent = t('Buscando modelos…');
   try {
@@ -221,6 +243,7 @@ submits.saveKey = async form => {
     // sem modelo escolhido (ou trocou de provedor): busca a lista e escolhe um padrão bom
     if (!model || !loadedModels[p]) model = await fetchModels(p, key, model);
     setAiConfig(p, key, model);
+    if (form.effort) setAiEffort(p, form.effort.value);
     save();
     toast(t('IA configurada: {ia}, modelo {m}.', { ia: PROVIDERS[p].name, m: model }), 4000);
   } catch (e) {

@@ -28,6 +28,41 @@ export const aiKey = (p = aiProvider()) => { migrate(); return state.settings.ai
 export const aiModel = (p = aiProvider()) => { migrate(); return state.settings.aiModels?.[p] || (p === 'claude' ? 'claude-opus-5-5' : ''); };
 export const aiEnabled = () => !!aiKey() && !!aiModel();
 
+/** Níveis de esforço que o modelo aceita ([] = o modelo não tem esse ajuste). */
+export function effortLevels(p = aiProvider(), model = aiModel(p)) {
+  const m = String(model || '').toLowerCase();
+  if (p === 'claude') {
+    if (/^claude-(fable|mythos|opus-5|sonnet-5|haiku-5|opus-4-[78])/.test(m)) return ['low', 'medium', 'high', 'xhigh', 'max'];
+    if (/^claude-(opus|sonnet)-4-6/.test(m)) return ['low', 'medium', 'high', 'max'];
+    if (/^claude-opus-4-5/.test(m)) return ['low', 'medium', 'high'];
+    return [];
+  }
+  if (p === 'openai') {
+    if (/^gpt-5/.test(m)) return ['minimal', 'low', 'medium', 'high'];
+    if (/^o\d/.test(m)) return ['low', 'medium', 'high'];
+    return [];
+  }
+  if (p === 'gemini') {
+    if (/gemini-3/.test(m)) return ['low', 'high'];
+    if (/gemini-2\.5/.test(m)) return ['low', 'medium', 'high'];
+    return [];
+  }
+  return [];
+}
+/** Esforço escolhido para o provedor ('auto' = o app decide por tarefa). */
+export const aiEffort = (p = aiProvider()) => state.settings.aiEfforts?.[p] || 'auto';
+export function setAiEffort(p, effort) {
+  state.settings.aiEfforts = { ...(state.settings.aiEfforts || {}), [p]: effort || 'auto' };
+}
+/** Esforço desta chamada: o escolhido, se o modelo aceitar; senão o da tarefa; null se o modelo não tem esforço. */
+function effortFor(p, model, taskEffort) {
+  const levels = effortLevels(p, model);
+  if (!levels.length) return null;
+  const chosen = aiEffort(p);
+  if (chosen !== 'auto' && levels.includes(chosen)) return chosen;
+  return p === 'claude' && levels.includes(taskEffort) ? taskEffort : null;
+}
+
 export function setAiConfig(provider, key, model) {
   migrate();
   const st = state.settings;
@@ -85,7 +120,7 @@ async function askClaude({ system, user, messages, effort, schema, cache }) {
     // na conversa, o contexto do app (longo e igual em todas as perguntas) fica em cache
     system: cache ? [{ type: 'text', text: system, cache_control: { type: 'ephemeral' } }] : system,
     messages: messages ?? [{ role: 'user', content: user }],
-    output_config: { effort, ...(schema ? { format: { type: 'json_schema', schema } } : {}) },
+    output_config: { ...(effortFor('claude', model, effort) ? { effort: effortFor('claude', model, effort) } : {}), ...(schema ? { format: { type: 'json_schema', schema } } : {}) },
   };
   let res;
   try {
@@ -118,6 +153,7 @@ async function askOpenAI({ system, user, messages, schema }) {
     model: aiModel('openai'),
     messages: [{ role: 'system', content: system + (schema ? jsonRule(schema) : '') }, ...(messages ?? [{ role: 'user', content: user }])],
     ...(schema ? { response_format: { type: 'json_object' } } : {}),
+    ...(effortFor('openai', aiModel('openai')) ? { reasoning_effort: effortFor('openai', aiModel('openai')) } : {}),
   };
   const data = await http('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -138,7 +174,12 @@ async function askGemini({ system, user, messages, schema }) {
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: system + (schema ? jsonRule(schema) : '') }] },
       contents: (messages ?? [{ role: 'user', content: user }]).map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })),
-      ...(schema ? { generationConfig: { responseMimeType: 'application/json' } } : {}),
+      ...(() => {
+        const gen = { ...(schema ? { responseMimeType: 'application/json' } : {}) };
+        const e = effortFor('gemini', model);
+        if (e) gen.thinkingConfig = /gemini-3/.test(model) ? { thinkingLevel: e } : { thinkingBudget: { low: 1024, medium: 8192, high: 24576 }[e] };
+        return Object.keys(gen).length ? { generationConfig: gen } : {};
+      })(),
     }),
   });
   const c = data.candidates?.[0];

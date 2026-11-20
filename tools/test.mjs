@@ -85,6 +85,16 @@ eq([planFor(ex).w, planFor(ex).reps, planFor(ex).kind], [42.5, [8, 8, 8], 'up'],
   delete state.settings.units;
 }
 
+// ---- níveis de esforço da IA por modelo ----
+{
+  const { effortLevels } = await import('../js/ai.js');
+  eq(effortLevels('claude', 'claude-opus-5-5'), ['low', 'medium', 'high', 'xhigh', 'max'], 'Opus 5.5: cinco níveis');
+  eq(effortLevels('claude', 'claude-haiku-4-5'), [], 'Haiku 4.5: sem esforço (não manda o campo)');
+  eq(effortLevels('openai', 'gpt-5-mini'), ['minimal', 'low', 'medium', 'high'], 'GPT-5: reasoning_effort');
+  eq(effortLevels('openai', 'gpt-4o'), [], 'GPT-4o: sem esforço');
+  eq(effortLevels('gemini', 'gemini-2.5-flash'), ['low', 'medium', 'high'], 'Gemini 2.5: orçamento de raciocínio');
+}
+
 // RIR: folga grande acelera, zero de folga segura; aquecimento não vira base da progressão
 state.sessions = [sess(2, [{ w: 40, r: 9, rir: 3 }, { w: 40, r: 9, rir: 3 }, { w: 40, r: 8, rir: 4 }])];
 eq([planFor(ex).w, planFor(ex).reps], [40, [11, 11, 10]], 'RIR 3+ em tudo: +2 reps');
