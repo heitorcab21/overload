@@ -765,11 +765,16 @@ body.no-tabs #view:has(.w-done) { padding-bottom: calc(320px + var(--safe-b)); }
 .btn.cardio-soft { background: color-mix(in srgb, var(--warm) 14%, var(--surface)); border: 1.5px solid color-mix(in srgb, var(--warm) 55%, transparent); color: var(--warm); font-weight: 700; font-size: 14px; }
 .opt-why { text-transform: none; letter-spacing: 0; font-weight: 600; color: var(--muted); }
 
-/* Treinador (conversa com a IA) */
-.coach-btn { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 14px 16px; border-radius: 16px; border: 1px solid color-mix(in srgb, var(--data) 45%, var(--line)); background: color-mix(in srgb, var(--data) 10%, var(--surface)); color: var(--ink); font: inherit; }
-.coach-btn .coach-ic { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: color-mix(in srgb, var(--data) 22%, transparent); color: var(--data); flex: none; }
-.coach-btn b { font-size: 16px; }
-.coach-btn:active { transform: scale(.99); }
+/* Treinador (conversa com a IA): botão flutuante acima das abas */
+.coach-fab { position: fixed; right: max(16px, env(safe-area-inset-right, 0px)); bottom: calc(var(--tab-h) + var(--safe-b) + 12px); z-index: 19;
+  display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px 6px 6px; border-radius: 99px;
+  border: 1px solid color-mix(in srgb, var(--data) 50%, var(--line)); background: color-mix(in srgb, var(--data) 14%, var(--surface));
+  color: var(--ink); font: inherit; font-weight: 700; font-size: 14px; box-shadow: 0 6px 18px rgba(0, 0, 0, .35); }
+.coach-fab .coach-ic { width: 32px; height: 32px; border-radius: 99px; display: grid; place-items: center; background: color-mix(in srgb, var(--data) 22%, transparent); color: var(--data); }
+.coach-fab .coach-ic .ic { width: 18px; height: 18px; }
+.coach-fab:active { transform: scale(.96); }
+body.has-coach #view { padding-bottom: calc(var(--tab-h) + var(--safe-b) + 84px); }
+.ic.prov { stroke: none; }
 .coach { display: grid; gap: 10px; }
 .coach-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-right: 44px; } /* espaço para o × da janela */
 .coach-head h2 { display: inline-flex; align-items: center; gap: 8px; margin: 0; }

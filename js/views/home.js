@@ -190,14 +190,10 @@ function renderHome() {
       <button class="btn primary block" data-act="backupNow">${t('Salvar backup agora')}</button>
     </div>` : '';
 
-  const ai = `<button class="coach-btn" data-act="coachOpen">
-    <span class="coach-ic">${icon.spark}</span>
-    <span class="grow"><b>${t('Treinador')}</b><br><span class="small muted">${t('Converse com a IA sobre os seus treinos')}</span></span>${icon.next}
-  </button>`;
 
   $('#view').innerHTML = `
     <div class="head"><div class="brand grow"><b>Overload</b><span class="muted small">${fmtDate(now)}</span></div></div>
-    <div class="stack">${week}${main}${stalledCard()}${ai}${drive}${driveInvite}${backup}</div>`;
+    <div class="stack">${week}${main}${stalledCard()}${drive}${driveInvite}${backup}</div>`;
 }
 
 // ---------- Exercício parado ----------

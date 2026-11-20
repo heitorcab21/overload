@@ -36,6 +36,10 @@ export function rerender() {
   if (name !== lastName) window.scrollTo(0, 0);
   else if (window.scrollX) window.scrollTo(0, window.scrollY); // nunca fica deslocada para o lado
   lastName = name;
+  afterRender.forEach(f => f());
 }
+
+/** Funções chamadas depois de cada tela desenhada (ex.: botão flutuante do Treinador). */
+export const afterRender = [];
 
 window.addEventListener('hashchange', rerender);

@@ -1078,6 +1078,8 @@ const ui = {
   "Usa {p} com a sua chave. A conversa fica só neste aparelho.": "Usa {p} con tu clave. La conversación queda solo en este dispositivo.",
   "Sem resposta. Tente de novo.": "Sin respuesta. Inténtalo de nuevo.",
   "Erro da IA. Tente mais tarde.": "Error de la IA. Inténtalo más tarde.",
+  "Abrir o Treinador (conversa com a IA)": "Abrir el Entrenador (conversación con la IA)",
+  "Com uma chave de API da sua IA favorita (Claude, ChatGPT ou Gemini), você conversa com o Treinador sobre os seus treinos, e o app entende frases de voz mais livres e tira dúvidas de execução. Sem chave, tudo o mais funciona normalmente, inclusive sem internet.": "Con una clave de API de tu IA favorita (Claude, ChatGPT o Gemini), conversas con el Entrenador sobre tus entrenamientos, y la app entiende frases de voz más libres y responde dudas de ejecución. Sin clave, todo lo demás funciona normalmente, incluso sin internet.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

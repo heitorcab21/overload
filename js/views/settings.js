@@ -148,7 +148,7 @@ function aiCard() {
   }[p];
   return `<div class="card stack">
     <h3>${t('Treinador IA (opcional)')}</h3>
-    <p class="muted small">${t('Com uma chave de API da sua IA favorita (Claude, ChatGPT ou Gemini), o app entende frases de voz mais livres, analisa sua semana e tira dúvidas de execução. Sem chave, tudo o mais funciona normalmente, inclusive sem internet.')}</p>
+    <p class="muted small">${t('Com uma chave de API da sua IA favorita (Claude, ChatGPT ou Gemini), você conversa com o Treinador sobre os seus treinos, e o app entende frases de voz mais livres e tira dúvidas de execução. Sem chave, tudo o mais funciona normalmente, inclusive sem internet.')}</p>
     <form class="stack" data-submit="saveKey">
       <label class="field">${t('IA')}
         <select name="provider" data-change="setAiProvider">
@@ -166,10 +166,10 @@ function aiCard() {
         <button class="btn primary grow">${t('Salvar')}</button>
         ${aiEnabled() ? `<button type="button" class="btn" data-act="testAI">${t('Testar')}</button>` : ''}
       </div>
+      <a class="btn block" href="${info.keyUrl}" target="_blank" rel="noopener">${t('Criar chave de API: {ia}', { ia: info.name })}</a>
     </form>
     <p class="muted small">${note}</p>
     <p class="muted small">${t('A chave fica guardada só neste aparelho e é enviada apenas à empresa da IA escolhida.')}</p>
-    <a class="btn block" href="${info.keyUrl}" target="_blank" rel="noopener">${t('Criar chave de API: {ia}', { ia: info.name })}</a>
   </div>`;
 }
 

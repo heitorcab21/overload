@@ -1078,6 +1078,8 @@ const ui = {
   "Usa {p} com a sua chave. A conversa fica só neste aparelho.": "Uses {p} with your key. The chat stays on this device only.",
   "Sem resposta. Tente de novo.": "No answer. Try again.",
   "Erro da IA. Tente mais tarde.": "AI error. Try again later.",
+  "Abrir o Treinador (conversa com a IA)": "Open the Coach (chat with the AI)",
+  "Com uma chave de API da sua IA favorita (Claude, ChatGPT ou Gemini), você conversa com o Treinador sobre os seus treinos, e o app entende frases de voz mais livres e tira dúvidas de execução. Sem chave, tudo o mais funciona normalmente, inclusive sem internet.": "With an API key from your favorite AI (Claude, ChatGPT or Gemini), you can chat with the Coach about your workouts, and the app understands freer voice phrases and answers form questions. Without a key, everything else works normally, even offline.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
