@@ -149,17 +149,19 @@ function render() {
   // "+ Série": logo abaixo das séries; acrescenta uma série só neste treino, a qualquer momento
   const more = en.skipped ? '' : `<button class="set add-set" data-act="wMore">${icon.plus}${t('Série')}</button>`;
 
+  // botões rápidos acima das séries: ficam sempre à vista, mesmo em telas com fonte grande
+  const quick = logging ? `<div class="quick-acts">
+        ${en.sets.length < goal(en, ex) ? `<button class="qa" data-act="wAll"><b>${t('Todas como a meta')}</b></button>` : ''}
+        ${en.sets.length || en.warmup.length ? `<button class="qa" data-act="wUndo"><b>${icon.undo}${t('Desfazer')}</b></button>` : `<button class="qa" data-act="wSkip"><b>${t('Pular exercício')}</b></button>`}
+        <button class="qa warm" data-act="wWarm"><b>${t('Foi aquecimento')}</b></button>
+      </div>` : '';
+
   let body;
   if (en.skipped) {
     body = `<div class="card stack"><p class="muted">${t('Exercício pulado neste treino.')}</p>
       <button class="btn block" data-act="wUnskip">${t('Fazer mesmo assim')}</button></div>`;
   } else if (logging) {
     body = `<div class="log">
-      <div class="quick-acts">
-        ${en.sets.length < goal(en, ex) ? `<button class="qa" data-act="wAll"><b>${t('Todas como a meta')}</b></button>` : ''}
-        ${en.sets.length || en.warmup.length ? `<button class="qa" data-act="wUndo"><b>${icon.undo}${t('Desfazer')}</b></button>` : `<button class="qa" data-act="wSkip"><b>${t('Pular exercício')}</b></button>`}
-        <button class="qa warm" data-act="wWarm"><b>${t('Foi aquecimento')}</b></button>
-      </div>
       <p class="small warm-hint" id="warmHint"${willBeWarmup(en, ex) ? '' : ' hidden'}>${t('Carga abaixo de 70% da meta: esta série vai contar como aquecimento. Suba a carga para registrar como série válida.')}</p>
       <p class="small muted load-hint">${esc(loadHint(ex))}</p>
       ${rirRow(en)}
@@ -198,6 +200,7 @@ function render() {
       <button class="btn sm ghost" data-act="wSwap">${icon.sync}${t('Trocar exercício')}</button>
       <button class="btn sm ghost" data-act="wAdd">${icon.plus}${t('Adicionar exercício')}</button>
     </div>
+    ${quick}
     <div class="sets">${rows}${more}</div>
     ${body}
     <div class="w-bar">
@@ -332,18 +335,25 @@ export function testRestNotify() {
 }
 
 /** Pede a permissão (precisa partir de um toque) e liga o aviso. */
-export async function askRestNotify() {
+export async function askRestNotify(quiet = false) {
   state.settings.restNotifyAsked = true;
   let p = 'denied';
   try { p = await Notification.requestPermission(); } catch { /* navegador antigo */ }
   state.settings.restNotify = p === 'granted';
   save({ touch: false });
+  if (quiet) return p;
   toast(p === 'granted'
     ? t('Pronto: no fim do descanso você recebe uma notificação, mesmo com o app fora da tela.')
     : t('Sem permissão para notificar. Dá para liberar depois nas configurações do navegador.'), 5000);
   return p;
 }
 actions.restBell = async () => { await askRestNotify(); render(); };
+
+/** No primeiro acesso: pede a permissão de notificação uma única vez, junto do toque que conclui a configuração. */
+export function askNotifyOnce() {
+  if (!notifySupported() || Notification.permission !== 'default' || state.settings.restNotifyAsked) return;
+  askRestNotify(true);
+}
 
 // O treino em andamento fica só neste aparelho até ser finalizado: mexer nele não conta
 // como alteração a enviar ao Drive (senão o selo ficaria vermelho o treino inteiro).

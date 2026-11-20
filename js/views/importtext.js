@@ -1,4 +1,5 @@
 // Importar treinos de texto: cola o que estava no bloco de notas ou no WhatsApp, confere e salva.
+import { askNotifyOnce } from './workout.js';
 import { state, save, uid } from '../store.js';
 import { $, esc, fmt, icon, actions, changes, toast } from '../ui.js';
 import { route, go, rerender } from '../router.js';
@@ -146,6 +147,7 @@ changes.impSets = el => {
 };
 
 actions.impSave = () => {
+  if (!state.onboarded) askNotifyOnce(); // primeiro acesso: pede a notificação junto deste toque
   const alsoLog = $('#impLog')?.checked;
   const created = {};
   const routinesTouched = new Set();

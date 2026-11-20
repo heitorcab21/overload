@@ -7,7 +7,7 @@ import {
   planFor, weekStart, addDays, sessionsIn, groupGoalStatus, defaultGroupGoals, DAY,
   sessionPRs, tonnage, exGoalStatus, entriesFor, stalledExercises,
 } from '../logic.js';
-import { startWorkout, startFreeWorkout } from './workout.js';
+import { startWorkout, startFreeWorkout, askNotifyOnce } from './workout.js';
 import { openCardioSheet, cardioLine } from './cardio.js';
 import { cardioIn } from '../cardio.js';
 import { aiEnabled, aiWeeklyAnalysis } from '../ai.js';
@@ -98,6 +98,7 @@ actions.skipLogin = () => { state.loginSkipped = true; save({ touch: false }); r
 actions.drivePromptLater = () => { state.drivePromptDismissed = true; save({ touch: false }); rerender(); };
 
 actions.pickTemplate = el => {
+  askNotifyOnce();
   const tp = TEMPLATES.find(x => x.id === el.dataset.id);
   if (tp) {
     for (const [name, ids] of tp.routines) {

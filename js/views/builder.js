@@ -1,5 +1,6 @@
 // Montar o próprio treino no primeiro acesso: a pessoa escolhe os exercícios de cada treino
 // e só entra no app quando concluir. Dá para voltar e escolher um treino pronto.
+import { askNotifyOnce } from './workout.js';
 import { state, save, uid } from '../store.js';
 import { $, $$, esc, icon, actions, changes, toast } from '../ui.js';
 import { route, go, rerender } from '../router.js';
@@ -99,6 +100,7 @@ changes.bFilter = el => {
 actions.bDone = () => {
   const list = draft.routines.filter(x => x.ex.length);
   if (!list.length) return;
+  askNotifyOnce();
   for (const r of list) {
     r.ex.forEach(ensureExercise);
     state.routines.push({ id: uid(), name: r.name, ex: r.ex.slice() });
