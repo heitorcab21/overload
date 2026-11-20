@@ -182,6 +182,7 @@ function aiCard() {
         </select></label>
       <label class="field">${t('Chave da API')}
         <input type="password" name="key" value="${esc(aiKey(p))}" placeholder="${info.keyHint}" autocomplete="off" spellcheck="false"></label>
+      <a class="btn block" href="${info.keyUrl}" target="_blank" rel="noopener">${t('Criar chave de API: {ia}', { ia: info.name })}</a>
       <label class="field">${t('Modelo')}
         <select name="model" data-change="aiModelPick">
           ${models.length ? models.map(m => `<option value="${esc(m)}"${m === current ? ' selected' : ''}>${esc(m)}</option>`).join('')
@@ -193,7 +194,6 @@ function aiCard() {
         <button class="btn primary grow">${t('Salvar')}</button>
         ${aiEnabled() ? `<button type="button" class="btn" data-act="testAI">${t('Testar')}</button>` : ''}
       </div>
-      <a class="btn block" href="${info.keyUrl}" target="_blank" rel="noopener">${t('Criar chave de API: {ia}', { ia: info.name })}</a>
     </form>
     <p class="muted small">${note}</p>
     <p class="muted small">${t('A chave fica guardada só neste aparelho e é enviada apenas à empresa da IA escolhida.')}</p>
