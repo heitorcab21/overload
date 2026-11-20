@@ -1102,6 +1102,8 @@ const ui = {
   "Esforço": "Esfuerzo",
   "Mais esforço: respostas mais pensadas, porém mais lentas e caras.": "Más esfuerzo: respuestas más pensadas, pero más lentas y caras.",
   "Cole a chave da API primeiro.": "Pega primero la clave de API.",
+  "A IA está sobrecarregada agora (erro {n} do servidor). Tente de novo em alguns segundos ou escolha outro modelo nos Ajustes.": "La IA está sobrecargada ahora (error {n} del servidor). Inténtalo de nuevo en unos segundos o elige otro modelo en Ajustes.",
+  "Tentar de novo": "Intentar de nuevo",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

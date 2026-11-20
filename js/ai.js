@@ -84,15 +84,21 @@ function httpError(status, detail) {
     if (/api key/i.test(detail || '')) return new Error(t('Chave da API inválida. Confira em Ajustes.'));
     return new Error(t('A IA rejeitou o pedido: {msg}', { msg: detail || status }));
   }
+  if (status === 503 || status === 502 || status === 504) return new Error(t('A IA está sobrecarregada agora (erro {n} do servidor). Tente de novo em alguns segundos ou escolha outro modelo nos Ajustes.', { n: status }));
   return new Error(t('Erro da IA ({n}). Tente mais tarde.', { n: status }));
 }
 
 async function http(url, opts) {
-  let res;
-  try { res = await fetch(url, opts); } catch { throw new Error(t('Falha de conexão com a IA.')); }
-  const body = await res.json().catch(() => ({}));
-  if (!res.ok) throw httpError(res.status, body?.error?.message);
-  return body;
+  // servidor sobrecarregado ou instável (500, 502, 503, 504): tenta de novo sozinho, com pausas curtas
+  const waits = [1200, 3000];
+  for (let attempt = 0; ; attempt++) {
+    let res;
+    try { res = await fetch(url, opts); } catch { throw new Error(t('Falha de conexão com a IA.')); }
+    const body = await res.json().catch(() => ({}));
+    if (res.ok) return body;
+    if (res.status >= 500 && attempt < waits.length) { await new Promise(r => setTimeout(r, waits[attempt])); continue; }
+    throw httpError(res.status, body?.error?.message);
+  }
 }
 
 // ---------- Claude (SDK oficial da Anthropic) ----------
@@ -134,7 +140,7 @@ async function askClaude({ system, user, messages, effort, schema, cache }) {
     if (err instanceof Anthropic.RateLimitError) throw new Error(t('Limite de uso atingido. Tente de novo em instantes.'));
     if (err instanceof Anthropic.BadRequestError) throw new Error(t('A IA rejeitou o pedido: {msg}', { msg: err.message }));
     if (err instanceof Anthropic.APIConnectionError) throw new Error(t('Falha de conexão com a IA.'));
-    if (err instanceof Anthropic.APIError) throw new Error(t('Erro da IA ({n}). Tente mais tarde.', { n: err.status }));
+    if (err instanceof Anthropic.APIError) throw httpError(err.status, err.message);
     throw err;
   }
   if (res.stop_reason === 'refusal') throw new Error(t('A IA não pôde responder a este pedido.'));

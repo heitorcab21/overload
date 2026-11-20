@@ -800,3 +800,4 @@ body.has-coach #view { padding-bottom: calc(var(--tab-h) + var(--safe-b) + 76px)
 .coach-form textarea { flex: 1; min-height: 46px; max-height: 120px; resize: none; }
 .coach-form .btn { min-width: 48px; padding: 0; justify-content: center; }
 .coach-note { margin: 0; text-align: center; }
+.msg .retry { margin-top: 8px; color: var(--ink); }

@@ -57,7 +57,8 @@ function fmt(text) {
 }
 
 function bubbles() {
-  return chat.map(m => `<div class="msg ${m.role === 'user' ? 'me' : 'ai'}${m.error ? ' err' : ''}">${m.role === 'user' ? `<p>${esc(m.content)}</p>` : fmt(m.content)}</div>`).join('')
+  const lastErr = chat.length && chat.at(-1).error && !busy;
+  return chat.map((m, i) => `<div class="msg ${m.role === 'user' ? 'me' : 'ai'}${m.error ? ' err' : ''}">${m.role === 'user' ? `<p>${esc(m.content)}</p>` : fmt(m.content)}${lastErr && i === chat.length - 1 ? `<button class="btn sm retry" data-act="coachRetry">${t('Tentar de novo')}</button>` : ''}</div>`).join('')
     + (busy ? `<div class="msg ai typing"><span></span><span></span><span></span></div>` : '');
 }
 
@@ -107,6 +108,14 @@ async function send(q) {
 
 actions.coachOpen = () => render();
 actions.coachAsk = el => send(el.dataset.q);
+// reenvia a última pergunta que deu erro
+actions.coachRetry = () => {
+  const i = chat.map(m => m.role === 'user' && m.error).lastIndexOf(true);
+  if (i < 0 || busy) return;
+  const q = chat[i].content;
+  chat = chat.slice(0, i);
+  send(q);
+};
 actions.coachNew = () => { chat = []; keep(); render(); };
 actions.coachSetup = () => { go('#/ajustes'); document.querySelector('#sheet [data-act="closeSheet"]')?.click(); };
 submits.coachSend = form => send(form.q.value);
