@@ -328,6 +328,16 @@ document.addEventListener('visibilitychange', () => {
   }, left);
 });
 
+/** Teste nos Ajustes: uma notificação agora e outra em 10 s, para conferir com o app fora da tela. */
+export function testRestNotify() {
+  const vib = [120, 230, 120, 230, 450];
+  restNote(t('Teste do Overload'), { tag: 'overload-test', body: t('Notificações funcionando. Saia do app agora: em 10 segundos chega a segunda.'), vibrate: vib });
+  setTimeout(() => restNote(t('Teste: 10 segundos'), { tag: 'overload-test', renotify: true, requireInteraction: true, vibrate: vib,
+    body: document.visibilityState === 'hidden'
+      ? t('Chegou com o app fora da tela: o aviso do fim do descanso vai funcionar.')
+      : t('Chegou, mas o app estava aberto. Repita saindo do app para testar de verdade.') }), 10000);
+}
+
 /** Pede a permissão (precisa partir de um toque) e liga o aviso. */
 export async function askRestNotify() {
   state.settings.restNotifyAsked = true;

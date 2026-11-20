@@ -3,7 +3,7 @@ import { state, save, exportJSON, importJSON, emptyData, resetKeepAccount } from
 import { googleBtn, $, $$, esc, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, shareFile, fmtDate, fmtTime, waitDone, startWait, stopWait } from '../ui.js';
 import { route, go, rerender } from '../router.js';
 import { sessionsCSV } from '../export.js';
-import { askRestNotify } from './workout.js';
+import { askRestNotify, testRestNotify } from './workout.js';
 import { aiEnabled, aiAskExecution, PROVIDERS, aiProvider, aiKey, aiModel, setAiConfig, listModels } from '../ai.js';
 import { driveAvailable, driveConnected, driveDirty, connect, sync, hasToken, refreshIfNeeded, logout, wipeRemote } from '../drive.js';
 import { isInstalled } from '../install.js';
@@ -243,12 +243,16 @@ changes.setLang = el => {
 function restNotifyRow() {
   if (!('Notification' in window) || !('serviceWorker' in navigator)) return `<p class="small muted">${t('Este navegador não permite notificações; o aviso do fim do descanso toca só com o app aberto.')}</p>`;
   const p = Notification.permission;
-  if (p === 'granted') return `<label class="check"><input type="checkbox" data-change="setRestNotify"${state.settings.restNotify !== false ? ' checked' : ''}>${t('Avisar o fim do descanso com o app fora da tela')}</label>`;
-  if (p === 'denied') return `<p class="small muted">${t('Notificações bloqueadas. Para receber o aviso do fim do descanso com o app fora da tela, libere as notificações do Overload nas configurações do navegador.')}</p>`;
-  return `<button class="btn block" data-act="askRestNotify">${icon.bell}${t('Avisar o fim do descanso com o app fora da tela')}</button>`;
+  if (p === 'granted') return `<label class="check"><input type="checkbox" data-change="setRestNotify"${state.settings.restNotify !== false ? ' checked' : ''}>${t('Avisar o fim do descanso com o app fora da tela')}</label>
+    <p class="small muted">${t('Notificações: liberadas.')}</p>
+    <button class="btn block" data-act="testRestNotify">${icon.bell}${t('Testar notificação')}</button>`;
+  if (p === 'denied') return `<p class="small muted">${t('Notificações bloqueadas. Para liberar no Android: Configurações do celular → Apps → Overload (ou Chrome, se não instalou o app) → Notificações → Permitir. Depois feche e abra o app.')}</p>`;
+  return `<p class="small muted">${t('Notificações: ainda não liberadas.')}</p>
+    <button class="btn block" data-act="askRestNotify">${icon.bell}${t('Avisar o fim do descanso com o app fora da tela')}</button>`;
 }
 changes.setRestNotify = el => { state.settings.restNotify = el.checked; save(); };
 actions.askRestNotify = async () => { await askRestNotify(); rerender(); };
+actions.testRestNotify = () => { testRestNotify(); toast(t('Primeira notificação enviada. Saia do app: em 10 segundos chega a segunda.'), 5000); };
 changes.setRest = el => { state.settings.rest = Math.max(0, Math.round(Number(el.value) || 0)); save(); };
 changes.setTheme = el => { state.settings.theme = el.value; save(); applyTheme(); };
 
