@@ -146,14 +146,8 @@ function render() {
   }).join('');
 
   // sem carga ainda: só uma caixinha com séries × reps; com carga, o cartão completo
-  // "+ Série": acrescenta uma série só neste treino, a qualquer momento
-  const more = en.skipped ? '' : `<button class="meta-add" data-act="wMore" aria-label="${t('Série a mais')}">${icon.plus}${t('Série')}</button>`;
-  const target = p.first && !p.w ? `<div class="target-mini"><span>${t('Meta de hoje')}</span><b class="num">${goal(en, ex)} × ${ex.repMin}–${ex.repMax} reps</b>${more}</div>` : `<div class="target">
-    <div class="target-head"><h3>${t('Meta de hoje')}</h3>${more}</div>
-    <div class="big num">${kg(p.w)} × ${p.reps.join(' · ')}</div>
-    ${p.last ? `<div class="small muted num">${t('Último')} (${fmtDate(p.last.date)}): ${kg(p.last.w)} × ${p.last.reps.join(' · ')}</div>` : ''}
-    ${p.first ? '' : `<div class="note">${esc(p.note)}</div>`}
-  </div>`;
+  // "+ Série": logo abaixo das séries; acrescenta uma série só neste treino, a qualquer momento
+  const more = en.skipped ? '' : `<button class="set add-set" data-act="wMore">${icon.plus}${t('Série')}</button>`;
 
   let body;
   if (en.skipped) {
@@ -204,8 +198,7 @@ function render() {
       <button class="btn sm ghost" data-act="wSwap">${icon.sync}${t('Trocar exercício')}</button>
       <button class="btn sm ghost" data-act="wAdd">${icon.plus}${t('Adicionar exercício')}</button>
     </div>
-    ${target}
-    <div class="sets">${rows}</div>
+    <div class="sets">${rows}${more}</div>
     ${body}
     <div class="w-bar">
       <div class="rest" id="rest" hidden>

@@ -745,7 +745,7 @@ body.no-tabs #view:has(.w-done) { padding-bottom: calc(320px + var(--safe-b)); }
 .opt-lock { color: var(--accent) !important; font-weight: 600; }
 
 /* "+ Série a mais" e o × da série acrescentada */
-.set.add-set { width: 100%; justify-content: center; gap: 6px; border: 1.5px dashed var(--line); background: transparent; color: var(--muted); font-weight: 600; font-size: 14px; min-height: 44px; }
+.set.add-set { width: 100%; justify-content: center; gap: 6px; border: 1.5px dashed var(--line); background: transparent; color: var(--ink); font-weight: 700; font-size: 14px; min-height: 40px; padding: 6px 14px; }
 .set.add-set .ic { width: 16px; height: 16px; }
 .set.add-set:active { transform: scale(.98); }
 .set .set-del { margin-left: auto; border: 0; background: transparent; color: var(--muted); width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; }
