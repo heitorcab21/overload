@@ -248,13 +248,23 @@ actions.weekDay = el => {
       : cc.length ? '' : `<p class="muted">${t('Nenhum treino registrado neste dia.')}</p>`}
     ${cc.length ? `<h3>${t('Cardio')}</h3><div class="card flat"><div class="list">${cc.map(c => `<button class="item" data-act="cardioEdit" data-id="${c.id}">
       <span class="grow t">${esc(cardioLine(c))}</span>${icon.edit}</button>`).join('')}</div></div>` : ''}
-    <button class="btn block" data-act="cardioOnDay" data-day="${at.toISOString()}">${icon.heart}${t('Registrar cardio neste dia')}</button>
-    ${isToday ? '' : state.active && !activeEmpty() ? `<p class="small muted">${t('Há um treino em andamento com séries registradas. Finalize ou descarte ele para registrar outro dia.')}</p>
-      <button class="btn block" data-act="resume">${icon.play}${t('Ir para o treino em andamento')}</button>`
-      : state.routines.length ? `<h3>${t('Registrar treino neste dia')}</h3>
-      <p class="small muted">${t('Esqueceu de anotar? Escolha a ficha e registre as séries como num treino normal; ele fica salvo nesta data.')}</p>
-      <div class="card flat"><div class="list">${state.routines.map(r => `<button class="item" data-act="startOnDay" data-id="${r.id}" data-day="${at.toISOString()}">
-        <span class="grow t">${esc(routineName(r))}</span>${icon.plus}</button>`).join('')}</div></div>` : ''}`);
+    ${!isToday && state.routines.length ? `<button class="btn primary block" data-act="pickOnDay" data-day="${at.toISOString()}">${icon.plus}${t('Registrar treino neste dia')}</button>` : ''}
+    <button class="btn block" data-act="cardioOnDay" data-day="${at.toISOString()}">${icon.heart}${t('Registrar cardio neste dia')}</button>`);
+};
+/** Escolher a ficha do treino de outro dia (ou resolver antes o treino aberto com séries). */
+actions.pickOnDay = el => {
+  const day = el.dataset.day;
+  if (state.active && !activeEmpty()) {
+    sheet(`<h2>${t('Treino em andamento')}</h2>
+      <p class="muted">${t('Há um treino aberto com séries registradas. Finalize ou descarte ele para registrar outro dia.')}</p>
+      <button class="btn primary block" data-act="resume">${icon.play}${t('Ir para o treino em andamento')}</button>
+      <button class="btn ghost danger block" data-act="wDiscardAsk">${t('Descartar treino')}</button>`);
+    return;
+  }
+  sheet(`<h2>${esc(fmtDate(new Date(day)))}</h2>
+    <p class="small muted">${t('Escolha a ficha e registre as séries como num treino normal; ele fica salvo nesta data.')}</p>
+    <div class="card flat"><div class="list">${state.routines.map(r => `<button class="item" data-act="startOnDay" data-id="${r.id}" data-day="${day}">
+      <span class="grow t">${esc(routineName(r))}</span>${icon.plus}</button>`).join('')}</div></div>`);
 };
 actions.cardioOnDay = el => { closeSheet(); openCardioSheet({ date: el.dataset.day }); };
 // um treino aberto sem nenhuma série é substituído sem perguntar: não há nada a perder

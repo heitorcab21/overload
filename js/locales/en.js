@@ -1056,6 +1056,8 @@ const ui = {
   "Notificações bloqueadas. Para liberar no Android: Configurações do celular → Apps → Overload (ou Chrome, se não instalou o app) → Notificações → Permitir. Depois feche e abra o app.": "Notifications are blocked. To allow them on Android: phone Settings → Apps → Overload (or Chrome, if you did not install the app) → Notifications → Allow. Then close and reopen the app.",
   "Notificações: ainda não liberadas.": "Notifications: not allowed yet.",
   "Primeira notificação enviada. Saia do app: em 10 segundos chega a segunda.": "First notification sent. Leave the app: the second one arrives in 10 seconds.",
+  "Há um treino aberto com séries registradas. Finalize ou descarte ele para registrar outro dia.": "There is an open workout with logged sets. Finish or discard it to log another day.",
+  "Escolha a ficha e registre as séries como num treino normal; ele fica salvo nesta data.": "Pick the routine and log the sets as usual; it is saved on this date.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
