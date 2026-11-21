@@ -1318,6 +1318,10 @@ const ui = {
   "Como o app me faz evoluir mais rápido": "Cómo la app me hace progresar más rápido",
   "Explique o app e como vou evoluir mais rápido com ele.": "Explica la app y cómo voy a progresar más rápido con ella.",
   "Como evoluo mais rápido": "Cómo progreso más rápido",
+  "A conexão com a IA caiu (internet oscilou ou o app saiu da tela). Toque em Tentar de novo.": "Se cayó la conexión con la IA (la internet falló o la app salió de la pantalla). Toca Intentar de nuevo.",
+  "Tenho uma limitação física": "Tengo una limitación física",
+  "Tenho limitações físicas e quero treinos específicos para mim. Me faça as perguntas que precisar (onde, o que dói ou limita, desde quando, o que já me disseram) antes de sugerir algo.": "Tengo limitaciones físicas y quiero entrenos específicos para mí. Hazme las preguntas que necesites (dónde, qué duele o limita, desde cuándo, qué me han dicho) antes de sugerir algo.",
+  "Como o Overload maximiza meus ganhos?": "¿Cómo maximiza Overload mis ganancias?",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

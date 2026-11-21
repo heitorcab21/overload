@@ -73,7 +73,9 @@ function effortFor(p, model, taskEffort) {
   if (!levels.length) return null;
   const chosen = aiEffort(p);
   if (chosen !== 'auto' && levels.includes(chosen)) return chosen;
-  return p === 'claude' && levels.includes(taskEffort) ? taskEffort : null;
+  if (levels.includes(taskEffort)) return taskEffort;
+  // tarefa leve num modelo sem 'low': o menor nível que ele aceita
+  return taskEffort === 'low' ? levels[0] : null;
 }
 
 export function setAiConfig(provider, key, model) {
@@ -106,7 +108,7 @@ async function http(url, opts) {
   const waits = [1200, 3000];
   for (let attempt = 0; ; attempt++) {
     let res;
-    try { res = await fetch(url, opts); } catch { throw new Error(t('Falha de conexão com a IA.')); }
+    try { res = await fetch(url, opts); } catch { throw new Error(t('A conexão com a IA caiu (internet oscilou ou o app saiu da tela). Toque em Tentar de novo.')); }
     const body = await res.json().catch(() => ({}));
     if (res.ok) return body;
     if (res.status >= 500 && attempt < waits.length) { await new Promise(r => setTimeout(r, waits[attempt])); continue; }
@@ -168,10 +170,10 @@ async function askClaude({ system, user, messages, effort, schema, cache }) {
 const jsonRule = schema => `\n\nResponda somente com um objeto JSON válido (formato json, sem texto antes ou depois) que siga este JSON Schema:\n${JSON.stringify(schema)}`;
 
 // ChatGPT, Grok, DeepSeek e Perplexity: todos usam o formato de API da OpenAI
-async function askOpenAI({ system, user, messages, schema }, p = 'openai') {
+async function askOpenAI({ system, user, messages, schema, effort: taskEffort }, p = 'openai') {
   const cfg = OPENAI_LIKE[p];
   const model = aiModel(p);
-  const effort = effortFor(p, model);
+  const effort = effortFor(p, model, taskEffort);
   const body = {
     model,
     messages: [{ role: 'system', content: system + (schema ? jsonRule(schema) : '') }, ...(messages ?? [{ role: 'user', content: user }])],
@@ -190,7 +192,7 @@ async function askOpenAI({ system, user, messages, schema }, p = 'openai') {
   return (c.message?.content || '').replace(/<think>[\s\S]*?<\/think>/g, '').trim();
 }
 
-async function askGemini({ system, user, messages, schema }) {
+async function askGemini({ system, user, messages, schema, effort: taskEffort }) {
   const model = aiModel('gemini');
   const data = await http(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
     method: 'POST',
@@ -200,7 +202,7 @@ async function askGemini({ system, user, messages, schema }) {
       contents: (messages ?? [{ role: 'user', content: user }]).map(m => ({ role: m.role === 'assistant' ? 'model' : 'user', parts: [{ text: m.content }] })),
       ...(() => {
         const gen = { ...(schema ? { responseMimeType: 'application/json' } : {}) };
-        const e = effortFor('gemini', model);
+        const e = effortFor('gemini', model, taskEffort);
         if (e) gen.thinkingConfig = /gemini-3/.test(model) ? { thinkingLevel: e } : { thinkingBudget: { low: 1024, medium: 8192, high: 24576 }[e] };
         return Object.keys(gen).length ? { generationConfig: gen } : {};
       })(),

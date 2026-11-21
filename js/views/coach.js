@@ -93,9 +93,11 @@ function suggestions() {
     if (lv) out.push([t('Evoluir no {x}', { x: exName(lv.ex).split(' (')[0].toLowerCase() }), t('Como subo do Top {n}% no {x}?', { n: lv.l.top, x: exName(lv.ex).toLowerCase() })]);
   }
   if (!last) out.push([t('Como começar'), t('Como começo com segurança?')]);
+  out.push([t('Tenho uma limitação física'), t('Tenho limitações físicas e quero treinos específicos para mim. Me faça as perguntas que precisar (onde, o que dói ou limita, desde quando, o que já me disseram) antes de sugerir algo.')]);
   out.push([t('Estou cansado hoje'), t('Estou cansado hoje: como adapto o treino?')]);
   // rótulo curto no botão; a pergunta completa vai para a IA
-  return out.slice(0, 2);
+  const lim = out.find(([l]) => l === t('Tenho uma limitação física'));
+  return [...out.filter(x => x !== lim).slice(0, 2), lim];
 }
 
 /** Texto da IA com o mínimo de formatação: parágrafos, listas "- " e **negrito**. */
@@ -136,7 +138,7 @@ function render() {
       <button class="btn sm ghost coach-mem-btn" data-act="coachMem">${MEM_IC}${c.notes.length ? t('Memória ({n})', { n: c.notes.length }) : t('Memória')}</button></div>
     <div class="coach-log" id="coachLog">${chat().length || busy ? bubbles() : `<p class="muted small">${t('Pergunte o que quiser sobre os seus treinos. Eu vejo seus registros, fichas, metas e cardio, e lembro do que você me contar.')}</p>`}</div>
     ${busy ? '' : `<div class="coach-sugs">
-      <button class="chip pitch" data-act="coachPitch">${icon.spark}${t('Como evoluo mais rápido')}</button>
+      <button class="chip pitch" data-act="coachPitch">${icon.spark}${t('Como o Overload maximiza meus ganhos?')}</button>
       ${suggestions().map(([label, q]) => `<button class="chip" data-act="coachAsk" data-q="${esc(q)}">${esc(label)}</button>`).join('')}</div>`}
     <form class="coach-form" data-submit="coachSend">
       <textarea name="q" rows="1" maxlength="1000" placeholder="${t('Escreva sua pergunta…')}" ${busy ? 'disabled' : ''}></textarea>
@@ -254,7 +256,7 @@ actions.coachWipe = () => {
 
 actions.coachOpen = () => { view = 'chat'; render(); checkin(); };
 actions.coachAsk = el => send(el.dataset.q);
-actions.coachPitch = () => send(t('Explique o app e como vou evoluir mais rápido com ele.'), { extra: PITCH() });
+actions.coachPitch = () => send(t('Como o Overload maximiza meus ganhos?'), { extra: PITCH() });
 // reenvia a última pergunta que deu erro
 actions.coachRetry = () => {
   const list = chat();

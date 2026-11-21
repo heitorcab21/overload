@@ -1318,6 +1318,10 @@ const ui = {
   "Como o app me faz evoluir mais rápido": "How the app helps me progress faster",
   "Explique o app e como vou evoluir mais rápido com ele.": "Explain the app and how it will help me progress faster.",
   "Como evoluo mais rápido": "How do I progress faster",
+  "A conexão com a IA caiu (internet oscilou ou o app saiu da tela). Toque em Tentar de novo.": "The connection to the AI dropped (the internet wavered or the app left the screen). Tap Try again.",
+  "Tenho uma limitação física": "I have a physical limitation",
+  "Tenho limitações físicas e quero treinos específicos para mim. Me faça as perguntas que precisar (onde, o que dói ou limita, desde quando, o que já me disseram) antes de sugerir algo.": "I have physical limitations and want workouts made for me. Ask me what you need to know (where, what hurts or limits me, since when, what I have been told) before suggesting anything.",
+  "Como o Overload maximiza meus ganhos?": "How does Overload maximize my gains?",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
