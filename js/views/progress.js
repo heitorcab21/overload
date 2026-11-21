@@ -456,7 +456,6 @@ function bodyCard() {
   return `<div class="card stack">
     <div class="row between"><h3>${t('Seu corpo')}</h3><button class="btn sm ghost" data-act="editProfile">${t('Atualizar')}</button></div>
     <p class="small muted">${p.sex === 'm' ? t('Homem') : t('Mulher')} · ${t('{n} anos', { n: p.age })} · ${heightStr(p.height)} · ${fmt1(toW(p.weight))} ${wUnit()}</p>
-    ${weightBlock(p)}
     <div class="tiles">
       <div class="tile"><span class="l">${t('Massa magra')}</span><span class="v">${fmt1(toW(c.leanKg))} ${wUnit()}</span></div>
       <div class="tile"><span class="l">${t('Massa gorda')}</span><span class="v">${fmt1(toW(c.fatKg))} ${wUnit()}</span></div>
@@ -467,6 +466,7 @@ function bodyCard() {
       <span class="seg-lean" style="width:${leanPct}%">${leanPct >= 18 ? `${leanPct}%` : ''}</span><span class="seg-fat" style="width:${100 - leanPct}%">${100 - leanPct >= 12 ? `${100 - leanPct}%` : ''}</span>
     </div>
     <div class="legend small"><span><i class="sw-lean"></i>${t('Massa magra')}</span><span><i class="sw-fat"></i>${t('Massa gorda')}</span></div>
+    ${weightBlock(p)}
     <p class="small muted">${method}</p>
 
     <p class="small muted">${t('Estimativas aproximadas. Não substituem uma avaliação física (bioimpedância, dobras cutâneas ou DEXA).')}</p>
