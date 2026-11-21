@@ -342,11 +342,8 @@ function strengthOverview() {
     return `<a class="card stack strength-card link-card" href="#/forca"><div class="row between"><h3>${t('Seu nível de força')}</h3>${icon.next}</div>
       <p class="muted">${t('Registre exercícios com barra, halteres ou peso corporal (supino, agachamento, terra, remada, barra fixa...) para ver em que top de força você está.')}</p></a>`;
   }
-  const best = rows[0];
   return `<a class="card stack strength-card link-card" href="#/forca">
     <div class="row between"><h3>${t('Seu nível de força')}</h3>${icon.next}</div>
-    <div class="row between"><span class="grow"><span class="small muted">${t('Seu destaque')}</span><br><b>${esc(exName(best.ex))}</b></span>
-      <span class="top-chip big">${t('Top {n}%', { n: best.lv.top })}</span></div>
     ${radarSvg(p)}
     <div class="r-info small muted">${t('Esquerda: frente do corpo · direita: trás. Toque num eixo para ver o detalhe.')}</div>
   </a>`;

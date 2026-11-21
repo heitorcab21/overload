@@ -1,6 +1,6 @@
 // Service worker: deixa o Overload funcionando sem internet.
 // Ao publicar uma versão nova, troque o número abaixo para atualizar o cache dos aparelhos.
-const VERSION = 'v122';
+const VERSION = 'v123';
 
 const CORE = [
   './', 'index.html', 'manifest.webmanifest', 'css/app.css',
