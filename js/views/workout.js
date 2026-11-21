@@ -242,16 +242,28 @@ function tickRest() {
 }
 
 let audioCtx = null;
+const BEEPS = [[0, 660, 0.16], [0.5, 784, 0.16], [1.0, 1320, 0.55]]; // [início (s), frequência (Hz), duração (s)]
+
+/**
+ * No iPhone o som de páginas da web fica travado até um toque tocar algo de fato, e a chave do silencioso
+ * corta esse som. Por isso: sessão de áudio "curta" (mistura com a música e toca mesmo no silencioso, iOS 16.4+),
+ * destrava a cada toque e, se o áudio da página estiver parado na hora, toca os mesmos bipes num <audio>.
+ */
+function audioSession(type) { try { if (navigator.audioSession) navigator.audioSession.type = type; } catch { /* sem suporte */ } }
+
 /** Fim do descanso: bipe, bipe, biiipe, como numa largada, mais vibração. */
 function restAlert() {
   try { navigator.vibrate?.([120, 230, 120, 230, 450]); } catch { /* sem vibração */ }
+  audioSession('transient');
+  setTimeout(() => audioSession('auto'), 2500);
   try {
     const Ctx = window.AudioContext || window.webkitAudioContext;
     audioCtx ??= new Ctx();
-    audioCtx.resume?.();
+    if (audioCtx.state !== 'running') audioCtx.resume?.();
+    if (audioCtx.state !== 'running') { playBeepFile(); return; }
     const now = audioCtx.currentTime + 0.05;
-    // [início (s), frequência (Hz), duração (s)]: sobe a cada bipe e o último é mais agudo e mais longo
-    [[0, 660, 0.16], [0.5, 784, 0.16], [1.0, 1320, 0.55]].forEach(([at, f, dur]) => {
+    // sobe a cada bipe e o último é mais agudo e mais longo
+    BEEPS.forEach(([at, f, dur]) => {
       const o = audioCtx.createOscillator();
       const g = audioCtx.createGain();
       o.type = 'square';
@@ -264,13 +276,58 @@ function restAlert() {
       o.start(now + at);
       o.stop(now + at + dur + 0.02);
     });
+  } catch { playBeepFile(); }
+}
+
+// Os mesmos três bipes como arquivo de som (WAV gerado aqui), para quando o áudio da página estiver travado.
+let beepEl = null;
+function beepWav() {
+  const rate = 22050, total = Math.ceil(1.6 * rate), data = new Int16Array(total);
+  for (const [at, f, dur] of BEEPS) {
+    const a = Math.floor(at * rate), n = Math.floor(dur * rate);
+    for (let k = 0; k < n && a + k < total; k++) {
+      const env = Math.min(1, k / 300, (n - k) / 800);
+      data[a + k] = (Math.sin(2 * Math.PI * f * k / rate) >= 0 ? 1 : -1) * 0.22 * env * 32767;
+    }
+  }
+  const buf = new ArrayBuffer(44 + total * 2), v = new DataView(buf);
+  const str = (o, x) => [...x].forEach((c, k) => v.setUint8(o + k, c.charCodeAt(0)));
+  str(0, 'RIFF'); v.setUint32(4, 36 + total * 2, true); str(8, 'WAVE'); str(12, 'fmt ');
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, rate, true);
+  v.setUint32(28, rate * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); str(36, 'data'); v.setUint32(40, total * 2, true);
+  new Int16Array(buf, 44).set(data);
+  return URL.createObjectURL(new Blob([buf], { type: 'audio/wav' }));
+}
+function playBeepFile() {
+  try {
+    beepEl ??= new Audio(beepWav());
+    beepEl.muted = false;
+    beepEl.currentTime = 0;
+    beepEl.play()?.catch(() => {});
   } catch { /* sem áudio */ }
 }
-/** Destrava o áudio no primeiro toque (celulares só tocam som depois de uma interação). */
+
+/** A cada toque: garante o áudio da página rodando (o iPhone exige um som tocado dentro do toque). */
 function unlockAudio() {
-  try { const Ctx = window.AudioContext || window.webkitAudioContext; audioCtx ??= new Ctx(); audioCtx.resume?.(); } catch { /* sem áudio */ }
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    audioCtx ??= new Ctx();
+    if (audioCtx.state !== 'running') {
+      audioCtx.resume?.();
+      const src = audioCtx.createBufferSource();
+      src.buffer = audioCtx.createBuffer(1, 1, 22050);
+      src.connect(audioCtx.destination);
+      src.start(0);
+    }
+    // destrava também o arquivo de bipes (toca mudo uma vez, dentro do toque)
+    if (!beepEl) {
+      beepEl = new Audio(beepWav());
+      beepEl.muted = true;
+      beepEl.play()?.then(() => { beepEl.pause(); beepEl.currentTime = 0; beepEl.muted = false; }).catch(() => { beepEl.muted = false; });
+    }
+  } catch { /* sem áudio */ }
 }
-document.addEventListener('pointerdown', unlockAudio, { once: true });
+for (const ev of ['touchend', 'click', 'keydown']) document.addEventListener(ev, unlockAudio, { passive: true });
 
 async function keepAwake() {
   try {
