@@ -7,12 +7,14 @@ import { t, helpPack } from '../i18n.js';
 const TOPICS = [
   ['Primeiros passos', 'Do primeiro acesso ao primeiro treino', `
     <ol class="steps">
-      <li><b>Entre com sua conta Google</b> na primeira tela. Assim seus treinos ficam salvos no seu Drive. Se preferir, toque em "Usar sem conta".</li>
-      <li><b>Escolha um ponto de partida</b>: ABC, Push/Pull/Legs, Superior/Inferior, Arnold split, ABCDE, três opções com foco em glúteos e pernas, Corpo inteiro ou do zero. Depois dá para adicionar outros em <b>Treinos &gt; Treinos prontos e salvos</b>.</li>
-      <li><b>Informe as cargas que você já usa</b> na tela de cargas iniciais. É opcional: o que ficar em branco você escolhe no primeiro treino.</li>
+      <li><b>Entre com sua conta Google</b> na primeira tela, para salvar tudo no seu Drive. Se preferir, toque em "Usar sem conta".</li>
+      <li><b>Escolha um ponto de partida</b>: ABC, Push/Pull/Legs, Superior/Inferior, Arnold split, ABCDE, opções com foco em glúteos e pernas, Corpo inteiro ou do zero. Também dá para <b>importar do bloco de notas</b>.</li>
+      <li><b>Seu corpo</b>: sexo, idade, altura e peso (já vêm com valores de exemplo: ajuste no − e no +). Eles destravam o nível de força, a composição corporal e metas certas para você.</li>
+      <li><b>Seu objetivo</b>: ganhar massa, ficar mais forte, emagrecer ou saúde, os grupos que quer priorizar e quantos treinos por semana. O app monta as metas de séries e de cardio.</li>
+      <li><b>Metas de carga</b>: para cada exercício, escolha Conservador, Moderado ou Difícil (calculados pelas suas cargas e pelo seu nível) ou <b>Seguir minha progressão</b>.</li>
       <li>Na aba <b>Hoje</b>, toque em <b>Começar treino</b>.</li>
     </ol>
-    <p class="tip">Tudo pode ser mudado depois na aba Treinos: exercícios, ordem, séries e faixa de repetições. Para trocar o idioma (português, inglês ou espanhol), vá em <b>Ajustes &gt; Idioma</b>.</p>`],
+    <p class="tip">Tudo pode ser mudado depois. Idioma (português, inglês ou espanhol) e unidades (métrico ou imperial: lb, pés e milhas) ficam em <b>Ajustes</b>.</p>`],
 
   ['Importar treinos de texto', 'Do bloco de notas ou do WhatsApp', `
     <p>Já anotava seus treinos em texto? Copie e cole tudo de uma vez: o app salva as cargas e já sugere a próxima.</p>
@@ -63,15 +65,16 @@ const TOPICS = [
     </ul>
     <p class="tip">O mais importante é anotar sempre do mesmo jeito: é assim que o app compara um treino com o outro e sugere a próxima carga.</p>`],
 
-  ['Cardio', 'Esteira, bike, corrida e mais', `
+  ['Cardio', 'Registro, metas e rotinas com cronômetro', `
     <ol class="steps">
-      <li>Na aba <b>Cardio</b>, toque em <b>Registrar cardio</b>: escolha o tipo, o tempo e, se quiser, a distância e a intensidade. O app estima as calorias pelo seu peso.</li>
-      <li>Fez cardio junto com a musculação? No treino, abra a lista de exercícios e toque em <b>Adicionar cardio</b>. Ele aparece no resumo e no card dos stories.</li>
-      <li>A <b>meta da semana</b> começa em 150 minutos (recomendação da OMS) e pode ser mudada no lápis.</li>
-      <li>Na tela Hoje, dias só com cardio aparecem com um coração azul. Esqueceu de anotar? Toque no dia e use <b>Registrar cardio neste dia</b>.</li>
-      <li><b>Rotinas com cronômetro</b>: monte blocos contínuos e intervalados (ex.: aquecer 5 min, 8× 30 s forte / 30 s leve), com velocidade, inclinação e nível opcionais, ou comece por um modelo pronto. O cronômetro avisa cada troca com bipe e vibração.</li>
-      <li>No fim, dê uma <b>nota de esforço de 1 a 10</b>. Se ficou fácil (até 6), o app sugere o próximo avanço: mais uma rodada, +0,5 km/h, +1% de inclinação ou mais tempo. Toque em <b>Aplicar</b> para atualizar a rotina.</li>
-    </ol>`],
+      <li>Na aba <b>Cardio</b>, toque em <b>Registrar cardio</b>: tipo, tempo e, se quiser, distância e intensidade. O app estima as calorias pelo seu peso.</li>
+      <li>Fez cardio junto com a musculação? No treino, abra a lista de exercícios e toque em <b>Adicionar cardio</b>.</li>
+      <li><b>Meta da semana</b>: toque no lápis e escolha uma de 3 opções (por exemplo 90, 150 ou 300 minutos; a OMS recomenda de 150 a 300) ou defina a sua.</li>
+      <li><b>Rotinas com cronômetro</b>: monte blocos contínuos e intervalados ou use um <b>modelo pronto</b> com base científica: Zona 2, Caminhar e correr, Esteira 12-3-30, 4×4 norueguês, HIIT 30/30, Tiros, Sprints de 30 s e Tabata. Cada modelo explica para que serve.</li>
+      <li>O <b>cronômetro</b> tem contagem 3-2-1, anel de progresso, linha do tempo das etapas, botão +30 s, bipes e vibração a cada troca e uma <b>voz</b> que anuncia a fase (desligue no ícone de som). Ele mostra também a <b>faixa de batimentos</b> pela sua idade e o teste da fala.</li>
+      <li>No fim, dê uma <b>nota de esforço de 1 a 10</b>. Se ficou fácil, o app sugere o próximo avanço: toque em <b>Aplicar</b>.</li>
+    </ol>
+    <p class="tip">No iPhone, o som e a voz só tocam com o app aberto na tela: o iOS pausa apps da web em segundo plano.</p>`],
 
   ['Registrar por voz', 'Fale em vez de tocar', `
     <p>Toque no <b>microfone azul</b> embaixo e fale. Exemplos:</p>
@@ -94,31 +97,33 @@ const TOPICS = [
       <li>Se ficar <b>duas vezes abaixo da faixa</b>, ele sugere reduzir cerca de 10%.</li>
     </ol>
     <ul class="errs">
+      <li><b>Meta do mês ativa</b>: se a sugestão ficar abaixo do degrau desta semana, o app puxa em direção a ele, no máximo um aumento de carga por treino e o resto em repetições ("Rumo à meta da semana").</li>
       <li><b>Sobraram 3 ou mais reps</b> em todas as séries: +2 reps. <b>Nenhuma sobrando</b> na última: repete os números.</li>
       <li><b>Dor</b>: repete os mesmos números.</li>
       <li><b>Troquei o aparelho</b>: aquele treino não conta para a próxima carga.</li>
     </ul>`],
 
-  ['Metas da semana e do mês', 'Grupamentos e exercícios', `
-    <p><b>Grupamentos</b> (peito, costas...): número de séries por semana e por mês. Elas seguem sua rotina sozinhas: cumprir os treinos é bater a meta. Se você mudar o número à mão, ele fica fixo.</p>
-    <p><b>Exercícios</b>: a melhor série que você quer conseguir até o fim do mês (por exemplo, 45 kg × 10). O app divide o caminho em <b>degraus semanais</b>.</p>
-    <ol class="steps">
-      <li>Na aba <b>Metas</b>, alterne entre <b>Semana</b> e <b>Mês</b>.</li>
-      <li>Toque em qualquer linha para editar. A meta desta semana também pode ser trocada à mão.</li>
-      <li><b>Sugerir metas</b> cria metas cerca de 5% acima do seu melhor recente.</li>
-    </ol>`],
-
-  ['Seu corpo e nível de força', 'IMC, gordura, massa magra e top de força', `
-    <p>Na aba <b>Progresso</b>, preencha sexo, idade, altura e peso no cartão <b>Seu corpo</b>.</p>
+  ['Metas', 'Objetivo, séries, cargas e cardio', `
+    <p>Tudo começa pelo <b>objetivo</b>, no topo da aba Metas (toque nele para mudar). Ele define quantas séries por semana cada grupo precisa e a meta de cardio.</p>
     <ul class="errs">
-      <li><b>Massa magra e massa gorda</b> são o foco. O <b>IMC</b> aparece só como número: ele não separa músculo de gordura, então quem treina costuma ter IMC alto sem estar acima do peso.</li>
-      <li><b>Gordura estimada</b>: com cintura e pescoço (e quadril, para mulheres), o app usa a fórmula da Marinha americana, com erro de cerca de 3 a 4 pontos. Sem essas medidas, usa IMC, idade e sexo, com erro de cerca de 5 pontos, e desconta até 4 pontos se você for forte para o seu peso.</li>
-      <li><b>Massa magra e gorda</b>: o peso dividido pelo percentual de gordura estimado.</li>
-      <li><b>Top de força</b>: toque no cartão <b>Seu nível de força</b>, no Progresso, para ver o top % de cada exercício. Ele compara o seu 1RM estimado com padrões de quem treina musculação, ajustados por sexo, idade e peso, e é recalculado sempre que você atualiza o perfil ou registra o peso. Top 10% = mais forte que 90% dessas pessoas. Em <b>Consultar qualquer exercício</b>, escolha um exercício (tronco, braços ou pernas), informe carga e reps e veja o top na hora, sem salvar nada. Só vale para exercícios com barra, halteres ou peso corporal; aparelhos e polias variam demais entre academias.</li>
-      <li><b>De onde vem o 1RM</b>: o cartão de força do exercício mostra a série usada no cálculo (a melhor dos últimos 90 dias) e a fórmula. Para um número mais confiável, toque em <b>Fazer teste de força</b>: depois de aquecer, faça uma série até não aguentar mais e informe carga e reps. O teste não mexe na progressão dos treinos.</li>
-      <li><b>Peso corporal</b>: no cartão Seu corpo, toque em <b>Atualizar</b> e mude o peso para acompanhar o gráfico. Um registro por dia.</li>
+      <li><b>Mapa muscular</b>: o corpo de frente e de costas, pintado pelas séries da semana (ou do mês) em relação à meta. Toque num músculo para ver quantas faltam.</li>
+      <li><b>Séries por grupo</b>: toque num grupo e escolha uma de 3 opções pela ciência do volume (conservador, moderado, difícil) ou defina a sua. Só contam as <b>séries efetivas</b>: carga de pelo menos 60% da sua força no exercício e até 4 reps sobrando. Se a sua ficha não entrega a meta, toque em <b>Completar</b>.</li>
+      <li><b>Cargas por exercício</b>: cada exercício mostra 3 opções para o mês (conservador, moderado, difícil), pelo seu melhor recente e pelo seu nível. Sem treino registrado, o app estima e avisa. Você também pode <b>seguir a sua progressão</b> ou definir a sua meta: o app diz se ela é realista, ambiciosa ou ilusória.</li>
+      <li>Enquanto faltar escolher, um aviso aparece em Metas e em Treinos, e o treino pede a escolha quando entra um exercício novo.</li>
+      <li>A meta do mês é dividida em <b>degraus semanais</b>. Alterne entre <b>Semana</b> e <b>Mês</b> no topo.</li>
+    </ul>`],
+
+  ['Seu corpo e nível de força', 'Composição corporal, radar e top de força', `
+    <p>Na aba <b>Progresso</b>, o cartão <b>Seu corpo</b> usa sexo, idade, altura e peso (toque em <b>Atualizar</b> para mudar).</p>
+    <ul class="errs">
+      <li><b>Massa magra e massa gorda</b> são o foco. O <b>IMC</b> aparece só como número: ele não separa músculo de gordura.</li>
+      <li><b>Gordura estimada</b>: com cintura e pescoço (e quadril, para mulheres), o app usa a fórmula da Marinha americana (erro de cerca de 3 a 4 pontos). Sem essas medidas, usa IMC, idade e sexo (cerca de 5 pontos) e desconta até 4 pontos se você for forte para o seu peso.</li>
+      <li><b>Peso corporal</b>: o gráfico fica logo abaixo dos valores. Um registro por dia.</li>
+      <li><b>Nível de força</b>: um <b>radar</b> com os 6 padrões de movimento (empurrar e puxar na horizontal e na vertical, agachar e dobradiça de quadril). À esquerda fica a frente do corpo e à direita a parte de trás: o formato mostra desequilíbrios. Toque num eixo para ver o exercício e o seu top. Top 10% = mais forte que 90% de quem treina, com o mesmo sexo, idade e peso.</li>
+      <li>Toque no cartão para ver cada exercício, agrupado por padrão de movimento, e em <b>Consultar qualquer exercício</b> para ver o top na hora, sem salvar. Só entram exercícios com barra, halteres ou peso corporal.</li>
+      <li><b>De onde vem o 1RM</b>: da melhor série dos últimos 90 dias. Para um número mais confiável, use <b>Fazer teste de força</b> na tela do exercício.</li>
     </ul>
-    <p class="tip">São estimativas. Para um número confiável de gordura corporal, faça uma avaliação física (bioimpedância, dobras cutâneas ou DEXA). Atualize o peso de vez em quando para manter os cálculos certos.</p>`],
+    <p class="tip">São estimativas. Para gordura corporal confiável, faça uma avaliação física (bioimpedância, dobras cutâneas ou DEXA).</p>`],
 
   ['Planilhas (Excel e Google Planilhas)', 'Exportar e importar', `
     <ul class="errs">
@@ -153,20 +158,22 @@ const TOPICS = [
       <li>No <b>histórico</b>, toque em um treino e depois em um exercício para corrigir séries antigas, inclusive marcar ou desmarcar uma série como aquecimento (botão <b>Aquec.</b>).</li>
     </ul>`],
 
-  ['Treinador IA (opcional)', 'Análises e dúvidas', `
-    <p>Em <b>Ajustes &gt; Treinador IA</b>, escolha a sua IA favorita (<b>Claude</b>, <b>ChatGPT</b> ou <b>Gemini</b>) e cole uma chave de API dela. Com isso, o app analisa sua semana, responde dúvidas de execução e entende frases de voz mais livres. Sem chave, todo o resto funciona.</p>
+  ['Treinador IA (opcional)', 'Conversa com memória', `
+    <p>Em <b>Ajustes &gt; Treinador IA</b>, escolha a sua IA (<b>Claude, ChatGPT, Gemini, Grok, DeepSeek ou Perplexity</b>) e cole uma chave de API dela: o botão <b>Criar chave de API</b> leva à página certa. Depois, toque no botão <b>Treinador</b> no canto da tela.</p>
     <ul class="errs">
-      <li><b>Gemini</b>: tem uso gratuito com limites diários. No plano gratuito, o Google pode usar o que é enviado para melhorar os produtos dele.</li>
-      <li><b>Claude</b> e <b>ChatGPT</b>: cobrados por uso na sua conta. A assinatura ChatGPT Plus não inclui a API: a chave é criada à parte.</li>
-      <li>O botão <b>Criar chave de API</b>, em Ajustes, leva à página certa de cada empresa.</li>
-      <li><b>O que a IA vê</b>: a cada pedido, o app monta um resumo na hora com seus treinos dos últimos 14 dias (cargas, reps, RIR, sensação), metas, próximas cargas sugeridas e seu perfil e nível de força. A IA não guarda memória entre um pedido e outro: quem guarda tudo é o app.</li>
+      <li><b>Ele conhece seus dados</b>: treinos dos últimos 14 dias, evolução de 3 meses, metas, perfil, nível de força, peso, anotações, dores relatadas e cardio.</li>
+      <li><b>Ele lembra de você</b>: anota no caderno o que você conta (dores, equipamento, horários, objetivos) e resume as conversas antigas. Veja e apague em <b>Memória</b>. A conversa e a memória sincronizam com o seu Drive.</li>
+      <li>Ao abrir o chat, ele pode <b>puxar assunto</b> (no máximo uma vez por dia). As sugestões prontas ajudam a começar.</li>
+      <li><b>Custo</b>: o Gemini tem uso gratuito com limites (no plano gratuito, o Google pode usar o que é enviado). As outras são cobradas por uso na sua conta; assinaturas como ChatGPT Plus não incluem a API.</li>
+      <li>Com a IA ligada, o app também entende frases de voz mais livres, organiza textos importados e explica a execução de exercícios criados por você.</li>
     </ul>`],
 
-  ['Instalar e atualizar o app', 'Na tela inicial do celular', `
-    <p>Toque no <b>ícone laranja de download</b> no canto superior direito da tela. Ele some quando o app já está instalado. Se o navegador não instalar direto, o app mostra os passos:</p>
+  ['Instalar, avisos e atualizar', 'Na tela inicial do celular', `
+    <p>Toque no <b>ícone laranja de download</b> no canto superior direito. Ele some quando o app já está instalado. Se o navegador não instalar direto, o app mostra os passos:</p>
     <ul class="errs">
       <li><b>Android (Chrome)</b>: menu de três pontos &gt; Instalar app.</li>
       <li><b>iPhone (Safari)</b>: botão Compartilhar &gt; Adicionar à Tela de Início.</li>
+      <li><b>Aviso de fim do descanso</b>: no primeiro acesso o app pede permissão para notificações. Para o aviso aparecer no topo da tela no Android, deixe as notificações do app com prioridade alta (pop-up) nas configurações do sistema. Em Ajustes, use <b>Testar notificação</b>.</li>
       <li><b>Atualizar</b>: abra o app com internet, espere alguns segundos, feche completamente e abra de novo.</li>
     </ul>`],
 
@@ -176,9 +183,17 @@ const TOPICS = [
       <li><b>"O Google não verificou este app"</b>: é normal neste momento. Toque em Continuar.</li>
       <li><b>A janela do Google não abre</b>: permita pop-ups para este site no navegador.</li>
       <li><b>O microfone não funciona</b>: confira a permissão do microfone no navegador e a internet. Se continuar, digite a frase.</li>
+      <li><b>Sem som do descanso no iPhone com o app fechado</b>: o iOS não deixa apps da web tocarem som em segundo plano. Com o app aberto o bipe toca, inclusive no silencioso.</li>
+      <li><b>A IA diz que está sobrecarregada (Gemini)</b>: o app já tenta de novo sozinho; se continuar, espere um pouco ou escolha outro modelo em Ajustes.</li>
       <li><b>Não vejo a versão nova</b>: feche o app completamente e abra de novo, com internet.</li>
     </ul>`],
 ];
+
+/** A Ajuda inteira em texto simples, para a IA usar como manual do app. */
+export function helpText() {
+  const plain = html => html.replace(/<li>/g, '\n- ').replace(/<[^>]+>/g, '').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&').replace(/[ \t]+/g, ' ').replace(/\n\s*\n+/g, '\n').trim();
+  return (helpPack() || TOPICS).map(([title, sub, body]) => `## ${title} (${sub})\n${plain(body)}`).join('\n\n');
+}
 
 function render() {
   $('#view').innerHTML = `

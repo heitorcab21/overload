@@ -11,6 +11,7 @@ import { go, current, afterRender } from '../router.js';
 import { aiEnabled, aiChat, aiProvider, PROVIDERS, aiCoachNotes, aiCoachSummary, aiCoachCheckin } from '../ai.js';
 import { t } from '../i18n.js';
 import { buildSummary } from './home.js';
+import { helpText } from './help.js';
 
 import { PROVIDER_ICON } from '../aiicons.js';
 const SEND_IC = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -94,7 +95,7 @@ function suggestions() {
   if (!last) out.push([t('Como começar'), t('Como começo com segurança?')]);
   out.push([t('Estou cansado hoje'), t('Estou cansado hoje: como adapto o treino?')]);
   // rótulo curto no botão; a pergunta completa vai para a IA
-  return out.slice(0, 5);
+  return out.slice(0, 2);
 }
 
 /** Texto da IA com o mínimo de formatação: parágrafos, listas "- " e **negrito**. */
@@ -134,7 +135,9 @@ function render() {
     <div class="coach-head"><h2>${coachIcon()}${t('Treinador')}</h2>
       <button class="btn sm ghost coach-mem-btn" data-act="coachMem">${MEM_IC}${c.notes.length ? t('Memória ({n})', { n: c.notes.length }) : t('Memória')}</button></div>
     <div class="coach-log" id="coachLog">${chat().length || busy ? bubbles() : `<p class="muted small">${t('Pergunte o que quiser sobre os seus treinos. Eu vejo seus registros, fichas, metas e cardio, e lembro do que você me contar.')}</p>`}</div>
-    ${busy ? '' : `<div class="coach-sugs">${suggestions().map(([label, q]) => `<button class="chip" data-act="coachAsk" data-q="${esc(q)}">${esc(label)}</button>`).join('')}</div>`}
+    ${busy ? '' : `<div class="coach-sugs">
+      <button class="chip pitch" data-act="coachPitch">${icon.spark}${t('Como o app me faz evoluir mais rápido')}</button>
+      ${suggestions().map(([label, q]) => `<button class="chip" data-act="coachAsk" data-q="${esc(q)}">${esc(label)}</button>`).join('')}</div>`}
     <form class="coach-form" data-submit="coachSend">
       <textarea name="q" rows="1" maxlength="1000" placeholder="${t('Escreva sua pergunta…')}" ${busy ? 'disabled' : ''}></textarea>
       <button class="coach-send" ${busy ? 'disabled' : ''} aria-label="${t('Enviar')}">${SEND_IC}</button>
@@ -149,7 +152,15 @@ function render() {
 const MEM_IC = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h11a1 1 0 011 1v16l-6-3.5L6 20V4a1 1 0 010-1z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>';
 const isOpen = () => !$('#sheet').hidden && ($('.coach') || $('.coach-memory'));
 
-async function send(q) {
+// Pedido da sugestão em destaque: um super resumo só dos diferenciais, a partir da Ajuda (o manual do app)
+const PITCH = () => `[Para responder: use o MANUAL DO APP abaixo (a seção Ajuda) e faça um super resumo só com os diferenciais do Overload, para alguém leigo ver o valor de usar o app.
+Foque no que faz evoluir mais rápido: a carga certa sugerida a cada treino (progressão automática), metas inteligentes em 3 cenários (conservador, moderado, difícil) com degraus semanais, séries efetivas pela ciência do volume, nível de força em top % e radar (subir de nível como num jogo), mapa muscular, cardio com protocolos estudados e o treinador com memória.
+No máximo 7 itens curtos começando com "- " e o diferencial em **negrito**, e uma frase final de como usar o app para evoluir mais rápido, citando um dado real da pessoa se houver. Nada sobre instalar, contas ou detalhes técnicos.]
+
+MANUAL DO APP:
+${helpText()}`;
+
+async function send(q, opts = {}) {
   q = String(q || '').trim();
   if (!q || busy) return;
   chat().push({ role: 'user', content: q, at: Date.now() });
@@ -157,7 +168,10 @@ async function send(q) {
   render();
   let answer = null;
   try {
-    const answerText = await aiChat(apiMessages(), fullContext(), memoryText());
+    const msgs = apiMessages();
+    // instruções extras só neste pedido (a conversa guarda apenas a pergunta)
+    if (opts.extra) msgs.at(-1).content += `\n\n${opts.extra}`;
+    const answerText = await aiChat(msgs, fullContext(), memoryText());
     answer = answerText || t('Sem resposta. Tente de novo.');
     chat().push({ role: 'assistant', content: answer, at: Date.now() });
   } catch (e) {
@@ -240,6 +254,7 @@ actions.coachWipe = () => {
 
 actions.coachOpen = () => { view = 'chat'; render(); checkin(); };
 actions.coachAsk = el => send(el.dataset.q);
+actions.coachPitch = () => send(t('Explique o app e como vou evoluir mais rápido com ele.'), { extra: PITCH() });
 // reenvia a última pergunta que deu erro
 actions.coachRetry = () => {
   const list = chat();

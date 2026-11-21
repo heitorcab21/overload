@@ -977,3 +977,6 @@ body.has-install .w-top { padding-right: 52px; }
 .prov-opt.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--surface)); }
 .field.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 #tabbar a .ic { width: 24px; height: 24px; } /* barra 10% maior: mais legível */
+/* sugestão em destaque no chat do Treinador */
+.coach-sugs .chip.pitch { display: inline-flex; align-items: center; gap: 6px; flex-basis: 100%; justify-content: center; white-space: normal; font-weight: 700; color: #fff; background: var(--ai, var(--accent)); border-color: var(--ai, var(--accent)); padding: 9px 14px; }
+.coach-sugs .chip.pitch .ic { width: 16px; height: 16px; color: #fff; }

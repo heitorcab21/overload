@@ -1315,6 +1315,8 @@ const ui = {
   "Cobrado por uso na sua conta da xAI. A assinatura do X Premium não inclui a API: a chave é criada à parte no console da xAI.": "Se cobra por uso en tu cuenta de xAI. X Premium no incluye la API: la clave se crea aparte en la consola de xAI.",
   "Cobrado por uso, com preços bem baixos. Os pedidos são processados em servidores na China.": "Se cobra por uso, con precios muy bajos. Las solicitudes se procesan en servidores en China.",
   "Cobrado por uso na sua conta da Perplexity. Os modelos Sonar também pesquisam na internet, o que deixa cada resposta um pouco mais cara.": "Se cobra por uso en tu cuenta de Perplexity. Los modelos Sonar también buscan en internet, lo que encarece un poco cada respuesta.",
+  "Como o app me faz evoluir mais rápido": "Cómo la app me hace progresar más rápido",
+  "Explique o app e como vou evoluir mais rápido com ele.": "Explica la app y cómo voy a progresar más rápido con ella.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -1322,12 +1324,15 @@ const ui = {
 const help = [
   ['Primeros pasos', 'Del primer acceso al primer entrenamiento', `
     <ol class="steps">
-      <li><b>Inicia sesión con tu cuenta de Google</b> en la primera pantalla para que tus entrenamientos se guarden en tu Drive. Si prefieres, toca "Usar sin cuenta".</li>
-      <li><b>Elige un punto de partida</b>: ABC, Empuje/Tracción/Piernas, Superior/Inferior, Arnold split, ABCDE, tres opciones con foco en glúteos y piernas, Cuerpo completo o de cero. Después puedes agregar otros en <b>Entrenos &gt; Entrenamientos listos y guardados</b>.</li>
-      <li><b>Indica las cargas que ya usas</b> en la pantalla de cargas iniciales. Es opcional: lo que quede en blanco lo eliges en el primer entrenamiento.</li>
+      <li><b>Entra con tu cuenta de Google</b> en la primera pantalla para guardar todo en tu Drive. Si prefieres, toca "Usar sin cuenta".</li>
+      <li><b>Elige un punto de partida</b>: ABC, Push/Pull/Legs, Superior/Inferior, Arnold split, ABCDE, opciones con foco en glúteos y piernas, Cuerpo completo o desde cero. También puedes <b>importar desde tus notas</b>.</li>
+      <li><b>Tu cuerpo</b>: sexo, edad, altura y peso (vienen con valores de ejemplo: ajústalos con − y +). Desbloquean el nivel de fuerza, la composición corporal y metas a tu medida.</li>
+      <li><b>Tu objetivo</b>: ganar músculo, ser más fuerte, adelgazar o salud, los grupos que quieres priorizar y cuántos entrenos por semana. La app arma las metas de series y de cardio.</li>
+      <li><b>Metas de carga</b>: para cada ejercicio, elige Conservador, Moderado o Difícil (calculados con tus cargas y tu nivel) o <b>Seguir mi progresión</b>.</li>
       <li>En la pestaña <b>Hoy</b>, toca <b>Empezar entrenamiento</b>.</li>
     </ol>
-    <p class="tip">Todo se puede cambiar después en la pestaña Entrenos: ejercicios, orden, series y rango de repeticiones. Para cambiar el idioma (portugués, inglés o español), ve a <b>Ajustes &gt; Idioma</b>.</p>`],
+    <p class="tip">Todo se puede cambiar después. El idioma (portugués, inglés o español) y las unidades (métrico o imperial: lb, pies y millas) están en <b>Ajustes</b>.</p>`],
+
   ['Importar entrenamientos de texto', 'Desde tus notas o WhatsApp', `
     <p>¿Ya anotabas tus entrenamientos en texto? Copia y pega todo de una vez: la app guarda las cargas y sugiere las siguientes.</p>
     <ol class="steps">
@@ -1374,15 +1379,17 @@ const help = [
       <li><b>Peso corporal</b> (dominadas, fondos, flexiones): deja 0. Con cinturón o chaleco lastrado, anota solo el peso extra.</li>
     </ul>
     <p class="tip">Lo más importante es anotar siempre de la misma forma: así la app compara un entrenamiento con otro y sugiere la próxima carga.</p>`],
-  ['Cardio', 'Cinta, bici, carrera y más', `
+  ['Cardio', 'Registro, metas y rutinas con cronómetro', `
     <ol class="steps">
-      <li>En la pestaña <b>Cardio</b>, toca <b>Registrar cardio</b>: elige el tipo, el tiempo y, si quieres, la distancia y la intensidad. La app estima las calorías según tu peso.</li>
-      <li>¿Hiciste cardio junto con pesas? En el entrenamiento, abre la lista de ejercicios y toca <b>Agregar cardio</b>. Aparece en el resumen y en la tarjeta para historias.</li>
-      <li>La <b>meta semanal</b> empieza en 150 minutos (recomendación de la OMS) y se cambia con el lápiz.</li>
-      <li>En la pantalla Hoy, los días solo con cardio aparecen con un corazón azul. ¿Olvidaste anotarlo? Toca el día y usa <b>Registrar cardio este día</b>.</li>
-      <li><b>Rutinas con cronómetro</b>: arma bloques continuos e intervalos (ej.: calentar 5 min, 8× 30 s fuerte / 30 s suave), con velocidad, inclinación y nivel opcionales, o empieza por un modelo. El cronómetro avisa cada cambio con pitido y vibración.</li>
-      <li>Al final, da una <b>nota de esfuerzo de 1 a 10</b>. Si fue fácil (hasta 6), la app sugiere el próximo avance: una ronda más, +0,5 km/h, +1% de inclinación o más tiempo. Toca <b>Aplicar</b> para actualizar la rutina.</li>
-    </ol>`],
+      <li>En la pestaña <b>Cardio</b>, toca <b>Registrar cardio</b>: tipo, tiempo y, si quieres, distancia e intensidad. La app estima las calorías según tu peso.</li>
+      <li>¿Hiciste cardio junto con las pesas? En el entrenamiento, abre la lista de ejercicios y toca <b>Agregar cardio</b>.</li>
+      <li><b>Meta semanal</b>: toca el lápiz y elige una de 3 opciones (por ejemplo 90, 150 o 300 minutos; la OMS recomienda de 150 a 300) o define la tuya.</li>
+      <li><b>Rutinas con cronómetro</b>: arma bloques continuos e interválicos o usa una <b>plantilla</b> con base científica: Zona 2, Caminar y correr, Cinta 12-3-30, 4×4 noruego, HIIT 30/30, Series de carrera, Sprints de 30 s y Tabata. Cada plantilla explica para qué sirve.</li>
+      <li>El <b>cronómetro</b> tiene cuenta 3-2-1, anillo de progreso, línea de tiempo de las etapas, botón +30 s, pitidos y vibración en cada cambio y una <b>voz</b> que anuncia la fase (apágala en el ícono de sonido). También muestra el <b>rango de pulsaciones</b> según tu edad y la prueba del habla.</li>
+      <li>Al final, da una <b>nota de esfuerzo de 1 a 10</b>. Si fue fácil, la app sugiere el siguiente avance: toca <b>Aplicar</b>.</li>
+    </ol>
+    <p class="tip">En iPhone, el sonido y la voz solo suenan con la app abierta en pantalla: iOS pausa las apps web en segundo plano.</p>`],
+
   ['Registrar por voz', 'Habla en lugar de tocar', `
     <p>Toca el <b>micrófono azul</b> abajo y habla. Ejemplos:</p>
     <ul class="errs">
@@ -1398,34 +1405,39 @@ const help = [
   ['Cómo se sugiere la carga', 'La lógica de la progresión', `
     <p>La app usa la <b>doble progresión</b>: cada ejercicio tiene un rango de repeticiones (por ejemplo, 8 a 12).</p>
     <ol class="steps">
-      <li>Con la misma carga, ganas <b>1 repetición cada vez</b>, empezando por la serie más floja.</li>
-      <li>Cuando llegas al <b>tope del rango en todas las series</b>, la app sube la carga según el valor de aumento del ejercicio y vuelve al inicio del rango.</li>
+      <li>Con la misma carga, sumas <b>1 repetición a la vez</b>, empezando por la serie más débil.</li>
+      <li>Cuando llegas al <b>tope del rango en todas las series</b>, la app sube la carga según el incremento del ejercicio y vuelve al inicio del rango.</li>
       <li>Si quedas <b>dos veces por debajo del rango</b>, sugiere bajar cerca de un 10%.</li>
     </ol>
     <ul class="errs">
-      <li><b>Sobraron 3 o más reps</b> en todas las series: +2 reps. <b>Ninguna sobrando</b> en la última: repite los números.</li>
+      <li><b>Meta del mes activa</b>: si la sugerencia queda por debajo del escalón de esta semana, la app tira hacia él, como máximo un aumento de carga por entreno y el resto en repeticiones ("Rumbo a la meta de la semana").</li>
+      <li><b>Sobraron 3 o más reps</b> en todas las series: +2 reps. <b>Ninguna</b> en la última: repite los números.</li>
       <li><b>Dolor</b>: repite los mismos números.</li>
-      <li><b>Cambié de máquina</b>: ese entrenamiento no cuenta para la próxima carga.</li>
+      <li><b>Cambié de aparato</b>: ese entreno no cuenta para la próxima carga.</li>
     </ul>`],
-  ['Metas de la semana y del mes', 'Grupos musculares y ejercicios', `
-    <p><b>Grupos musculares</b> (pecho, espalda...): número de series por semana y por mes. Siguen tu rutina solas: cumplir los entrenamientos es cumplir la meta. Si cambias el número a mano, queda fijo.</p>
-    <p><b>Ejercicios</b>: la mejor serie que quieres lograr hasta fin de mes (por ejemplo, 45 kg × 10). La app divide el camino en <b>escalones semanales</b>.</p>
-    <ol class="steps">
-      <li>En la pestaña <b>Metas</b>, alterna entre <b>Semana</b> y <b>Mes</b>.</li>
-      <li>Toca cualquier fila para editar. La meta de esta semana también se puede cambiar a mano.</li>
-      <li><b>Sugerir metas</b> crea metas cerca de un 5% por encima de tu mejor marca reciente.</li>
-    </ol>`],
-  ['Tu cuerpo y nivel de fuerza', 'IMC, grasa, masa magra y top de fuerza', `
-    <p>En la pestaña <b>Progreso</b>, indica sexo, edad, altura y peso en la tarjeta <b>Tu cuerpo</b>.</p>
+
+  ['Metas', 'Objetivo, series, cargas y cardio', `
+    <p>Todo empieza por el <b>objetivo</b>, arriba en la pestaña Metas (tócalo para cambiarlo). Define cuántas series por semana necesita cada grupo y la meta de cardio.</p>
     <ul class="errs">
-      <li><b>La masa magra y la masa grasa</b> son lo importante. El <b>IMC</b> aparece solo como número: no distingue músculo de grasa, así que quien entrena suele tener un IMC alto sin tener sobrepeso.</li>
-      <li><b>Grasa estimada</b>: con cintura y cuello (y cadera, para mujeres), la app usa la fórmula de la Marina de EE. UU., con un error de unos 3 a 4 puntos. Sin esas medidas, usa IMC, edad y sexo, con un error de unos 5 puntos, y descuenta hasta 4 puntos si eres fuerte para tu peso.</li>
-      <li><b>Masa magra y grasa</b>: tu peso repartido según el porcentaje de grasa estimado.</li>
-      <li><b>Top de fuerza</b>: toca la tarjeta <b>Tu nivel de fuerza</b>, en Progreso, para ver el top % de cada ejercicio. Compara tu 1RM estimado con estándares de quienes entrenan musculación, ajustados por sexo, edad y peso, y se recalcula cada vez que actualizas el perfil o registras tu peso. Top 10% = más fuerte que el 90% de esas personas. En <b>Consultar cualquier ejercicio</b>, elige un ejercicio (tronco, brazos o piernas), indica carga y reps y mira el top al instante, sin guardar nada. Solo vale para ejercicios con barra, mancuernas o peso corporal; las máquinas y poleas varían demasiado entre gimnasios.</li>
-      <li><b>De dónde viene el 1RM</b>: la tarjeta de fuerza del ejercicio muestra la serie usada (tu mejor de los últimos 90 días) y la fórmula. Para un número más fiable, toca <b>Hacer prueba de fuerza</b>: después de calentar, haz una serie hasta no poder más e indica carga y reps. La prueba no cambia la progresión de los entrenamientos.</li>
-      <li><b>Peso corporal</b>: en la tarjeta Tu cuerpo, toca <b>Actualizar</b> y cambia el peso para seguir el gráfico. Un registro por día.</li>
+      <li><b>Mapa muscular</b>: el cuerpo de frente y de espaldas, pintado según las series de la semana (o del mes) frente a la meta. Toca un músculo para ver cuántas faltan.</li>
+      <li><b>Series por grupo</b>: toca un grupo y elige una de 3 opciones según la ciencia del volumen (conservador, moderado, difícil) o define la tuya. Solo cuentan las <b>series efectivas</b>: al menos el 60% de tu fuerza en el ejercicio y hasta 4 reps de reserva. Si tu rutina no alcanza la meta, toca <b>Completar</b>.</li>
+      <li><b>Cargas por ejercicio</b>: cada ejercicio muestra 3 opciones para el mes (conservador, moderado, difícil), según tu mejor marca reciente y tu nivel. Sin entreno registrado, la app estima y avisa. También puedes <b>seguir tu progresión</b> o definir tu meta: la app dice si es realista, ambiciosa o ilusoria.</li>
+      <li>Mientras falte elegir, aparece un aviso en Metas y en Entrenos, y el entreno pide la elección cuando entra un ejercicio nuevo.</li>
+      <li>La meta del mes se divide en <b>escalones semanales</b>. Alterna entre <b>Semana</b> y <b>Mes</b> arriba.</li>
+    </ul>`],
+
+  ['Tu cuerpo y nivel de fuerza', 'Composición corporal, radar y top de fuerza', `
+    <p>En la pestaña <b>Progreso</b>, la tarjeta <b>Tu cuerpo</b> usa sexo, edad, altura y peso (toca <b>Actualizar</b> para cambiarlos).</p>
+    <ul class="errs">
+      <li><b>Masa magra y masa grasa</b> son el foco. El <b>IMC</b> aparece solo como número: no separa músculo de grasa.</li>
+      <li><b>Grasa estimada</b>: con cintura y cuello (y cadera, en mujeres), la app usa la fórmula de la Marina de EE. UU. (error de unos 3 a 4 puntos). Sin esas medidas, usa IMC, edad y sexo (unos 5 puntos) y descuenta hasta 4 puntos si eres fuerte para tu peso.</li>
+      <li><b>Peso corporal</b>: el gráfico está justo debajo de los valores. Un registro por día.</li>
+      <li><b>Nivel de fuerza</b>: un <b>radar</b> con los 6 patrones de movimiento (empuje y tracción horizontal y vertical, sentadilla y bisagra de cadera). A la izquierda la parte delantera del cuerpo y a la derecha la trasera: la forma muestra desequilibrios. Toca un eje para ver el ejercicio y tu top. Top 10% = más fuerte que el 90% de quienes entrenan, con el mismo sexo, edad y peso.</li>
+      <li>Toca la tarjeta para ver cada ejercicio, agrupado por patrón de movimiento, y <b>Consultar cualquier ejercicio</b> para ver el top al instante, sin guardar. Solo cuentan ejercicios con barra, mancuernas o peso corporal.</li>
+      <li><b>De dónde sale el 1RM</b>: de tu mejor serie de los últimos 90 días. Para un número más confiable, usa <b>Hacer prueba de fuerza</b> en la pantalla del ejercicio.</li>
     </ul>
-    <p class="tip">Son estimaciones. Para un número fiable de grasa corporal, haz una evaluación física (bioimpedancia, pliegues cutáneos o DEXA). Actualiza el peso de vez en cuando para mantener los cálculos al día.</p>`],
+    <p class="tip">Son estimaciones. Para una grasa corporal confiable, haz una evaluación física (bioimpedancia, pliegues cutáneos o DEXA).</p>`],
+
   ['Hojas de cálculo (Excel y Google Sheets)', 'Exportar e importar', `
     <ul class="errs">
       <li><b>Entrenamientos</b>: Ajustes &gt; Exportar entrenamientos. Cada serie se convierte en una fila.</li>
@@ -1455,27 +1467,33 @@ const help = [
       <li>En la pantalla Hoy, el aviso <b>Ejercicios estancados</b> aparece cuando un ejercicio pasa 3 entrenamientos sin superar tu mejor marca, con sugerencias.</li>
       <li>En el <b>historial</b>, toca un entrenamiento y luego un ejercicio para corregir series anteriores, incluso marcar o desmarcar una serie como calentamiento (botón <b>Calent.</b>).</li>
     </ul>`],
-  ['Entrenador IA (opcional)', 'Análisis y dudas', `
-    <p>En <b>Ajustes &gt; Entrenador IA</b>, elige tu IA favorita (<b>Claude</b>, <b>ChatGPT</b> o <b>Gemini</b>) y pega una clave de API. Con ella, la app analiza tu semana, responde dudas de técnica y entiende frases de voz más libres. Sin clave, todo lo demás funciona.</p>
+  ['Entrenador IA (opcional)', 'Conversación con memoria', `
+    <p>En <b>Ajustes &gt; Entrenador IA</b>, elige tu IA (<b>Claude, ChatGPT, Gemini, Grok, DeepSeek o Perplexity</b>) y pega una clave de API: el botón <b>Crear clave de API</b> lleva a la página correcta. Después, toca el botón <b>Entrenador</b> en la esquina de la pantalla.</p>
     <ul class="errs">
-      <li><b>Gemini</b>: tiene uso gratuito con límites diarios. En el plan gratuito, Google puede usar lo que se envía para mejorar sus productos.</li>
-      <li><b>Claude</b> y <b>ChatGPT</b>: se cobran por uso en tu cuenta. La suscripción ChatGPT Plus no incluye la API: la clave se crea aparte.</li>
-      <li>El botón <b>Crear clave de API</b>, en Ajustes, lleva a la página correcta de cada empresa.</li>
-      <li><b>Qué ve la IA</b>: en cada pedido, la app arma en el momento un resumen con tus entrenamientos de los últimos 14 días (cargas, reps, RIR, sensación), metas, próximas cargas sugeridas y tu perfil y nivel de fuerza. La IA no guarda memoria entre un pedido y otro: quien guarda todo es la app.</li>
+      <li><b>Conoce tus datos</b>: entrenos de los últimos 14 días, evolución de 3 meses, metas, perfil, nivel de fuerza, peso, notas, dolores reportados y cardio.</li>
+      <li><b>Te recuerda</b>: anota lo que le cuentas (dolores, equipo, horarios, objetivos) y resume las conversaciones antiguas. Míralo y bórralo en <b>Memoria</b>. La conversación y la memoria se sincronizan con tu Drive.</li>
+      <li>Al abrir el chat, puede <b>iniciar la conversación</b> (como máximo una vez al día). Las sugerencias listas ayudan a empezar.</li>
+      <li><b>Costo</b>: Gemini tiene uso gratuito con límites (en el plan gratuito, Google puede usar lo que se envía). Las demás se cobran por uso en tu cuenta; suscripciones como ChatGPT Plus no incluyen la API.</li>
+      <li>Con la IA activada, la app también entiende frases de voz más libres, organiza textos importados y explica la técnica de ejercicios creados por ti.</li>
     </ul>`],
-  ['Instalar y actualizar la app', 'En la pantalla de inicio del móvil', `
-    <p>Toca el <b>icono naranja de descarga</b> en la esquina superior derecha de la pantalla. Desaparece cuando la app ya está instalada. Si el navegador no la instala directamente, la app muestra los pasos:</p>
+
+  ['Instalar, avisos y actualizar', 'En la pantalla de inicio del celular', `
+    <p>Toca el <b>ícono naranja de descarga</b> en la esquina superior derecha. Desaparece cuando la app ya está instalada. Si el navegador no la instala directo, la app muestra los pasos:</p>
     <ul class="errs">
-      <li><b>Android (Chrome)</b>: menú de tres puntos &gt; Instalar aplicación.</li>
-      <li><b>iPhone (Safari)</b>: botón Compartir &gt; Añadir a pantalla de inicio.</li>
+      <li><b>Android (Chrome)</b>: menú de tres puntos &gt; Instalar app.</li>
+      <li><b>iPhone (Safari)</b>: botón Compartir &gt; Agregar a inicio.</li>
+      <li><b>Aviso de fin del descanso</b>: en el primer acceso la app pide permiso para notificaciones. Para que el aviso aparezca arriba en Android, deja las notificaciones de la app con prioridad alta (emergente) en los ajustes del sistema. En Ajustes, usa <b>Probar notificación</b>.</li>
       <li><b>Actualizar</b>: abre la app con internet, espera unos segundos, ciérrala por completo y ábrela de nuevo.</li>
     </ul>`],
+
   ['Problemas comunes', 'Cuando algo no funciona', `
     <ul class="errs">
-      <li><b>Google dice que la app está en pruebas o bloquea el acceso</b>: pide al dueño de la app que añada tu correo a la lista de testers.</li>
-      <li><b>"Google no ha verificado esta aplicación"</b>: es normal por ahora. Toca Continuar.</li>
+      <li><b>Google dice que la app está en prueba o bloquea el acceso</b>: pide al dueño de la app que agregue tu correo a la lista de probadores.</li>
+      <li><b>"Google no verificó esta app"</b>: es normal por ahora. Toca Continuar.</li>
       <li><b>La ventana de Google no se abre</b>: permite ventanas emergentes para este sitio en el navegador.</li>
-      <li><b>El micrófono no funciona</b>: revisa el permiso del micrófono en el navegador y la internet. Si sigue sin funcionar, escribe la frase.</li>
+      <li><b>El micrófono no funciona</b>: revisa el permiso del micrófono en el navegador y la conexión. Si sigue, escribe la frase.</li>
+      <li><b>Sin sonido del descanso en iPhone con la app cerrada</b>: iOS no permite que las apps web suenen en segundo plano. Con la app abierta el pitido suena, incluso en silencio.</li>
+      <li><b>La IA dice que está sobrecargada (Gemini)</b>: la app ya reintenta sola; si sigue, espera un poco o elige otro modelo en Ajustes.</li>
       <li><b>No veo la versión nueva</b>: cierra la app por completo y ábrela de nuevo, con internet.</li>
     </ul>`],
 ];

@@ -1315,6 +1315,8 @@ const ui = {
   "Cobrado por uso na sua conta da xAI. A assinatura do X Premium não inclui a API: a chave é criada à parte no console da xAI.": "Billed per use on your xAI account. X Premium does not include the API: the key is created separately in the xAI console.",
   "Cobrado por uso, com preços bem baixos. Os pedidos são processados em servidores na China.": "Billed per use, at very low prices. Requests are processed on servers in China.",
   "Cobrado por uso na sua conta da Perplexity. Os modelos Sonar também pesquisam na internet, o que deixa cada resposta um pouco mais cara.": "Billed per use on your Perplexity account. Sonar models also search the web, which makes each answer a bit more expensive.",
+  "Como o app me faz evoluir mais rápido": "How the app helps me progress faster",
+  "Explique o app e como vou evoluir mais rápido com ele.": "Explain the app and how it will help me progress faster.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -1322,12 +1324,15 @@ const ui = {
 const help = [
   ['Getting started', 'From first launch to your first workout', `
     <ol class="steps">
-      <li><b>Sign in with your Google account</b> on the first screen so your workouts are saved to your Drive. If you prefer, tap "Use without an account".</li>
-      <li><b>Choose a starting point</b>: ABC, Push/Pull/Legs, Upper/Lower, Arnold split, Bro split, three glute-and-leg focused options, Full body or from scratch. You can add others later in <b>Workouts &gt; Ready-made and saved workouts</b>.</li>
-      <li><b>Enter the loads you already use</b> on the starting loads screen. It's optional: anything left blank you choose in your first workout.</li>
+      <li><b>Sign in with your Google account</b> on the first screen so everything is saved to your Drive. If you prefer, tap "Use without an account".</li>
+      <li><b>Pick a starting point</b>: ABC, Push/Pull/Legs, Upper/Lower, Arnold split, 5-day split, glute and leg focused options, Full body or from scratch. You can also <b>import from your notes</b>.</li>
+      <li><b>Your body</b>: sex, age, height and weight (they start with sample values: adjust with − and +). They unlock your strength level, body composition and goals that fit you.</li>
+      <li><b>Your goal</b>: build muscle, get stronger, lose fat or health, the groups you want to prioritize and how many workouts per week. The app sets your set and cardio goals.</li>
+      <li><b>Load goals</b>: for each exercise, pick Conservative, Moderate or Hard (calculated from your loads and level) or <b>Follow my own progression</b>.</li>
       <li>On the <b>Today</b> tab, tap <b>Start workout</b>.</li>
     </ol>
-    <p class="tip">Everything can be changed later in the Workouts tab: exercises, order, sets and rep range. To change the language (Portuguese, English or Spanish), go to <b>Settings &gt; Language</b>.</p>`],
+    <p class="tip">Everything can be changed later. Language (Portuguese, English or Spanish) and units (metric or imperial: lb, feet and miles) are in <b>Settings</b>.</p>`],
+
   ['Import workouts from text', 'From your notes app or WhatsApp', `
     <p>Already logged your workouts as text? Copy and paste it all at once: the app saves the loads and suggests the next ones.</p>
     <ol class="steps">
@@ -1374,15 +1379,17 @@ const help = [
       <li><b>Bodyweight</b> (pull-ups, dips, push-ups): leave 0. With a weight belt or vest, log only the extra weight.</li>
     </ul>
     <p class="tip">What matters most is always logging the same way: that's how the app compares one workout with the next and suggests the next load.</p>`],
-  ['Cardio', 'Treadmill, bike, running and more', `
+  ['Cardio', 'Logging, goals and timed routines', `
     <ol class="steps">
-      <li>On the <b>Cardio</b> tab, tap <b>Log cardio</b>: pick the type, the time and, if you like, the distance and intensity. The app estimates calories from your weight.</li>
-      <li>Did cardio along with lifting? During the workout, open the exercise list and tap <b>Add cardio</b>. It shows up in the summary and on the story card.</li>
-      <li>The <b>weekly goal</b> starts at 150 minutes (WHO recommendation) and can be changed with the pencil.</li>
-      <li>On the Today screen, cardio-only days show a blue heart. Forgot to log it? Tap the day and use <b>Log cardio on this day</b>.</li>
-      <li><b>Timed routines</b>: build steady and interval blocks (e.g. warm up 5 min, 8× 30 s hard / 30 s easy), with optional speed, incline and level, or start from a template. The timer signals each change with a beep and vibration.</li>
-      <li>At the end, give an <b>effort score from 1 to 10</b>. If it was easy (6 or less), the app suggests the next step: one more round, +0.5 km/h, +1% incline or more time. Tap <b>Apply</b> to update the routine.</li>
-    </ol>`],
+      <li>On the <b>Cardio</b> tab, tap <b>Log cardio</b>: type, time and, if you like, distance and intensity. The app estimates calories from your weight.</li>
+      <li>Did cardio with your lifting? In the workout, open the exercise list and tap <b>Add cardio</b>.</li>
+      <li><b>Weekly goal</b>: tap the pencil and pick one of 3 options (for example 90, 150 or 300 minutes; the WHO recommends 150 to 300) or set your own.</li>
+      <li><b>Timed routines</b>: build steady and interval blocks or use a research-backed <b>template</b>: Zone 2, Walk and run, 12-3-30 treadmill, Norwegian 4×4, HIIT 30/30, Running intervals, 30-s sprints and Tabata. Each template explains what it is for.</li>
+      <li>The <b>timer</b> has a 3-2-1 countdown, a progress ring, a timeline of the steps, a +30 s button, beeps and vibration at each change and a <b>voice</b> that announces the phase (turn it off with the speaker icon). It also shows a <b>heart-rate range</b> for your age and the talk test.</li>
+      <li>At the end, give an <b>effort score from 1 to 10</b>. If it was easy, the app suggests the next step: tap <b>Apply</b>.</li>
+    </ol>
+    <p class="tip">On iPhone, sound and voice only play with the app open on screen: iOS pauses web apps in the background.</p>`],
+
   ['Logging by voice', 'Speak instead of tapping', `
     <p>Tap the <b>blue microphone</b> at the bottom and speak. Examples:</p>
     <ul class="errs">
@@ -1398,34 +1405,39 @@ const help = [
   ['How the load is suggested', 'The progression logic', `
     <p>The app uses <b>double progression</b>: each exercise has a rep range (for example, 8 to 12).</p>
     <ol class="steps">
-      <li>With the same load, you gain <b>1 rep at a time</b>, starting with the weakest set.</li>
-      <li>When you hit the <b>top of the range on every set</b>, the app raises the load by the exercise's increase value and goes back to the bottom of the range.</li>
-      <li>If you fall <b>below the range twice</b>, it suggests dropping about 10%.</li>
+      <li>With the same load, you add <b>1 rep at a time</b>, starting with the weakest set.</li>
+      <li>When you hit the <b>top of the range on every set</b>, the app raises the load by the exercise's increment and goes back to the bottom of the range.</li>
+      <li>If you fall <b>below the range twice</b>, it suggests reducing about 10%.</li>
     </ol>
     <ul class="errs">
-      <li><b>3 or more reps left</b> in every set: +2 reps. <b>None left</b> in the last one: repeats the numbers.</li>
+      <li><b>Active monthly goal</b>: if the suggestion is below this week's step, the app pulls toward it, at most one load increase per workout and the rest in reps ("Toward this week's goal").</li>
+      <li><b>3 or more reps left</b> on every set: +2 reps. <b>None left</b> on the last one: repeat the numbers.</li>
       <li><b>Pain</b>: repeats the same numbers.</li>
-      <li><b>Changed machine</b>: that workout doesn't count toward the next load.</li>
+      <li><b>Changed equipment</b>: that workout does not count for the next load.</li>
     </ul>`],
-  ['Weekly and monthly goals', 'Muscle groups and exercises', `
-    <p><b>Muscle groups</b> (chest, back...): number of sets per week and per month. They follow your workouts on their own: completing your workouts hits the goal. If you change the number by hand, it stays fixed.</p>
-    <p><b>Exercises</b>: the best set you want to reach by the end of the month (for example, 45 kg × 10). The app splits the way there into <b>weekly steps</b>.</p>
-    <ol class="steps">
-      <li>On the <b>Goals</b> tab, switch between <b>Week</b> and <b>Month</b>.</li>
-      <li>Tap any row to edit. This week's goal can also be changed by hand.</li>
-      <li><b>Suggest goals</b> creates goals about 5% above your recent best.</li>
-    </ol>`],
-  ['Your body and strength level', 'BMI, body fat, lean mass and strength percentile', `
-    <p>On the <b>Progress</b> tab, enter your sex, age, height and weight in the <b>Your body</b> card.</p>
+
+  ['Goals', 'Goal, sets, loads and cardio', `
+    <p>It all starts with your <b>goal</b>, at the top of the Goals tab (tap it to change). It sets how many weekly sets each group needs and your cardio goal.</p>
     <ul class="errs">
-      <li><b>Lean mass and fat mass</b> are the focus. <b>BMI</b> is shown as a number only: it doesn't tell muscle from fat, so people who lift often have a high BMI without being overweight.</li>
-      <li><b>Estimated body fat</b>: with waist and neck (and hips, for women), the app uses the US Navy formula, with an error of about 3 to 4 points. Without those measurements, it uses BMI, age and sex, with an error of about 5 points, and takes off up to 4 points if you're strong for your weight.</li>
-      <li><b>Lean and fat mass</b>: your weight split by the estimated body fat percentage.</li>
-      <li><b>Strength percentile</b>: tap the <b>Your strength level</b> card in Progress to see the top % for each exercise. It compares your estimated 1RM with standards for lifters, adjusted for sex, age and weight, and is recalculated whenever you update your profile or log your weight. Top 10% = stronger than 90% of them. Under <b>Check any exercise</b>, pick an exercise (upper body, arms or legs), enter load and reps and see your percentile instantly, without saving anything. It only applies to barbell, dumbbell and bodyweight exercises; machines and cables vary too much between gyms.</li>
-      <li><b>Where the 1RM comes from</b>: the exercise's strength card shows the set used (your best in the last 90 days) and the formula. For a more reliable number, tap <b>Take a strength test</b>: after warming up, do one set to failure and enter the load and reps. The test does not change your workout progression.</li>
-      <li><b>Body weight</b>: on the Your body card, tap <b>Update</b> and change your weight to follow the chart. One entry per day.</li>
+      <li><b>Muscle map</b>: your body front and back, colored by this week's (or month's) sets versus the goal. Tap a muscle to see how many are left.</li>
+      <li><b>Sets per group</b>: tap a group and pick one of 3 options based on volume research (conservative, moderate, hard) or set your own. Only <b>effective sets</b> count: at least 60% of your strength in the exercise and up to 4 reps in reserve. If your routine doesn't deliver the goal, tap <b>Fill in</b>.</li>
+      <li><b>Loads per exercise</b>: each exercise shows 3 options for the month (conservative, moderate, hard), from your recent best and your level. With no workout logged, the app estimates and tells you. You can also <b>follow your own progression</b> or set your own goal: the app tells you if it is realistic, ambitious or unrealistic.</li>
+      <li>While anything is left to choose, a notice shows on Goals and Workouts, and the workout asks for a choice when a new exercise comes in.</li>
+      <li>The monthly goal is split into <b>weekly steps</b>. Switch between <b>Week</b> and <b>Month</b> at the top.</li>
+    </ul>`],
+
+  ['Your body and strength level', 'Body composition, radar and strength percentile', `
+    <p>On the <b>Progress</b> tab, the <b>Your body</b> card uses sex, age, height and weight (tap <b>Update</b> to change).</p>
+    <ul class="errs">
+      <li><b>Lean mass and fat mass</b> are the focus. <b>BMI</b> is shown only as a number: it does not separate muscle from fat.</li>
+      <li><b>Estimated body fat</b>: with waist and neck (and hips, for women), the app uses the US Navy formula (about 3 to 4 points of error). Without them, it uses BMI, age and sex (about 5 points) and subtracts up to 4 points if you are strong for your weight.</li>
+      <li><b>Body weight</b>: the chart sits right below the values. One entry per day.</li>
+      <li><b>Strength level</b>: a <b>radar</b> with the 6 movement patterns (horizontal and vertical push and pull, squat and hip hinge). The left side is the front of the body and the right side the back: the shape shows imbalances. Tap an axis to see the exercise and your percentile. Top 10% = stronger than 90% of lifters of the same sex, age and weight.</li>
+      <li>Tap the card to see each exercise, grouped by movement pattern, and <b>Check any exercise</b> to see your percentile instantly, without saving. Only barbell, dumbbell and bodyweight exercises count.</li>
+      <li><b>Where the 1RM comes from</b>: your best set in the last 90 days. For a more reliable number, use <b>Take a strength test</b> on the exercise screen.</li>
     </ul>
-    <p class="tip">These are estimates. For a reliable body fat number, get a body composition assessment (bioimpedance, skinfolds or DEXA). Update your weight now and then to keep the calculations right.</p>`],
+    <p class="tip">These are estimates. For a reliable body fat number, get a body assessment (bioimpedance, skinfolds or DEXA).</p>`],
+
   ['Spreadsheets (Excel and Google Sheets)', 'Export and import', `
     <ul class="errs">
       <li><b>Workouts</b>: Settings &gt; Export workouts. Each set becomes a row.</li>
@@ -1455,27 +1467,33 @@ const help = [
       <li>On the Today screen, the <b>Stalled exercises</b> notice shows up when an exercise goes 3 workouts without beating your best, with tips on what to do.</li>
       <li>In the <b>history</b>, tap a workout and then an exercise to correct past sets, including marking or unmarking a set as a warm-up (<b>Warm</b> button).</li>
     </ul>`],
-  ['AI coach (optional)', 'Analyses and questions', `
-    <p>In <b>Settings &gt; AI coach</b>, choose your favorite AI (<b>Claude</b>, <b>ChatGPT</b> or <b>Gemini</b>) and paste an API key for it. The app then analyzes your week, answers form questions and understands freer voice phrases. Without a key, everything else works.</p>
+  ['AI coach (optional)', 'A chat with memory', `
+    <p>In <b>Settings &gt; AI coach</b>, pick your AI (<b>Claude, ChatGPT, Gemini, Grok, DeepSeek or Perplexity</b>) and paste an API key from it: the <b>Create API key</b> button takes you to the right page. Then tap the <b>Coach</b> button in the corner of the screen.</p>
     <ul class="errs">
-      <li><b>Gemini</b>: has free usage with daily limits. On the free tier, Google may use what you send to improve its products.</li>
-      <li><b>Claude</b> and <b>ChatGPT</b>: billed per use to your account. A ChatGPT Plus subscription doesn't include the API: the key is created separately.</li>
-      <li>The <b>Create API key</b> button in Settings takes you to the right page for each company.</li>
-      <li><b>What the AI sees</b>: for each request, the app builds a fresh summary with your workouts from the last 14 days (loads, reps, RIR, feel), goals, next suggested loads and your profile and strength level. The AI keeps no memory between requests: the app is what stores everything.</li>
+      <li><b>It knows your data</b>: workouts from the last 14 days, 3-month progress, goals, profile, strength level, weight, notes, reported pain and cardio.</li>
+      <li><b>It remembers you</b>: it notes what you share (pain, equipment, schedule, goals) and summarizes older chats. See and delete it in <b>Memory</b>. The chat and memory sync with your Drive.</li>
+      <li>When you open the chat, it may <b>start the conversation</b> (at most once a day). The ready-made suggestions help you get going.</li>
+      <li><b>Cost</b>: Gemini has free usage with limits (on the free plan, Google may use what is sent). The others are billed per use on your account; subscriptions like ChatGPT Plus do not include the API.</li>
+      <li>With AI on, the app also understands freer voice phrases, organizes imported text and explains form for exercises you created.</li>
     </ul>`],
-  ['Installing and updating the app', 'On your phone\'s home screen', `
-    <p>Tap the <b>orange download icon</b> in the top right corner of the screen. It disappears once the app is installed. If the browser can't install it directly, the app shows the steps:</p>
+
+  ['Install, alerts and updates', 'On your phone\'s home screen', `
+    <p>Tap the <b>orange download icon</b> in the top right corner. It disappears once the app is installed. If the browser can't install it directly, the app shows the steps:</p>
     <ul class="errs">
       <li><b>Android (Chrome)</b>: three-dot menu &gt; Install app.</li>
       <li><b>iPhone (Safari)</b>: Share button &gt; Add to Home Screen.</li>
-      <li><b>Updating</b>: open the app with internet, wait a few seconds, close it completely and open it again.</li>
+      <li><b>End-of-rest alert</b>: on first launch the app asks for notification permission. For the alert to pop up at the top on Android, set the app's notifications to high priority (pop-up) in the system settings. In Settings, use <b>Test notification</b>.</li>
+      <li><b>Update</b>: open the app with internet, wait a few seconds, close it completely and open it again.</li>
     </ul>`],
+
   ['Common problems', 'When something doesn\'t work', `
     <ul class="errs">
-      <li><b>Google says the app is in testing or blocks access</b>: ask the app owner to add your email to the tester list.</li>
-      <li><b>"Google hasn't verified this app"</b>: that's normal for now. Tap Continue.</li>
+      <li><b>Google says the app is in testing or blocks access</b>: ask the app owner to add your email to the testers list.</li>
+      <li><b>"Google hasn't verified this app"</b>: this is normal for now. Tap Continue.</li>
       <li><b>The Google window doesn't open</b>: allow pop-ups for this site in your browser.</li>
-      <li><b>The microphone doesn't work</b>: check the browser's microphone permission and your internet. If it still fails, type the phrase.</li>
+      <li><b>The microphone doesn't work</b>: check the browser's microphone permission and your internet. If it persists, type the phrase.</li>
+      <li><b>No rest sound on iPhone with the app closed</b>: iOS doesn't let web apps play sound in the background. With the app open the beep plays, even in silent mode.</li>
+      <li><b>The AI says it is overloaded (Gemini)</b>: the app already retries on its own; if it continues, wait a bit or pick another model in Settings.</li>
       <li><b>I don't see the new version</b>: close the app completely and open it again, with internet.</li>
     </ul>`],
 ];
