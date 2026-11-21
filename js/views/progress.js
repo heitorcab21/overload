@@ -322,10 +322,12 @@ function radarSvg(p) {
     return lines.map(([txt, cls], k) => `<text x="${x.toFixed(1)}" y="${(y0 + 14 * k).toFixed(1)}" text-anchor="${anchor}" class="${cls}">${esc(txt)}</text>`).join('');
   }).join('');
   const dots = axes.map((a, i) => (a.best ? (() => { const [x, y] = pt(i, Math.max(0.04, a.best.l.pct / 100)); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5" class="r-dot"/>`; })() : '')).join('');
-  // divisões pontilhadas entre os eixos: deixam claro que cada fatia é um botão
+  // fatias: cada eixo ganha a sua fatia dentro do hexágono (centro, meio das arestas vizinhas e o vértice),
+  // com fundo laranja claro e borda pontilhada, para ficar claro que cada uma é um botão
+  const mid = (i, j) => { const [x1, y1] = pt(i, 1), [x2, y2] = pt(j, 1); return [(x1 + x2) / 2, (y1 + y2) / 2]; };
   const seps = axes.map((_, i) => {
-    const ang = -Math.PI / 3 + i * Math.PI / 3 + Math.PI / 6;
-    return `<line x1="${cx}" y1="${cy}" x2="${(cx + Math.cos(ang) * R * 1.32).toFixed(1)}" y2="${(cy + Math.sin(ang) * R * 1.32).toFixed(1)}" class="r-sep"/>`;
+    const n = axes.length, pts = [[cx, cy], mid((i + n - 1) % n, i), pt(i, 1), mid(i, (i + 1) % n)];
+    return `<polygon points="${pts.map(p => p.map(v => v.toFixed(1)).join(',')).join(' ')}" class="r-slice" data-i="${i}"/>`;
   }).join('');
   // área de toque de cada eixo: uma fatia de 60° em volta dele
   const hits = axes.map((a, i) => {
