@@ -1253,6 +1253,8 @@ const ui = {
   "Para ver os 3 cenários, registre um treino neste exercício ou informe a carga inicial dele em Treinos. Enquanto isso, defina a sua meta abaixo.": "Para ver los 3 escenarios, registra un entreno en este ejercicio o indica su carga inicial en Entrenos. Mientras tanto, define tu meta abajo.",
   "Estimado pela carga típica de quem está começando, pelo seu peso corporal, porque ainda não há treino registrado. Cada aparelho pesa diferente: ajuste depois do primeiro treino.": "Estimado por la carga típica de quien empieza, según tu peso corporal, porque aún no hay entreno registrado. Cada máquina es distinta: ajusta después del primer entreno.",
   "Ainda sem treino registrado: os cenários partem de poucas repetições. Ajuste depois do primeiro treino.": "Aún sin entreno registrado: los escenarios parten de pocas repeticiones. Ajusta después del primer entreno.",
+  "Mudar objetivo": "Cambiar objetivo",
+  "{d}/{n} treinos": "{d}/{n} entrenos",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

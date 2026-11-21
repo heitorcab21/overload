@@ -286,12 +286,12 @@ function intentCard() {
   }
   const days = trainedDaysThisWeek();
   const focus = (it.focus || []).map(f => t(f)).join(', ');
-  return `<div class="card stack intent-card">
-    <div class="row between"><span class="grow"><span class="small muted">${t('Seu objetivo')}</span><br><b>${esc(GOAL_NAME()[it.goal])}</b>${focus ? `<br><span class="small muted">${t('Prioridade: {x}', { x: esc(focus) })}</span>` : ''}</span>
-      <a class="btn sm ghost" href="#/objetivo/editar">${t('Mudar')}</a></div>
-    <div class="row between small"><span>${t('Treinos nesta semana')}</span><b>${days} / ${it.days}</b></div>
+  // compacto: uma linha com o objetivo e os treinos da semana, e a barra embaixo
+  return `<a class="card intent-card link-card" href="#/objetivo/editar" aria-label="${t('Mudar objetivo')}">
+    <div class="ic-row"><span class="grow ic-goal"><b>${esc(GOAL_NAME()[it.goal])}</b>${focus ? ` <span class="small muted">· ${esc(focus)}</span>` : ''}</span>
+      <span class="small ic-days">${t('{d}/{n} treinos', { d: days, n: it.days })}</span>${icon.edit}</div>
     ${meter(days / it.days, days >= it.days)}
-  </div>`;
+  </a>`;
 }
 
 let idraft = null;

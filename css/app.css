@@ -613,7 +613,8 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 /* atalhos em destaque: laranja nos treinos, verde (Excel/Google Planilhas) nas planilhas */
 :root { --sheet: #1e8e3e; }
 .btn.accent-soft { background: color-mix(in srgb, var(--accent) 14%, var(--surface)); border: 1.5px solid color-mix(in srgb, var(--accent) 55%, transparent); color: var(--accent); font-weight: 700; font-size: 14px; }
-.top-acts .btn { min-height: 52px; padding: 8px 10px; line-height: 1.2; text-align: center; }
+.top-acts .btn { min-height: 40px; padding: 6px 8px; gap: 6px; line-height: 1.2; text-align: center; white-space: nowrap; min-width: 0; overflow: hidden; }
+.top-acts .btn .ic { flex: none; width: 18px; height: 18px; }
 .btn.sheet-green { background: var(--sheet); border-color: var(--sheet); color: #fff; }
 .btn.sheet-green-soft { background: color-mix(in srgb, var(--sheet) 14%, var(--surface)); border: 1.5px solid color-mix(in srgb, var(--sheet) 55%, transparent); color: var(--sheet); font-weight: 700; }
 .sheet-card { border: 1.5px solid color-mix(in srgb, var(--sheet) 45%, var(--line)); scroll-margin-top: 16px; }
@@ -629,7 +630,7 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 .week button.wd:not(:disabled):active i { transform: scale(.92); }
 .past-day { display: flex; align-items: center; gap: 6px; color: var(--warm); font-weight: 600; margin: 4px 0; }
 .past-day .ic { width: 16px; height: 16px; }
-.top-acts .btn.sheet-green-soft { font-size: 14px; }
+.top-acts .btn.sheet-green-soft { font-size: 13.5px; }
 .top-acts label.btn { cursor: pointer; }
 .week .missed i { border: 2px dashed var(--muted); opacity: .7; }
 .part-title { color: var(--accent); padding: 6px 4px 2px; }
@@ -917,8 +918,11 @@ body.has-coach #view { padding-bottom: calc(var(--tab-h) + var(--safe-b) + 76px)
 .crun-btns .danger { grid-column: 1 / -1; }
 body.has-install .w-top { padding-right: 52px; }
 /* cartão do objetivo mais compacto */
-.intent-card { gap: 8px; padding-top: 12px; padding-bottom: 12px; }
-.intent-card .btn.sm { min-height: 34px; padding: 4px 12px; }
+.intent-card { display: grid; gap: 8px; padding: 10px 14px; }
+.intent-card .ic-row { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.intent-card .ic-goal { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.intent-card .ic-days { color: var(--ink-2); font-weight: 600; white-space: nowrap; }
+.intent-card .ic { width: 16px; height: 16px; color: var(--muted); flex: none; }
 .intent-card .meter { margin: 0; }
 .est-note { color: var(--ink-2); background: var(--surface-2); border-radius: 10px; padding: 8px 10px; margin: 0; }
 .est-mini { display: block; margin-top: 6px; }
