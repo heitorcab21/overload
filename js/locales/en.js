@@ -1246,6 +1246,7 @@ const ui = {
   "Desligar a voz": "Turn voice off",
   "Ligar a voz": "Turn voice on",
   "Rotina concluída. Muito bem!": "Routine complete. Well done!",
+  "Esquerda: frente do corpo · direita: trás. Toque num eixo para ver o detalhe.": "Left: front of the body · right: back. Tap an axis for details.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };

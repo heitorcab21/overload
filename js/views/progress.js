@@ -307,7 +307,7 @@ const radarAxes = p => RADAR_AXES().map(([n1, n2, lifts]) => {
 function radarSvg(p) {
   const axes = radarAxes(p);
   if (!axes.some(a => a.best)) return '';
-  const W = 320, H = 280, cx = W / 2, cy = 140, R = 80;
+  const W = 320, H = 250, cx = W / 2, cy = 126, R = 80;
   const pt = (i, f) => { const a = -Math.PI / 3 + i * Math.PI * 2 / 6; return [cx + Math.cos(a) * R * f, cy + Math.sin(a) * R * f]; };
   const poly = f => axes.map((_, i) => pt(i, f).map(v => v.toFixed(1)).join(',')).join(' ');
   const rings = [0.25, 0.5, 0.75, 1].map(f => `<polygon points="${poly(f)}" class="r-ring"/>`).join('');
@@ -330,7 +330,7 @@ function radarSvg(p) {
   }).join('');
   return `<svg viewBox="0 0 ${W} ${H}" class="radar" role="img" aria-label="${esc(axes.map(a => `${a.name}: ${a.best ? t('Top {n}%', { n: a.best.l.top }) : t('sem dado')}`).join(', '))}">
       ${hits}${rings}${spokes}<polygon points="${vals}" class="r-area"/>${dots}${labels}
-      <text x="12" y="${H - 4}" class="r-side">${esc(t('frente do corpo'))}</text><text x="${W - 12}" y="${H - 4}" text-anchor="end" class="r-side">${esc(t('trás do corpo'))}</text></svg>`;
+</svg>`;
 }
 
 function strengthOverview() {
@@ -348,8 +348,7 @@ function strengthOverview() {
     <div class="row between"><span class="grow"><span class="small muted">${t('Seu destaque')}</span><br><b>${esc(exName(best.ex))}</b></span>
       <span class="top-chip big">${t('Top {n}%', { n: best.lv.top })}</span></div>
     ${radarSvg(p)}
-    <div class="r-info small">${t('Toque num eixo do radar para ver o detalhe.')}</div>
-    <p class="small muted">${tn(rows.length, 'Veja o seu nível em {n} exercício', 'Veja o seu nível em cada um dos {n} exercícios')}</p>
+    <div class="r-info small muted">${t('Esquerda: frente do corpo · direita: trás. Toque num eixo para ver o detalhe.')}</div>
   </a>`;
 }
 
@@ -600,6 +599,7 @@ actions.radarPick = (el, ev) => {
   card.querySelectorAll('.r-hit.sel').forEach(x => x.classList.remove('sel'));
   el.classList.add('sel');
   const box = card.querySelector('.r-info');
+  box.classList.remove('muted');
   if (!a.best) {
     const names = LIB.filter(l => STRENGTH_LIFTS[l.id] && a.lifts.includes(STRENGTH_LIFTS[l.id][0])).slice(0, 3).map(l => libName(l.id));
     box.innerHTML = `<b>${esc(a.name)}</b><br>${esc(t('Ainda sem registro. Para medir: {ex}.', { ex: names.join(', ') }))}`;

@@ -862,9 +862,9 @@ body.has-coach #view { padding-bottom: calc(var(--tab-h) + var(--safe-b) + 76px)
 .goal-line .ic { width: 15px; height: 15px; }
 .radar .r-side { fill: var(--muted); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
 /* mapa muscular em Metas */
-.bm-figs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; max-width: 420px; width: 100%; margin: 0 auto; }
+.bm-figs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 300px; width: 100%; margin: 0 auto; }
 .bm-fig { margin: 0; display: grid; justify-items: center; gap: 4px; }
-.bm-svg { width: 100%; height: auto; aspect-ratio: 1 / 2; display: block; }
+.bm-svg { width: 100%; height: auto; display: block; }
 .bm-svg .bm-outline { fill: none; stroke: var(--axis); stroke-width: 2; vector-effect: non-scaling-stroke; }
 .bm-svg .bm-base { fill: var(--surface-2); }
 .bm-svg .bm-m { cursor: pointer; stroke: var(--surface); stroke-width: 1; vector-effect: non-scaling-stroke; transition: fill .2s, filter .2s; outline: none; }
@@ -888,7 +888,7 @@ body.has-coach #view { padding-bottom: calc(var(--tab-h) + var(--safe-b) + 76px)
 .radar .r-hit { fill: transparent; cursor: pointer; outline: none; }
 .radar .r-hit.sel, .radar .r-hit:focus-visible { fill: color-mix(in srgb, var(--accent) 7%, transparent); }
 .radar .r-area, .radar .r-ring, .radar .r-dot, .radar text { pointer-events: none; }
-.r-info { text-align: center; min-height: 2.6em; line-height: 1.5; }
+.r-info { text-align: center; min-height: 2.4em; line-height: 1.45; margin-top: -6px; }
 .r-info .top-chip { font-size: 11px; padding: 1px 7px; }
 /* cardio: linha do tempo, anel do cronômetro, modelos */
 .ctl { display: flex; gap: 2px; height: 10px; width: 100%; border-radius: 6px; overflow: hidden; }

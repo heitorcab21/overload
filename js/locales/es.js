@@ -1246,6 +1246,7 @@ const ui = {
   "Desligar a voz": "Apagar la voz",
   "Ligar a voz": "Encender la voz",
   "Rotina concluída. Muito bem!": "Rutina completada. ¡Muy bien!",
+  "Esquerda: frente do corpo · direita: trás. Toque num eixo para ver o detalhe.": "Izquierda: parte delantera · derecha: trasera. Toca un eje para ver el detalle.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
