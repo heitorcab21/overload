@@ -845,3 +845,15 @@ body.has-coach #view { padding-bottom: calc(var(--tab-h) + var(--safe-b) + 76px)
 .link-btn { border: 0; background: none; padding: 0; color: var(--accent); font: inherit; font-weight: 700; text-decoration: underline; }
 .goal-line { display: flex; align-items: center; gap: 6px; margin: -2px 0 8px; color: var(--accent); font-weight: 600; }
 .goal-line .ic { width: 15px; height: 15px; }
+.radar .r-side { fill: var(--muted); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+/* mapa muscular em Metas */
+.bm-svg { width: 100%; max-width: 420px; justify-self: center; display: block; margin: 0 auto; }
+.bm-svg .bm-base { fill: var(--surface-2); stroke: var(--line); stroke-width: 1; }
+.bm-svg .bm-m { cursor: pointer; stroke: var(--surface); stroke-width: 1.5; transition: fill .2s; outline: none; }
+.bm-svg .bm-m:hover, .bm-svg .bm-m:focus-visible { stroke: var(--ink-2); }
+.bm-svg .bm-m.sel { stroke: var(--ink); stroke-width: 2.5; }
+.bm-svg .bm-cap { fill: var(--muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+.bm-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 12px; }
+.bm-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.bm-legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.bm-info { text-align: center; min-height: 2.8em; line-height: 1.5; }

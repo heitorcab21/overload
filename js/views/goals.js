@@ -12,6 +12,7 @@ import { t, tn } from '../i18n.js';
 import { toW, fromW, toStep } from '../units.js';
 import { intent, saveIntent, trainedDaysThisWeek, GOAL_IDS } from '../intent.js';
 import { scenarios, judgeGoal } from '../scenarios.js';
+import { bodyMap } from './bodymap.js';
 import { GOAL_PLANS, FOCUS_GROUPS, intentWeekSets, fillPlan } from '../logic.js';
 
 let mode = 'week';
@@ -91,6 +92,7 @@ function render() {
         <button role="tab" aria-selected="${isWeek}" class="${isWeek ? 'on' : ''}" data-act="goalMode" data-m="week">${t('Semana')}</button>
         <button role="tab" aria-selected="${!isWeek}" class="${!isWeek ? 'on' : ''}" data-act="goalMode" data-m="month">${t('Mês')}</button>
       </div>
+      ${gs.length ? bodyMap(gs, isWeek) : ''}
 
       <div class="card flat">
         <table class="sheet-table">

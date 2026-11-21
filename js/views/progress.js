@@ -290,33 +290,40 @@ function strengthRows(p) {
 }
 
 // ---------- Radar de força: um eixo por padrão de movimento, valor = percentil ----------
+// Os 6 padrões fundamentais. Ordem no sentido horário a partir do canto superior direito:
+// à direita a parte de trás do corpo (puxar, quadril), à esquerda a da frente (empurrar, agachar);
+// em cima o tronco, embaixo as pernas. Assim o formato já mostra o desequilíbrio.
 const RADAR_AXES = () => [
-  [t('Empurrar'), ['bench', 'dip']], [t('Puxar'), ['row', 'pullup']], [t('Ombros'), ['ohp']],
-  [t('Pernas'), ['squat']], [t('Posterior'), ['deadlift', 'hipthrust']], [t('Braços'), ['curl']],
+  [t('Puxar'), t('vertical'), ['pullup']], [t('Puxar'), t('horizontal'), ['row']], [t('Dobradiça'), t('de quadril'), ['deadlift', 'hipthrust']],
+  [t('Agachar'), '', ['squat']], [t('Empurrar'), t('horizontal'), ['bench', 'dip']], [t('Empurrar'), t('vertical'), ['ohp']],
 ];
 /** Radar de força (só o gráfico), usado dentro do cartão "Seu nível de força". */
 function radarSvg(p) {
-  const axes = RADAR_AXES().map(([name, lifts]) => {
+  const axes = RADAR_AXES().map(([n1, n2, lifts]) => {
+    const name = n2 ? `${n1} ${n2}` : n1;
     const best = Object.values(state.exercises).map(ex => ({ ex, l: strengthLevel(ex, p) }))
       .filter(x => x.l.pct !== undefined && lifts.includes(x.l.lift)).sort((a, b) => b.l.pct - a.l.pct)[0];
-    return { name, best };
+    return { name, n1, n2, best };
   });
   if (!axes.some(a => a.best)) return '';
-  const W = 300, H = 260, cx = W / 2, cy = 128, R = 88;
-  const pt = (i, f) => { const a = -Math.PI / 2 + i * Math.PI * 2 / 6; return [cx + Math.cos(a) * R * f, cy + Math.sin(a) * R * f]; };
+  const W = 320, H = 280, cx = W / 2, cy = 140, R = 80;
+  const pt = (i, f) => { const a = -Math.PI / 3 + i * Math.PI * 2 / 6; return [cx + Math.cos(a) * R * f, cy + Math.sin(a) * R * f]; };
   const poly = f => axes.map((_, i) => pt(i, f).map(v => v.toFixed(1)).join(',')).join(' ');
   const rings = [0.25, 0.5, 0.75, 1].map(f => `<polygon points="${poly(f)}" class="r-ring"/>`).join('');
   const spokes = axes.map((_, i) => { const [x, y] = pt(i, 1); return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" class="r-ring"/>`; }).join('');
   const vals = axes.map((a, i) => pt(i, a.best ? Math.max(0.04, a.best.l.pct / 100) : 0).map(v => v.toFixed(1)).join(',')).join(' ');
   const labels = axes.map((a, i) => {
-    const [x, y] = pt(i, 1.22);
+    const [x, y] = pt(i, 1.14);
     const anchor = Math.abs(x - cx) < 4 ? 'middle' : x > cx ? 'start' : 'end';
-    return `<text x="${x.toFixed(1)}" y="${(y - 4).toFixed(1)}" text-anchor="${anchor}" class="r-name">${esc(a.name)}</text>
-      <text x="${x.toFixed(1)}" y="${(y + 11).toFixed(1)}" text-anchor="${anchor}" class="r-val${a.best ? '' : ' none'}">${a.best ? esc(t('Top {n}%', { n: a.best.l.top })) : '—'}</text>`;
+    const lines = [[a.n1, 'r-name'], ...(a.n2 ? [[a.n2, 'r-name']] : []), [a.best ? t('Top {n}%', { n: a.best.l.top }) : '—', `r-val${a.best ? '' : ' none'}`]];
+    // em cima o texto sobe a partir do vértice, embaixo desce, nos lados fica centrado
+    const y0 = y < cy - 10 ? y - 14 * (lines.length - 1) - 2 : y > cy + 10 ? y + 12 : y + 4 - 7 * (lines.length - 1);
+    return lines.map(([txt, cls], k) => `<text x="${x.toFixed(1)}" y="${(y0 + 14 * k).toFixed(1)}" text-anchor="${anchor}" class="${cls}">${esc(txt)}</text>`).join('');
   }).join('');
   const dots = axes.map((a, i) => (a.best ? (() => { const [x, y] = pt(i, Math.max(0.04, a.best.l.pct / 100)); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5" class="r-dot"/>`; })() : '')).join('');
   return `<svg viewBox="0 0 ${W} ${H}" class="radar" role="img" aria-label="${esc(axes.map(a => `${a.name}: ${a.best ? t('Top {n}%', { n: a.best.l.top }) : t('sem dado')}`).join(', '))}">
-      ${rings}${spokes}<polygon points="${vals}" class="r-area"/>${dots}${labels}</svg>`;
+      ${rings}${spokes}<polygon points="${vals}" class="r-area"/>${dots}${labels}
+      <text x="12" y="${H - 4}" class="r-side">${esc(t('frente do corpo'))}</text><text x="${W - 12}" y="${H - 4}" text-anchor="end" class="r-side">${esc(t('trás do corpo'))}</text></svg>`;
 }
 
 function strengthOverview() {
