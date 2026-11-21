@@ -1317,6 +1317,7 @@ const ui = {
   "Cobrado por uso na sua conta da Perplexity. Os modelos Sonar também pesquisam na internet, o que deixa cada resposta um pouco mais cara.": "Se cobra por uso en tu cuenta de Perplexity. Los modelos Sonar también buscan en internet, lo que encarece un poco cada respuesta.",
   "Como o app me faz evoluir mais rápido": "Cómo la app me hace progresar más rápido",
   "Explique o app e como vou evoluir mais rápido com ele.": "Explica la app y cómo voy a progresar más rápido con ella.",
+  "Como evoluo mais rápido": "Cómo progreso más rápido",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

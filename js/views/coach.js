@@ -136,7 +136,7 @@ function render() {
       <button class="btn sm ghost coach-mem-btn" data-act="coachMem">${MEM_IC}${c.notes.length ? t('Memória ({n})', { n: c.notes.length }) : t('Memória')}</button></div>
     <div class="coach-log" id="coachLog">${chat().length || busy ? bubbles() : `<p class="muted small">${t('Pergunte o que quiser sobre os seus treinos. Eu vejo seus registros, fichas, metas e cardio, e lembro do que você me contar.')}</p>`}</div>
     ${busy ? '' : `<div class="coach-sugs">
-      <button class="chip pitch" data-act="coachPitch">${icon.spark}${t('Como o app me faz evoluir mais rápido')}</button>
+      <button class="chip pitch" data-act="coachPitch">${icon.spark}${t('Como evoluo mais rápido')}</button>
       ${suggestions().map(([label, q]) => `<button class="chip" data-act="coachAsk" data-q="${esc(q)}">${esc(label)}</button>`).join('')}</div>`}
     <form class="coach-form" data-submit="coachSend">
       <textarea name="q" rows="1" maxlength="1000" placeholder="${t('Escreva sua pergunta…')}" ${busy ? 'disabled' : ''}></textarea>
