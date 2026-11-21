@@ -322,9 +322,10 @@ function renderIntent(arg) {
     c: plan.growth > 1 ? t('subindo cerca de {p}% por mês', { p: Math.round((plan.growth - 1) * 100) }) : t('mantidas'), d: plan.cardio,
   }) : '';
   $('#view').innerHTML = `
-    <div class="head">${editing ? `<a class="icon-btn" href="#/metas" aria-label="${t('Voltar')}">${icon.back}</a>` : ''}<div class="grow"><h1>${t('Seu objetivo')}</h1>
-      <p class="sub">${t('O app usa isso para montar as suas metas de séries, cargas e cardio.')}</p></div></div>
-    <div class="stack">
+    <div class="head intent-top">${editing ? `<a class="icon-btn" href="#/metas" aria-label="${t('Voltar')}">${icon.back}</a>` : ''}</div>
+    <div class="stack intent-screen">
+      <h1 class="intent-title">${t('Seu objetivo')}</h1>
+      <p class="sub muted">${t('O app usa isso para montar as suas metas de séries, cargas e cardio.')}</p>
       <div class="goal-opts">${GOAL_IDS.map(g => `<button class="goal-opt${idraft.goal === g ? ' on' : ''}" data-act="intentGoal" data-g="${g}" aria-pressed="${idraft.goal === g}">
         <b>${esc(GOAL_NAME()[g])}</b><span class="small muted">${esc(GOAL_DESC()[g])}</span></button>`).join('')}</div>
       <h3>${t('Grupos para priorizar (opcional)')}</h3>

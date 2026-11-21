@@ -25,6 +25,8 @@ export function rerender() {
   document.body.classList.toggle('no-tabs', !!r.noTabs);
   for (const a of $$('#tabbar a')) a.classList.toggle('on', a.dataset.tab === (r.tab || name));
   r.fn(arg);
+  // a página nunca fica travada sem rolar se nenhuma janela estiver aberta
+  if ($('#sheet')?.hidden) document.body.classList.remove('no-scroll');
   if (name !== lastName) {
     const v = $('#view');
     v.classList.remove('enter');
