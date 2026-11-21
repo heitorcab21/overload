@@ -1186,6 +1186,8 @@ const ui = {
   "Aplicar na ficha": "Apply to routine",
   "Ficha ajustada: {n} séries de {g} por semana.": "Routine adjusted: {n} sets of {g} per week.",
   "Contam as séries efetivas: carga de pelo menos 60% da sua força estimada no exercício (até ~20 reps) e, se você anotou, no máximo 4 reps sobrando.": "Effective sets count: a load of at least 60% of your estimated strength in the exercise (up to ~20 reps) and, if you logged it, at most 4 reps left in reserve.",
+  "Rumo à meta da semana: {set} na primeira série.": "Toward this week's goal: {set} on the first set.",
+  "Meta da semana: {set}": "This week's goal: {set}",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };

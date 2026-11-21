@@ -1186,6 +1186,8 @@ const ui = {
   "Aplicar na ficha": "Aplicar a la rutina",
   "Ficha ajustada: {n} séries de {g} por semana.": "Rutina ajustada: {n} series de {g} por semana.",
   "Contam as séries efetivas: carga de pelo menos 60% da sua força estimada no exercício (até ~20 reps) e, se você anotou, no máximo 4 reps sobrando.": "Cuentan las series efectivas: carga de al menos 60% de tu fuerza estimada en el ejercicio (hasta ~20 reps) y, si lo anotaste, como máximo 4 reps de reserva.",
+  "Rumo à meta da semana: {set} na primeira série.": "Rumbo a la meta de la semana: {set} en la primera serie.",
+  "Meta da semana: {set}": "Meta de la semana: {set}",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

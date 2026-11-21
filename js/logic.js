@@ -70,7 +70,34 @@ const fit = (reps, n) => Array.from({ length: n }, (_, i) => reps[i] ?? reps.at(
  * Sugestão para o treino de hoje (dupla progressão):
  * primeiro ganha repetições dentro da faixa, depois sobe a carga.
  */
-export function planFor(ex) {
+/**
+ * Próximo treino do exercício. Calcula a progressão normal e, se houver meta do mês ativa e a sugestão
+ * ficar abaixo do degrau desta semana, puxa até ele: no máximo um degrau de carga por treino, o resto em reps.
+ * Não empurra quando a progressão manda segurar ou reduzir (dor, falha, abaixo da faixa).
+ */
+export function planFor(ex, now = new Date()) {
+  return towardGoal(ex, basePlan(ex), now);
+}
+
+function towardGoal(ex, p, now) {
+  if (p.first || !['reps', 'up'].includes(p.kind) || !state.goals.ex[ex.id]) return p;
+  const st = exGoalStatus(ex, now);
+  if (!st || st.expired || st.weekDone) return p;
+  const tgt = st.weekSet;
+  if (!tgt || !(tgt.w > 0) || !(p.w > 0)) return p;
+  const targetE = e1rm(tgt.w, tgt.r);
+  if (e1rm(p.w, Math.max(...p.reps)) >= targetE - 1e-6) return { ...p, goal: tgt };
+  const up = imperial() ? fromW(toW(p.w) + toStep(ex.step || 2.5)) : p.w + (ex.step > 0 ? ex.step : 0);
+  const w = Math.max(p.w, Math.min(tgt.w, up));
+  const r1 = Math.min(ex.repMax + 2, Math.max(1, Math.ceil(30 * (targetE / w - 1) - 1e-9)));
+  const reps = w > p.w
+    ? p.reps.map((_, i) => (i === 0 ? r1 : Math.max(ex.repMin, r1 - 1)))
+    : p.reps.map((r, i) => (i === 0 ? Math.max(r, r1) : r));
+  const setTxt = ul(`${toW(w).toLocaleString(locale())} kg × ${reps[0]}`);
+  return { ...p, w, reps, kind: 'goal', goal: tgt, note: tr('Rumo à meta da semana: {set} na primeira série.', { set: setTxt }) };
+}
+
+function basePlan(ex) {
   // treinos em que o aparelho foi trocado não servem de base para a próxima carga
   const hist = entriesFor(ex.id).filter(e => !(e.flags || []).includes('troca'));
   // cargas importadas do bloco de notas valem como "treino anterior" até haver um treino mais novo

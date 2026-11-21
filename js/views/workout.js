@@ -197,6 +197,7 @@ function render() {
     ${en.sg ? `<p class="sup-tag">${icon.link}<b>${en.sgn === 3 ? t('Tri-set') : t('Bi-set')}</b> ${esc(a.entries.filter(e => e.sg === en.sg).map(e => exName(state.exercises[e.exId])).join(' + '))}</p>` : ''}
     ${ex.note ? `<button class="ex-note" data-act="editNote" data-id="${esc(ex.id)}" aria-label="${t('Editar anotação')}">${icon.edit}<span>${esc(ex.note)}</span></button>` : ''}
     <p class="muted ex-info">${esc(tg(ex.group))} · ${ex.sets} × ${ex.repMin}–${ex.repMax} reps · ${en.sg && en.sgi < en.sgn - 1 ? t('sem descanso até o próximo do {x}', { x: en.sgn === 3 ? t('Tri-set') : t('Bi-set') }) : t('descanso {s} s', { s: restOf(ex) })}${(() => { const lv = strengthLevel(ex); return lv.top ? ` · <a class="top-link" href="#/exercicio/${encodeURIComponent(ex.id)}">${t('Top {n}% de força', { n: lv.top })}</a>` : ''; })()}${ex.note ? '' : ` · <button class="note-link" data-act="editNote" data-id="${esc(ex.id)}">${icon.edit}${t('Anotar')}</button>`}</p>
+    ${en.plan?.goal && !isDone(en, ex) ? `<p class="small goal-line">${icon.target}${t('Meta da semana: {set}', { set: setStr(en.plan.goal) })}</p>` : ''}
     <div class="ex-actions">
       <button class="btn sm ghost" data-act="wSwap">${icon.sync}${t('Trocar exercício')}</button>
       <button class="btn sm ghost" data-act="wAdd">${icon.plus}${t('Adicionar exercício')}</button>

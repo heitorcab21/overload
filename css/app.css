@@ -843,3 +843,5 @@ body.has-coach #view { padding-bottom: calc(var(--tab-h) + var(--safe-b) + 76px)
 /* metas: a ficha não entrega a meta */
 .sheet-table .sub.gap { color: var(--accent); }
 .link-btn { border: 0; background: none; padding: 0; color: var(--accent); font: inherit; font-weight: 700; text-decoration: underline; }
+.goal-line { display: flex; align-items: center; gap: 6px; margin: -2px 0 8px; color: var(--accent); font-weight: 600; }
+.goal-line .ic { width: 15px; height: 15px; }

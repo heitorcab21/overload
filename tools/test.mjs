@@ -85,6 +85,25 @@ eq([planFor(ex).w, planFor(ex).reps, planFor(ex).kind], [42.5, [8, 8, 8], 'up'],
   delete state.settings.units;
 }
 
+// ---- o treino mira a meta do mês ----
+{
+  const { setExGoal, exGoalStatus: gst } = await import('../js/logic.js');
+  const keepS = state.sessions, keepG = state.goals;
+  const d0 = new Date(2026, 10, 9, 12); // segunda semana de novembro
+  state.goals = { ex: {}, groups: {} };
+  state.sessions = [sess(5, [{ w: 40, r: 10 }, { w: 40, r: 10 }, { w: 40, r: 10 }])];
+  const base = planFor(ex, d0);
+  eq([base.kind, base.w, base.reps], ['reps', 40, [11, 10, 10]], 'sem meta: progressão normal');
+  setExGoal(ex, 45, 10, new Date(2026, 10, 2, 12));
+  const wk = gst(ex, d0).weekSet;
+  const p = planFor(ex, d0);
+  eq([p.kind, p.w <= 42.5, p.goal], ['goal', true, wk], 'com meta: puxa para o degrau da semana, no máximo +1 degrau de carga');
+  eq(e1rm(p.w, p.reps[0]) >= e1rm(wk.w, wk.r) - 1e-6 || p.reps[0] === ex.repMax + 2, true, 'a primeira série alcança a meta da semana');
+  state.sessions = [sess(5, [{ w: 40, r: 10, t: 'fail' }, { w: 40, r: 8 }, { w: 40, r: 7 }], { flags: ['dor'] })];
+  eq(planFor(ex, d0).kind === 'goal', false, 'com dor marcada não empurra para a meta');
+  state.sessions = keepS; state.goals = keepG;
+}
+
 // ---- níveis de esforço da IA por modelo ----
 {
   const { effortLevels } = await import('../js/ai.js');
