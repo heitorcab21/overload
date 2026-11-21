@@ -322,6 +322,11 @@ function radarSvg(p) {
     return lines.map(([txt, cls], k) => `<text x="${x.toFixed(1)}" y="${(y0 + 14 * k).toFixed(1)}" text-anchor="${anchor}" class="${cls}">${esc(txt)}</text>`).join('');
   }).join('');
   const dots = axes.map((a, i) => (a.best ? (() => { const [x, y] = pt(i, Math.max(0.04, a.best.l.pct / 100)); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5" class="r-dot"/>`; })() : '')).join('');
+  // divisões pontilhadas entre os eixos: deixam claro que cada fatia é um botão
+  const seps = axes.map((_, i) => {
+    const ang = -Math.PI / 3 + i * Math.PI / 3 + Math.PI / 6;
+    return `<line x1="${cx}" y1="${cy}" x2="${(cx + Math.cos(ang) * R * 1.32).toFixed(1)}" y2="${(cy + Math.sin(ang) * R * 1.32).toFixed(1)}" class="r-sep"/>`;
+  }).join('');
   // área de toque de cada eixo: uma fatia de 60° em volta dele
   const hits = axes.map((a, i) => {
     const ang = k => -Math.PI / 3 + i * Math.PI / 3 + k * Math.PI / 6;
@@ -329,7 +334,7 @@ function radarSvg(p) {
     return `<polygon points="${cx},${cy} ${q(-1)} ${q(0)} ${q(1)}" class="r-hit" data-act="radarPick" data-i="${i}" tabindex="0" role="button" aria-label="${esc(a.name)}"/>`;
   }).join('');
   return `<svg viewBox="0 0 ${W} ${H}" class="radar" role="img" aria-label="${esc(axes.map(a => `${a.name}: ${a.best ? t('Top {n}%', { n: a.best.l.top }) : t('sem dado')}`).join(', '))}">
-      ${hits}${rings}${spokes}<polygon points="${vals}" class="r-area"/>${dots}${labels}
+      ${hits}${rings}${spokes}${seps}<polygon points="${vals}" class="r-area"/>${dots}${labels}
 </svg>`;
 }
 
@@ -345,7 +350,7 @@ function strengthOverview() {
   return `<a class="card stack strength-card link-card" href="#/forca">
     <div class="row between"><h3>${t('Seu nível de força')}</h3>${icon.next}</div>
     ${radarSvg(p)}
-    <div class="r-info small muted">${t('Esquerda: frente do corpo · direita: trás. Toque num eixo para ver o detalhe.')}</div>
+    <div class="r-info small muted">${icon.target} ${t('Toque numa fatia para ver os exercícios dela e quanto de carga você precisa para o top que quiser.')}<br>${t('Esquerda: frente do corpo · direita: trás.')}</div>
   </a>`;
 }
 
@@ -586,27 +591,74 @@ route('perfil', renderBodyIntro, { noTabs: true });
 route('progresso', render);
 route('forca', renderStrength, { tab: 'progresso' });
 
-// toque num eixo do radar: mostra o exercício que define o eixo (sem sair do cartão)
+// ---------- Fatia do radar: exercícios do eixo e carga necessária para o top que a pessoa quer ----------
+
+/** Carga (total, ou extra nos de peso corporal) para chegar ao top % com tantas reps. null se fora de alcance. */
+export function loadForTop(libId, top, reps, p = profile()) {
+  const map = STRENGTH_LIFTS[libId];
+  if (!map || !p) return null;
+  const target = 100 - top;
+  const pct = w => quickLevel(libId, w, reps, p)?.pct ?? 0;
+  if (map[2] && pct(0) >= target) return 0; // só o peso do corpo já basta
+  let lo = map[2] ? 0 : 0.5, hi = 1000;
+  if (pct(hi) < target) return null;
+  for (let k = 0; k < 40; k++) { const mid = (lo + hi) / 2; if (pct(mid) < target) lo = mid; else hi = mid; }
+  const step = LIB_BY_ID[libId]?.step || 2.5;
+  return Math.ceil(hi / step - 1e-9) * step;
+}
+
+let axisState = { i: 0, top: 20, reps: 8 };
+
+function axisRows() {
+  const p = profile();
+  const a = radarAxes(p)[axisState.i];
+  const mine = Object.fromEntries(Object.values(state.exercises).filter(ex => ex.lib).map(ex => [ex.lib, ex]));
+  const ids = LIB.filter(l => STRENGTH_LIFTS[l.id] && a.lifts.includes(STRENGTH_LIFTS[l.id][0])).map(l => l.id)
+    .sort((x, y) => (mine[y] ? 1 : 0) - (mine[x] ? 1 : 0));
+  return ids.map(id => {
+    const ex = mine[id];
+    const lv = ex ? strengthLevel(ex, p) : null;
+    const w = loadForTop(id, axisState.top, axisState.reps, p);
+    const bw = STRENGTH_LIFTS[id][2];
+    const need = w == null ? '—'
+      : bw ? (w > 0 ? `+${fmt(toW(w))} ${wUnit()} × ${axisState.reps}` : t('{r} reps só com o peso do corpo', { r: axisState.reps }))
+        : `${fmt(toW(w))} ${wUnit()} × ${axisState.reps}`;
+    return `<div class="item axis-row${ex ? ' mine' : ''}">
+      <span class="grow"><span class="t">${esc(ex ? exName(ex) : libName(id))}</span><br>
+        <span class="d">${ex ? (lv?.top ? t('Você hoje: Top {n}%', { n: lv.top }) : t('nas suas fichas, ainda sem registro')) : t('não está nas suas fichas')}</span></span>
+      <b class="num need">${esc(need)}</b></div>`;
+  }).join('');
+}
+
+function axisSheet() {
+  const p = profile();
+  const a = radarAxes(p)[axisState.i];
+  sheet(`<h2>${esc(a.name)}</h2>
+    <p class="small muted">${a.best ? esc(t('Seu melhor neste eixo: {ex}, Top {n}%.', { ex: exName(a.best.ex), n: a.best.l.top })) : t('Ainda sem registro neste eixo: treine um dos exercícios abaixo para ele aparecer no radar.')}</p>
+    <div class="card stack radar-calc">
+      <b>${t('Em qual top você quer estar, e com quantas repetições?')}</b>
+      <div class="chips">${[50, 30, 20, 10, 5].map(n => `<button class="chip${axisState.top === n ? ' on' : ''}" data-act="axisTop" data-n="${n}">${t('Top {n}%', { n })}</button>`).join('')}</div>
+      <div class="two">${stepper('axTop', axisState.top, 5, t('Top %'), 1, 'axisCalc')}${stepper('axReps', axisState.reps, 1, t('Repetições'), 1, 'axisCalc')}</div>
+      <p class="small muted">${ul(t('Para {g}, {a} anos e {w} kg. Carga total, como você anota no treino; nos exercícios com peso do corpo, o peso extra.', { g: groupWord(p), a: p.age, w: Math.round(toW(p.weight)) }))}</p>
+    </div>
+    <h3>${t('Exercícios que contam neste eixo')}</h3>
+    <div class="card flat"><div class="list" id="axisList">${axisRows()}</div></div>
+    <p class="small muted">${t('O radar usa o seu melhor exercício do eixo. Cargas estimadas por tabelas de força; máquinas e variantes usam fatores aproximados.')}</p>`);
+}
 actions.radarPick = (el, ev) => {
   ev?.preventDefault();
   const p = profile();
-  const a = p && radarAxes(p)[Number(el.dataset.i)];
-  const card = el.closest('.strength-card');
-  if (!a || !card) return;
-  card.querySelectorAll('.r-hit.sel').forEach(x => x.classList.remove('sel'));
-  el.classList.add('sel');
-  const box = card.querySelector('.r-info');
-  box.classList.remove('muted');
-  if (!a.best) {
-    // primeiro os exercícios das fichas da pessoa que valem para este eixo; senão, os da biblioteca
-    const fits = id => STRENGTH_LIFTS[id] && a.lifts.includes(STRENGTH_LIFTS[id][0]);
-    const mine = Object.values(state.exercises).filter(ex => ex.lib && fits(ex.lib)).map(ex => exName(ex));
-    const names = (mine.length ? mine : LIB.filter(l => fits(l.id)).map(l => libName(l.id))).slice(0, 3);
-    box.innerHTML = `<b>${esc(a.name)}</b><br>${esc(t('Ainda sem registro. Treine um destes (ou faça a consulta rápida no Nível de força): {ex}.', { ex: names.join(', ') }))}`;
-    return;
-  }
-  const { ex, l } = a.best;
-  box.innerHTML = `<b>${esc(a.name)}</b> · <span class="top-chip">${esc(t('Top {n}%', { n: l.top }))}</span><br>
-    ${esc(exName(ex))} · ${ul(t('1RM estimado: {w} kg', { w: Math.round(toW(l.oneRM)) }))}<br>
-    <span class="muted">${l.src.test ? t('teste de força') : esc(setStr(l.src))} · ${fmtDate(l.src.date, false)}</span>`;
+  if (!p) return;
+  const a = radarAxes(p)[Number(el.dataset.i)];
+  // começa um pouco acima do nível atual (10 pontos melhor), ou no meio da tabela
+  axisState = { i: Number(el.dataset.i), top: a.best ? Math.max(1, a.best.l.top - 10) : 50, reps: axisState.reps || 8 };
+  axisSheet();
+};
+actions.axisTop = el => { axisState.top = Number(el.dataset.n); axisSheet(); };
+changes.axisCalc = el => {
+  const box = el.closest('.sheet-card');
+  axisState.top = Math.max(1, Math.min(99, Math.round(Number(box.querySelector('input[name="axTop"]').value) || 20)));
+  axisState.reps = Math.max(1, Math.min(30, Math.round(Number(box.querySelector('input[name="axReps"]').value) || 8)));
+  box.querySelectorAll('.radar-calc .chip').forEach(c => c.classList.toggle('on', Number(c.dataset.n) === axisState.top));
+  $('#axisList').innerHTML = axisRows();
 };

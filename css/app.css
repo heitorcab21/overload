@@ -997,3 +997,11 @@ body.has-install .w-top { padding-right: 52px; }
 /* nenhuma sugestão passa da largura da janela: se não couber, quebra a linha */
 .coach-sugs .chip { max-width: 100%; white-space: normal; text-align: right; }
 .coach-sugs .chip.pitch .ic { flex: none; }
+/* radar: fatias pontilhadas e janela do eixo */
+.radar .r-sep { stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 3 4; opacity: .7; pointer-events: none; }
+.radar .r-hit:hover { fill: color-mix(in srgb, var(--accent) 6%, transparent); }
+.r-info .ic { width: 14px; height: 14px; vertical-align: -2px; color: var(--accent); }
+.radar-calc .chips { gap: 6px; }
+.radar-calc .chip { padding: 5px 10px; font-size: 13.5px; min-height: 0; }
+.axis-row .need { white-space: nowrap; color: var(--accent); }
+.axis-row:not(.mine) .t { color: var(--ink-2); }
