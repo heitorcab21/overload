@@ -59,6 +59,21 @@ const STD = Object.fromEntries(['m', 'f'].map(sex => [sex, {
 }]));
 const Z = [-1.645, -0.842, 0, 0.842, 1.645]; // percentis 5, 20, 50, 80, 95
 
+// População geral: normas do Cooper Institute (referência do ACSM), supino 1RM ÷ peso, 20 a 29 anos
+// (Physical Fitness Assessments and Norms for Adults and Law Enforcement, reproduzidas pela ACE em 2020).
+// Percentis 5, 20, 80 e 95 da tabela; o 50 é a média dos percentis 40 e 60 (homens 0,99 e 1,14; mulheres 0,59 e 0,70).
+// Cada exercício usa a tabela dele da Strength Level, deslocada em cada percentil pela razão Cooper ÷ Strength Level
+// do supino: assim todo exercício fica comparado com adultos em geral, e não só com quem registra treinos.
+const COOPER_BENCH = { m: [0.72, 0.88, 1.065, 1.32, 1.63], f: [0.44, 0.51, 0.645, 0.80, 1.01] };
+const GYM = Object.fromEntries(['m', 'f'].map(sex => {
+  const shift = COOPER_BENCH[sex].map((v, i) => v / STD[sex]['bench-press'][i]);
+  return [sex, Object.fromEntries(Object.entries(STD[sex]).map(([k, arr]) => {
+    const out = arr.map((v, i) => v * shift[i]);
+    for (let i = 1; i < out.length; i++) out[i] = Math.max(out[i], out[i - 1] * 1.03); // sempre crescente
+    return [k, out];
+  }))];
+}));
+
 /**
  * Exercícios comparáveis: [padrão de movimento (eixo do radar), fator, peso do corpo, tabela].
  * Cada um usa a SUA tabela da Strength Level. fator = quanto da carga anotada corresponde à carga da tabela
@@ -157,58 +172,67 @@ export const oneRepMax = (w, reps) => (reps <= 1 ? w : e1rm(w, reps));
  * Indo até a falha, as reps caem de uma série para a outra (1 a 3 por série, com 1 a 3 min de descanso).
  * Repetir a mesma carga e as mesmas reps em k séries indica reserva: 2 séries iguais → 0, 3 → 1, 4 → 2, 5+ → 3.
  */
-export function inferredRir(s, sets) {
+export function inferredRir(s, sets, generous = false) {
   if (s.rir != null) return { rir: s.rir, inferred: false };
   if (s.t) return { rir: 0, inferred: false }; // falhou: sem reserva
   const k = sets.filter(x => x.w === s.w && x.r >= s.r && !x.t).length;
-  const rir = Math.min(3, Math.floor((k - 1) * 0.75));
+  // no nível de treino, cada série igual a mais indica ~1 rep de reserva; na força máxima, mais conservador
+  const rir = Math.min(3, generous ? k - 1 : Math.floor((k - 1) * 0.75));
   return { rir: Math.max(0, rir), inferred: rir > 0 };
 }
 
-export function best1RM(ex, bw, isBw) {
+export function best1RM(ex, bw, isBw, { days = 90, tests = true, generous = false } = {}) {
   let best = null;
   const consider = (s, date, test, sets = []) => {
     if (!s.r) return;
     const w = isBw ? bw * bwShare(isBw) + (s.w || 0) : s.w;
     if (!(w > 0)) return;
     // reps que sobraram (anotadas, ou estimadas pelas séries repetidas) contam para estimar o máximo (até 4)
-    const { rir: r0, inferred } = test ? { rir: s.rir || 0, inferred: false } : inferredRir(s, sets);
+    const { rir: r0, inferred } = test ? { rir: s.rir || 0, inferred: false } : inferredRir(s, sets, generous);
     const rir = Math.min(4, r0 || 0);
     const value = oneRepMax(w, s.r + rir);
     if (!best || value > best.value) best = { value, w: s.w || 0, r: s.r, rir: s.rir ?? (inferred ? rir : null), rirInferred: inferred, sets: inferred ? sets.filter(x => x.w === s.w && x.r >= s.r).length : 0, date, test };
   };
-  const from90 = addDays(new Date(), -90), from180 = addDays(new Date(), -180);
+  const from = addDays(new Date(), -days), from180 = addDays(new Date(), -180);
   for (const e of entriesFor(ex.id)) {
-    if (new Date(e.date) < from90) continue;
+    if (new Date(e.date) < from) continue;
     const work = workSets(e.sets);
     for (const s of work) consider(s, e.date, false, work);
   }
-  for (const tst of ex.tests || []) {
+  if (tests) for (const tst of ex.tests || []) {
     if (new Date(tst.date) >= from180) consider(tst, tst.date, true);
   }
   return best;
 }
 
 /**
- * Nível de força num exercício. Retorna { pct, top, lift } ou { reason } quando não dá para comparar:
- * 'noProfile' (perfil incompleto), 'notComparable' (aparelho/polia), 'noData' (sem registros recentes).
+ * Nível de TREINO num exercício (o que o radar e o app mostram): pelas séries de trabalho dos últimos 60 dias,
+ * contando as séries repetidas como reserva, comparado com adultos em geral (Cooper Institute / ACSM).
+ * Retorna { pct, top, lift } ou { reason }: 'noProfile', 'notComparable' (isolador), 'noData' (sem treino recente).
  */
 export function strengthLevel(ex, p = profile()) {
+  return levelOf(ex, p, { days: 60, tests: false, generous: true }, 'gym');
+}
+/** Força MÁXIMA: melhor 1RM estimado (ou teste de força) dos últimos 90 dias, comparado com quem registra treinos (Strength Level). */
+export function maxLevel(ex, p = profile()) {
+  return levelOf(ex, p, { days: 90, tests: true, generous: false }, 'sl');
+}
+function levelOf(ex, p, opts, refTable) {
   const map = ex?.lib && STRENGTH_LIFTS[ex.lib];
   if (!map) return { reason: 'notComparable' };
   if (!p) return { reason: 'noProfile' };
   const [lift, factor, isBw, std] = map;
-  const src = best1RM(ex, p.weight, isBw);
+  const src = best1RM(ex, p.weight, isBw, opts);
   if (!src) return { reason: 'noData' };
-  return { ...levelOf1RM(std, factor, src.value, p), lift, oneRM: src.value, src, bw: !!isBw };
+  return { ...levelOf1RM(std, factor, src.value, p, refTable), lift, oneRM: src.value, src, bw: !!isBw };
 }
 
 /** Percentil a partir de um 1RM (carga total, já com o peso do corpo nos exercícios de peso corporal). */
-function levelOf1RM(std, factor, one, p) {
+function levelOf1RM(std, factor, one, p, refTable = 'gym') {
   const ref = REF_BW[p.sex];
   // normaliza pelo peso corporal (escala alométrica: quem é mais pesado levanta menos por kg) e pela idade
   const ratio = (one / factor / ref) * (ref / p.weight) ** 0.67 / ageFactor(p.age);
-  const pct = percentileOf(ratio, STD[p.sex][std]);
+  const pct = percentileOf(ratio, (refTable === 'sl' ? STD : GYM)[p.sex][std]);
   return { pct, top: Math.max(1, Math.round(100 - pct)) };
 }
 
@@ -216,20 +240,20 @@ function levelOf1RM(std, factor, one, p) {
  * Consulta rápida, sem salvar nada: em que top de força fica uma série de carga × reps neste exercício.
  * w é a carga total (ou o peso extra, nos exercícios de peso corporal). Retorna null se não der para comparar.
  */
-export function quickLevel(libId, w, r, p = profile()) {
+export function quickLevel(libId, w, r, p = profile(), refTable = 'gym') {
   const map = STRENGTH_LIFTS[libId];
   if (!map || !p || !(r >= 1)) return null;
   const [, factor, isBw, std] = map;
   const load = isBw ? p.weight * bwShare(isBw) + (w || 0) : w;
   if (!(load > 0)) return null;
   const one = oneRepMax(load, r);
-  return { ...levelOf1RM(std, factor, one, p), oneRM: one };
+  return { ...levelOf1RM(std, factor, one, p, refTable), oneRM: one };
 }
 
 /** Média dos percentis de força de todos os exercícios comparáveis com registros. */
 export function overallStrength(p = profile()) {
   if (!p) return null;
-  const levels = Object.values(state.exercises).map(ex => strengthLevel(ex, p)).filter(l => l.pct !== undefined);
+  const levels = Object.values(state.exercises).map(ex => maxLevel(ex, p)).filter(l => l.pct !== undefined);
   if (!levels.length) return null;
   const pct = levels.reduce((a, l) => a + l.pct, 0) / levels.length;
   return { pct, top: Math.max(1, Math.round(100 - pct)), count: levels.length };

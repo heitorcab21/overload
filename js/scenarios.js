@@ -2,7 +2,7 @@
 // para uma meta escolhida pela pessoa. O ritmo vem do nível dela: quem está começando evolui mais rápido.
 import { state } from './store.js';
 import { e1rm, toSet, bestInRange, addDays, entriesFor } from './logic.js';
-import { strengthLevel, quickLevel, profile, STRENGTH_LIFTS } from './body.js';
+import { maxLevel, quickLevel, profile, STRENGTH_LIFTS } from './body.js';
 import { imperial, snapW } from './units.js';
 
 // ganho de força (1RM estimado) por mês, por nível (percentil): [conservador, moderado, difícil]
@@ -51,7 +51,7 @@ function estimateBase(ex) {
   let lo = 1, hi = 500;
   for (let k = 0; k < 30; k++) {
     const mid = (lo + hi) / 2;
-    if ((quickLevel(ex.lib, mid, 1, p)?.pct ?? 0) < START_PCT) lo = mid; else hi = mid;
+    if ((quickLevel(ex.lib, mid, 1, p, 'sl')?.pct ?? 0) < START_PCT) lo = mid; else hi = mid;
   }
   const w = snap(hi / (1 + r / 30));
   return { best: { w, r }, base: e1rm(w, r), est: 'std' };
@@ -59,7 +59,7 @@ function estimateBase(ex) {
 
 /** Ritmos do mês para este exercício e esta pessoa. */
 export function rates(ex) {
-  const lv = strengthLevel(ex, profile());
+  const lv = maxLevel(ex, profile());
   const pct = lv.pct ?? (entriesFor(ex.id).length < 12 ? 30 : 65); // sem percentil: experiência no exercício
   const r = RATES.find(([lim]) => pct < lim)[1];
   const slow = state.intent?.goal === 'emagrecer' ? 0.5 : 1; // emagrecendo, o foco é manter a força

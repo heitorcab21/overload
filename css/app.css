@@ -1005,3 +1005,5 @@ body.has-install .w-top { padding-right: 52px; }
 .radar-calc .chip { padding: 5px 10px; font-size: 13.5px; min-height: 0; }
 .axis-row .need { white-space: nowrap; color: var(--accent); }
 .axis-row:not(.mine) .t { color: var(--ink-2); }
+.max-box { border-top: 1px solid var(--line); padding-top: 10px; }
+.max-box summary { font-size: 14.5px; }

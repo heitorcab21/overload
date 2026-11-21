@@ -9,7 +9,7 @@ import { ensureExercise, planStr } from './home.js';
 import { exerciseProgress, groupWord } from './progress.js';
 import { scenarioCard } from './goals.js';
 import { lgBanner } from './loadgoals.js';
-import { strengthLevel, profile, oneRepMax } from '../body.js';
+import { strengthLevel, maxLevel, profile, oneRepMax } from '../body.js';
 import { aiEnabled, aiAskExecution, aiCuesFor } from '../ai.js';
 import { imperial, toW, fromW, toStep, wUnit, ul } from '../units.js';
 
@@ -443,27 +443,38 @@ function strengthCard(ex) {
       <p class="muted">${t('Preencha seu perfil (sexo, idade, altura e peso) na aba Progresso para ver em que top de força você está neste exercício.')}</p></a>`;
   }
   const testBtn = `<button class="btn block" data-act="strengthTest" data-id="${esc(ex.id)}">${icon.target}${t('Fazer teste de força')}</button>`;
-  if (lv.reason === 'noData') {
+  if (lv.reason === 'noData' && !maxLevel(ex).top) {
     return `<div class="card stack"><h3>${t('Seu nível de força')}</h3><p class="muted">${t('Registre este exercício ou faça um teste de força para ver em que top de força você está.')}</p>${testBtn}</div>`;
   }
   const p = profile();
-  const s = lv.src;
-  const load = lv.bw ? (s.w ? ul(t('peso corporal + {w} kg', { w: fmt(toW(s.w)) })) : t('peso corporal')) : kg(s.w);
-  const setTxt = `${load} × ${s.r}${s.rir ? ` (${s.rirInferred ? t('{k} séries iguais: ~{n} de reserva', { k: s.sets, n: s.rir }) : t('sobraram {n}', { n: s.rir >= 4 ? '4+' : s.rir })})` : ''}`;
-  const reps = s.r + Math.min(4, s.rir || 0);
-  const how = reps <= 1 ? t('Uma repetição máxima: o 1RM é a própria carga.')
-    : t('Calculado pela fórmula de Epley: carga × (1 + reps ÷ 30).');
+  const mx = maxLevel(ex, p);
+  const who = { grupo: groupWord(p), idade: p.age, peso: Math.round(toW(p.weight)) };
+  // nível de treino (o do radar)
+  const train = lv.top ? `<div class="row between"><span class="big-num">${t('Top {n}%', { n: lv.top })}</span><span class="small muted">${t('nível de treino')}</span></div>
+    ${meter(lv.pct / 100)}
+    <p class="small muted">${ul(t('Pelas suas séries dos últimos 60 dias, comparado com {grupo} de {idade} anos e cerca de {peso} kg (normas do Cooper Institute, usadas pelo ACSM). Top 50% = a média.', who))}</p>`
+    : `<p class="muted">${t('Sem treino deste exercício nos últimos 60 dias.')}</p>`;
+  // força máxima: 1RM e comparação rigorosa
+  let max = '';
+  if (mx.top) {
+    const s = mx.src;
+    const load = mx.bw ? (s.w ? ul(t('peso corporal + {w} kg', { w: fmt(toW(s.w)) })) : t('peso corporal')) : kg(s.w);
+    const setTxt = `${load} × ${s.r}${s.rir ? ` (${s.rirInferred ? t('{k} séries iguais: ~{n} de reserva', { k: s.sets, n: s.rir }) : t('sobraram {n}', { n: s.rir >= 4 ? '4+' : s.rir })})` : ''}`;
+    const reps = s.r + Math.min(4, s.rir || 0);
+    const how = reps <= 1 ? t('Uma repetição máxima: o 1RM é a própria carga.') : t('Calculado pela fórmula de Epley: carga × (1 + reps ÷ 30).');
+    max = `<details class="own-goal max-box"><summary><b>${t('Força máxima (1RM)')}</b> · ${ul(t('{w} kg', { w: Math.round(toW(mx.oneRM)) }))} · ${t('Top {n}%', { n: mx.top })}</summary>
+      <p class="small muted">${ul(t('Comparado com {grupo} de {idade} anos e cerca de {peso} kg que registram treinos na Strength Level (público dedicado). Top 50% = intermediário.', who))}</p>
+      <div class="src-box small">
+        <b>${s.test ? t('Base: teste de força de {d}', { d: fmtDate(s.date, false) }) : t('Base: sua melhor série dos últimos 90 dias ({d})', { d: fmtDate(s.date, false) })}</b><br>
+        ${esc(setTxt)}. ${how}${mx.bw ? ` ${t('Nos exercícios de peso corporal, seu peso entra na conta.')}` : ''}
+        ${reps > 10 ? `<br><span class="warn-text">${t('Séries com mais de 10 reps dão uma estimativa menos precisa. Um teste de força deixa o número mais confiável.')}</span>` : ''}
+      </div>
+      ${testBtn}</details>`;
+  } else max = testBtn;
   return `<div class="card stack">
     <h3>${t('Seu nível de força')}</h3>
-    <div class="row between"><span class="big-num">${t('Top {n}%', { n: lv.top })}</span><span class="small muted">${ul(t('1RM estimado: {w} kg', { w: Math.round(toW(lv.oneRM)) }))}</span></div>
-    ${meter(lv.pct / 100)}
-    <p class="small muted">${ul(t('Comparado com {grupo} de {idade} anos e cerca de {peso} kg que registram treinos na Strength Level (público dedicado). Top 50% = intermediário de academia. Estimativa, não é um ranking oficial.', { grupo: groupWord(p), idade: p.age, peso: Math.round(toW(p.weight)) }))}</p>
-    <div class="src-box small">
-      <b>${s.test ? t('Base: teste de força de {d}', { d: fmtDate(s.date, false) }) : t('Base: sua melhor série dos últimos 90 dias ({d})', { d: fmtDate(s.date, false) })}</b><br>
-      ${esc(setTxt)}. ${how}${lv.bw ? ` ${t('Nos exercícios de peso corporal, seu peso entra na conta.')}` : ''}
-      ${reps > 10 ? `<br><span class="warn-text">${t('Séries com mais de 10 reps dão uma estimativa menos precisa. Um teste de força deixa o número mais confiável.')}</span>` : ''}
-    </div>
-    ${testBtn}
+    ${train}
+    ${max}
   </div>`;
 }
 
@@ -499,8 +510,8 @@ submits.saveStrengthTest = form => {
   if (r < 1 || r > 30 || (!ex.bw && !(w > 0))) { toast(t('Confira a carga e as repetições.'), 4000); return; }
   ex.tests = [...(ex.tests || []), { date: new Date().toISOString(), w, r }].slice(-20);
   save(); closeSheet(); rerender();
-  const lv = strengthLevel(ex);
-  toast(lv.top ? t('Teste salvo. Seu nível agora: top {n}%.', { n: lv.top }) : t('Teste salvo.'), 4000);
+  const lv = maxLevel(ex);
+  toast(lv.top ? t('Teste salvo. Sua força máxima agora: top {n}%.', { n: lv.top }) : t('Teste salvo.'), 4000);
 };
 actions.delStrengthTest = el => {
   const ex = state.exercises[el.dataset.id];

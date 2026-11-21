@@ -252,11 +252,14 @@ eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [10, { week: 10, 
   eq([pd.pct > 35 && pd.pct < 75, rw.pct > 35 && rw.pct < 80], [true, true], 'puxada e remada na polia (60 kg × 10, 82 kg): perto do intermediário');
   // calibração pela Strength Level: o valor "intermediário" da tabela (80 kg, homem; 60 kg, mulher) = percentil 50
   const m80 = { sex: 'm', age: 30, weight: 80, height: 180 }, f60 = { sex: 'f', age: 30, weight: 60, height: 165 };
-  const p50 = (id, w, r, who) => Math.round(quickLevel(id, w, r, who).pct);
+  const p50 = (id, w, r, who) => Math.round(quickLevel(id, w, r, who, 'sl').pct);
   eq([p50('supino-reto', 98, 1, m80), p50('agachamento-livre', 132, 1, m80), p50('levantamento-terra', 155, 1, m80), p50('puxada-frente', 85, 1, m80),
     p50('supino-reto-halteres', 80, 1, m80), p50('barra-fixa', 0, 13, m80), p50('flexao', 0, 38, m80), p50('supino-reto', 47, 1, f60), p50('leg-press', 140, 1, f60)],
     [50, 50, 50, 50, 50, 50, 50, 50, 50], 'valores intermediários da Strength Level dão o percentil 50 (barra, máquina, halteres e peso do corpo)');
-  eq(Math.round(quickLevel('supino-reto', 151, 1, m80).pct), 95, 'elite da tabela = percentil 95');
+  eq(Math.round(quickLevel('supino-reto', 151, 1, m80, 'sl').pct), 95, 'elite da tabela = percentil 95');
+  // população geral (Cooper Institute / ACSM): supino 1,32 × o peso = percentil 80; 1,63 = 95
+  eq([Math.round(quickLevel('supino-reto', 1.32 * 80, 1, m80).pct), Math.round(quickLevel('supino-reto', 1.63 * 80, 1, m80).pct), Math.round(quickLevel('supino-reto', 0.80 * 60, 1, f60).pct)],
+    [80, 95, 80], 'nível de treino comparado com adultos em geral pelas normas do Cooper');
 }
 
 // ---- metas de carga: decisão por exercício ----
@@ -433,22 +436,22 @@ S().profile = { sex: 'm', birthYear: new Date().getFullYear() - 30, height: 178,
 S().exercises['supino-reto'] = { id: 'supino-reto', lib: 'supino-reto', name: 'Supino reto com barra', group: 'Peito', sets: 3, repMin: 6, repMax: 10, step: 2.5 };
 S().exercises['peck-deck'] = { id: 'peck-deck', lib: 'peck-deck', name: 'x', group: 'Peito', sets: 3, repMin: 10, repMax: 15, step: 5 };
 S().sessions.push({ id: 'bench', date: nowIso, entries: [{ exId: 'supino-reto', sets: [{ w: 120, r: 1 }] }] });
-const lv = body.strengthLevel(S().exercises['supino-reto']);
+const lv = body.maxLevel(S().exercises['supino-reto']);
 eq([lv.lift, lv.top >= 20 && lv.top <= 27], ['bench', true], 'supino de 120 kg com 80 kg (Strength Level: avançado = 124 kg): por volta do top 23%');
 eq(body.strengthLevel(S().exercises['peck-deck']).reason, 'notComparable', 'aparelho não entra no ranking');
 S().sessions.push({ id: 'bench2', date: nowIso, entries: [{ exId: 'supino-reto', sets: [{ w: 100, r: 5, rir: 3 }] }] });
-eq(Math.round(body.strengthLevel(S().exercises['supino-reto']).oneRM), Math.round(e1rm(100, 8)), 'RIR entra na estimativa do 1RM');
-const lvR = body.strengthLevel(S().exercises['supino-reto']);
+eq(Math.round(body.maxLevel(S().exercises['supino-reto']).oneRM), Math.round(e1rm(100, 8)), 'RIR entra na estimativa do 1RM');
+const lvR = body.maxLevel(S().exercises['supino-reto']);
 eq([lvR.src.w, lvR.src.r, lvR.src.rir, lvR.src.test], [100, 5, 3, false], 'mostra a série que gerou o 1RM');
 eq([body.inferredRir({ w: 75, r: 10 }, [{ w: 75, r: 10 }, { w: 75, r: 10 }, { w: 75, r: 10 }, { w: 75, r: 10 }]).rir,
   body.inferredRir({ w: 75, r: 10 }, [{ w: 75, r: 10 }, { w: 75, r: 8 }, { w: 75, r: 7 }]).rir,
   body.inferredRir({ w: 75, r: 10, rir: 1 }, [{ w: 75, r: 10 }, { w: 75, r: 10 }, { w: 75, r: 10 }, { w: 75, r: 10 }]).rir], [2, 0, 1],
   '4 séries iguais sem RIR anotado: ~2 de reserva; reps caindo: foi até a falha; RIR anotado vale mais');
 S().exercises['supino-reto'].tests = [{ date: nowIso, w: 140, r: 1 }];
-const lvT = body.strengthLevel(S().exercises['supino-reto']);
+const lvT = body.maxLevel(S().exercises['supino-reto']);
 eq([lvT.oneRM, lvT.src.test], [140, true], 'teste de 1 rep: o 1RM é a própria carga');
 S().exercises['supino-reto'].tests = [{ date: new Date(Date.now() - 200 * 864e5).toISOString(), w: 200, r: 1 }];
-eq(body.strengthLevel(S().exercises['supino-reto']).src.test, false, 'teste com mais de 180 dias deixa de valer');
+eq(body.maxLevel(S().exercises['supino-reto']).src.test, false, 'teste com mais de 180 dias deixa de valer');
 delete S().exercises['supino-reto'].tests;
 const topAt = kgW => { S().profile.weight = kgW; return body.strengthLevel(S().exercises['supino-reto']).top; };
 const pw = S().profile.weight;

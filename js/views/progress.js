@@ -419,7 +419,7 @@ function renderStrength() {
     <div class="stack">
       ${!p ? `<div class="card stack"><p>${t('Descubra em que top de força você está em cada exercício, comparado a pessoas do seu sexo, idade e peso que treinam musculação.')}</p>
         <button class="btn primary block" data-act="editProfile">${t('Preencher perfil')}</button></div>` : `
-      <p class="muted small">${ul(t('Comparado com {grupo} de {idade} anos e cerca de {peso} kg que registram treinos na Strength Level: um público dedicado, então a tabela é exigente. Top 50% = intermediário de academia.', { grupo: groupWord(p), idade: p.age, peso: Math.round(toW(p.weight)) }))}
+      <p class="muted small">${ul(t('Seu nível de treino: pelas suas séries dos últimos 60 dias (séries iguais contam como reserva), comparado com {grupo} de {idade} anos e cerca de {peso} kg (normas do Cooper Institute, usadas pelo ACSM). Top 50% = a média.', { grupo: groupWord(p), idade: p.age, peso: Math.round(toW(p.weight)) }))}
         ${t('Top 10% quer dizer que você é mais forte que 90% dessas pessoas.')}</p>
       ${quickCalc()}
       ${rows.length ? `<h3 class="group-title">${t('Pelos seus treinos')}</h3>` : ''}
@@ -434,7 +434,7 @@ function renderStrength() {
       ${pending.length ? `<h3 class="group-title">${t('Ainda sem registro')}</h3>
         <div class="card flat"><div class="list">${pending.map(ex => `<a class="item" href="#/exercicio/${encodeURIComponent(ex.id)}">
           <span class="grow t">${esc(exName(ex))}</span><span class="small muted">${t('treine ou faça um teste')}</span>${icon.next}</a>`).join('')}</div></div>` : ''}
-      <p class="small muted">${t('Cada exercício é comparado com a própria tabela da Strength Level (milhões de levantamentos registrados por quem treina): Top 50% = intermediário, Top 5% = elite. Isoladores, como cadeiras e crucifixos, ficam de fora. Estimativa, não é um ranking oficial.')}</p>`}
+      <p class="small muted">${t('Cada exercício usa a própria tabela da Strength Level, ajustada para adultos em geral pelas normas do Cooper Institute (ACSM). Isoladores, como cadeiras e crucifixos, ficam de fora. A força máxima (1RM) de cada exercício, comparada só com quem treina sério, fica na tela do exercício.')}</p>`}
     </div>`;
 }
 
@@ -645,7 +645,7 @@ function axisSheet() {
     </div>
     <h3>${t('Exercícios que contam neste eixo')}</h3>
     <div class="card flat"><div class="list" id="axisList">${axisRows()}</div></div>
-    <p class="small muted">${t('O radar usa o seu melhor exercício do eixo. Cargas calculadas pela tabela da Strength Level de cada exercício.')}</p>`);
+    <p class="small muted">${t('O radar usa o seu melhor exercício do eixo, pelo seu nível de treino. Cargas pela tabela de cada exercício, comparadas com adultos em geral (Cooper Institute / ACSM).')}</p>`);
 }
 actions.radarPick = (el, ev) => {
   ev?.preventDefault();
