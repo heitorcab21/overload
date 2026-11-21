@@ -103,7 +103,7 @@ function httpError(status, detail) {
   return new Error(t('Erro da IA ({n}). Tente mais tarde.', { n: status }));
 }
 
-const TIMEOUT = 90000; // por tentativa
+const TIMEOUT = 60000; // por tentativa
 async function http(url, opts) {
   // servidor sobrecarregado ou instável (500, 502, 503, 504) ou conexão que caiu: tenta de novo sozinho, com pausas curtas
   const waits = [1200, 3000];
@@ -115,11 +115,13 @@ async function http(url, opts) {
       res = await fetch(url, { ...opts, signal: ctl.signal });
     } catch (e) {
       clearTimeout(timer);
-      if (attempt < waits.length && navigator.onLine) { await new Promise(r => setTimeout(r, waits[attempt])); continue; }
+      // estourou o tempo: não repete o mesmo modelo (vai direto para o reserva)
+      if (e?.name !== 'AbortError' && attempt < waits.length && navigator.onLine) { await new Promise(r => setTimeout(r, waits[attempt])); continue; }
       const err = new Error(e?.name === 'AbortError'
         ? t('A IA demorou demais para responder. Tente de novo ou escolha um modelo mais rápido em Ajustes (os "Flash" respondem bem mais rápido).')
         : t('Não consegui falar com a IA (a internet oscilou ou o servidor não respondeu). Toque em Tentar de novo.'));
       err.retryable = true;
+      err.detail = `${e?.name || 'Error'}${e?.message ? `: ${String(e.message).slice(0, 60)}` : ''}`;
       throw err;
     }
     clearTimeout(timer);
@@ -128,6 +130,7 @@ async function http(url, opts) {
     if (res.status >= 500 && attempt < waits.length) { await new Promise(r => setTimeout(r, waits[attempt])); continue; }
     const err = httpError(res.status, body?.error?.message);
     err.retryable = res.status >= 500 || res.status === 429;
+    err.detail = `HTTP ${res.status}`;
     throw err;
   }
 }

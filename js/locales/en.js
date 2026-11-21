@@ -1382,6 +1382,8 @@ const ui = {
   "Voltar ao treino": "Back to workout",
   "Tem certeza que quer excluir este treino?": "Are you sure you want to delete this workout?",
   "Sim, excluir treino": "Yes, delete workout",
+  "Ainda pensando… alguns modelos levam até 1 minuto.": "Still thinking… some models take up to a minute.",
+  "Cancelado. Toque em Tentar de novo quando quiser.": "Canceled. Tap Try again whenever you like.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };

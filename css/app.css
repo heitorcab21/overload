@@ -1021,3 +1021,4 @@ body.has-install .w-top { padding-right: 52px; }
 .w-top .w-discard { color: var(--muted); }
 .w-top .w-discard:hover { color: var(--crit); }
 .r-info.r-tap { background: #0b0b0b; color: #fff; padding: 10px 14px; border-radius: 14px; margin-top: 4px; } /* fundo preto: dá ainda mais destaque à dica */
+.msg.slow-note { display: grid; gap: 8px; justify-items: start; }

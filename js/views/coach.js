@@ -11,7 +11,6 @@ import { go, current, afterRender } from '../router.js';
 import { aiEnabled, aiChat, aiProvider, PROVIDERS, aiCoachNotes, aiCoachSummary, aiCoachCheckin } from '../ai.js';
 import { t } from '../i18n.js';
 import { buildSummary } from './home.js';
-import { helpText } from './help.js';
 
 import { PROVIDER_ICON } from '../aiicons.js';
 const SEND_IC = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -116,11 +115,14 @@ function fmt(text) {
   return out.join('');
 }
 
+let busySince = 0, slowTimer = 0, reqId = 0;
 function bubbles() {
   const list = chat();
   const lastErr = list.length && list.at(-1).error && !busy;
+  const slow = busy && Date.now() - busySince > 12000;
   return list.map((m, i) => `<div class="msg ${m.role === 'user' ? 'me' : 'ai'}${m.error ? ' err' : ''}">${m.role === 'user' ? `<p>${esc(m.content)}</p>` : fmt(m.content)}${lastErr && i === list.length - 1 ? `<button class="btn sm retry" data-act="coachRetry">${t('Tentar de novo')}</button>` : ''}</div>`).join('')
-    + (busy ? `<div class="msg ai typing"><span></span><span></span><span></span></div>` : '');
+    + (busy ? `<div class="msg ai typing"><span></span><span></span><span></span></div>` : '')
+    + (slow ? `<div class="msg ai slow-note"><p class="small">${t('Ainda pensando… alguns modelos levam até 1 minuto.')}</p><button class="btn sm" data-act="coachCancel">${t('Cancelar')}</button></div>` : '');
 }
 
 function render() {
@@ -155,18 +157,31 @@ const MEM_IC = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="
 const isOpen = () => !$('#sheet').hidden && ($('.coach') || $('.coach-memory'));
 
 // Pedido da sugestão em destaque: um super resumo só dos diferenciais, a partir da Ajuda (o manual do app)
-const PITCH = () => `[Para responder: use o MANUAL DO APP abaixo (a seção Ajuda) e faça um super resumo só com os diferenciais do Overload, para alguém leigo ver o valor de usar o app.
-Foque no que faz evoluir mais rápido: a carga certa sugerida a cada treino (progressão automática), metas inteligentes em 3 cenários (conservador, moderado, difícil) com degraus semanais, séries efetivas pela ciência do volume, nível de força em top % e radar (subir de nível como num jogo), mapa muscular, cardio com protocolos estudados e o treinador com memória.
+// Pedido da sugestão em destaque: um resumo só dos diferenciais. O texto abaixo resume a seção Ajuda (curto de propósito:
+// pedidos grandes demais estavam falhando na rede do celular).
+const DIFERENCIAIS = `- Carga certa a cada treino: dupla progressão automática (reps primeiro, depois carga), ajustada por RIR, dor e falha.
+- Metas de carga de 30 dias em 3 cenários (conservador, moderado, difícil) pelo nível da pessoa, divididas em degraus semanais; o treino puxa para o degrau da semana. Ou "seguir minha progressão".
+- Séries efetivas por grupo muscular pela ciência do volume, com mapa muscular e botão para completar a ficha.
+- Nível de força em top % comparado com adultos do mesmo sexo, idade e peso (normas Cooper/ACSM e tabelas da Strength Level), radar dos 6 padrões de movimento e calculadora de carga para o top desejado: subir de nível como num jogo.
+- Força máxima (1RM) estimada e teste de força.
+- Cardio com protocolos estudados (Zona 2, 4×4 norueguês, HIIT), cronômetro com voz e faixa de batimentos.
+- Composição corporal (massa magra e gorda) e gráfico do peso.
+- Treinador IA que conhece os treinos e lembra do que a pessoa conta.`;
+const PITCH = () => `[Para responder: faça um super resumo, para alguém leigo, só com os diferenciais do Overload abaixo, mostrando como cada um faz evoluir mais rápido.
 No máximo 7 itens curtos começando com "- " e o diferencial em **negrito**, e uma frase final de como usar o app para evoluir mais rápido, citando um dado real da pessoa se houver. Nada sobre instalar, contas ou detalhes técnicos.]
 
-MANUAL DO APP:
-${helpText(true)}`;
+DIFERENCIAIS DO APP:
+${DIFERENCIAIS}`;
 
 async function send(q, opts = {}) {
   q = String(q || '').trim();
   if (!q || busy) return;
   chat().push({ role: 'user', content: q, at: Date.now() });
   busy = true;
+  busySince = Date.now();
+  const my = ++reqId;
+  clearTimeout(slowTimer);
+  slowTimer = setTimeout(() => { if (busy && my === reqId && isOpen() && view === 'chat') render(); }, 12500);
   render();
   let answer = null;
   try {
@@ -174,14 +189,19 @@ async function send(q, opts = {}) {
     // instruções extras só neste pedido (a conversa guarda apenas a pergunta)
     if (opts.extra) msgs.at(-1).content += `\n\n${opts.extra}`;
     const answerText = await aiChat(msgs, fullContext(), memoryText());
+    if (my !== reqId) return; // cancelado: a resposta que chegou tarde é ignorada
     answer = answerText || t('Sem resposta. Tente de novo.');
     chat().push({ role: 'assistant', content: answer, at: Date.now() });
   } catch (e) {
+    if (my !== reqId) return;
+    // detalhe curto para diagnosticar (tempo e tipo de falha)
+    const secs = Math.round((Date.now() - busySince) / 1000);
     chat().pop(); // tira a pergunta que não foi respondida, para não quebrar a alternância
     chat().push({ role: 'user', content: q, error: true, at: Date.now() });
-    chat().push({ role: 'assistant', content: e.message || t('Erro da IA. Tente mais tarde.'), error: true, at: Date.now() });
+    chat().push({ role: 'assistant', content: `${e.message || t('Erro da IA. Tente mais tarde.')}\n(${secs} s${e.detail ? ` · ${e.detail}` : ''})`, error: true, at: Date.now() });
   }
   busy = false;
+  clearTimeout(slowTimer);
   keep();
   if (isOpen() && view === 'chat') render();
   if (answer) remember(q, answer);
@@ -305,3 +325,16 @@ window.addEventListener('scroll', () => {
 window.addEventListener('ai-fallback', ev => {
   toast(t('O modelo {a} não respondeu; usei o {b}. Se acontecer sempre, troque o modelo em Ajustes.', { a: ev.detail.from, b: ev.detail.to }), 6000);
 });
+
+// cancelar a espera: a conversa volta a aceitar perguntas; a resposta, se chegar depois, é ignorada
+actions.coachCancel = () => {
+  if (!busy) return;
+  reqId++;
+  busy = false;
+  clearTimeout(slowTimer);
+  const list = chat();
+  const last = list.at(-1);
+  if (last?.role === 'user') { list.pop(); list.push({ ...last, error: true }); list.push({ role: 'assistant', content: t('Cancelado. Toque em Tentar de novo quando quiser.'), error: true, at: Date.now() }); }
+  keep();
+  render();
+};

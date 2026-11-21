@@ -1382,6 +1382,8 @@ const ui = {
   "Voltar ao treino": "Volver al entreno",
   "Tem certeza que quer excluir este treino?": "¿Seguro que quieres eliminar este entreno?",
   "Sim, excluir treino": "Sí, eliminar entreno",
+  "Ainda pensando… alguns modelos levam até 1 minuto.": "Sigue pensando… algunos modelos tardan hasta 1 minuto.",
+  "Cancelado. Toque em Tentar de novo quando quiser.": "Cancelado. Toca Intentar de nuevo cuando quieras.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
