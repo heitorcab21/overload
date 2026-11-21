@@ -650,7 +650,7 @@ const ui = {
   "teste de força": "strength test",
   "Ainda sem registro": "No records yet",
   "treine ou faça um teste": "train it or take a test",
-  "Entram os exercícios compostos de cada padrão (barra, halteres, peso do corpo, máquinas e polias), convertidos para o movimento principal por fatores aproximados. Isoladores, como cadeiras e crucifixos, ficam de fora. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.": "Compound exercises for each pattern count (barbell, dumbbell, bodyweight, machines and cables), converted to the main lift with approximate factors. Isolation moves such as leg extensions and flyes are left out. Estimate based on strength standards for lifters; not an official ranking.",
+  "Cada exercício é comparado com a própria tabela da Strength Level (milhões de levantamentos registrados por quem treina): Top 50% = intermediário, Top 5% = elite. Isoladores, como cadeiras e crucifixos, ficam de fora. Estimativa, não é um ranking oficial.": "Each exercise is compared with its own Strength Level table (millions of lifts logged by people who train): Top 50% = intermediate, Top 5% = elite. Isolation moves such as leg extensions and flyes are left out. An estimate, not an official ranking.",
   "Veja o seu nível em {n} exercício": "See your level in {n} exercise",
   "Veja o seu nível em cada um dos {n} exercícios": "See your level in each of your {n} exercises",
   "Arnold split": "Arnold split",
@@ -1336,7 +1336,7 @@ const ui = {
   "Top %": "Top %",
   "Para {g}, {a} anos e {w} kg. Carga total, como você anota no treino; nos exercícios com peso do corpo, o peso extra.": "For {g}, {a} years old and {w} kg. Total load, as you log it; for bodyweight exercises, the extra weight.",
   "Exercícios que contam neste eixo": "Exercises that count on this axis",
-  "O radar usa o seu melhor exercício do eixo. Cargas estimadas por tabelas de força; máquinas e variantes usam fatores aproximados.": "The radar uses your best exercise on the axis. Loads estimated from strength tables; machines and variants use approximate factors.",
+  "O radar usa o seu melhor exercício do eixo. Cargas calculadas pela tabela da Strength Level de cada exercício.": "The radar uses your best exercise on the axis. Loads calculated from each exercise's Strength Level table.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -1453,7 +1453,7 @@ const help = [
       <li><b>Estimated body fat</b>: with waist and neck (and hips, for women), the app uses the US Navy formula (about 3 to 4 points of error). Without them, it uses BMI, age and sex (about 5 points) and subtracts up to 4 points if you are strong for your weight.</li>
       <li><b>Body weight</b>: the chart sits right below the values. One entry per day.</li>
       <li><b>Strength level</b>: a <b>radar</b> with the 6 movement patterns (horizontal and vertical push and pull, squat and hip hinge). The left side is the front of the body and the right side the back: the shape shows imbalances. Tap an axis to see the exercise and your percentile. Top 10% = stronger than 90% of lifters of the same sex, age and weight.</li>
-      <li>Tap the card to see each exercise, grouped by movement pattern, and <b>Check any exercise</b> to see your percentile instantly, without saving. Compound exercises for each pattern count, including machines, cables and push-ups, converted with approximate factors; isolation moves (leg extensions, flyes) are left out.</li>
+      <li>Tap the card to see each exercise, grouped by movement pattern, and <b>Check any exercise</b> to see your percentile instantly, without saving. Compound exercises for each pattern count, including machines, cables and push-ups, each compared with its own Strength Level table (millions of logged lifts); isolation moves (leg extensions, flyes) are left out.</li>
       <li><b>Where the 1RM comes from</b>: your best set in the last 90 days. For a more reliable number, use <b>Take a strength test</b> on the exercise screen.</li>
     </ul>
     <p class="tip">These are estimates. For a reliable body fat number, get a body assessment (bioimpedance, skinfolds or DEXA).</p>`],

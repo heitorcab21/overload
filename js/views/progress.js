@@ -434,7 +434,7 @@ function renderStrength() {
       ${pending.length ? `<h3 class="group-title">${t('Ainda sem registro')}</h3>
         <div class="card flat"><div class="list">${pending.map(ex => `<a class="item" href="#/exercicio/${encodeURIComponent(ex.id)}">
           <span class="grow t">${esc(exName(ex))}</span><span class="small muted">${t('treine ou faça um teste')}</span>${icon.next}</a>`).join('')}</div></div>` : ''}
-      <p class="small muted">${t('Entram os exercícios compostos de cada padrão (barra, halteres, peso do corpo, máquinas e polias), convertidos para o movimento principal por fatores aproximados. Isoladores, como cadeiras e crucifixos, ficam de fora. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.')}</p>`}
+      <p class="small muted">${t('Cada exercício é comparado com a própria tabela da Strength Level (milhões de levantamentos registrados por quem treina): Top 50% = intermediário, Top 5% = elite. Isoladores, como cadeiras e crucifixos, ficam de fora. Estimativa, não é um ranking oficial.')}</p>`}
     </div>`;
 }
 
@@ -645,7 +645,7 @@ function axisSheet() {
     </div>
     <h3>${t('Exercícios que contam neste eixo')}</h3>
     <div class="card flat"><div class="list" id="axisList">${axisRows()}</div></div>
-    <p class="small muted">${t('O radar usa o seu melhor exercício do eixo. Cargas estimadas por tabelas de força; máquinas e variantes usam fatores aproximados.')}</p>`);
+    <p class="small muted">${t('O radar usa o seu melhor exercício do eixo. Cargas calculadas pela tabela da Strength Level de cada exercício.')}</p>`);
 }
 actions.radarPick = (el, ev) => {
   ev?.preventDefault();

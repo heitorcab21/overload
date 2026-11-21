@@ -250,8 +250,13 @@ eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [10, { week: 10, 
   const p = { sex: 'm', age: 23, weight: 82, height: 181 };
   const pd = quickLevel('puxada-frente', 60, 10, p), rw = quickLevel('remada-baixa', 60, 10, p);
   eq([pd.pct > 35 && pd.pct < 75, rw.pct > 35 && rw.pct < 80], [true, true], 'puxada e remada na polia (60 kg × 10, 82 kg): perto do intermediário');
-  const fx = quickLevel('flexao', 0, 20, p), lp = quickLevel('leg-press', 200, 10, p), sq = quickLevel('agachamento-livre', 100, 8, p);
-  eq([fx.oneRM > 80 && fx.oneRM < 95, Math.abs(lp.pct - sq.pct) < 20], [true, true], 'flexão usa 64% do peso do corpo; leg press 200 × 10 ≈ agachamento 100 × 8');
+  // calibração pela Strength Level: o valor "intermediário" da tabela (80 kg, homem; 60 kg, mulher) = percentil 50
+  const m80 = { sex: 'm', age: 30, weight: 80, height: 180 }, f60 = { sex: 'f', age: 30, weight: 60, height: 165 };
+  const p50 = (id, w, r, who) => Math.round(quickLevel(id, w, r, who).pct);
+  eq([p50('supino-reto', 98, 1, m80), p50('agachamento-livre', 132, 1, m80), p50('levantamento-terra', 155, 1, m80), p50('puxada-frente', 85, 1, m80),
+    p50('supino-reto-halteres', 80, 1, m80), p50('barra-fixa', 0, 13, m80), p50('flexao', 0, 38, m80), p50('supino-reto', 47, 1, f60), p50('leg-press', 140, 1, f60)],
+    [50, 50, 50, 50, 50, 50, 50, 50, 50], 'valores intermediários da Strength Level dão o percentil 50 (barra, máquina, halteres e peso do corpo)');
+  eq(Math.round(quickLevel('supino-reto', 151, 1, m80).pct), 95, 'elite da tabela = percentil 95');
 }
 
 // ---- metas de carga: decisão por exercício ----
@@ -429,7 +434,7 @@ S().exercises['supino-reto'] = { id: 'supino-reto', lib: 'supino-reto', name: 'S
 S().exercises['peck-deck'] = { id: 'peck-deck', lib: 'peck-deck', name: 'x', group: 'Peito', sets: 3, repMin: 10, repMax: 15, step: 5 };
 S().sessions.push({ id: 'bench', date: nowIso, entries: [{ exId: 'supino-reto', sets: [{ w: 120, r: 1 }] }] });
 const lv = body.strengthLevel(S().exercises['supino-reto']);
-eq([lv.lift, lv.top >= 15 && lv.top <= 22], ['bench', true], 'supino 1,5x o peso: por volta do top 18%');
+eq([lv.lift, lv.top >= 20 && lv.top <= 27], ['bench', true], 'supino de 120 kg com 80 kg (Strength Level: avançado = 124 kg): por volta do top 23%');
 eq(body.strengthLevel(S().exercises['peck-deck']).reason, 'notComparable', 'aparelho não entra no ranking');
 S().sessions.push({ id: 'bench2', date: nowIso, entries: [{ exId: 'supino-reto', sets: [{ w: 100, r: 5, rir: 3 }] }] });
 eq(Math.round(body.strengthLevel(S().exercises['supino-reto']).oneRM), Math.round(e1rm(100, 8)), 'RIR entra na estimativa do 1RM');

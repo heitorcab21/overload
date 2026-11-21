@@ -13,95 +13,110 @@ export function profile() {
 }
 
 // ---------- Padrões de força ----------
-// 1RM ÷ peso corporal de quem treina musculação, nos percentis 5, 20, 50, 80 e 95
-// (iniciante, novato, intermediário, avançado, elite), para um peso de referência
-// (80 kg homens, 60 kg mulheres). Valores aproximados de tabelas de força usadas por treinadores.
-const STD = {
+// Fonte: Strength Level (strengthlevel.com/strength-standards), tabelas "by bodyweight", em kg, consultadas em
+// nov/2026. Os níveis são percentis de quem treina e registra os levantamentos lá: iniciante = mais forte que 5%,
+// novato 20%, intermediário 50%, avançado 80% e elite 95%. Valores do 1RM para 80 kg (homens) e 60 kg (mulheres);
+// halteres: UM halter (o app anota os dois somados, por isso o fator 2 em STRENGTH_LIFTS).
+// Exercícios medidos em repetições (barra fixa, paralelas, flexão) viram carga: peso do corpo × (1 + reps/30).
+// "<1" (não faz nenhuma) entra como 0,85 a 0,95 do peso do corpo, para manter a escala crescente.
+const REF_BW = { m: 80, f: 60 };
+const KG = {
   m: {
-    bench: [0.5, 0.75, 1.0, 1.5, 2.0],
-    squat: [0.75, 1.25, 1.5, 2.25, 2.75],
-    deadlift: [1.0, 1.5, 2.0, 2.5, 3.0],
-    ohp: [0.35, 0.55, 0.75, 1.0, 1.25],
-    row: [0.5, 0.7, 0.9, 1.2, 1.5],
-    curl: [0.2, 0.35, 0.5, 0.7, 0.85],
-    hipthrust: [0.75, 1.25, 1.75, 2.5, 3.25],
-    pullup: [1.0, 1.15, 1.35, 1.6, 1.85],
-    dip: [1.1, 1.3, 1.55, 1.9, 2.2],
+    'bench-press': [56, 75, 98, 124, 151], 'incline-bench-press': [50, 66, 87, 109, 134], 'decline-bench-press': [58, 79, 104, 133, 164],
+    'close-grip-bench-press': [55, 72, 93, 116, 140], 'smith-bench': [53, 72, 95, 120, 148], 'chest-press': [39, 61, 89, 123, 160],
+    'db-bench': [19, 28, 40, 53, 68], 'incline-db-bench': [22, 29, 39, 50, 62],
+    'shoulder-press': [33, 46, 62, 81, 101], 'machine-shoulder-press': [29, 50, 76, 109, 145], 'db-shoulder-press': [15, 22, 31, 42, 54], 'arnold-press': [10, 16, 24, 34, 44],
+    'bent-over-row': [48, 66, 88, 114, 141], 'seated-cable-row': [47, 65, 87, 112, 140], 'machine-row': [47, 72, 104, 142, 184], 't-bar-row': [38, 58, 82, 111, 143], 'db-row': [19, 30, 43, 59, 76],
+    'lat-pulldown': [47, 64, 85, 108, 133], 'reverse-pulldown': [52, 70, 92, 118, 145], 'close-pulldown': [54, 71, 92, 115, 139],
+    'squat': [75, 101, 132, 168, 206], 'leg-press': [109, 162, 230, 309, 395], 'horizontal-leg-press': [76, 119, 175, 241, 314], 'hack-squat': [63, 102, 152, 213, 280],
+    'smith-squat': [57, 84, 118, 158, 202], 'goblet-squat': [15, 26, 41, 59, 80], 'db-bulgarian': [13, 22, 33, 47, 63], 'db-lunge': [10, 18, 30, 45, 62],
+    'deadlift': [89, 119, 155, 196, 239], 'sumo-deadlift': [102, 135, 174, 218, 265], 'romanian-deadlift': [65, 92, 125, 163, 203], 'good-morning': [30, 53, 84, 122, 165], 'hip-thrust': [56, 96, 149, 213, 285],
+    'barbell-curl': [22, 33, 46, 63, 80], 'db-curl': [8, 14, 22, 32, 42], 'hammer-curl': [11, 16, 24, 33, 42], 'preacher-curl': [20, 31, 45, 61, 78],
   },
   f: {
-    bench: [0.3, 0.45, 0.6, 0.9, 1.2],
-    squat: [0.55, 0.9, 1.15, 1.7, 2.1],
-    deadlift: [0.75, 1.1, 1.5, 1.9, 2.3],
-    ohp: [0.22, 0.35, 0.5, 0.65, 0.8],
-    row: [0.35, 0.5, 0.65, 0.85, 1.05],
-    curl: [0.13, 0.22, 0.33, 0.45, 0.55],
-    hipthrust: [0.75, 1.25, 1.75, 2.5, 3.0],
-    pullup: [0.6, 0.85, 1.05, 1.25, 1.5],
-    dip: [0.8, 1.0, 1.2, 1.5, 1.8],
+    'bench-press': [19, 31, 47, 66, 88], 'incline-bench-press': [14, 25, 39, 56, 76], 'decline-bench-press': [19, 32, 50, 71, 95],
+    'close-grip-bench-press': [20, 31, 46, 63, 82], 'smith-bench': [16, 28, 43, 62, 83], 'chest-press': [11, 21, 36, 54, 75],
+    'db-bench': [7, 12, 19, 28, 38], 'incline-db-bench': [7, 12, 19, 26, 35],
+    'shoulder-press': [12, 20, 31, 43, 57], 'machine-shoulder-press': [8, 17, 30, 47, 66], 'db-shoulder-press': [6, 10, 15, 20, 27], 'arnold-press': [6, 8, 12, 16, 21],
+    'bent-over-row': [18, 29, 43, 59, 78], 'seated-cable-row': [21, 32, 45, 62, 79], 'machine-row': [21, 34, 51, 72, 96], 't-bar-row': [15, 26, 42, 62, 84], 'db-row': [9, 14, 21, 29, 38],
+    'lat-pulldown': [23, 33, 46, 60, 76], 'reverse-pulldown': [26, 37, 50, 66, 83], 'close-pulldown': [27, 37, 51, 66, 82],
+    'squat': [32, 49, 72, 99, 129], 'leg-press': [49, 87, 140, 204, 277], 'horizontal-leg-press': [39, 68, 107, 155, 209], 'hack-squat': [24, 50, 87, 135, 190],
+    'smith-squat': [22, 38, 61, 88, 119], 'goblet-squat': [10, 17, 26, 37, 49], 'db-bulgarian': [7, 12, 20, 30, 41], 'db-lunge': [6, 11, 18, 28, 39],
+    'deadlift': [40, 60, 86, 116, 149], 'sumo-deadlift': [47, 68, 93, 122, 154], 'romanian-deadlift': [31, 47, 67, 90, 116], 'good-morning': [16, 28, 45, 65, 89], 'hip-thrust': [35, 63, 100, 147, 199],
+    'barbell-curl': [8, 14, 23, 34, 47], 'db-curl': [4, 7, 12, 18, 24], 'hammer-curl': [5, 8, 12, 17, 22], 'preacher-curl': [8, 15, 23, 34, 46],
   },
 };
-const REF_BW = { m: 80, f: 60 };
+// repetições só com o peso do corpo ("<1" = -4,5 / -3 / -1,5, ver acima)
+const REPS = {
+  m: { 'pull-ups': [1, 7, 13, 21, 29], 'chin-ups': [1, 7, 13, 21, 29], 'dips': [3, 10, 20, 31, 42], 'push-ups': [6, 20, 38, 60, 84] },
+  f: { 'pull-ups': [-4.5, -1.5, 6, 12, 20], 'chin-ups': [-4.5, 1, 7, 11, 17], 'dips': [-3, 1, 9, 19, 29], 'push-ups': [-3, 7, 18, 32, 47] },
+};
+const PUSHUP_SHARE = 0.64; // a flexão levanta cerca de 64% do peso do corpo
+// razão 1RM ÷ peso de referência, nos percentis 5, 20, 50, 80 e 95
+const STD = Object.fromEntries(['m', 'f'].map(sex => [sex, {
+  ...Object.fromEntries(Object.entries(KG[sex]).map(([k, v]) => [k, v.map(x => x / REF_BW[sex])])),
+  ...Object.fromEntries(Object.entries(REPS[sex]).map(([k, v]) => [k, v.map(r => (k === 'push-ups' ? PUSHUP_SHARE : 1) * (1 + r / 30))])),
+}]));
 const Z = [-1.645, -0.842, 0, 0.842, 1.645]; // percentis 5, 20, 50, 80, 95
 
 /**
- * Exercícios comparáveis: [movimento base, fator]. O fator converte a carga do exercício
- * na carga equivalente do movimento base (ex.: dois halteres somados no supino ≈ 80% da barra).
- * bw: true = peso corporal + peso extra.
+ * Exercícios comparáveis: [padrão de movimento (eixo do radar), fator, peso do corpo, tabela].
+ * Cada um usa a SUA tabela da Strength Level. fator = quanto da carga anotada corresponde à carga da tabela
+ * (2 = o app anota os dois halteres e a tabela é de um). peso do corpo: true = corpo todo + extra; 0,64 = flexão.
  */
 export const STRENGTH_LIFTS = {
-  'supino-reto': ['bench', 1.0],
-  'supino-reto-halteres': ['bench', 0.8],
-  'supino-inclinado-halteres': ['bench', 0.7],
-  'remada-curvada': ['row', 1.0],
-  'remada-unilateral': ['row', 0.5],
-  'desenvolvimento-halteres': ['ohp', 0.8],
-  'rosca-direta': ['curl', 1.0],
-  'rosca-alternada': ['curl', 0.8],
-  'rosca-martelo': ['curl', 0.85],
-  'rosca-scott': ['curl', 0.85],
-  'agachamento-livre': ['squat', 1.0],
-  'levantamento-terra': ['deadlift', 1.0],
-  'stiff': ['deadlift', 0.7],
-  'elevacao-pelvica': ['hipthrust', 1.0],
-  'barra-fixa': ['pullup', 1.0, true],
-  'mergulho': ['dip', 1.0, true],
-  'supino-inclinado-barra': ['bench', 0.85],
-  'supino-declinado': ['bench', 1.0],
-  'supino-fechado': ['bench', 0.9],
-  'desenvolvimento-barra': ['ohp', 1.0],
-  'terra-sumo': ['deadlift', 1.0],
-  // Variantes de cada padrão de movimento, para o radar ficar completo. Fatores aproximados (estimativa):
-  // carga do exercício ÷ fator ≈ carga do movimento base. Isoladores (crucifixo, cadeiras) ficam de fora.
   // empurrar na horizontal
-  'supino-maquina': ['bench', 1.0],
-  'supino-smith': ['bench', 0.95],
-  'flexao': ['bench', 1.0, 0.64],      // a flexão levanta cerca de 64% do peso do corpo (+ peso extra)
+  'supino-reto': ['bench', 1, false, 'bench-press'],
+  'supino-inclinado-barra': ['bench', 1, false, 'incline-bench-press'],
+  'supino-declinado': ['bench', 1, false, 'decline-bench-press'],
+  'supino-fechado': ['bench', 1, false, 'close-grip-bench-press'],
+  'supino-smith': ['bench', 1, false, 'smith-bench'],
+  'supino-maquina': ['bench', 1, false, 'chest-press'],
+  'supino-reto-halteres': ['bench', 2, false, 'db-bench'],
+  'supino-inclinado-halteres': ['bench', 2, false, 'incline-db-bench'],
+  'flexao': ['bench', 1, PUSHUP_SHARE, 'push-ups'],
+  'mergulho': ['dip', 1, true, 'dips'],
   // empurrar na vertical
-  'desenvolvimento-maquina': ['ohp', 1.1],
-  'desenvolvimento-arnold': ['ohp', 0.75],
-  // puxar na vertical (puxada ≈ 70% da carga total da barra fixa: peso do corpo + extra)
-  'puxada-frente': ['pullup', 0.7],
-  'puxada-supinada': ['pullup', 0.7],
-  'puxada-triangulo': ['pullup', 0.7],
+  'desenvolvimento-barra': ['ohp', 1, false, 'shoulder-press'],
+  'desenvolvimento-maquina': ['ohp', 1, false, 'machine-shoulder-press'],
+  'desenvolvimento-halteres': ['ohp', 2, false, 'db-shoulder-press'],
+  'desenvolvimento-arnold': ['ohp', 2, false, 'arnold-press'],
+  // puxar na vertical
+  'barra-fixa': ['pullup', 1, true, 'pull-ups'],
+  'puxada-frente': ['pullup', 1, false, 'lat-pulldown'],
+  'puxada-supinada': ['pullup', 1, false, 'reverse-pulldown'],
+  'puxada-triangulo': ['pullup', 1, false, 'close-pulldown'],
   // puxar na horizontal
-  'remada-baixa': ['row', 1.0],
-  'remada-maquina': ['row', 1.0],
-  'remada-cavalinho': ['row', 1.0],
-  'remada-halteres': ['row', 0.8],
-  // agachar (leg press e hack: só as anilhas, sem o peso do aparelho)
-  'leg-press': ['squat', 2.3],
-  'leg-press-horizontal': ['squat', 1.5],
-  'hack': ['squat', 1.2],
-  'agachamento-smith': ['squat', 1.0],
-  'agachamento-bulgaro': ['squat', 0.4],
-  'afundo': ['squat', 0.45],
-  'afundo-caminhando': ['squat', 0.45],
-  'agachamento-goblet': ['squat', 0.35],
-  'agachamento-sumo': ['squat', 0.4],
-  'subida-banco': ['squat', 0.4],
+  'remada-curvada': ['row', 1, false, 'bent-over-row'],
+  'remada-baixa': ['row', 1, false, 'seated-cable-row'],
+  'remada-maquina': ['row', 1, false, 'machine-row'],
+  'remada-cavalinho': ['row', 1, false, 't-bar-row'],
+  'remada-unilateral': ['row', 1, false, 'db-row'],
+  'remada-halteres': ['row', 2, false, 'db-row'],
+  // agachar
+  'agachamento-livre': ['squat', 1, false, 'squat'],
+  'leg-press': ['squat', 1, false, 'leg-press'],
+  'leg-press-horizontal': ['squat', 1, false, 'horizontal-leg-press'],
+  'hack': ['squat', 1, false, 'hack-squat'],
+  'agachamento-smith': ['squat', 1, false, 'smith-squat'],
+  'agachamento-goblet': ['squat', 1, false, 'goblet-squat'],
+  'agachamento-sumo': ['squat', 1, false, 'goblet-squat'],     // com um halter, como o goblet
+  'agachamento-bulgaro': ['squat', 2, false, 'db-bulgarian'],
+  'afundo': ['squat', 2, false, 'db-lunge'],
+  'afundo-caminhando': ['squat', 2, false, 'db-lunge'],
+  'subida-banco': ['squat', 2, false, 'db-lunge'],             // sem tabela própria: usa a do afundo
   // dobradiça de quadril
-  'bom-dia': ['deadlift', 0.45],
-  'ponte-gluteo': ['hipthrust', 0.9],
+  'levantamento-terra': ['deadlift', 1, false, 'deadlift'],
+  'terra-sumo': ['deadlift', 1, false, 'sumo-deadlift'],
+  'stiff': ['deadlift', 1, false, 'romanian-deadlift'],
+  'bom-dia': ['deadlift', 1, false, 'good-morning'],
+  'elevacao-pelvica': ['hipthrust', 1, false, 'hip-thrust'],
+  'ponte-gluteo': ['hipthrust', 0.9, false, 'hip-thrust'],    // sem tabela própria: ~90% do hip thrust
+  // braços
+  'rosca-direta': ['curl', 1, false, 'barbell-curl'],
+  'rosca-alternada': ['curl', 2, false, 'db-curl'],
+  'rosca-martelo': ['curl', 2, false, 'hammer-curl'],
+  'rosca-scott': ['curl', 1, false, 'preacher-curl'],
 };
 
 /** Fração do peso do corpo que entra na carga (true = o corpo todo; 0,64 = flexão). */
@@ -167,18 +182,18 @@ export function strengthLevel(ex, p = profile()) {
   const map = ex?.lib && STRENGTH_LIFTS[ex.lib];
   if (!map) return { reason: 'notComparable' };
   if (!p) return { reason: 'noProfile' };
-  const [lift, factor, isBw] = map;
+  const [lift, factor, isBw, std] = map;
   const src = best1RM(ex, p.weight, isBw);
   if (!src) return { reason: 'noData' };
-  return { ...levelOf1RM(lift, factor, src.value, p), lift, oneRM: src.value, src, bw: !!isBw };
+  return { ...levelOf1RM(std, factor, src.value, p), lift, oneRM: src.value, src, bw: !!isBw };
 }
 
 /** Percentil a partir de um 1RM (carga total, já com o peso do corpo nos exercícios de peso corporal). */
-function levelOf1RM(lift, factor, one, p) {
+function levelOf1RM(std, factor, one, p) {
   const ref = REF_BW[p.sex];
   // normaliza pelo peso corporal (escala alométrica: quem é mais pesado levanta menos por kg) e pela idade
   const ratio = (one / factor / ref) * (ref / p.weight) ** 0.67 / ageFactor(p.age);
-  const pct = percentileOf(ratio, STD[p.sex][lift]);
+  const pct = percentileOf(ratio, STD[p.sex][std]);
   return { pct, top: Math.max(1, Math.round(100 - pct)) };
 }
 
@@ -189,11 +204,11 @@ function levelOf1RM(lift, factor, one, p) {
 export function quickLevel(libId, w, r, p = profile()) {
   const map = STRENGTH_LIFTS[libId];
   if (!map || !p || !(r >= 1)) return null;
-  const [lift, factor, isBw] = map;
+  const [, factor, isBw, std] = map;
   const load = isBw ? p.weight * bwShare(isBw) + (w || 0) : w;
   if (!(load > 0)) return null;
   const one = oneRepMax(load, r);
-  return { ...levelOf1RM(lift, factor, one, p), oneRM: one };
+  return { ...levelOf1RM(std, factor, one, p), oneRM: one };
 }
 
 /** Média dos percentis de força de todos os exercícios comparáveis com registros. */
