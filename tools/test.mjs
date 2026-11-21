@@ -250,6 +250,8 @@ eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [10, { week: 10, 
   const p = { sex: 'm', age: 23, weight: 82, height: 181 };
   const pd = quickLevel('puxada-frente', 60, 10, p), rw = quickLevel('remada-baixa', 60, 10, p);
   eq([pd.pct > 35 && pd.pct < 75, rw.pct > 35 && rw.pct < 80], [true, true], 'puxada e remada na polia (60 kg × 10, 82 kg): perto do intermediário');
+  const fx = quickLevel('flexao', 0, 20, p), lp = quickLevel('leg-press', 200, 10, p), sq = quickLevel('agachamento-livre', 100, 8, p);
+  eq([fx.oneRM > 80 && fx.oneRM < 95, Math.abs(lp.pct - sq.pct) < 20], [true, true], 'flexão usa 64% do peso do corpo; leg press 200 × 10 ≈ agachamento 100 × 8');
 }
 
 // ---- metas de carga: decisão por exercício ----

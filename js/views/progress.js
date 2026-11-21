@@ -427,7 +427,7 @@ function renderStrength() {
       ${pending.length ? `<h3 class="group-title">${t('Ainda sem registro')}</h3>
         <div class="card flat"><div class="list">${pending.map(ex => `<a class="item" href="#/exercicio/${encodeURIComponent(ex.id)}">
           <span class="grow t">${esc(exName(ex))}</span><span class="small muted">${t('treine ou faça um teste')}</span>${icon.next}</a>`).join('')}</div></div>` : ''}
-      <p class="small muted">${t('Entram exercícios com barra, halteres ou peso corporal e as puxadas e remadas na polia; os outros aparelhos variam demais entre academias. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.')}</p>`}
+      <p class="small muted">${t('Entram os exercícios compostos de cada padrão (barra, halteres, peso do corpo, máquinas e polias), convertidos para o movimento principal por fatores aproximados. Isoladores, como cadeiras e crucifixos, ficam de fora. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.')}</p>`}
     </div>`;
 }
 
@@ -598,8 +598,11 @@ actions.radarPick = (el, ev) => {
   const box = card.querySelector('.r-info');
   box.classList.remove('muted');
   if (!a.best) {
-    const names = LIB.filter(l => STRENGTH_LIFTS[l.id] && a.lifts.includes(STRENGTH_LIFTS[l.id][0])).slice(0, 3).map(l => libName(l.id));
-    box.innerHTML = `<b>${esc(a.name)}</b><br>${esc(t('Ainda sem registro. Para medir: {ex}.', { ex: names.join(', ') }))}`;
+    // primeiro os exercícios das fichas da pessoa que valem para este eixo; senão, os da biblioteca
+    const fits = id => STRENGTH_LIFTS[id] && a.lifts.includes(STRENGTH_LIFTS[id][0]);
+    const mine = Object.values(state.exercises).filter(ex => ex.lib && fits(ex.lib)).map(ex => exName(ex));
+    const names = (mine.length ? mine : LIB.filter(l => fits(l.id)).map(l => libName(l.id))).slice(0, 3);
+    box.innerHTML = `<b>${esc(a.name)}</b><br>${esc(t('Ainda sem registro. Treine um destes (ou faça a consulta rápida no Nível de força): {ex}.', { ex: names.join(', ') }))}`;
     return;
   }
   const { ex, l } = a.best;

@@ -70,10 +70,42 @@ export const STRENGTH_LIFTS = {
   'supino-fechado': ['bench', 0.9],
   'desenvolvimento-barra': ['ohp', 1.0],
   'terra-sumo': ['deadlift', 1.0],
-  // polia com tabelas de força bem estabelecidas: a pilha de placas varia pouco entre academias
-  'puxada-frente': ['pullup', 0.7],   // puxada ≈ 70% da carga total da barra fixa (peso do corpo + extra)
-  'remada-baixa': ['row', 1.0],       // remada sentada na polia ≈ remada curvada
+  // Variantes de cada padrão de movimento, para o radar ficar completo. Fatores aproximados (estimativa):
+  // carga do exercício ÷ fator ≈ carga do movimento base. Isoladores (crucifixo, cadeiras) ficam de fora.
+  // empurrar na horizontal
+  'supino-maquina': ['bench', 1.0],
+  'supino-smith': ['bench', 0.95],
+  'flexao': ['bench', 1.0, 0.64],      // a flexão levanta cerca de 64% do peso do corpo (+ peso extra)
+  // empurrar na vertical
+  'desenvolvimento-maquina': ['ohp', 1.1],
+  'desenvolvimento-arnold': ['ohp', 0.75],
+  // puxar na vertical (puxada ≈ 70% da carga total da barra fixa: peso do corpo + extra)
+  'puxada-frente': ['pullup', 0.7],
+  'puxada-supinada': ['pullup', 0.7],
+  'puxada-triangulo': ['pullup', 0.7],
+  // puxar na horizontal
+  'remada-baixa': ['row', 1.0],
+  'remada-maquina': ['row', 1.0],
+  'remada-cavalinho': ['row', 1.0],
+  'remada-halteres': ['row', 0.8],
+  // agachar (leg press e hack: só as anilhas, sem o peso do aparelho)
+  'leg-press': ['squat', 2.3],
+  'leg-press-horizontal': ['squat', 1.5],
+  'hack': ['squat', 1.2],
+  'agachamento-smith': ['squat', 1.0],
+  'agachamento-bulgaro': ['squat', 0.4],
+  'afundo': ['squat', 0.45],
+  'afundo-caminhando': ['squat', 0.45],
+  'agachamento-goblet': ['squat', 0.35],
+  'agachamento-sumo': ['squat', 0.4],
+  'subida-banco': ['squat', 0.4],
+  // dobradiça de quadril
+  'bom-dia': ['deadlift', 0.45],
+  'ponte-gluteo': ['hipthrust', 0.9],
 };
+
+/** Fração do peso do corpo que entra na carga (true = o corpo todo; 0,64 = flexão). */
+export const bwShare = isBw => (isBw === true ? 1 : Number(isBw) || 0);
 
 /** Força cai depois dos 40 e ainda não chegou ao pico na adolescência. */
 export function ageFactor(age) {
@@ -109,7 +141,7 @@ export function best1RM(ex, bw, isBw) {
   let best = null;
   const consider = (s, date, test) => {
     if (!s.r) return;
-    const w = isBw ? bw + (s.w || 0) : s.w;
+    const w = isBw ? bw * bwShare(isBw) + (s.w || 0) : s.w;
     if (!(w > 0)) return;
     // com RIR informado, as reps que sobraram contam para estimar o máximo (até 4)
     const rir = Math.min(4, s.rir || 0);
@@ -158,7 +190,7 @@ export function quickLevel(libId, w, r, p = profile()) {
   const map = STRENGTH_LIFTS[libId];
   if (!map || !p || !(r >= 1)) return null;
   const [lift, factor, isBw] = map;
-  const load = isBw ? p.weight + (w || 0) : w;
+  const load = isBw ? p.weight * bwShare(isBw) + (w || 0) : w;
   if (!(load > 0)) return null;
   const one = oneRepMax(load, r);
   return { ...levelOf1RM(lift, factor, one, p), oneRM: one };
