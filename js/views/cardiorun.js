@@ -5,8 +5,11 @@ import { route, go, rerender, current } from '../router.js';
 import { t, tn } from '../i18n.js';
 import { lineChart } from '../charts.js';
 import { CARDIO_TYPES, INTENSITIES } from '../cardio.js';
-import { CARDIO_TEMPLATES, segmentsOf, planSeconds, planKcal, planIntensity, routineHistory, nextStep, blocksSummary, fmtSec, clock } from '../cardioplan.js';
+import { CARDIO_TEMPLATES, hrMax, HR_ZONE, segmentsOf, planSeconds, planKcal, planIntensity, routineHistory, nextStep, blocksSummary, fmtSec, clock } from '../cardioplan.js';
 import { toSpeed, fromSpeed, speedUnit, toDist, fromDist, distUnit, ul } from '../units.js';
+import { tone, restAlert } from './workout.js';
+import { profile } from '../body.js';
+import { locale } from '../i18n.js';
 
 const typeName = k => t((CARDIO_TYPES[k] || CARDIO_TYPES.outro).name);
 const intName = i => ({ leve: t('Leve'), moderado: t('Moderado'), forte: t('Forte') })[i] || t('Moderado');
@@ -26,6 +29,11 @@ export function stepText(st) {
   }[st.key];
 }
 
+/** Faixa com todas as etapas, proporcional ao tempo de cada uma. idx = etapa atual (-1 no cartão). */
+export function timeline(segs, idx = -1) {
+  return `<div class="ctl" aria-hidden="true">${segs.map((s, i) => `<i class="ctl-${s.phase} int-${s.int}${i === idx ? ' now' : i < idx ? ' done' : ''}" style="flex-grow:${s.sec}"></i>`).join('')}</div>`;
+}
+
 // ---------- Cartão na aba Cardio ----------
 
 export function routinesCard() {
@@ -41,6 +49,7 @@ export function routinesCard() {
       return `<div class="croutine">
         <div class="row between"><span class="grow"><b>${esc(r.name)}</b><br><span class="small muted">${esc(typeName(r.type))} · ${esc(blocksSummary(r.blocks))} · ${fmtSec(planSeconds(r.blocks))}</span></span>
           <a class="icon-btn" href="#/cardiorot/${r.id}" aria-label="${t('Editar rotina')}">${icon.edit}</a></div>
+        ${timeline(segmentsOf(r.blocks))}
         ${last ? `<p class="small muted">${t('Última: {d} · esforço {n}/10', { d: fmtDate(last.date, false), n: last.rpe ?? '—' })}</p>` : ''}
         ${st ? `<p class="small step-${st.kind}">${esc(stepText(st))}${st.apply ? ` <button class="btn sm" data-act="cApply" data-id="${r.id}">${t('Aplicar')}</button>` : ''}</p>` : ''}
         <button class="btn primary block" data-act="cStart" data-id="${r.id}"${run ? ' disabled' : ''}>${icon.play}${t('Começar')}</button>
@@ -55,8 +64,12 @@ export function routinesCard() {
 
 actions.cTemplates = () => {
   sheet(`<h2>${t('Modelos prontos')}</h2>
-    <div class="card flat"><div class="list">${CARDIO_TEMPLATES.map(tp => `<button class="item" data-act="cAddTpl" data-id="${tp.id}">
-      <span class="grow"><span class="t">${esc(t(tp.name))}</span><br><span class="d">${esc(typeName(tp.type))} · ${esc(blocksSummary(tp.blocks))} · ${fmtSec(planSeconds(tp.blocks))}</span></span>${icon.plus}</button>`).join('')}</div></div>`);
+    <p class="small muted">${t('Protocolos estudados. Toque para adicionar e ajuste depois como quiser.')}</p>
+    <div class="ctpl-list">${CARDIO_TEMPLATES.map(tp => `<button class="ctpl" data-act="cAddTpl" data-id="${tp.id}">
+      <span class="row between"><b>${esc(t(tp.name))}</b>${icon.plus}</span>
+      <span class="small muted">${esc(typeName(tp.type))} · ${esc(blocksSummary(tp.blocks))} · ${fmtSec(planSeconds(tp.blocks))}</span>
+      ${timeline(segmentsOf(tp.blocks))}
+      ${tp.about ? `<span class="small">${esc(t(tp.about))}</span>` : ''}</button>`).join('')}</div>`);
 };
 actions.cAddTpl = el => {
   const tp = CARDIO_TEMPLATES.find(x => x.id === el.dataset.id);
@@ -206,12 +219,28 @@ function beep(freq = 880, ms = 120, vol = 0.25) {
 }
 const buzz = p => { try { navigator.vibrate?.(p); } catch { /* sem vibração */ } };
 
+// ---------- Voz: anuncia cada etapa (dá para desligar no cronômetro) ----------
+const voiceOn = () => state.settings.cardioVoice !== false;
+function say(text) {
+  if (!voiceOn() || !text) return;
+  try {
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = locale(); u.rate = 1.05;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  } catch { /* sem voz */ }
+}
+const PREP = 3; // segundos de "prepare-se" antes da primeira etapa
+
 actions.cStart = async el => {
   const r = routines().find(x => x.id === el.dataset.id);
   if (!r) return;
   beep(660, 60, 0.01); // libera o som do navegador neste toque
+  try { speechSynthesis.speak(new SpeechSynthesisUtterance('')); } catch { /* sem voz */ } // e a voz
   const segs = segmentsOf(r.blocks);
-  state.cardioRun = { rid: r.id, name: r.name, type: r.type, blocks: copy(r.blocks), segs, idx: 0, endAt: Date.now() + segs[0].sec * 1000, doneSec: 0, startedAt: Date.now(), paused: false };
+  const now = Date.now();
+  state.cardioRun = { rid: r.id, name: r.name, type: r.type, blocks: copy(r.blocks), segs, idx: 0, prepUntil: now + PREP * 1000, endAt: now + (PREP + segs[0].sec) * 1000, doneSec: 0, startedAt: now, paused: false };
+  say(t('Prepare-se. Começa com {x}.', { x: phaseName(segs[0]) }));
   save({ touch: false });
   buzz(200);
   go('#/cardiorun');
@@ -219,29 +248,52 @@ actions.cStart = async el => {
 
 const phaseName = s => (s.phase === 'work' ? t('Forte') : s.phase === 'rest' ? t('Descanso') : s.label ? t(s.label) : `${t('Contínuo')} · ${intName(s.int)}`);
 const targets = s => [s.speed && `${fmt(toSpeed(s.speed))} ${speedUnit()}`, s.incline != null && `${t('inclinação')} ${fmt(s.incline)}%`, s.level && `${t('nível')} ${s.level}`].filter(Boolean).join(' · ');
+// guia de intensidade: batimentos (se houver idade no perfil) e o teste da fala
+const TALK = () => ({ leve: t('dá para conversar'), moderado: t('frases curtas'), forte: t('poucas palavras') });
+function hrGuide(s) {
+  const int = s.phase === 'rest' ? 'leve' : s.int || 'moderado';
+  const p = profile();
+  const z = HR_ZONE[int];
+  const hr = p ? `${Math.round(hrMax(p.age) * z[0])}–${Math.round(hrMax(p.age) * z[1])} bpm · ` : '';
+  return `${hr}${TALK()[int]}`;
+}
+const R_RING = 100, C_RING = 2 * Math.PI * R_RING;
+// o que a voz fala ao entrar numa etapa
+function sayPhase(run) {
+  const s = run.segs[run.idx];
+  const lastRound = s.phase === 'work' && s.rounds > 1 && s.round === s.rounds;
+  const parts = [phaseName(s), lastRound ? t('Última rodada!') : s.phase === 'work' && s.rounds ? t('Rodada {i} de {n}', { i: s.round, n: s.rounds }) : '', targets(s)];
+  say(parts.filter(Boolean).join('. '));
+}
 
 function renderRun() {
   const run = state.cardioRun;
   if (!run) { go('#/cardio'); return; }
   const s = run.segs[run.idx];
   const next = run.segs[run.idx + 1];
+  const prep = run.prepUntil && Date.now() < run.prepUntil;
   $('#view').innerHTML = `
     <div class="w-top">
       <button class="icon-btn" data-act="cHome" aria-label="${t('Voltar')}">${icon.back}</button>
       <span class="title">${esc(run.name)}</span>
-      <span></span>
+      <button class="icon-btn" data-act="cVoice" aria-pressed="${voiceOn()}" aria-label="${voiceOn() ? t('Desligar a voz') : t('Ligar a voz')}">${voiceOn() ? SPK_ON : SPK_OFF}</button>
     </div>
-    <div class="crun phase-${s.phase}" id="crun">
-      <p class="crun-phase" id="cPhase">${esc(phaseName(s))}</p>
-      ${s.rounds ? `<p class="crun-round" id="cRound">${t('Rodada {i} de {n}', { i: s.round, n: s.rounds })}</p>` : '<p class="crun-round" id="cRound"></p>'}
-      <p class="crun-clock num" id="cClock">${clock(s.sec)}</p>
-      <p class="crun-target" id="cTarget">${esc(targets(s))}</p>
-      <div id="cBar">${meter(0)}</div>
+    <div class="crun phase-${prep ? 'prep' : s.phase}" id="crun">
+      <p class="crun-phase" id="cPhase">${prep ? t('Prepare-se') : esc(phaseName(s))}</p>
+      ${s.rounds && !prep ? `<p class="crun-round" id="cRound">${s.round === s.rounds && s.phase === 'work' && s.rounds > 1 ? t('Última rodada!') : t('Rodada {i} de {n}', { i: s.round, n: s.rounds })}</p>` : '<p class="crun-round" id="cRound"></p>'}
+      <div class="crun-ring">
+        <svg viewBox="0 0 220 220" aria-hidden="true"><circle cx="110" cy="110" r="${R_RING}" class="ring-bg"/><circle cx="110" cy="110" r="${R_RING}" class="ring-fg" id="cRing" stroke-dasharray="${C_RING.toFixed(1)}" stroke-dashoffset="0" transform="rotate(-90 110 110)"/></svg>
+        <p class="crun-clock num" id="cClock">${clock(prep ? PREP : s.sec)}</p>
+      </div>
+      <p class="crun-target" id="cTarget">${prep ? `${t('Começa com')}: ${esc(phaseName(s))}` : esc(targets(s))}</p>
+      <p class="crun-hr small">${prep ? '' : esc(hrGuide(s))}</p>
+      ${timeline(run.segs, prep ? -1 : run.idx)}
       <p class="small muted" id="cNext">${next ? `${t('Próximo')}: ${esc(phaseName(next))} · ${clock(next.sec)}` : t('Última etapa')}</p>
       <p class="small muted" id="cLeft"></p>
     </div>
     <div class="crun-btns">
       <button class="btn big" data-act="cPause" id="cPauseBtn">${run.paused ? `${icon.play}${t('Continuar')}` : t('Pausar')}</button>
+      <button class="btn" data-act="cPlus">${t('+30 s')}</button>
       <button class="btn" data-act="cSkip">${t('Pular etapa')}</button>
       <button class="btn ghost danger" data-act="cStopAsk">${t('Encerrar')}</button>
     </div>`;
@@ -271,44 +323,83 @@ function tick() {
     left = (run.endAt - now) / 1000;
   }
   if (changed) {
-    beep(1320, 350, 0.35);
+    restAlert();
     buzz([200, 100, 200]);
     lastBeep = -1;
     save({ touch: false });
     renderRun();
+    sayPhase(run);
     return;
   }
-  // bipe curto nos 3 últimos segundos
-  const whole = Math.ceil(left);
-  if (!run.paused && whole <= 3 && whole >= 1 && whole !== lastBeep) { lastBeep = whole; beep(880, 110); }
   const s = run.segs[run.idx];
+  // fim do "prepare-se": entra na primeira etapa
+  const prep = run.prepUntil && !run.paused && now < run.prepUntil;
+  if (run.prepUntil && !run.paused && now >= run.prepUntil) {
+    delete run.prepUntil;
+    restAlert(); buzz(200); lastBeep = -1;
+    save({ touch: false }); renderRun(); sayPhase(run);
+    return;
+  }
+  const shown = prep ? (run.prepUntil - now) / 1000 : left;
+  // bipe curto nos 3 últimos segundos (da etapa e do "prepare-se")
+  const whole = Math.ceil(shown);
+  if (!run.paused && whole <= 3 && whole >= 1 && whole !== lastBeep) { lastBeep = whole; tone(880, 0.11); }
   const total = run.segs.reduce((n, x) => n + x.sec, 0);
-  const done = run.doneSec + (s.sec - Math.max(0, left));
-  const c = $('#cClock'); if (c) c.textContent = clock(left);
-  const bar = $('#cBar .meter i'); if (bar) bar.style.width = `${Math.min(100, (done / total) * 100).toFixed(1)}%`;
+  const done = prep ? 0 : run.doneSec + (s.sec - Math.max(0, left));
+  // metade da rotina, uma vez
+  if (!run.half && !prep && done >= total / 2 && total >= 600) { run.half = true; say(t('Metade da rotina. Continue assim!')); }
+  const c = $('#cClock'); if (c) c.textContent = clock(shown);
+  const ring = $('#cRing');
+  if (ring) ring.setAttribute('stroke-dashoffset', (C_RING * (1 - Math.max(0, shown) / (prep ? PREP : s.sec))).toFixed(1));
   const l = $('#cLeft'); if (l) l.textContent = t('Faltam {x} no total', { x: clock(total - done) });
 }
 
 actions.cPause = () => {
   const run = state.cardioRun;
   if (!run) return;
+  if (run.prepUntil) { delete run.prepUntil; run.endAt = Date.now() + run.segs[0].sec * 1000; }
   if (run.paused) { run.endAt = Date.now() + run.left * 1000; run.paused = false; delete run.left; }
   else { run.left = Math.max(0, (run.endAt - Date.now()) / 1000); run.paused = true; }
   save({ touch: false });
   renderRun();
 };
+actions.cPlus = () => {
+  const run = state.cardioRun;
+  if (!run || run.prepUntil) return;
+  run.segs[run.idx].sec += 30;
+  if (run.paused) run.left += 30; else run.endAt += 30000;
+  save({ touch: false });
+  toast(t('+30 s nesta etapa.'), 1500);
+  tick();
+};
+actions.cVoice = () => {
+  state.settings.cardioVoice = !voiceOn();
+  save({ touch: false });
+  if (!voiceOn()) { try { speechSynthesis.cancel(); } catch { /* ok */ } }
+  renderRun();
+};
+const SPK_ON = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 010 7M18.5 6a8.5 8.5 0 010 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+const SPK_OFF = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M17 9l5 6M22 9l-5 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 actions.cSkip = () => {
   const run = state.cardioRun;
   if (!run) return;
+  if (run.prepUntil) {
+    delete run.prepUntil;
+    run.endAt = Date.now() + run.segs[0].sec * 1000;
+    run.paused = false; delete run.left;
+    restAlert(); buzz(150); save({ touch: false }); renderRun(); sayPhase(run);
+    return;
+  }
   const left = run.paused ? run.left : Math.max(0, (run.endAt - Date.now()) / 1000);
   run.doneSec += run.segs[run.idx].sec - left;
   run.idx++;
   if (run.idx >= run.segs.length) { finishRun(true); return; }
   run.endAt = Date.now() + run.segs[run.idx].sec * 1000;
   run.paused = false; delete run.left;
-  beep(1320, 250, 0.3); buzz(150);
+  restAlert(); buzz(150);
   save({ touch: false });
   renderRun();
+  sayPhase(run);
 };
 actions.cHome = () => go('#/cardio');
 actions.cStopAsk = () => {
@@ -334,7 +425,7 @@ function finishRun(complete) {
     run.ended = true;
     save({ touch: false });
   }
-  if (complete) { beep(1568, 500, 0.4); buzz([300, 120, 300, 120, 300]); }
+  if (complete) { restAlert(); buzz([300, 120, 300, 120, 300]); say(t('Rotina concluída. Muito bem!')); }
   releaseWake();
   go('#/cardio');
   const rpeLabel = n => (n <= 4 ? t('fácil') : n <= 6 ? t('moderado') : n <= 8 ? t('difícil') : t('máximo'));

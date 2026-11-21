@@ -513,9 +513,12 @@ eq(parseUtterance('40 quilos 12 repetições'), [set(40, 12)], 'série normal co
 {
   const cp = await import('../js/cardioplan.js');
   const st = await import('../js/store.js');
-  const hiit = cp.CARDIO_TEMPLATES[0];
+  const hiit = cp.CARDIO_TEMPLATES.find(x => x.id === 'hiit-30-30');
   eq(cp.planSeconds(hiit.blocks), 300 + 8 * 60 + 300, 'duração do HIIT 30/30');
   eq(cp.segmentsOf(hiit.blocks).length, 1 + 16 + 1, 'etapas: aquecer, 8 fortes, 8 descansos, desaquecer');
+  eq(cp.hrMax(30), 187, 'FC máxima de Tanaka aos 30 anos');
+  eq(cp.CARDIO_TEMPLATES.every(x => x.about && cp.planSeconds(x.blocks) > 0), true, 'todo modelo tem explicação e duração');
+  eq(cp.planSeconds(cp.CARDIO_TEMPLATES.find(x => x.id === 'noruegues-4x4').blocks), 600 + 4 * 420 + 300, 'duração do 4×4');
   const r = { id: 'cr1', name: 'x', type: 'bike', blocks: JSON.parse(JSON.stringify(hiit.blocks)) };
   st.state.cardio = [{ id: 'k1', date: new Date().toISOString(), type: 'bike', min: 18, routineId: 'cr1', rpe: 5 }];
   const s1 = cp.nextStep(r);

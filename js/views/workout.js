@@ -252,8 +252,28 @@ const BEEPS = [[0, 660, 0.16], [0.5, 784, 0.16], [1.0, 1320, 0.55]]; // [início
  */
 function audioSession(type) { try { if (navigator.audioSession) navigator.audioSession.type = type; } catch { /* sem suporte */ } }
 
+/** Bipe curto pelo mesmo áudio destravado do descanso (contagem 3-2-1 do cardio). */
+export function tone(freq = 880, dur = 0.12, vol = 0.2) {
+  audioSession('transient');
+  setTimeout(() => audioSession('auto'), 1200);
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    audioCtx ??= new Ctx();
+    if (audioCtx.state !== 'running') audioCtx.resume?.();
+    if (audioCtx.state !== 'running') return;
+    const now = audioCtx.currentTime + 0.02;
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = 'square'; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.exponentialRampToValueAtTime(vol, now + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+    o.connect(g).connect(audioCtx.destination);
+    o.start(now); o.stop(now + dur + 0.02);
+  } catch { /* sem som */ }
+}
+
 /** Fim do descanso: bipe, bipe, biiipe, como numa largada, mais vibração. */
-function restAlert() {
+export function restAlert() {
   try { navigator.vibrate?.([120, 230, 120, 230, 450]); } catch { /* sem vibração */ }
   audioSession('transient');
   setTimeout(() => audioSession('auto'), 2500);

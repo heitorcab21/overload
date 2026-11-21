@@ -10,23 +10,40 @@ import { CARDIO_TYPES, INTENSITIES } from './cardio.js';
  */
 
 export const CARDIO_TEMPLATES = [
-  { id: 'hiit-30-30', name: 'HIIT 30/30', type: 'bike', blocks: [
+  { id: 'z2', name: 'Zona 2 contínuo', type: 'bike', about: 'Ritmo em que ainda dá para conversar (60–70% da FC máxima). Constrói a base aeróbica e faz bem ao coração; é a maior parte do treino de quem faz cardio a sério.', blocks: [
+    { kind: 'cont', sec: 2400, int: 'moderado' }] },
+  { id: 'caminhar-correr', name: 'Caminhar e correr', type: 'esteira', about: 'Para começar a correr: alterna 1 min correndo com 1:30 caminhando. Quando ficar fácil, o app sobe as rodadas até você correr direto.', blocks: [
+    { kind: 'cont', sec: 300, int: 'leve', speed: 5, label: 'Aquecer' },
+    { kind: 'int', rounds: 8, work: 60, rest: 90, int: 'moderado', speed: 8, restSpeed: 5 },
+    { kind: 'cont', sec: 300, int: 'leve', speed: 5, label: 'Desaquecer' }] },
+  { id: 'esteira-12-3-30', name: 'Esteira inclinada 12-3-30', type: 'esteira', about: '30 min caminhando a 4,8 km/h com 12% de inclinação. Intensidade moderada e pouco impacto nas articulações.', blocks: [
+    { kind: 'cont', sec: 1800, int: 'moderado', speed: 4.8, incline: 12 }] },
+  { id: 'noruegues-4x4', name: '4×4 norueguês', type: 'esteira', about: '4 tiros de 4 min a 85–95% da FC máxima com 3 min leves (Helgerud e cols., 2007). Um dos protocolos que mais sobem o VO₂máx.', blocks: [
+    { kind: 'cont', sec: 600, int: 'leve', label: 'Aquecer' },
+    { kind: 'int', rounds: 4, work: 240, rest: 180, int: 'forte' },
+    { kind: 'cont', sec: 300, int: 'leve', label: 'Desaquecer' }] },
+  { id: 'hiit-30-30', name: 'HIIT 30/30', type: 'bike', about: 'Intervalado clássico: 30 s forte e 30 s leve. Melhora o condicionamento em pouco tempo.', blocks: [
     { kind: 'cont', sec: 300, int: 'leve', label: 'Aquecer' },
     { kind: 'int', rounds: 8, work: 30, rest: 30, int: 'forte' },
     { kind: 'cont', sec: 300, int: 'leve', label: 'Desaquecer' }] },
-  { id: 'tabata', name: 'Tabata', type: 'hiit', blocks: [
-    { kind: 'cont', sec: 300, int: 'leve', label: 'Aquecer' },
-    { kind: 'int', rounds: 8, work: 20, rest: 10, int: 'forte' },
-    { kind: 'cont', sec: 180, int: 'leve', label: 'Desaquecer' }] },
-  { id: 'esteira-12-3-30', name: 'Esteira inclinada 12-3-30', type: 'esteira', blocks: [
-    { kind: 'cont', sec: 1800, int: 'moderado', speed: 4.8, incline: 12 }] },
-  { id: 'tiros', name: 'Tiros de corrida', type: 'esteira', blocks: [
+  { id: 'tiros', name: 'Tiros de corrida', type: 'esteira', about: 'Tiros de 1 min forte com 1:30 de recuperação: trabalha velocidade e VO₂máx.', blocks: [
     { kind: 'cont', sec: 300, int: 'leve', speed: 7, label: 'Aquecer' },
     { kind: 'int', rounds: 6, work: 60, rest: 90, int: 'forte', speed: 12, restSpeed: 6 },
     { kind: 'cont', sec: 300, int: 'leve', speed: 6, label: 'Desaquecer' }] },
-  { id: 'z2', name: 'Zona 2 contínuo', type: 'bike', blocks: [
-    { kind: 'cont', sec: 2400, int: 'moderado' }] },
+  { id: 'sprints-30', name: 'Sprints de 30 s', type: 'bike', about: 'Sprints curtos no máximo com 2 min de pedal leve (Gibala e cols.). Pouco tempo total, ganho grande de condicionamento.', blocks: [
+    { kind: 'cont', sec: 300, int: 'leve', label: 'Aquecer' },
+    { kind: 'int', rounds: 6, work: 30, rest: 120, int: 'forte' },
+    { kind: 'cont', sec: 180, int: 'leve', label: 'Desaquecer' }] },
+  { id: 'tabata', name: 'Tabata', type: 'hiit', about: '20 s no máximo e 10 s de pausa, 8 vezes (Tabata, 1996). Só 4 minutos, mas muito intenso.', blocks: [
+    { kind: 'cont', sec: 300, int: 'leve', label: 'Aquecer' },
+    { kind: 'int', rounds: 8, work: 20, rest: 10, int: 'forte' },
+    { kind: 'cont', sec: 180, int: 'leve', label: 'Desaquecer' }] },
 ];
+
+/** Frequência cardíaca máxima estimada (Tanaka: 208 − 0,7 × idade). */
+export const hrMax = age => Math.round(208 - 0.7 * age);
+/** Faixa de batimentos de cada intensidade, em % da FC máxima. */
+export const HR_ZONE = { leve: [0.5, 0.65], moderado: [0.65, 0.8], forte: [0.85, 0.95] };
 
 /** Duração total da rotina em segundos. */
 export const planSeconds = blocks => blocks.reduce((n, b) => n + (b.kind === 'int' ? b.rounds * (b.work + b.rest) : b.sec), 0);

@@ -890,3 +890,29 @@ body.has-coach #view { padding-bottom: calc(var(--tab-h) + var(--safe-b) + 76px)
 .radar .r-area, .radar .r-ring, .radar .r-dot, .radar text { pointer-events: none; }
 .r-info { text-align: center; min-height: 2.6em; line-height: 1.5; }
 .r-info .top-chip { font-size: 11px; padding: 1px 7px; }
+/* cardio: linha do tempo, anel do cronômetro, modelos */
+.ctl { display: flex; gap: 2px; height: 10px; width: 100%; border-radius: 6px; overflow: hidden; }
+.ctl i { display: block; min-width: 2px; background: var(--axis); }
+.ctl i.int-leve { background: color-mix(in srgb, var(--warm) 55%, var(--surface-2)); }
+.ctl i.int-moderado { background: color-mix(in srgb, var(--accent) 55%, var(--surface-2)); }
+.ctl i.ctl-work, .ctl i.int-forte { background: var(--accent); }
+.ctl i.ctl-rest { background: color-mix(in srgb, var(--warm) 55%, var(--surface-2)); }
+.ctl i.done { opacity: .3; }
+.ctl i.now { outline: 2px solid var(--ink); outline-offset: -2px; }
+.crun .ctl { height: 12px; margin: 4px 0; }
+.crun.phase-prep { background: color-mix(in srgb, var(--data) 18%, var(--surface)); }
+.crun-ring { position: relative; width: min(72vw, 260px); aspect-ratio: 1; display: grid; place-items: center; margin: 4px 0; }
+.crun-ring svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.crun-ring .ring-bg { fill: none; stroke: color-mix(in srgb, var(--ink) 10%, transparent); stroke-width: 10; }
+.crun-ring .ring-fg { fill: none; stroke: var(--ink); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset .2s linear; }
+.crun.phase-work .ring-fg { stroke: var(--accent); }
+.crun.phase-rest .ring-fg { stroke: var(--warm); }
+.crun.phase-prep .ring-fg { stroke: var(--data); }
+.crun-ring .crun-clock { position: relative; margin: 0; font-size: clamp(56px, 18vw, 80px); }
+.crun-hr { color: var(--ink-2); font-weight: 600; min-height: 1.2em; }
+.ctpl-list { display: grid; gap: 8px; }
+.ctpl { display: grid; gap: 6px; text-align: left; padding: 12px 14px; border-radius: 16px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; }
+.ctpl .row .ic { color: var(--accent); }
+.ctpl:active { background: var(--surface-2); }
+.crun-btns .danger { grid-column: 1 / -1; }
+body.has-install .w-top { padding-right: 52px; }
