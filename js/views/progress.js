@@ -254,8 +254,11 @@ submits.saveEntry = () => {
   if (state.sessions.includes(s)) sessionSheet(s); else closeSheet();
 };
 actions.delSessionAsk = el => {
-  sheet(`<h2>${t('Excluir este treino?')}</h2><p class="muted">${t('Ele sai do histórico, das metas e dos gráficos. Esta ação não pode ser desfeita.')}</p>
-    <button class="btn danger block" data-act="delSession" data-id="${el.dataset.id}">${t('Excluir treino')}</button>
+  const s = state.sessions.find(x => x.id === el.dataset.id);
+  sheet(`<h2>${t('Tem certeza que quer excluir este treino?')}</h2>
+    ${s ? `<p><b>${esc(routineName(s))}</b> · ${fmtDate(s.date)}</p>` : ''}
+    <p class="muted">${t('Ele sai do histórico, das metas e dos gráficos. Esta ação não pode ser desfeita.')}</p>
+    <button class="btn danger block" data-act="delSession" data-id="${el.dataset.id}" data-wait="5">${icon.trash}${t('Sim, excluir treino')}</button>
     <button class="btn block" data-act="closeSheet">${t('Cancelar')}</button>`);
 };
 actions.delSession = el => {

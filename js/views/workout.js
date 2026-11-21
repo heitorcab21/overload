@@ -184,6 +184,7 @@ function render() {
     <div class="w-top">
       <button class="icon-btn" data-act="wHome" aria-label="${t('Voltar ao início')}">${icon.back}</button>
       <span class="title">${esc(routineName(a))} · ${t('{i} de {n}', { i: a.idx + 1, n: a.entries.length })}</span>
+      <button class="icon-btn w-discard" data-act="wDiscardAsk" aria-label="${t('Descartar treino')}">${icon.trash}</button>
       <button class="icon-btn" data-act="wList" aria-label="${t('Lista de exercícios')}">${icon.list}</button>
     </div>
     ${a.onDate ? `<p class="small past-day">${icon.edit}${t('Registrando o treino de {d}', { d: fmtDate(a.onDate) })}</p>` : ''}
@@ -635,7 +636,7 @@ actions.wFinish = () => {
   if (!sets) {
     sheet(`<h2>${t('Nenhuma série registrada')}</h2><p class="muted">${t('Você pode continuar treinando ou descartar este treino.')}</p>
       <button class="btn primary block" data-act="closeSheet">${t('Continuar treinando')}</button>
-      <button class="btn ghost danger block" data-act="wDiscard">${t('Descartar treino')}</button>`);
+      <button class="btn ghost danger block" data-act="wDiscardAsk">${t('Descartar treino')}</button>`);
     return;
   }
   if (!pend) { finish(); return; }
@@ -646,9 +647,13 @@ actions.wFinish = () => {
 };
 actions.wFinishNow = () => { closeSheet(); finish(); };
 actions.wDiscardAsk = () => {
-  sheet(`<h2>${t('Descartar este treino?')}</h2><p class="muted">${t('As séries registradas agora serão apagadas. Esta ação não pode ser desfeita.')}</p>
-    <button class="btn danger block" data-act="wDiscard">${t('Descartar treino')}</button>
-    <button class="btn block" data-act="closeSheet">${t('Voltar')}</button>`);
+  const a = state.active;
+  const sets = a ? a.entries.reduce((n, e) => n + e.sets.length, 0) : 0;
+  // confirmação com espera de 5 segundos: dá tempo de ler antes de apagar
+  sheet(`<h2>${t('Tem certeza que quer descartar este treino?')}</h2>
+    <p class="muted">${sets ? tn(sets, 'A série registrada neste treino será apagada.', 'As {n} séries registradas neste treino serão apagadas.') : t('Nada foi registrado ainda.')} ${t('Esta ação não pode ser desfeita.')}</p>
+    <button class="btn danger block" data-act="wDiscard" data-wait="5">${icon.trash}${t('Sim, descartar treino')}</button>
+    <button class="btn block" data-act="closeSheet">${t('Voltar ao treino')}</button>`);
 };
 actions.wDiscard = () => { state.active = null; save({ touch: false }); closeSheet(); releaseAwake(); go('#/hoje'); };
 
@@ -763,7 +768,7 @@ function renderEmpty() {
       <h2>${t('Treino livre')}</h2>
       <p class="muted">${t('Adicione os exercícios conforme for treinando. A carga sugerida vem do seu histórico.')}</p>
       <button class="btn primary big" data-act="wAdd">${icon.plus}${t('Adicionar exercício')}</button>
-      <button class="btn ghost danger block" data-act="wDiscard">${t('Descartar treino')}</button>
+      <button class="btn ghost danger block" data-act="wDiscardAsk">${t('Descartar treino')}</button>
     </div>`;
 }
 

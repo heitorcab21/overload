@@ -144,7 +144,7 @@ function renderHome() {
       <h2>${esc(routineName(a))}</h2>
       <p class="muted">${t('{done} de {total} exercícios registrados', { done, total: a.entries.length })}</p>
       <button class="btn primary big" data-act="resume">${icon.play}${t('Continuar treino')}</button>
-      ${empty ? `<button class="btn ghost block" data-act="dropEmpty">${t('Descartar (nada foi registrado)')}</button>` : ''}
+      ${empty ? `<button class="btn ghost block" data-act="dropEmpty">${t('Descartar (nada foi registrado)')}</button>` : `<button class="btn ghost danger block" data-act="wDiscardAsk">${icon.trash}${t('Descartar treino')}</button>`}
     </div>`;
   } else if (!state.routines.length) {
     main = `<div class="card stack">
