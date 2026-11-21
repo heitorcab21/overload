@@ -1,6 +1,6 @@
 // Progresso: números do período, séries por semana, evolução por exercício e histórico.
 import { state, save } from '../store.js';
-import { $, esc, fmt, setStr, compact, icon, actions, changes, submits, sheet, closeSheet, fmtDate, stepper, toast, meter } from '../ui.js';
+import { $, esc, fmt, setStr, compact, icon, actions, changes, submits, sheet, closeSheet, fmtDate, stepper, toast, meter, kg } from '../ui.js';
 import { profile, bodyComposition, overallStrength, strengthLevel, quickLevel, STRENGTH_LIFTS } from '../body.js';
 import { route, go, rerender } from '../router.js';
 import { GROUPS, LIB, LIB_BY_ID, exName, routineName, loadHint } from '../data.js';
@@ -339,16 +339,17 @@ function strengthOverview() {
 }
 
 // consulta rápida: qualquer exercício comparável, sem salvar nada
-const QUICK_PARTS = () => [
-  [t('Tronco'), ['Peito', 'Costas']],
-  [t('Braços'), ['Ombros', 'Bíceps', 'Tríceps']],
-  [t('Pernas'), ['Quadríceps', 'Posteriores', 'Glúteos', 'Panturrilhas']],
+// Padrões de movimento (como treinadores e tabelas de força organizam os testes): [nome, lifts]
+const PATTERNS = () => [
+  [t('Empurrar na horizontal'), ['bench', 'dip']], [t('Empurrar na vertical'), ['ohp']],
+  [t('Puxar na horizontal'), ['row']], [t('Puxar na vertical'), ['pullup']],
+  [t('Agachar'), ['squat']], [t('Dobradiça de quadril'), ['deadlift', 'hipthrust']], [t('Braços'), ['curl']],
 ];
 const libName = id => exPack(id)?.name ?? LIB_BY_ID[id].name;
 
 function quickCalc() {
-  const parts = QUICK_PARTS().map(([label, groups]) => {
-    const ids = LIB.filter(l => groups.includes(l.group) && STRENGTH_LIFTS[l.id]).map(l => l.id);
+  const parts = PATTERNS().map(([label, lifts]) => {
+    const ids = LIB.filter(l => STRENGTH_LIFTS[l.id] && lifts.includes(STRENGTH_LIFTS[l.id][0])).map(l => l.id);
     if (!ids.length) return '';
     return `<details class="quick-part"><summary><b>${esc(label)}</b><span class="small muted">${tn(ids.length, '{n} exercício', '{n} exercícios')}</span>${icon.down}</summary>
       <div class="list">${ids.map(id => `<button class="item" data-act="quickLevel" data-id="${id}"><span class="grow t">${esc(libName(id))}</span>${icon.next}</button>`).join('')}</div></details>`;
@@ -391,7 +392,10 @@ changes.quickCalc = el => showQuick(el.closest('form'));
 function renderStrength() {
   const p = profile();
   const rows = p ? strengthRows(p) : [];
-  const pending = p ? Object.values(state.exercises).filter(ex => strengthLevel(ex, p).reason === 'noData') : [];
+  // sem registro: na mesma ordem dos padrões de movimento
+  const order = PATTERNS().flatMap(([, l]) => l);
+  const rank = ex => order.indexOf(STRENGTH_LIFTS[ex.lib]?.[0]);
+  const pending = p ? Object.values(state.exercises).filter(ex => strengthLevel(ex, p).reason === 'noData').sort((a, b) => rank(a) - rank(b)) : [];
   $('#view').innerHTML = `
     <div class="head"><a class="icon-btn" href="#/progresso" aria-label="${t('Voltar')}">${icon.back}</a><h1 class="grow">${t('Nível de força')}</h1></div>
     <div class="stack">
@@ -401,11 +405,14 @@ function renderStrength() {
         ${t('Top 10% quer dizer que você é mais forte que 90% dessas pessoas.')}</p>
       ${quickCalc()}
       ${rows.length ? `<h3 class="group-title">${t('Pelos seus treinos')}</h3>` : ''}
-      ${rows.map(({ ex, lv }) => `<a class="card stack strength-row" href="#/exercicio/${encodeURIComponent(ex.id)}">
+      ${PATTERNS().map(([label, lifts]) => {
+        const list = rows.filter(x => lifts.includes(x.lv.lift));
+        return list.length ? `<p class="muscle-title">${esc(label)}</p>${list.map(({ ex, lv }) => `<a class="card stack strength-row" href="#/exercicio/${encodeURIComponent(ex.id)}">
         <div class="row between"><b class="grow">${esc(exName(ex))}</b><span class="top-chip">${t('Top {n}%', { n: lv.top })}</span></div>
         ${meter(lv.pct / 100)}
         <span class="small muted">${ul(t('1RM estimado: {w} kg', { w: Math.round(toW(lv.oneRM)) }))} · ${lv.src.test ? t('teste de força') : setStr(lv.src)} · ${fmtDate(lv.src.date, false)}</span>
-      </a>`).join('') || `<div class="card"><p class="muted">${t('Registre exercícios com barra, halteres ou peso corporal (supino, agachamento, terra, remada, barra fixa...) para ver em que top de força você está.')}</p></div>`}
+      </a>`).join('')}` : '';
+      }).join('') || `<div class="card"><p class="muted">${t('Registre exercícios com barra, halteres ou peso corporal (supino, agachamento, terra, remada, barra fixa...) para ver em que top de força você está.')}</p></div>`}
       ${pending.length ? `<h3 class="group-title">${t('Ainda sem registro')}</h3>
         <div class="card flat"><div class="list">${pending.map(ex => `<a class="item" href="#/exercicio/${encodeURIComponent(ex.id)}">
           <span class="grow t">${esc(exName(ex))}</span><span class="small muted">${t('treine ou faça um teste')}</span>${icon.next}</a>`).join('')}</div></div>` : ''}

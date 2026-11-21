@@ -1188,6 +1188,13 @@ const ui = {
   "Contam as séries efetivas: carga de pelo menos 60% da sua força estimada no exercício (até ~20 reps) e, se você anotou, no máximo 4 reps sobrando.": "Effective sets count: a load of at least 60% of your estimated strength in the exercise (up to ~20 reps) and, if you logged it, at most 4 reps left in reserve.",
   "Rumo à meta da semana: {set} na primeira série.": "Toward this week's goal: {set} on the first set.",
   "Meta da semana: {set}": "This week's goal: {set}",
+  "Empurrar na horizontal": "Horizontal push",
+  "Empurrar na vertical": "Vertical push",
+  "Puxar na horizontal": "Horizontal pull",
+  "Puxar na vertical": "Vertical pull",
+  "Agachar": "Squat",
+  "Dobradiça de quadril": "Hip hinge",
+  "Outros": "Other",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
