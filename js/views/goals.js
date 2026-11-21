@@ -13,7 +13,7 @@ import { toW, fromW, toStep } from '../units.js';
 import { intent, saveIntent, trainedDaysThisWeek, GOAL_IDS } from '../intent.js';
 import { scenarios, judgeGoal } from '../scenarios.js';
 import { bodyMap } from './bodymap.js';
-import { GOAL_PLANS, FOCUS_GROUPS, intentWeekSets, fillPlan } from '../logic.js';
+import { GOAL_PLANS, FOCUS_GROUPS, intentWeekSets, fillPlan, groupScenarios } from '../logic.js';
 
 let mode = 'week';
 const cap = s => s[0].toUpperCase() + s.slice(1);
@@ -86,7 +86,7 @@ function render() {
   $('#view').innerHTML = `
     <div class="head"><div class="grow"><h1>${t('Metas')}</h1><p class="sub">${period}</p></div></div>
     <div class="stack">
-      <div class="two top-acts">
+      <div class="two top-acts goals-acts">
         <button class="btn sheet-green-soft" data-act="exportGoals">${icon.share}${t('Exportar planilha')}</button>
         <label class="btn sheet-green-soft">${icon.download}${t('Importar planilha')}<input type="file" accept=".csv,text/csv,text/plain" data-change="importGoals" class="sr"></label>
       </div>
@@ -126,8 +126,19 @@ actions.editGroupGoal = el => {
   const g = el.dataset.g;
   const cur = state.goals.groups[g] || {};
   const fromRoutine = routineGroupSets()[g];
+  const sc = groupScenarios(g);
+  const SN = SCEN_NAME();
+  const GN = { conservador: t('Mantém e ganha devagar'), moderado: t('O que mais rende por série'), dificil: t('Perto do máximo útil; exige boa recuperação') };
+  const isPick = x => cur.week === x.n;
+  const own = cur.week && !sc.some(isPick);
   sheet(`<h2>${t('Meta de {g}', { g: esc(tg(g)) })}</h2>
-    <p class="muted">${t('Quantas séries você quer fazer para este grupamento.')}</p>
+    <p class="small muted">${t('Séries efetivas por semana. Três cenários pela ciência do volume e pelo seu objetivo. Escolha um:')}</p>
+    <div class="scen-list">${sc.map(x => `<button class="scen scen-${x.key}${isPick(x) ? ' on' : ''}" data-act="pickGroupScen" data-g="${esc(g)}" data-n="${x.n}">
+      <span class="scen-head"><b>${esc(SN[x.key])}</b></span>
+      <span class="scen-set num">${tn(x.n, '{n} série por semana', '{n} séries por semana')}</span>
+      <span class="small muted">${esc(GN[x.key])}</span></button>`).join('')}</div>
+    ${fromRoutine != null ? `<p class="small muted">${t('Sua ficha entrega {n} por semana.', { n: fromRoutine || 0 })}</p>` : ''}
+    <details class="own-goal"${own ? ' open' : ''}><summary><b>${t('Definir a minha meta')}</b></summary>
     <form class="stack" data-submit="saveGroupGoal" data-g="${esc(g)}">
       <div class="two">
         ${stepper('week', cur.week || 0, 1, t('Séries por semana'))}
@@ -139,7 +150,13 @@ actions.editGroupGoal = el => {
         ${t('Deixe o mês em 0 para calcular a partir da semana.')}</p>
       <button class="btn primary big">${t('Salvar')}</button>
       ${fromRoutine && cur.auto === false ? `<button type="button" class="btn ghost block" data-act="groupAuto" data-g="${esc(g)}">${t('Seguir a rotina ({n} séries por semana)', { n: fromRoutine })}</button>` : ''}
-    </form>`);
+    </form></details>`);
+};
+actions.pickGroupScen = el => {
+  const g = el.dataset.g, week = Number(el.dataset.n);
+  state.goals.groups[g] = { week, month: Math.round(week * daysInMonth() / 7), auto: false };
+  save(); closeSheet(); rerender();
+  toast(t('Meta de {g}: {n} séries por semana.', { g: tg(g).toLowerCase(), n: week }), 3000);
 };
 submits.saveGroupGoal = form => {
   const week = Math.max(0, Math.round(Number(form.week.value) || 0));

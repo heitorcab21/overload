@@ -3,7 +3,7 @@ import { state, save, uid } from '../store.js';
 import { $, esc, fmt, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, meter, fmtDate } from '../ui.js';
 import { route, rerender } from '../router.js';
 import { t, tn } from '../i18n.js';
-import { weekStart, addDays } from '../logic.js';
+import { weekStart, addDays, cardioScenarios } from '../logic.js';
 import { columnChart } from '../charts.js';
 import { CARDIO_TYPES, INTENSITIES, cardioKcal, cardioIn, cardioMinutes, cardioWeeks } from '../cardio.js';
 import { routinesCard } from './cardiorun.js';
@@ -128,12 +128,25 @@ actions.cardioRepeat = () => {
   rerender();
 };
 actions.cardioGoal = () => {
+  const cur = state.cardioGoal || 150;
+  const sc = cardioScenarios();
+  const SN = { conservador: t('Conservador'), moderado: t('Moderado'), dificil: t('Difícil, mas possível') };
+  const CN = { conservador: t('Um bom começo, se hoje você faz pouco'), moderado: t('O seu objetivo, dentro da faixa da OMS'), dificil: t('Benefício extra para coração e gasto calórico') };
   sheet(`<h2>${t('Meta de cardio por semana')}</h2>
     <p class="muted small">${t('A recomendação da OMS para adultos é de 150 a 300 minutos de atividade moderada por semana.')}</p>
+    <div class="scen-list">${sc.map(x => `<button class="scen scen-${x.key}${cur === x.n ? ' on' : ''}" data-act="cardioGoalPick" data-n="${x.n}">
+      <span class="scen-head"><b>${esc(SN[x.key])}</b></span>
+      <span class="scen-set num">${x.n} min</span>
+      <span class="small muted">${esc(CN[x.key])}</span></button>`).join('')}</div>
+    <details class="own-goal"${sc.some(x => x.n === cur) ? '' : ' open'}><summary><b>${t('Definir a minha meta')}</b></summary>
     <form class="stack" data-submit="cardioGoalSave">
-      ${stepper('goal', state.cardioGoal || 150, 15, t('Minutos por semana'), 15)}
+      ${stepper('goal', cur, 15, t('Minutos por semana'), 15)}
       <button class="btn primary big">${t('Salvar')}</button>
-    </form>`);
+    </form></details>`);
+};
+actions.cardioGoalPick = el => {
+  state.cardioGoal = Number(el.dataset.n);
+  save(); closeSheet(); rerender();
 };
 submits.cardioGoalSave = form => {
   state.cardioGoal = Math.max(15, Math.round(Number(form.goal.value) || 150));

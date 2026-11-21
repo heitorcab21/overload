@@ -235,6 +235,15 @@ eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [10, { week: 10, 
   state.routines = [{ id: 'r', name: 'A', ex: ['x'] }];
 }
 
+// ---- cenários de séries e de cardio ----
+{
+  const { groupScenarios, cardioScenarios } = await import('../js/logic.js');
+  eq(groupScenarios('Peito', null).map(x => x.n), [7, 10, 14], 'séries sem objetivo: 7, 10 e 14');
+  eq(groupScenarios('Bíceps', null).map(x => x.n), [5, 7, 10], 'grupo pequeno: 5, 7 e 10');
+  eq(groupScenarios('Peito', { goal: 'massa', focus: [] }).map(x => x.n), [8, 12, 17], 'massa: moderado 12');
+  eq(cardioScenarios(null).map(x => x.n), [90, 150, 300], 'cardio: 90, 150 (OMS) e 300');
+}
+
 // ---- meta da semana à mão ----
 const auto = autoWeekSet(ex, now);
 setWeekOverride(ex, 44, 9, now);

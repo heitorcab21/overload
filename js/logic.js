@@ -339,6 +339,25 @@ export function intentWeekSets(group, it = state.intent) {
   return Math.round(SMALL_GROUPS.includes(group) ? n * 0.75 : n);
 }
 
+/**
+ * Três metas de séries por semana para um grupo (conservador, moderado, difícil).
+ * Moderado = o do objetivo (ou 10, 7 nos grupos pequenos). Acima de ~20 séries o ganho extra é pequeno.
+ */
+export function groupScenarios(group, it = state.intent) {
+  const small = SMALL_GROUPS.includes(group);
+  const mod = intentWeekSets(group, it) ?? (small ? 7 : 10);
+  const cons = Math.min(mod - 1, Math.max(small ? 4 : 6, Math.round(mod * 0.7)));
+  const hard = Math.max(mod + 2, Math.min(small ? 16 : 22, Math.round(mod * 1.4)));
+  return [{ key: 'conservador', n: cons }, { key: 'moderado', n: mod }, { key: 'dificil', n: hard }];
+}
+
+/** Três metas de cardio por semana, em minutos, a partir do objetivo (ou dos 150 da OMS). */
+export function cardioScenarios(it = state.intent) {
+  const mod = (it && GOAL_PLANS[it.goal]?.[3]) || 150;
+  const r15 = x => Math.round(x / 15) * 15;
+  return [{ key: 'conservador', n: Math.max(60, r15(mod * 0.6)) }, { key: 'moderado', n: mod }, { key: 'dificil', n: Math.min(420, Math.max(300, r15(mod * 1.4))) }];
+}
+
 export function defaultGroupGoals(now = new Date()) {
   const it = state.intent && GOAL_PLANS[state.intent.goal] ? state.intent : null;
   if (it) {
