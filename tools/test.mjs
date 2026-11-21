@@ -101,6 +101,14 @@ eq([planFor(ex).w, planFor(ex).reps, planFor(ex).kind], [42.5, [8, 8, 8], 'up'],
   eq(e1rm(p.w, p.reps[0]) >= e1rm(wk.w, wk.r) - 1e-6 || p.reps[0] === ex.repMax + 2, true, 'a primeira série alcança a meta da semana');
   state.sessions = [sess(5, [{ w: 40, r: 10, t: 'fail' }, { w: 40, r: 8 }, { w: 40, r: 7 }], { flags: ['dor'] })];
   eq(planFor(ex, d0).kind === 'goal', false, 'com dor marcada não empurra para a meta');
+  // prazo de 30 dias corridos (não o fim do mês): criada em 25/11, vale até 25/12, em ~5 degraus semanais
+  state.sessions = [sess(5, [{ w: 40, r: 10 }, { w: 40, r: 10 }, { w: 40, r: 10 }])];
+  setExGoal(ex, 45, 10, new Date(2026, 10, 25, 12));
+  const a1 = gst(ex, new Date(2026, 11, 5, 12)), a2 = gst(ex, new Date(2026, 11, 26, 12));
+  eq([a1.expired, a1.weeks >= 4, a1.until.getDate(), a1.until.getMonth(), a2.expired], [false, true, 25, 11, true], 'meta de 30 dias: continua valendo no mês seguinte e vence no 30º dia');
+  const E = st => e1rm(st.weekSet.w, st.weekSet.r);
+  const steps = [0, 7, 14, 21, 28].map(dd => gst(ex, new Date(2026, 10, 25 + dd, 12)));
+  eq([E(steps[0]) < E(steps[2]), E(steps[2]) < E(steps[4]) + 1e-6, steps[4].weekSet.w === 45 && steps[4].weekSet.r === 10], [true, true, true], 'degraus semanais sobem até a meta na última semana');
   state.sessions = keepS; state.goals = keepG;
 }
 

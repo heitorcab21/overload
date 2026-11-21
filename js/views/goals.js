@@ -55,9 +55,9 @@ function render() {
         <td class="v muted">${t('definir meta')}</td></tr>`;
     }
     if (st.expired) {
-      const [, m] = st.goal.month.split('-').map(Number);
+
       return `<tr data-act="editExGoal" data-id="${esc(ex.id)}" tabindex="0">
-        <td class="n">${esc(exName(ex))}<span class="sub">${t('Meta de {mes}: {set} · {status}', { mes: monthName(m - 1), set: setStr(st.goal), status: st.monthDone ? t('batida') : t('não batida') })}</span></td>
+        <td class="n">${esc(exName(ex))}<span class="sub">${t('Meta até {d}: {set} · {status}', { d: fmtDate(st.until, false), set: setStr(st.goal), status: st.monthDone ? t('batida') : t('não batida') })}</span></td>
         <td class="v"><span class="badge up">${t('renovar')}</span></td></tr>`;
     }
     const target = isWeek ? st.weekSet : st.goal;
@@ -67,7 +67,7 @@ function render() {
     const info = isWeek ? (st.weekManual ? ` · ${t('definida por você')}` : ` · ${t('semana {k} de {n}', { k: st.week, n: st.weeks })}`) : '';
     return `<tr data-act="editExGoal" data-id="${esc(ex.id)}" tabindex="0">
       <td class="n">${esc(exName(ex))}
-        <span class="sub">${best ? t('Melhor: {set}', { set: setStr(best) }) : isWeek ? t('Ainda não treinou nesta semana') : t('Sem registro neste mês')}${info}</span>
+        <span class="sub">${best ? t('Melhor: {set}', { set: setStr(best) }) : isWeek ? t('Ainda não treinou nesta semana') : t('Sem registro desde a meta')}${info}</span>
         ${meter(pct, ok)}</td>
       <td class="v">${setStr(target)}${ok ? `<br><span class="badge good">${icon.check}${t('batida')}</span>` : ''}</td>
     </tr>`;
@@ -107,9 +107,9 @@ function render() {
       </div>
       <p class="small muted">${t('Contam as séries efetivas: carga de pelo menos 60% da sua força estimada no exercício (até ~20 reps) e, se você anotou, no máximo 4 reps sobrando.')}</p>
 
-      <div class="row between ex-goals-head"><h3>${t('Exercícios ativos')}</h3><span class="small muted">${isWeek ? t('Meta da semana') : t('Meta do mês')}</span></div>
+      <div class="row between ex-goals-head"><h3>${t('Exercícios ativos')}</h3><span class="small muted">${isWeek ? t('Meta da semana') : t('Meta de 30 dias')}</span></div>
       ${exSections || `<div class="card"><p class="empty">${t('Nenhum exercício nos seus treinos. Adicione em Treinos.')}</p></div>`}
-      <p class="small muted">${t('A meta da semana é calculada sozinha, em degraus até a meta do mês, e você pode trocá-la quando quiser. Toque em uma linha para editar.')}</p>
+      <p class="small muted">${t('A meta da semana é calculada sozinha, em degraus até a meta de 30 dias, e você pode trocá-la quando quiser. Toque em uma linha para editar.')}</p>
 
       ${noGoal ? `<button class="btn block" data-act="suggestAll">${icon.spark}${tn(noGoal, 'Sugerir metas para {n} exercício', 'Sugerir metas para {n} exercícios')}</button>` : ''}
 
@@ -194,7 +194,7 @@ actions.editExGoal = el => {
   const own = active && (!sc || !sc.some(isPick));
   const SN = SCEN_NAME(), CH = { 0.85: t('chance alta'), 0.6: t('chance média'), 0.3: t('chance baixa') };
   sheet(`<h2>${esc(exName(ex))}</h2>
-    <h3>${t('Meta do mês (até o fim de {mes})', { mes: monthName(now.getMonth()) })}</h3>
+    <h3>${active ? t('Meta de 30 dias (até {d})', { d: fmtDate(st.until, false) }) : t('Meta para os próximos 30 dias (até {d})', { d: fmtDate(addDays(now, 30), false) })}</h3>
     ${sc ? `<p class="small muted">${t('Três cenários pelo seu ritmo e nível. Escolha um:')}</p>
     ${sc[0].est ? `<p class="small est-note">${estNote(sc[0].est)}</p>` : ''}
     <div class="scen-list">${sc.map(x => `<button class="scen scen-${x.key}${isPick(x) ? ' on' : ''}" data-act="pickScenario" data-id="${esc(ex.id)}" data-w="${x.set.w}" data-r="${x.set.r}" data-k="${x.key}">
@@ -218,7 +218,7 @@ actions.editExGoal = el => {
       </div>
       <p class="small muted">${st.weekManual
         ? t('Definida por você. O cálculo automático daria {set}.', { set: setStr(auto) })
-        : t('Calculada sozinha, em degraus até a meta do mês. Mude se quiser outra meta só nesta semana.')}</p>
+        : t('Calculada sozinha, em degraus até a meta de 30 dias. Mude se quiser outra meta só nesta semana.')}</p>
       ${st.weekManual ? `<button type="button" class="btn ghost block" data-act="weekAuto" data-id="${esc(ex.id)}">${t('Voltar ao cálculo automático')}</button>` : ''}` : ''}
       <button class="btn primary big">${t('Salvar meta')}</button>
     </form></details>
@@ -449,7 +449,7 @@ export function scenarioCard(ex) {
   const mini = scenarioMini(ex);
   if (!mini) return null;
   return `<div class="card stack">
-    <div class="row between"><h3>${t('Metas possíveis até o fim de {mes}', { mes: monthName(new Date().getMonth()) })}</h3></div>
+    <div class="row between"><h3>${t('Metas possíveis para os próximos 30 dias')}</h3></div>
     <p class="small muted">${t('Pelas suas cargas atuais neste exercício. Toque para escolher.')}</p>
     ${mini}
     <button class="link-btn" data-act="editExGoal" data-id="${esc(ex.id)}">${t('Definir a minha meta')}</button>

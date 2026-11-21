@@ -199,14 +199,25 @@ const pad2 = n => String(n).padStart(2, '0');
 /** Identifica a semana (segunda-feira) como texto, ex.: "2026-11-09". */
 export const weekKey = (d = new Date()) => { const w = weekStart(d); return `${w.getFullYear()}-${pad2(w.getMonth() + 1)}-${pad2(w.getDate())}`; };
 
-/** Cria a meta do mês de um exercício, usando o melhor resultado recente como ponto de partida. */
+/** Prazo das metas de carga: 30 dias corridos a partir da escolha. */
+export const GOAL_DAYS = 30;
+/** Cria a meta de 30 dias de um exercício, usando o melhor resultado recente como ponto de partida. */
 export function setExGoal(ex, w, r, now = new Date()) {
   const best = bestInRange(ex.id, addDays(now, -45), addDays(now, 1));
   const T = e1rm(w, r);
+  const until = addDays(now, GOAL_DAYS);
+  until.setHours(23, 59, 59, 999);
   state.goals.ex[ex.id] = {
-    w, r, month: monthKey(now), created: now.toISOString(),
+    w, r, month: monthKey(now), created: now.toISOString(), until: until.toISOString(),
     base: best ? Math.min(e1rm(best.w, best.r), T) : T * 0.9,
   };
+}
+/** Prazo da meta. Metas antigas, sem prazo gravado, também ganham 30 dias desde a criação. */
+export function goalUntil(g) {
+  if (g.until) return new Date(g.until);
+  const d = addDays(new Date(g.created), GOAL_DAYS);
+  d.setHours(23, 59, 59, 999);
+  return d;
 }
 
 /** Meta da semana calculada pelo app, ignorando ajuste manual. */
@@ -225,11 +236,12 @@ export function exGoalStatus(ex, now = new Date(), opts = {}) {
   const g = state.goals.ex[ex.id];
   if (!g) return null;
   const T = e1rm(g.w, g.r);
-  const [y, m] = g.month.split('-').map(Number);
-  const ms = new Date(y, m - 1, 1);
-  const me = monthEnd(ms);
-  const expired = g.month !== monthKey(now);
+  // janela da meta: do dia em que foi criada até o prazo (30 dias corridos)
+  const ms = new Date(g.created); ms.setHours(0, 0, 0, 0);
+  const me = goalUntil(g);
+  const expired = now > me;
   const ws0 = weekStart(new Date(g.created));
+  // degraus semanais até o prazo (cerca de 5 numa meta de 30 dias)
   const n = Math.max(1, Math.ceil((me - ws0) / (7 * DAY)));
   const k = Math.min(n, Math.max(1, Math.floor((weekStart(now) - ws0) / (7 * DAY)) + 1));
   const base = g.base ?? 0;
@@ -237,7 +249,7 @@ export function exGoalStatus(ex, now = new Date(), opts = {}) {
   const weekE = ov ? e1rm(ov.w, ov.r) : base + (T - base) * (k / n);
   const ws = weekStart(now);
   const bw = bestInRange(ex.id, ws, addDays(ws, 7));
-  const bm = bestInRange(ex.id, ms, me);
+  const bm = bestInRange(ex.id, ms, addDays(me, 1));
   const pct = (best, target) => {
     if (!best) return 0;
     const b = e1rm(best.w, best.r);
@@ -246,7 +258,7 @@ export function exGoalStatus(ex, now = new Date(), opts = {}) {
   };
   const weekSet = ov ? { w: ov.w, r: ov.r } : k >= n ? { w: g.w, r: g.r } : toSet(weekE, ex, currentWeight(ex) || g.w);
   return {
-    goal: g, expired, week: k, weeks: n, weekManual: !!ov,
+    goal: g, expired, until: me, daysLeft: Math.max(0, Math.ceil((me - now) / DAY)), week: k, weeks: n, weekManual: !!ov,
     weekSet, weekBest: bw, weekPct: pct(bw, weekE), weekDone: !!bw && e1rm(bw.w, bw.r) >= weekE - 1e-6,
     monthBest: bm, monthPct: pct(bm, T), monthDone: !!bm && e1rm(bm.w, bm.r) >= T - 1e-6,
   };

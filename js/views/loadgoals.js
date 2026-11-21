@@ -57,7 +57,7 @@ function render(back) {
     <div class="head"><a class="icon-btn" href="${target}" aria-label="${t('Voltar')}">${icon.back}</a></div>
     <div class="stack lg-screen">
       <h1>${t('Metas de carga')}</h1>
-      <p class="sub muted">${t('Para cada exercício, escolha a meta do mês: três opções calculadas pelas suas cargas e pelo seu nível. Se preferir, siga só a sua progressão, treino a treino.')}</p>
+      <p class="sub muted">${t('Para cada exercício, escolha a meta dos próximos 30 dias: três opções calculadas pelas suas cargas e pelo seu nível. O treino passa a mirar nela, em degraus semanais. Se preferir, siga só a sua progressão, treino a treino.')}</p>
       <div class="lg-progress"><b>${t('{d} de {n} escolhidas', { d: done.length, n: all.length })}</b>${todo.length ? `<button class="btn sm" data-act="lgAllModerate">${t('Moderado em todos os que faltam')}</button>` : ''}</div>
       ${todo.length ? todo.map(card).join('') : `<div class="card"><p>${icon.check} ${t('Tudo escolhido. Você pode mudar quando quiser.')}</p></div>`}
       ${done.length ? `<details class="own-goal"${todo.length ? '' : ' open'}><summary><b>${tn(done.length, 'Já escolhida (1)', 'Já escolhidas ({n})')}</b></summary><div class="stack">${done.map(card).join('')}</div></details>` : ''}

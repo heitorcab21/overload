@@ -318,11 +318,11 @@ export function buildSummary() {
   for (const g of groupGoalStatus(now)) {
     if (g.weekGoal || g.monthGoal) L.push(`- ${g.group}: semana ${g.weekDone}/${g.weekGoal}, mês ${g.monthDone}/${g.monthGoal}`);
   }
-  L.push('', 'METAS DE CARGA POR EXERCÍCIO NO MÊS:');
+  L.push('', 'METAS DE CARGA POR EXERCÍCIO (30 DIAS, EM DEGRAUS SEMANAIS):');
   for (const ex of Object.values(state.exercises)) {
     const st = exGoalStatus(ex, now);
     if (!st || st.expired) continue;
-    L.push(`- ${ex.name}: meta ${w(st.goal)}, melhor do mês ${st.monthBest ? w(st.monthBest) : 'sem registro'}, meta desta semana ${w(st.weekSet)} (${st.weekDone ? 'batida' : 'pendente'})`);
+    L.push(`- ${ex.name}: meta ${w(st.goal)} até ${d(st.until)}, melhor desde a meta ${st.monthBest ? w(st.monthBest) : 'sem registro'}, meta desta semana ${w(st.weekSet)} (${st.weekDone ? 'batida' : 'pendente'})`);
   }
   if (state.intent) {
     const names = { massa: 'ganhar massa', forca: 'ficar mais forte', emagrecer: 'emagrecer e definir', saude: 'saúde e condicionamento' };
@@ -370,7 +370,7 @@ function renderSummary(id) {
   for (const e of s.entries) {
     const ex = state.exercises[e.exId];
     const st = ex && exGoalStatus(ex);
-    if (st && !st.expired && st.monthDone) hit.push(t('{ex}: meta do mês batida', { ex: exName(ex) }));
+    if (st && !st.expired && st.monthDone) hit.push(t('{ex}: meta de 30 dias batida', { ex: exName(ex) }));
     else if (st && !st.expired && st.weekDone) hit.push(t('{ex}: meta da semana batida', { ex: exName(ex) }));
   }
   $('#view').innerHTML = `
