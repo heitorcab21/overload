@@ -1312,6 +1312,9 @@ const ui = {
   "Evoluir no {x}": "Improve my {x}",
   "Como começar": "How to start",
   "Estou cansado hoje": "I'm tired today",
+  "Cobrado por uso na sua conta da xAI. A assinatura do X Premium não inclui a API: a chave é criada à parte no console da xAI.": "Billed per use on your xAI account. X Premium does not include the API: the key is created separately in the xAI console.",
+  "Cobrado por uso, com preços bem baixos. Os pedidos são processados em servidores na China.": "Billed per use, at very low prices. Requests are processed on servers in China.",
+  "Cobrado por uso na sua conta da Perplexity. Os modelos Sonar também pesquisam na internet, o que deixa cada resposta um pouco mais cara.": "Billed per use on your Perplexity account. Sonar models also search the web, which makes each answer a bit more expensive.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };

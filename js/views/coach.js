@@ -12,16 +12,7 @@ import { aiEnabled, aiChat, aiProvider, PROVIDERS, aiCoachNotes, aiCoachSummary,
 import { t } from '../i18n.js';
 import { buildSummary } from './home.js';
 
-// Ícone simplificado de cada IA, nas cores da marca (o genérico ✦ quando não há IA configurada).
-const PROVIDER_ICON = {
-  claude: '<svg class="ic prov" viewBox="0 0 24 24" aria-hidden="true"><g stroke="#D97757" stroke-width="2.4" stroke-linecap="round">'
-    + [0, 45, 90, 135, 180, 225, 270, 315].map((a, i) => `<line x1="12" y1="12" x2="12" y2="${i % 2 ? 4.5 : 2.5}" transform="rotate(${a + (i % 2 ? 8 : 0)} 12 12)"/>`).join('')
-    + '</g></svg>',
-  gemini: '<svg class="ic prov" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="gemG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1A73E8"/><stop offset=".6" stop-color="#4C8DF6"/><stop offset="1" stop-color="#8E9CF5"/></linearGradient></defs>'
-    + '<path fill="url(#gemG)" d="M12 2c.6 5.4 4.6 9.4 10 10-5.4.6-9.4 4.6-10 10-.6-5.4-4.6-9.4-10-10 5.4-.6 9.4-4.6 10-10z"/></svg>',
-  openai: '<svg class="ic prov" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="#10A37F" stroke-width="1.9">'
-    + [0, 60, 120].map(a => `<ellipse cx="12" cy="12" rx="4" ry="9" transform="rotate(${a} 12 12)"/>`).join('') + '</g></svg>',
-};
+import { PROVIDER_ICON } from '../aiicons.js';
 const SEND_IC = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const coachIcon = () => (aiEnabled() && PROVIDER_ICON[aiProvider()]) || icon.spark;
 

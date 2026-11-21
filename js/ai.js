@@ -10,7 +10,19 @@ export const PROVIDERS = {
   claude: { name: 'Claude (Anthropic)', keyHint: 'sk-ant-...', keyUrl: 'https://platform.claude.com/settings/keys' },
   openai: { name: 'ChatGPT (OpenAI)', keyHint: 'sk-...', keyUrl: 'https://platform.openai.com/api-keys' },
   gemini: { name: 'Gemini (Google)', keyHint: 'AIza...', keyUrl: 'https://aistudio.google.com/apikey' },
+  xai: { name: 'Grok (xAI)', keyHint: 'xai-...', keyUrl: 'https://console.x.ai' },
+  deepseek: { name: 'DeepSeek', keyHint: 'sk-...', keyUrl: 'https://platform.deepseek.com/api_keys' },
+  perplexity: { name: 'Perplexity', keyHint: 'pplx-...', keyUrl: 'https://www.perplexity.ai/account/api/keys' },
 };
+
+// Provedores com API no formato da OpenAI: endereço base e como pedir JSON
+const OPENAI_LIKE = {
+  openai: { base: 'https://api.openai.com/v1', json: 'object' },
+  xai: { base: 'https://api.x.ai/v1', json: 'object' },
+  deepseek: { base: 'https://api.deepseek.com', json: 'object' },
+  perplexity: { base: 'https://api.perplexity.ai', json: 'schema' },
+};
+const PERPLEXITY_MODELS = ['sonar', 'sonar-pro', 'sonar-reasoning-pro'];
 
 // ---------- Configuração (uma chave e um modelo por provedor) ----------
 
@@ -47,6 +59,7 @@ export function effortLevels(p = aiProvider(), model = aiModel(p)) {
     if (/gemini-2\.5/.test(m)) return ['low', 'medium', 'high'];
     return [];
   }
+  if (p === 'xai' && /grok-3-mini/.test(m)) return ['low', 'high'];
   return [];
 }
 /** Esforço escolhido para o provedor ('auto' = o app decide por tarefa). */
@@ -152,24 +165,29 @@ async function askClaude({ system, user, messages, effort, schema, cache }) {
 // ---------- ChatGPT (API da OpenAI) e Gemini (API do Google) ----------
 // Pedem JSON pelo modo de resposta em JSON de cada provedor, com o formato descrito no texto.
 
-const jsonRule = schema => `\n\nResponda somente com um objeto JSON válido (sem texto antes ou depois) que siga este JSON Schema:\n${JSON.stringify(schema)}`;
+const jsonRule = schema => `\n\nResponda somente com um objeto JSON válido (formato json, sem texto antes ou depois) que siga este JSON Schema:\n${JSON.stringify(schema)}`;
 
-async function askOpenAI({ system, user, messages, schema }) {
+// ChatGPT, Grok, DeepSeek e Perplexity: todos usam o formato de API da OpenAI
+async function askOpenAI({ system, user, messages, schema }, p = 'openai') {
+  const cfg = OPENAI_LIKE[p];
+  const model = aiModel(p);
+  const effort = effortFor(p, model);
   const body = {
-    model: aiModel('openai'),
+    model,
     messages: [{ role: 'system', content: system + (schema ? jsonRule(schema) : '') }, ...(messages ?? [{ role: 'user', content: user }])],
-    ...(schema ? { response_format: { type: 'json_object' } } : {}),
-    ...(effortFor('openai', aiModel('openai')) ? { reasoning_effort: effortFor('openai', aiModel('openai')) } : {}),
+    ...(schema ? { response_format: cfg.json === 'schema' ? { type: 'json_schema', json_schema: { schema } } : { type: 'json_object' } } : {}),
+    ...(effort ? { reasoning_effort: effort } : {}),
   };
-  const data = await http('https://api.openai.com/v1/chat/completions', {
+  const data = await http(`${cfg.base}/chat/completions`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${aiKey('openai')}` },
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${aiKey(p)}` },
     body: JSON.stringify(body),
   });
   const c = data.choices?.[0];
   if (!c || c.finish_reason === 'content_filter' || c.message?.refusal) throw new Error(t('A IA não pôde responder a este pedido.'));
   if (c.finish_reason === 'length' && schema) throw new Error(t('A resposta da IA veio incompleta. Tente de novo.'));
-  return (c.message?.content || '').trim();
+  // modelos que pensam em voz alta (Perplexity reasoning, DeepSeek) podem mandar o raciocínio entre <think>
+  return (c.message?.content || '').replace(/<think>[\s\S]*?<\/think>/g, '').trim();
 }
 
 async function askGemini({ system, user, messages, schema }) {
@@ -200,7 +218,7 @@ async function ask(opts) {
   if (!navigator.onLine) throw new Error(t('Sem internet: a IA precisa de conexão.'));
   const p = aiProvider();
   const o = { effort: 'medium', ...opts };
-  if (p === 'openai') return askOpenAI(o);
+  if (OPENAI_LIKE[p]) return askOpenAI(o, p);
   if (p === 'gemini') return askGemini(o);
   return askClaude(o);
 }
@@ -228,6 +246,27 @@ export async function listModels(provider, key) {
       .sort((a, b) => (b.created || 0) - (a.created || 0)).map(m => m.id);
     const pick = ids.find(id => /^gpt-.*mini/.test(id) && !/\d{4}-\d{2}-\d{2}$/.test(id)) || ids.find(id => /^gpt-/.test(id)) || ids[0];
     return { models: ids, recommended: pick };
+  }
+  if (provider === 'xai') {
+    const data = await http('https://api.x.ai/v1/models', { headers: { Authorization: `Bearer ${key}` } });
+    const ids = (data.data || []).map(m => m.id).filter(id => /^grok/.test(id) && !/(image|imagine|vision|video)/.test(id))
+      .sort((a, b) => versionOf(b) - versionOf(a));
+    const pick = ids.find(id => /fast/.test(id) && !/reasoning$/.test(id)) || ids.find(id => /mini/.test(id)) || ids[0];
+    return { models: ids, recommended: pick };
+  }
+  if (provider === 'deepseek') {
+    const data = await http('https://api.deepseek.com/models', { headers: { Authorization: `Bearer ${key}` } });
+    const ids = (data.data || []).map(m => m.id);
+    return { models: ids, recommended: ids.includes('deepseek-chat') ? 'deepseek-chat' : ids[0] };
+  }
+  if (provider === 'perplexity') {
+    // a Perplexity não tem lista de modelos: confere a chave com um pedido mínimo
+    await http('https://api.perplexity.ai/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+      body: JSON.stringify({ model: 'sonar', max_tokens: 1, messages: [{ role: 'user', content: 'ok' }] }),
+    });
+    return { models: PERPLEXITY_MODELS, recommended: 'sonar' };
   }
   if (provider === 'gemini') {
     const data = await http('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200', { headers: { 'x-goog-api-key': key } });

@@ -4,6 +4,7 @@ import { googleBtn, $, $$, esc, icon, actions, changes, submits, toast, sheet, c
 import { route, go, rerender } from '../router.js';
 import { sessionsCSV } from '../export.js';
 import { askRestNotify, testRestNotify } from './workout.js';
+import { PROVIDER_ICON } from '../aiicons.js';
 import { aiEnabled, aiAskExecution, PROVIDERS, aiProvider, aiKey, aiModel, setAiConfig, listModels, effortLevels, aiEffort, setAiEffort } from '../ai.js';
 import { driveAvailable, driveConnected, driveDirty, connect, sync, hasToken, refreshIfNeeded, logout, wipeRemote } from '../drive.js';
 import { isInstalled } from '../install.js';
@@ -170,13 +171,17 @@ function aiCard() {
   const note = {
     claude: t('Cobrado por uso na sua conta da Anthropic. Dá para definir um limite de gastos no Console.'),
     openai: t('Cobrado por uso na sua conta da OpenAI. A assinatura ChatGPT Plus não inclui a API: a chave é criada à parte.'),
+    xai: t('Cobrado por uso na sua conta da xAI. A assinatura do X Premium não inclui a API: a chave é criada à parte no console da xAI.'),
+    deepseek: t('Cobrado por uso, com preços bem baixos. Os pedidos são processados em servidores na China.'),
+    perplexity: t('Cobrado por uso na sua conta da Perplexity. Os modelos Sonar também pesquisam na internet, o que deixa cada resposta um pouco mais cara.'),
     gemini: t('Tem um uso gratuito com limites diários. No plano gratuito, o Google pode usar o que é enviado para melhorar os produtos dele.'),
   }[p];
   return `<div class="card stack">
     <h3>${t('Treinador IA (opcional)')}</h3>
     <p class="muted small">${t('Com uma chave de API da sua IA favorita (Claude, ChatGPT ou Gemini), você conversa com o Treinador sobre os seus treinos, e o app entende frases de voz mais livres e tira dúvidas de execução. Sem chave, tudo o mais funciona normalmente, inclusive sem internet.')}</p>
     <form class="stack" data-submit="saveKey">
-      <label class="field">${t('IA')}
+      <div class="prov-pick" role="radiogroup" aria-label="${t('IA')}">${Object.entries(PROVIDERS).map(([id, v]) => `<button type="button" class="prov-opt${id === p ? ' on' : ''}" data-act="pickAiProvider" data-p="${id}" role="radio" aria-checked="${id === p}">${PROVIDER_ICON[id] || ''}<span>${esc(v.name.split(' (')[0])}</span></button>`).join('')}</div>
+      <label class="field sr">${t('IA')}
         <select name="provider" data-change="setAiProvider">
           ${Object.entries(PROVIDERS).map(([id, v]) => `<option value="${id}"${id === p ? ' selected' : ''}>${v.name}</option>`).join('')}
         </select></label>
@@ -201,6 +206,7 @@ function aiCard() {
 }
 
 changes.setAiProvider = el => { state.settings.aiProvider = el.value; save(); rerender(); };
+actions.pickAiProvider = el => { state.settings.aiProvider = el.dataset.p; save(); rerender(); };
 
 /** Busca os modelos da chave e guarda a configuração. Devolve o modelo escolhido. */
 async function fetchModels(p, key, keepModel) {

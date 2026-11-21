@@ -19,7 +19,7 @@
   --good-ink: #006300;
   --crit: #d03b3b;
   --shadow: 0 8px 30px rgba(0, 0, 0, .12);
-  --tab-h: 62px;
+  --tab-h: 68px;
   --safe-b: env(safe-area-inset-bottom, 0px);
   --safe-t: env(safe-area-inset-top, 0px);
 }
@@ -200,7 +200,7 @@ body.no-tabs #view { padding-bottom: calc(170px + var(--safe-b)); }
 #tabbar a {
   flex: 1; max-width: 112px; height: var(--tab-h);
   display: grid; place-items: center; align-content: center; gap: 3px;
-  font-size: 11px; font-weight: 600; text-decoration: none; color: var(--muted);
+  font-size: 12px; font-weight: 600; text-decoration: none; color: var(--muted);
 }
 #tabbar a.on { color: var(--ink); }
 #tabbar a.on .ic { color: var(--accent); }
@@ -682,7 +682,7 @@ a.tpl { text-decoration: none; color: inherit; display: grid; }
 .help-btn small { color: var(--muted); font-weight: 400; font-size: 12px; }
 .help-btn .ic:first-child { color: var(--accent); }
 #tabbar .tab-label { text-align: center; line-height: 1.1; }
-#tabbar a[data-tab="ajustes"] .tab-label { font-size: 10px; }
+#tabbar a[data-tab="ajustes"] .tab-label { font-size: 11px; }
 
 /* rotinas de cardio */
 .croutine { display: grid; gap: 6px; padding: 12px 0; border-top: 1px solid var(--line); }
@@ -964,3 +964,16 @@ body.has-install .w-top { padding-right: 52px; }
 .lg-prompt { border: 1.5px solid color-mix(in srgb, var(--accent) 55%, var(--line)); margin: 4px 0 10px; }
 .lg-prompt > b { display: inline-flex; align-items: center; gap: 6px; }
 .lg-prompt > b .ic { width: 16px; height: 16px; color: var(--accent); }
+/* mais IAs: cor de cada uma no Treinador e escolha com ícone nos Ajustes */
+.coach-card.prov-xai { --ai: #8a8f98; }
+.coach-card.prov-deepseek { --ai: #4D6BFE; }
+.coach-card.prov-perplexity { --ai: #20808D; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .coach-card.prov-xai { --ai: #c9ccd1; } :root:not([data-theme="light"]) .coach-card.prov-perplexity { --ai: #2fb3c1; } }
+:root[data-theme="dark"] .coach-card.prov-xai { --ai: #c9ccd1; }
+:root[data-theme="dark"] .coach-card.prov-perplexity { --ai: #2fb3c1; }
+.prov-pick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.prov-opt { display: grid; justify-items: center; gap: 6px; padding: 10px 6px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-size: 13.5px; font-weight: 600; }
+.prov-opt .ic { width: 26px; height: 26px; }
+.prov-opt.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--surface)); }
+.field.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+#tabbar a .ic { width: 24px; height: 24px; } /* barra 10% maior: mais legível */
