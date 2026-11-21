@@ -212,6 +212,8 @@ actions.pickAiProvider = el => { state.settings.aiProvider = el.dataset.p; save(
 async function fetchModels(p, key, keepModel) {
   const { models, recommended } = await listModels(p, key);
   loadedModels[p] = models;
+  // guarda o recomendado como reserva, para quando o modelo escolhido não responder
+  if (recommended) state.settings.aiRecommended = { ...(state.settings.aiRecommended || {}), [p]: recommended };
   const model = keepModel && models.includes(keepModel) ? keepModel : recommended;
   if (!model) throw new Error(t('Nenhum modelo de texto encontrado para esta chave.'));
   return model;

@@ -103,16 +103,32 @@ function httpError(status, detail) {
   return new Error(t('Erro da IA ({n}). Tente mais tarde.', { n: status }));
 }
 
+const TIMEOUT = 90000; // por tentativa
 async function http(url, opts) {
-  // servidor sobrecarregado ou instável (500, 502, 503, 504): tenta de novo sozinho, com pausas curtas
+  // servidor sobrecarregado ou instável (500, 502, 503, 504) ou conexão que caiu: tenta de novo sozinho, com pausas curtas
   const waits = [1200, 3000];
   for (let attempt = 0; ; attempt++) {
     let res;
-    try { res = await fetch(url, opts); } catch { throw new Error(t('A conexão com a IA caiu (internet oscilou ou o app saiu da tela). Toque em Tentar de novo.')); }
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), TIMEOUT);
+    try {
+      res = await fetch(url, { ...opts, signal: ctl.signal });
+    } catch (e) {
+      clearTimeout(timer);
+      if (attempt < waits.length && navigator.onLine) { await new Promise(r => setTimeout(r, waits[attempt])); continue; }
+      const err = new Error(e?.name === 'AbortError'
+        ? t('A IA demorou demais para responder. Tente de novo ou escolha um modelo mais rápido em Ajustes (os "Flash" respondem bem mais rápido).')
+        : t('Não consegui falar com a IA (a internet oscilou ou o servidor não respondeu). Toque em Tentar de novo.'));
+      err.retryable = true;
+      throw err;
+    }
+    clearTimeout(timer);
     const body = await res.json().catch(() => ({}));
     if (res.ok) return body;
     if (res.status >= 500 && attempt < waits.length) { await new Promise(r => setTimeout(r, waits[attempt])); continue; }
-    throw httpError(res.status, body?.error?.message);
+    const err = httpError(res.status, body?.error?.message);
+    err.retryable = res.status >= 500 || res.status === 429;
+    throw err;
   }
 }
 
@@ -216,13 +232,36 @@ async function askGemini({ system, user, messages, schema, effort: taskEffort })
   return (c.content?.parts || []).map(x => x.text || '').join('').trim();
 }
 
+async function askWith(p, o) {
+  if (OPENAI_LIKE[p]) return askOpenAI(o, p);
+  if (p === 'gemini') return askGemini(o);
+  return askClaude(o);
+}
+/** Modelo reserva: o recomendado quando a chave foi salva (rápido e estável). */
+export const aiFallbackModel = (p = aiProvider()) => state.settings.aiRecommended?.[p] || ({ gemini: 'gemini-2.5-flash' })[p] || null;
+
 async function ask(opts) {
   if (!navigator.onLine) throw new Error(t('Sem internet: a IA precisa de conexão.'));
   const p = aiProvider();
   const o = { effort: 'medium', ...opts };
-  if (OPENAI_LIKE[p]) return askOpenAI(o, p);
-  if (p === 'gemini') return askGemini(o);
-  return askClaude(o);
+  try {
+    return await askWith(p, o);
+  } catch (e) {
+    const fb = aiFallbackModel(p);
+    const cur = aiModel(p);
+    if (!e.retryable || !fb || fb === cur) throw e;
+    // troca só neste pedido e avisa a tela
+    state.settings.aiModels = { ...state.settings.aiModels, [p]: fb };
+    try {
+      const out = await askWith(p, o);
+      window.dispatchEvent(new CustomEvent('ai-fallback', { detail: { from: cur, to: fb } }));
+      return out;
+    } catch {
+      throw e; // o reserva também falhou: mostra o erro do modelo escolhido
+    } finally {
+      state.settings.aiModels = { ...state.settings.aiModels, [p]: cur };
+    }
+  }
 }
 
 /** Lê o JSON da resposta, mesmo que venha entre crases de bloco de código. */

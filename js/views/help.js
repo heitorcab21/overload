@@ -190,9 +190,12 @@ const TOPICS = [
 ];
 
 /** A Ajuda inteira em texto simples, para a IA usar como manual do app. */
-export function helpText() {
+export function helpText(onlyCore = false) {
   const plain = html => html.replace(/<li>/g, '\n- ').replace(/<[^>]+>/g, '').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&').replace(/[ \t]+/g, ' ').replace(/\n\s*\n+/g, '\n').trim();
-  return (helpPack() || TOPICS).map(([title, sub, body]) => `## ${title} (${sub})\n${plain(body)}`).join('\n\n');
+  // tópicos que explicam os diferenciais: primeiros passos, cardio, progressão, metas, nível de força, progresso e Treinador
+  const CORE = [0, 5, 7, 8, 9, 13, 14];
+  return (helpPack() || TOPICS).filter((_, i) => !onlyCore || CORE.includes(i))
+    .map(([title, sub, body]) => `## ${title} (${sub})\n${plain(body)}`).join('\n\n');
 }
 
 function render() {

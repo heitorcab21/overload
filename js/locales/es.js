@@ -1369,6 +1369,9 @@ const ui = {
   "Para cada exercício, escolha a meta dos próximos 30 dias: três opções calculadas pelas suas cargas e pelo seu nível. O treino passa a mirar nela, em degraus semanais. Se preferir, siga só a sua progressão, treino a treino.": "Para cada ejercicio, elige la meta de los próximos 30 días: tres opciones calculadas según tus cargas y tu nivel. Los entrenos apuntan a ella en escalones semanales. Si prefieres, sigue solo tu progresión, entreno a entreno.",
   "{ex}: meta de 30 dias batida": "{ex}: meta de 30 días cumplida",
   "Sem registro desde a meta": "Sin registro desde la meta",
+  "A IA demorou demais para responder. Tente de novo ou escolha um modelo mais rápido em Ajustes (os \"Flash\" respondem bem mais rápido).": "La IA tardó demasiado en responder. Intenta de nuevo o elige un modelo más rápido en Ajustes (los \"Flash\" responden mucho más rápido).",
+  "Não consegui falar com a IA (a internet oscilou ou o servidor não respondeu). Toque em Tentar de novo.": "No pude comunicarme con la IA (la internet falló o el servidor no respondió). Toca Intentar de nuevo.",
+  "O modelo {a} não respondeu; usei o {b}. Se acontecer sempre, troque o modelo em Ajustes.": "El modelo {a} no respondió; usé {b}. Si pasa siempre, cambia el modelo en Ajustes.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

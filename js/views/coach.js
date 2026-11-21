@@ -160,7 +160,7 @@ Foque no que faz evoluir mais rápido: a carga certa sugerida a cada treino (pro
 No máximo 7 itens curtos começando com "- " e o diferencial em **negrito**, e uma frase final de como usar o app para evoluir mais rápido, citando um dado real da pessoa se houver. Nada sobre instalar, contas ou detalhes técnicos.]
 
 MANUAL DO APP:
-${helpText()}`;
+${helpText(true)}`;
 
 async function send(q, opts = {}) {
   q = String(q || '').trim();
@@ -300,3 +300,8 @@ window.addEventListener('scroll', () => {
   fab.classList.toggle('away', y > lastY);
   lastY = y;
 }, { passive: true });
+
+// quando o modelo escolhido não respondeu e o app usou o reserva
+window.addEventListener('ai-fallback', ev => {
+  toast(t('O modelo {a} não respondeu; usei o {b}. Se acontecer sempre, troque o modelo em Ajustes.', { a: ev.detail.from, b: ev.detail.to }), 6000);
+});
