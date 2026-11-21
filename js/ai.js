@@ -332,19 +332,94 @@ Baseie-se apenas nos dados fornecidos. Não dê diagnóstico médico: se houver 
  * Conversa com o Treinador: messages = [{ role: 'user' | 'assistant', content }], começando e terminando
  * numa mensagem da pessoa. context = os dados do app (treinos, fichas, perfil, metas, cardio).
  */
-export function aiChat(messages, context) {
+export function aiChat(messages, context, mem = null) {
   return ask({
     effort: 'low',
     cache: true,
     messages,
     system: `${COACH()}
-Você conversa com a pessoa dentro do app Overload, como o treinador dela. Use os dados abaixo, que são os registros reais dela no app:
-cite exercícios, cargas, datas e metas concretas. Se faltar informação para responder, diga o que falta e peça.
+Você conversa com a pessoa dentro do app Overload, como o treinador dela, numa conversa contínua: você se lembra do que ela contou.
+Use os dados abaixo, que são os registros reais dela no app: cite exercícios, cargas, datas e metas concretas.
+Use o caderno com naturalidade (por exemplo, pergunte da dor que ela relatou ou leve em conta o equipamento que ela tem), sem repetir tudo.
+Se faltar informação para responder, diga o que falta e peça.
 Seja direto: respostas curtas (até 150 palavras), salvo se a pessoa pedir algo maior, como montar um treino.
 Pode usar listas simples começadas por "- " e destacar termos com **negrito**; nada de tabelas.
 
 DADOS DO APP:
-${context}`,
+${context}${mem ? `
+
+O QUE VOCÊ JÁ SABE DA PESSOA (caderno do treinador, com data):
+${mem.notes}
+
+RESUMO DAS CONVERSAS ANTERIORES:
+${mem.summary}` : ''}`,
+  });
+}
+
+/** Depois de cada troca: o que anotar, corrigir ou apagar no caderno do treinador. */
+export async function aiCoachNotes(notesText, userMsg, answer) {
+  const out = await ask({
+    effort: 'low',
+    schema: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['add', 'update', 'remove'],
+      properties: {
+        add: { type: 'array', items: { type: 'string' }, description: 'Fatos novos, curtos (até 120 caracteres), em terceira pessoa.' },
+        update: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['id', 'text'], properties: { id: { type: 'string' }, text: { type: 'string' } } } },
+        remove: { type: 'array', items: { type: 'string' }, description: 'ids de fatos que deixaram de valer.' },
+      },
+    },
+    system: `Você mantém o caderno de um treinador de musculação sobre o aluno. Anote só fatos duradouros que a pessoa contou e que ajudam a treinar melhor:
+dores e lesões, condições de saúde, equipamento e local de treino, horários e rotina, sono e estresse, preferências e aversões, objetivos pessoais e datas (ex.: uma prova ou viagem), como ela reagiu a mudanças.
+Não anote números de treino que o app já registra (cargas, séries, datas de treino) nem o que o treinador disse.
+Se um fato mudou (ex.: a dor passou), atualize ou remova o antigo pelo id. No máximo 3 fatos novos. Nada novo: listas vazias.
+Escreva em ${REPLY()}.`,
+    user: `CADERNO ATUAL:
+${notesText}
+
+A PESSOA DISSE:
+${userMsg}
+
+O TREINADOR RESPONDEU:
+${answer}`,
+  });
+  return parseJSON(out);
+}
+
+/** Junta conversas antigas ao resumo (para lembrar sem mandar tudo de novo). */
+export function aiCoachSummary(prev, messages) {
+  return ask({
+    effort: 'low',
+    system: `Você resume conversas entre uma pessoa e o treinador de musculação dela, para o treinador lembrar depois.
+Junte o resumo anterior com as mensagens novas num só texto de no máximo 180 palavras, em ${REPLY()}.
+Guarde o que importa para continuar: dúvidas, conselhos dados, combinados, mudanças de plano e como ela se sentiu. Sem saudações.`,
+    user: `RESUMO ANTERIOR:
+${prev || '(nenhum)'}
+
+MENSAGENS NOVAS:
+${messages.map(m => `${m.role === 'user' ? 'Pessoa' : 'Treinador'}: ${m.content}`).join('\n')}`,
+  });
+}
+
+/** O Treinador puxa assunto ao abrir o chat. */
+export function aiCoachCheckin(context, mem) {
+  return ask({
+    effort: 'low',
+    system: `${COACH()}
+Você é o treinador da pessoa no app Overload e ela acabou de abrir o chat. Puxe assunto em uma ou duas frases curtas, como um treinador atento:
+retome algo do caderno (por exemplo, uma dor relatada ou um objetivo com data), comente o último treino ou uma meta perto de bater, e termine com uma pergunta.
+Nada de se apresentar nem de listas. Se não houver nada relevante, pergunte como ela está se sentindo para o próximo treino.
+
+DADOS DO APP:
+${context}
+
+CADERNO DO TREINADOR:
+${mem.notes}
+
+RESUMO DAS CONVERSAS ANTERIORES:
+${mem.summary}`,
+    user: '(a pessoa abriu o chat)',
   });
 }
 

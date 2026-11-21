@@ -20,6 +20,7 @@ const defaults = () => ({
   goals: { ex: {}, groups: {} },
   lastBackup: null, // data do último backup salvo ou compartilhado
   profile: null,    // { sex, birthYear, height, weight, waist?, neck?, hip?, weights: [{ date, kg }] }
+  coach: { chat: [], notes: [], summary: '', folded: 0, checkinAt: 0 }, // Treinador: conversa, caderno e resumo
   updatedAt: 0,     // momento da última alteração nos dados (para sincronizar)
   sync: null,       // só deste aparelho: { connected, email, fileId, syncedAt, lastSync, needLogin }
 });
@@ -30,6 +31,7 @@ function merge(raw) {
     ...d, ...raw,
     settings: { ...d.settings, ...(raw.settings || {}) },
     goals: { ex: {}, groups: {}, ...(raw.goals || {}) },
+    coach: { ...d.coach, ...(raw.coach || {}) },
   };
 }
 

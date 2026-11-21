@@ -942,3 +942,8 @@ body.has-install .w-top { padding-right: 52px; }
 .head.intent-top { min-height: 44px; margin-bottom: 4px; }
 .intent-title { margin: 0; }
 .intent-screen > .sub { margin: -6px 0 0; }
+/* memória do Treinador */
+.coach-mem-btn { display: inline-flex; align-items: center; gap: 6px; }
+.coach-mem-btn .ic, .coach-memory h2 .ic { width: 16px; height: 16px; color: var(--ai, var(--data)); }
+.coach-memory .coach-head h2 { display: inline-flex; align-items: center; gap: 8px; margin: 0; }
+.mem-item .t { font-size: 15px; }

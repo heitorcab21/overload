@@ -244,6 +244,34 @@ eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [10, { week: 10, 
   eq(cardioScenarios(null).map(x => x.n), [90, 150, 300], 'cardio: 90, 150 (OMS) e 300');
 }
 
+// ---- memória do Treinador ----
+{
+  const cm = await import('../js/coachmem.js');
+  const keepCoach = state.coach;
+  state.coach = { chat: [], notes: [], summary: '', folded: 0, checkinAt: 0 };
+  const c = state.coach;
+  c.chat.push({ role: 'assistant', content: 'Oi! Como foi o treino?', at: 1, checkin: true }, { role: 'user', content: 'Doeu o ombro', at: 2 });
+  eq(cm.apiMessages().map(m => m.role), ['user', 'assistant', 'user'], 'começa pela pessoa mesmo quando o treinador puxou assunto');
+  c.chat.push({ role: 'user', content: 'e o joelho', at: 3, error: true });
+  eq(cm.apiMessages().length, 3, 'mensagens com erro não vão para a IA');
+  c.chat = Array.from({ length: 30 }, (_, i) => ({ role: i % 2 ? 'assistant' : 'user', content: String(i), at: i }));
+  eq(cm.foldRange(), [0, 18], 'acima de 24 mensagens, as mais antigas viram resumo (fica as 12 últimas)');
+  c.folded = 18;
+  eq([cm.foldRange(), cm.apiMessages().length, cm.apiMessages()[0].content], [null, 12, '18'], 'depois do resumo vão só as 12 recentes');
+  cm.applyNotes({ add: ['Dor no ombro direito no supino', 'dor no ombro direito no supino', 'Treina em casa às terças'], update: [], remove: [] }, new Date('2026-11-21T12:00:00Z'));
+  eq(c.notes.map(n => n.text), ['Dor no ombro direito no supino', 'Treina em casa às terças'], 'anota sem repetir');
+  const id = c.notes[0].id;
+  cm.applyNotes({ add: [], update: [{ id, text: 'Ombro direito melhorou' }], remove: [c.notes[1].id] });
+  eq(c.notes.map(n => n.text), ['Ombro direito melhorou'], 'atualiza e apaga pelo id');
+  c.checkinAt = 0; c.chat = [{ role: 'user', content: 'x', at: Date.now() }];
+  eq(cm.shouldCheckin(), false, 'não puxa assunto logo depois de uma conversa');
+  c.chat[0].at = Date.now() - 5 * 3600e3;
+  eq(cm.shouldCheckin(), true, 'puxa assunto depois de algumas horas');
+  c.checkinAt = Date.now() - 3600e3;
+  eq(cm.shouldCheckin(), false, 'no máximo uma vez a cada 18 h');
+  state.coach = keepCoach;
+}
+
 // ---- meta da semana à mão ----
 const auto = autoWeekSet(ex, now);
 setWeekOverride(ex, 44, 9, now);
