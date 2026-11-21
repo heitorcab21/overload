@@ -5,7 +5,7 @@ import { route, go, rerender } from '../router.js';
 import { sessionsCSV } from '../export.js';
 import { askRestNotify, testRestNotify } from './workout.js';
 import { PROVIDER_ICON } from '../aiicons.js';
-import { aiEnabled, aiAskExecution, PROVIDERS, aiProvider, aiKey, aiModel, setAiConfig, listModels, effortLevels, aiEffort, setAiEffort } from '../ai.js';
+import { aiEnabled, aiAskExecution, PROVIDERS, aiProvider, aiKey, aiModel, setAiConfig, listModels, effortLevels, aiEffort, setAiEffort, isExperimental } from '../ai.js';
 import { driveAvailable, driveConnected, driveDirty, connect, sync, hasToken, refreshIfNeeded, logout, wipeRemote } from '../drive.js';
 import { isInstalled } from '../install.js';
 import { syncState, syncLabel, updateSyncBadge } from '../syncbadge.js';
@@ -190,11 +190,12 @@ function aiCard() {
       <a class="btn block" href="${info.keyUrl}" target="_blank" rel="noopener">${t('Criar chave de API: {ia}', { ia: info.name })}</a>
       <label class="field">${t('Modelo')}
         <select name="model" data-change="aiModelPick">
-          ${models.length ? models.map(m => `<option value="${esc(m)}"${m === current ? ' selected' : ''}>${esc(m)}</option>`).join('')
+          ${models.length ? models.map(m => `<option value="${esc(m)}"${m === current ? ' selected' : ''}>${esc(m)}${isExperimental(p, m) ? ` · ${t('experimental')}` : ''}</option>`).join('')
             : `<option value="">${t('Escolhido ao salvar a chave')}</option>`}
         </select></label>
       <button type="button" class="btn ghost block" data-act="loadModels">${t('Atualizar lista de modelos')}</button>
       <div id="effortBox">${effortField(p, current)}</div>
+      ${current && isExperimental(p, current) ? `<p class="small warn-text">${t('Modelo experimental: pode ficar lento, sobrecarregado ou sem resposta. Para o Treinador, prefira um modelo estável (no Gemini, um "Flash").')}</p>` : ''}
       <div class="row">
         <button class="btn primary grow">${t('Salvar')}</button>
         ${aiEnabled() ? `<button type="button" class="btn" data-act="testAI">${t('Testar')}</button>` : ''}

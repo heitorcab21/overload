@@ -1372,6 +1372,8 @@ const ui = {
   "A IA demorou demais para responder. Tente de novo ou escolha um modelo mais rápido em Ajustes (os \"Flash\" respondem bem mais rápido).": "The AI took too long to answer. Try again or pick a faster model in Settings (\"Flash\" models answer much faster).",
   "Não consegui falar com a IA (a internet oscilou ou o servidor não respondeu). Toque em Tentar de novo.": "Couldn't reach the AI (the internet wavered or the server didn't answer). Tap Try again.",
   "O modelo {a} não respondeu; usei o {b}. Se acontecer sempre, troque o modelo em Ajustes.": "The {a} model didn't answer; I used {b}. If this keeps happening, change the model in Settings.",
+  "experimental": "experimental",
+  "Modelo experimental: pode ficar lento, sobrecarregado ou sem resposta. Para o Treinador, prefira um modelo estável (no Gemini, um \"Flash\").": "Experimental model: it may be slow, overloaded or not answer at all. For the Coach, prefer a stable model (on Gemini, a \"Flash\").",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };

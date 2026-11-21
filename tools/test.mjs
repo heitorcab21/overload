@@ -120,6 +120,9 @@ eq([planFor(ex).w, planFor(ex).reps, planFor(ex).kind], [42.5, [8, 8, 8], 'up'],
   eq(effortLevels('openai', 'gpt-5-mini'), ['minimal', 'low', 'medium', 'high'], 'GPT-5: reasoning_effort');
   eq(effortLevels('openai', 'gpt-4o'), [], 'GPT-4o: sem esforço');
   eq(effortLevels('gemini', 'gemini-2.5-flash'), ['low', 'medium', 'high'], 'Gemini 2.5: orçamento de raciocínio');
+  eq(effortLevels('gemini', 'gemini-4-hydrogen'), ['low', 'high'], 'Gemini 4: nível de raciocínio (pensa pouco no chat)');
+  const { isExperimental } = await import('../js/ai.js');
+  eq(['gemini-3.8-flash', 'gemini-4-hydrogen', 'gemini-3.1-pro-preview', 'gemini-3.5-flash-lite'].map(m => isExperimental('gemini', m)), [false, true, true, false], 'codinomes e prévias do Gemini são experimentais');
 }
 
 // RIR: folga grande acelera, zero de folga segura; aquecimento não vira base da progressão

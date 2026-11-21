@@ -55,7 +55,7 @@ export function effortLevels(p = aiProvider(), model = aiModel(p)) {
     return [];
   }
   if (p === 'gemini') {
-    if (/gemini-3/.test(m)) return ['low', 'high'];
+    if (/gemini-([3-9]|\d{2})/.test(m)) return ['low', 'high'];
     if (/gemini-2\.5/.test(m)) return ['low', 'medium', 'high'];
     return [];
   }
@@ -219,7 +219,7 @@ async function askGemini({ system, user, messages, schema, effort: taskEffort })
       ...(() => {
         const gen = { ...(schema ? { responseMimeType: 'application/json' } : {}) };
         const e = effortFor('gemini', model, taskEffort);
-        if (e) gen.thinkingConfig = /gemini-3/.test(model) ? { thinkingLevel: e } : { thinkingBudget: { low: 1024, medium: 8192, high: 24576 }[e] };
+        if (e) gen.thinkingConfig = /gemini-([3-9]|\d{2})/.test(model) ? { thinkingLevel: e } : { thinkingBudget: { low: 1024, medium: 8192, high: 24576 }[e] };
         return Object.keys(gen).length ? { generationConfig: gen } : {};
       })(),
     }),
@@ -277,6 +277,16 @@ export function parseJSON(text) {
 
 const versionOf = id => Number((id.match(/(\d+(?:\.\d+)?)/) || [])[1] || 0);
 
+/**
+ * Modelo experimental: prévias, versões "exp"/"latest" e, no Gemini, codinomes sem família (ex.: gemini-4-hydrogen),
+ * que costumam ter acesso limitado, ficar sobrecarregados ou nem responder.
+ */
+export function isExperimental(p, id) {
+  if (/(preview|exp|latest)/.test(id)) return true;
+  if (p === 'gemini') return !/(flash|pro|ultra|nano)/.test(id);
+  return false;
+}
+
 /** Busca os modelos de texto disponíveis na chave e indica um padrão rápido e barato. */
 export async function listModels(provider, key) {
   if (!navigator.onLine) throw new Error(t('Sem internet: a IA precisa de conexão.'));
@@ -311,13 +321,14 @@ export async function listModels(provider, key) {
   }
   if (provider === 'gemini') {
     const data = await http('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200', { headers: { 'x-goog-api-key': key } });
-    const skip = /(embedding|image|tts|audio|live|vision|aqa|learnlm|gemma)/;
+    const skip = /(embedding|image|tts|audio|live|vision|aqa|learnlm|gemma|transcribe|customtools|robotics|computer-use)/;
+    // primeiro os modelos estáveis com nome de família (flash, pro); os experimentais (preview, codinomes) vão para o fim
     const ids = (data.models || [])
       .filter(m => (m.supportedGenerationMethods || []).includes('generateContent'))
       .map(m => m.name.replace(/^models\//, ''))
       .filter(id => id.startsWith('gemini') && !skip.test(id))
-      .sort((a, b) => versionOf(b) - versionOf(a));
-    const stable = ids.filter(id => !/(preview|exp|latest)/.test(id));
+      .sort((a, b) => (isExperimental('gemini', a) - isExperimental('gemini', b)) || versionOf(b) - versionOf(a));
+    const stable = ids.filter(id => !isExperimental('gemini', id));
     const pick = stable.find(id => /flash/.test(id) && !/lite/.test(id)) || stable[0] || ids[0];
     return { models: ids, recommended: pick };
   }
