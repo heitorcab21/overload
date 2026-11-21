@@ -304,9 +304,12 @@ const radarAxes = p => RADAR_AXES().map(([n1, n2, lifts]) => {
     .filter(x => x.l.pct !== undefined && lifts.includes(x.l.lift)).sort((a, b) => b.l.pct - a.l.pct)[0];
   return { name, n1, n2, lifts, best };
 });
-function radarSvg(p) {
-  const axes = radarAxes(p);
-  if (!axes.some(a => a.best)) return '';
+function radarSvg(p, placeholder = false) {
+  // sem perfil: o desenho do radar vazio, só para mostrar o que vai aparecer
+  const axes = placeholder
+    ? RADAR_AXES().map(([n1, n2, lifts]) => ({ name: n2 ? `${n1} ${n2}` : n1, n1, n2, lifts, best: null }))
+    : radarAxes(p);
+  if (!placeholder && !axes.some(a => a.best)) return '';
   const W = 320, H = 250, cx = W / 2, cy = 126, R = 80;
   const pt = (i, f) => { const a = -Math.PI / 3 + i * Math.PI * 2 / 6; return [cx + Math.cos(a) * R * f, cy + Math.sin(a) * R * f]; };
   const poly = f => axes.map((_, i) => pt(i, f).map(v => v.toFixed(1)).join(',')).join(' ');
@@ -342,8 +345,22 @@ function radarSvg(p) {
 
 function strengthOverview() {
   const p = profile();
-  // sem perfil, o convite para preencher fica só no cartão "Seu corpo"
-  if (!p) return '';
+  // sem perfil: radar apagado e inativo, com o convite grande para preencher os dados
+  if (!p) {
+    return `<div class="card stack strength-card locked">
+      <h3>${t('Seu nível de força')}</h3>
+      <div class="radar-lock">
+        <div class="radar-ghost" aria-hidden="true">${radarSvg(null, true)}</div>
+        <div class="lock-msg">
+          <span class="lock-ic">${icon.target}</span>
+          <b class="lock-title">${t('Complete seus dados para liberar seus percentis de força e desempenho')}</b>
+          <p class="small">${t('Com sexo, idade, altura e peso, o app compara você com pessoas como você e mostra em que top você está em cada exercício.')}</p>
+          <button class="btn primary block" data-act="editProfile">${t('Preencher meus dados')}</button>
+          <p class="small muted">${t('Opcional: cintura, pescoço e quadril deixam a gordura e a massa magra bem mais precisas.')}</p>
+        </div>
+      </div>
+    </div>`;
+  }
   const rows = strengthRows(p);
   if (!rows.length) {
     return `<a class="card stack strength-card link-card" href="#/forca"><div class="row between"><h3>${t('Seu nível de força')}</h3>${icon.next}</div>
@@ -450,8 +467,8 @@ function bodyCard() {
   const p = profile();
   if (!p) {
     return `<div class="card stack">
-      <h3>${t('Seu corpo e nível de força')}</h3>
-      <p class="muted">${t('Informe sexo, idade, altura e peso para ver seu IMC, o percentual de gordura estimado, a massa magra e a massa gorda, e em que top de força você está em cada exercício.')}</p>
+      <h3>${t('Seu corpo')}</h3>
+      <p class="muted">${t('Com os mesmos dados, o app estima seu IMC, o percentual de gordura, a massa magra e a massa gorda, e acompanha seu peso.')}</p>
       <button class="btn primary block" data-act="editProfile">${t('Preencher perfil')}</button>
     </div>`;
   }

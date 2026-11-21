@@ -1007,3 +1007,12 @@ body.has-install .w-top { padding-right: 52px; }
 .axis-row:not(.mine) .t { color: var(--ink-2); }
 .max-box { border-top: 1px solid var(--line); padding-top: 10px; }
 .max-box summary { font-size: 14.5px; }
+/* radar inativo enquanto faltam os dados do perfil */
+.radar-lock { position: relative; display: grid; }
+.radar-lock > * { grid-area: 1 / 1; }
+.radar-ghost { opacity: .3; filter: grayscale(1) blur(1.5px); pointer-events: none; display: grid; }
+.lock-msg { display: grid; justify-items: center; align-content: center; gap: 10px; text-align: center; padding: 8px 6px; z-index: 1; }
+.lock-ic { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: color-mix(in srgb, var(--accent) 18%, transparent); color: var(--accent); }
+.lock-ic .ic { width: 24px; height: 24px; }
+.lock-title { font-size: 20px; line-height: 1.25; max-width: 300px; }
+.lock-msg .btn { max-width: 300px; }

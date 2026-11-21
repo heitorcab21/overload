@@ -1352,6 +1352,11 @@ const ui = {
   "Ombros (isoladores)": "Hombros (aislados)",
   "Pernas e glúteos (isoladores)": "Piernas y glúteos (aislados)",
   "Panturrilha": "Pantorrillas",
+  "Complete seus dados para liberar seus percentis de força e desempenho": "Completa tus datos para desbloquear tus percentiles de fuerza y rendimiento",
+  "Com sexo, idade, altura e peso, o app compara você com pessoas como você e mostra em que top você está em cada exercício.": "Con sexo, edad, altura y peso, la app te compara con personas como tú y muestra en qué top estás en cada ejercicio.",
+  "Preencher meus dados": "Completar mis datos",
+  "Opcional: cintura, pescoço e quadril deixam a gordura e a massa magra bem mais precisas.": "Opcional: cintura, cuello y cadera hacen la grasa y la masa magra mucho más precisas.",
+  "Com os mesmos dados, o app estima seu IMC, o percentual de gordura, a massa magra e a massa gorda, e acompanha seu peso.": "Con los mismos datos, la app estima tu IMC, el porcentaje de grasa, la masa magra y la masa grasa, y sigue tu peso.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
