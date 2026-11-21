@@ -1338,7 +1338,7 @@ const ui = {
   "Comparado com {grupo} de {idade} anos e cerca de {peso} kg que registram treinos na Strength Level (público dedicado). Top 50% = intermediário de academia. Estimativa, não é um ranking oficial.": "Compared with {grupo} aged {idade} at about {peso} kg who log their training on Strength Level (a dedicated crowd). Top 50% = intermediate gym-goer. An estimate, not an official ranking.",
   "{k} séries iguais: ~{n} de reserva": "{k} equal sets: ~{n} in reserve",
   "Seu nível de treino: pelas suas séries dos últimos 60 dias (séries iguais contam como reserva), comparado com {grupo} de {idade} anos e cerca de {peso} kg (normas do Cooper Institute, usadas pelo ACSM). Top 50% = a média.": "Your training level: from your sets in the last 60 days (equal sets count as reserve), compared with {grupo} aged {idade} at about {peso} kg (Cooper Institute norms, used by the ACSM). Top 50% = average.",
-  "Cada exercício usa a própria tabela da Strength Level, ajustada para adultos em geral pelas normas do Cooper Institute (ACSM). Isoladores, como cadeiras e crucifixos, ficam de fora. A força máxima (1RM) de cada exercício, comparada só com quem treina sério, fica na tela do exercício.": "Each exercise uses its own Strength Level table, adjusted to adults in general by the Cooper Institute norms (ACSM). Isolation moves such as leg extensions and flyes are left out. Each exercise's maximum strength (1RM), compared only with serious lifters, is on the exercise screen.",
+  "Cada exercício usa a própria tabela da Strength Level, ajustada para adultos em geral pelas normas do Cooper Institute (ACSM). Os isoladores (cadeiras, crucifixos, tríceps, panturrilha, abdômen) também têm nível, mas ficam fora do radar. A força máxima (1RM), comparada só com quem treina sério, fica na tela do exercício.": "Each exercise uses its own Strength Level table, adjusted to adults in general by the Cooper Institute norms (ACSM). Isolation moves (leg extensions, flyes, triceps, calves, abs) also get a level but stay off the radar. Maximum strength (1RM), compared only with serious lifters, is on the exercise screen.",
   "O radar usa o seu melhor exercício do eixo, pelo seu nível de treino. Cargas pela tabela de cada exercício, comparadas com adultos em geral (Cooper Institute / ACSM).": "The radar uses your best exercise on the axis, by training level. Loads from each exercise's table, compared with adults in general (Cooper Institute / ACSM).",
   "nível de treino": "training level",
   "Pelas suas séries dos últimos 60 dias, comparado com {grupo} de {idade} anos e cerca de {peso} kg (normas do Cooper Institute, usadas pelo ACSM). Top 50% = a média.": "From your sets in the last 60 days, compared with {grupo} aged {idade} at about {peso} kg (Cooper Institute norms, used by the ACSM). Top 50% = average.",
@@ -1347,6 +1347,11 @@ const ui = {
   "{w} kg": "{w} kg",
   "Comparado com {grupo} de {idade} anos e cerca de {peso} kg que registram treinos na Strength Level (público dedicado). Top 50% = intermediário.": "Compared with {grupo} aged {idade} at about {peso} kg who log their training on Strength Level (a dedicated crowd). Top 50% = intermediate.",
   "Teste salvo. Sua força máxima agora: top {n}%.": "Test saved. Your maximum strength now: top {n}%.",
+  "Peito (isoladores)": "Chest (isolation)",
+  "Costas e lombar (isoladores)": "Back and lower back (isolation)",
+  "Ombros (isoladores)": "Shoulders (isolation)",
+  "Pernas e glúteos (isoladores)": "Legs and glutes (isolation)",
+  "Panturrilha": "Calves",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -1463,7 +1468,7 @@ const help = [
       <li><b>Estimated body fat</b>: with waist and neck (and hips, for women), the app uses the US Navy formula (about 3 to 4 points of error). Without them, it uses BMI, age and sex (about 5 points) and subtracts up to 4 points if you are strong for your weight.</li>
       <li><b>Body weight</b>: the chart sits right below the values. One entry per day.</li>
       <li><b>Strength level</b>: a <b>radar</b> with the 6 movement patterns (horizontal and vertical push and pull, squat and hip hinge). The left side is the front of the body and the right side the back: the shape shows imbalances. Tap an axis to see the exercise and your percentile. It is your <b>training level</b>: it comes from your sets in the last 60 days (equal sets count as reserve) and compares you with adults of the same sex, age and weight, using the Cooper Institute norms used by the ACSM. Top 10% = stronger than 90% of them.</li>
-      <li>Tap the card to see each exercise, grouped by movement pattern, and <b>Check any exercise</b> to see your percentile instantly, without saving. Compound exercises for each pattern count, including machines, cables and push-ups, each compared with its own Strength Level table (millions of logged lifts); isolation moves (leg extensions, flyes) are left out.</li>
+      <li>Tap the card to see each exercise, grouped by movement pattern, and <b>Check any exercise</b> to see your percentile instantly, without saving. Compound exercises for each pattern count, including machines, cables and push-ups, each compared with its own Strength Level table (millions of logged lifts); isolation moves (leg extensions, flyes, triceps, calves, abs) also get a level but stay off the radar.</li>
       <li><b>Maximum strength (1RM)</b>: shown separately on each exercise screen. It comes from your best set in the last 90 days (or a <b>strength test</b>) and is compared only with people who log their training on Strength Level, a dedicated crowd, so its percentile is stricter.</li>
     </ul>
     <p class="tip">These are estimates. For a reliable body fat number, get a body assessment (bioimpedance, skinfolds or DEXA).</p>`],

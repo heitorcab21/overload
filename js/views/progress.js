@@ -361,7 +361,10 @@ function strengthOverview() {
 const PATTERNS = () => [
   [t('Empurrar na horizontal'), ['bench', 'dip']], [t('Empurrar na vertical'), ['ohp']],
   [t('Puxar na horizontal'), ['row']], [t('Puxar na vertical'), ['pullup']],
-  [t('Agachar'), ['squat']], [t('Dobradiça de quadril'), ['deadlift', 'hipthrust']], [t('Braços'), ['curl']],
+  [t('Agachar'), ['squat']], [t('Dobradiça de quadril'), ['deadlift', 'hipthrust']],
+  // isoladores: têm nível, mas não entram no radar
+  [t('Bíceps'), ['curl']], [t('Tríceps'), ['triceps']], [t('Peito (isoladores)'), ['chest-iso']], [t('Costas e lombar (isoladores)'), ['back-iso']],
+  [t('Ombros (isoladores)'), ['shoulder-iso']], [t('Pernas e glúteos (isoladores)'), ['leg-iso']], [t('Panturrilha'), ['calf']], [t('Abdômen'), ['core']],
 ];
 const libName = id => exPack(id)?.name ?? LIB_BY_ID[id].name;
 
@@ -434,7 +437,7 @@ function renderStrength() {
       ${pending.length ? `<h3 class="group-title">${t('Ainda sem registro')}</h3>
         <div class="card flat"><div class="list">${pending.map(ex => `<a class="item" href="#/exercicio/${encodeURIComponent(ex.id)}">
           <span class="grow t">${esc(exName(ex))}</span><span class="small muted">${t('treine ou faça um teste')}</span>${icon.next}</a>`).join('')}</div></div>` : ''}
-      <p class="small muted">${t('Cada exercício usa a própria tabela da Strength Level, ajustada para adultos em geral pelas normas do Cooper Institute (ACSM). Isoladores, como cadeiras e crucifixos, ficam de fora. A força máxima (1RM) de cada exercício, comparada só com quem treina sério, fica na tela do exercício.')}</p>`}
+      <p class="small muted">${t('Cada exercício usa a própria tabela da Strength Level, ajustada para adultos em geral pelas normas do Cooper Institute (ACSM). Os isoladores (cadeiras, crucifixos, tríceps, panturrilha, abdômen) também têm nível, mas ficam fora do radar. A força máxima (1RM), comparada só com quem treina sério, fica na tela do exercício.')}</p>`}
     </div>`;
 }
 
