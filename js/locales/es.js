@@ -1215,6 +1215,12 @@ const ui = {
   "Editar meta": "Editar meta",
   "Definir meta": "Definir meta",
   "Completar a ficha": "Completar la rutina",
+  "escolha uma meta": "elige una meta",
+  "Difícil": "Difícil",
+  "Metas possíveis até o fim de {mes}": "Metas posibles hasta fin de {mes}",
+  "Pelas suas cargas atuais neste exercício. Toque para escolher.": "Según tus cargas actuales en este ejercicio. Toca para elegir.",
+  "Toque num eixo do radar para ver o detalhe.": "Toca un eje del radar para ver el detalle.",
+  "Ainda sem registro. Para medir: {ex}.": "Aún sin registro. Para medir: {ex}.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

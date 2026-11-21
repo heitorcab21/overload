@@ -7,6 +7,7 @@ import { t, tn, exPack } from '../i18n.js';
 import { planFor, exGoalStatus, entriesFor, defaultGroupGoals } from '../logic.js';
 import { ensureExercise, planStr } from './home.js';
 import { exerciseProgress, groupWord } from './progress.js';
+import { scenarioCard } from './goals.js';
 import { strengthLevel, profile, oneRepMax } from '../body.js';
 import { aiEnabled, aiAskExecution, aiCuesFor } from '../ai.js';
 import { imperial, toW, fromW, toStep, wUnit, ul } from '../units.js';
@@ -403,7 +404,7 @@ function renderExercise(id) {
       ${st && !st.expired ? `<a class="card" href="#/metas" style="text-decoration:none">
         <div class="goal-row"><div class="top"><b>${t('Meta da semana')}</b><span class="num">${setStr(st.weekSet)}</span></div>${meter(st.weekPct, st.weekDone)}</div>
         <div class="goal-row"><div class="top"><b>${t('Meta do mês')}</b><span class="num">${setStr(st.goal)}</span></div>${meter(st.monthPct, st.monthDone)}</div>
-      </a>` : `<button class="btn block" data-act="editExGoal" data-id="${esc(ex.id)}">${icon.target}${t('Definir meta do mês')}</button>`}
+      </a>` : scenarioCard(ex) || `<button class="btn block" data-act="editExGoal" data-id="${esc(ex.id)}">${icon.target}${t('Definir meta do mês')}</button>`}
 
       <div class="card stack">
         <h3>${t('Execução ideal')}</h3>

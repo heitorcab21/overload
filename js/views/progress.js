@@ -298,13 +298,14 @@ const RADAR_AXES = () => [
   [t('Agachar'), '', ['squat']], [t('Empurrar'), t('horizontal'), ['bench', 'dip']], [t('Empurrar'), t('vertical'), ['ohp']],
 ];
 /** Radar de força (só o gráfico), usado dentro do cartão "Seu nível de força". */
+const radarAxes = p => RADAR_AXES().map(([n1, n2, lifts]) => {
+  const name = n2 ? `${n1} ${n2}` : n1;
+  const best = Object.values(state.exercises).map(ex => ({ ex, l: strengthLevel(ex, p) }))
+    .filter(x => x.l.pct !== undefined && lifts.includes(x.l.lift)).sort((a, b) => b.l.pct - a.l.pct)[0];
+  return { name, n1, n2, lifts, best };
+});
 function radarSvg(p) {
-  const axes = RADAR_AXES().map(([n1, n2, lifts]) => {
-    const name = n2 ? `${n1} ${n2}` : n1;
-    const best = Object.values(state.exercises).map(ex => ({ ex, l: strengthLevel(ex, p) }))
-      .filter(x => x.l.pct !== undefined && lifts.includes(x.l.lift)).sort((a, b) => b.l.pct - a.l.pct)[0];
-    return { name, n1, n2, best };
-  });
+  const axes = radarAxes(p);
   if (!axes.some(a => a.best)) return '';
   const W = 320, H = 280, cx = W / 2, cy = 140, R = 80;
   const pt = (i, f) => { const a = -Math.PI / 3 + i * Math.PI * 2 / 6; return [cx + Math.cos(a) * R * f, cy + Math.sin(a) * R * f]; };
@@ -321,8 +322,14 @@ function radarSvg(p) {
     return lines.map(([txt, cls], k) => `<text x="${x.toFixed(1)}" y="${(y0 + 14 * k).toFixed(1)}" text-anchor="${anchor}" class="${cls}">${esc(txt)}</text>`).join('');
   }).join('');
   const dots = axes.map((a, i) => (a.best ? (() => { const [x, y] = pt(i, Math.max(0.04, a.best.l.pct / 100)); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5" class="r-dot"/>`; })() : '')).join('');
+  // área de toque de cada eixo: uma fatia de 60° em volta dele
+  const hits = axes.map((a, i) => {
+    const ang = k => -Math.PI / 3 + i * Math.PI / 3 + k * Math.PI / 6;
+    const q = k => `${(cx + Math.cos(ang(k)) * R * 1.6).toFixed(1)},${(cy + Math.sin(ang(k)) * R * 1.6).toFixed(1)}`;
+    return `<polygon points="${cx},${cy} ${q(-1)} ${q(0)} ${q(1)}" class="r-hit" data-act="radarPick" data-i="${i}" tabindex="0" role="button" aria-label="${esc(a.name)}"/>`;
+  }).join('');
   return `<svg viewBox="0 0 ${W} ${H}" class="radar" role="img" aria-label="${esc(axes.map(a => `${a.name}: ${a.best ? t('Top {n}%', { n: a.best.l.top }) : t('sem dado')}`).join(', '))}">
-      ${rings}${spokes}<polygon points="${vals}" class="r-area"/>${dots}${labels}
+      ${hits}${rings}${spokes}<polygon points="${vals}" class="r-area"/>${dots}${labels}
       <text x="12" y="${H - 4}" class="r-side">${esc(t('frente do corpo'))}</text><text x="${W - 12}" y="${H - 4}" text-anchor="end" class="r-side">${esc(t('trás do corpo'))}</text></svg>`;
 }
 
@@ -341,6 +348,7 @@ function strengthOverview() {
     <div class="row between"><span class="grow"><span class="small muted">${t('Seu destaque')}</span><br><b>${esc(exName(best.ex))}</b></span>
       <span class="top-chip big">${t('Top {n}%', { n: best.lv.top })}</span></div>
     ${radarSvg(p)}
+    <div class="r-info small">${t('Toque num eixo do radar para ver o detalhe.')}</div>
     <p class="small muted">${tn(rows.length, 'Veja o seu nível em {n} exercício', 'Veja o seu nível em cada um dos {n} exercícios')}</p>
   </a>`;
 }
@@ -581,3 +589,24 @@ actions.skipBodyIntro = () => { state.settings.profileAsked = true; save(); go('
 route('perfil', renderBodyIntro, { noTabs: true });
 route('progresso', render);
 route('forca', renderStrength, { tab: 'progresso' });
+
+// toque num eixo do radar: mostra o exercício que define o eixo (sem sair do cartão)
+actions.radarPick = (el, ev) => {
+  ev?.preventDefault();
+  const p = profile();
+  const a = p && radarAxes(p)[Number(el.dataset.i)];
+  const card = el.closest('.strength-card');
+  if (!a || !card) return;
+  card.querySelectorAll('.r-hit.sel').forEach(x => x.classList.remove('sel'));
+  el.classList.add('sel');
+  const box = card.querySelector('.r-info');
+  if (!a.best) {
+    const names = LIB.filter(l => STRENGTH_LIFTS[l.id] && a.lifts.includes(STRENGTH_LIFTS[l.id][0])).slice(0, 3).map(l => libName(l.id));
+    box.innerHTML = `<b>${esc(a.name)}</b><br>${esc(t('Ainda sem registro. Para medir: {ex}.', { ex: names.join(', ') }))}`;
+    return;
+  }
+  const { ex, l } = a.best;
+  box.innerHTML = `<b>${esc(a.name)}</b> · <span class="top-chip">${esc(t('Top {n}%', { n: l.top }))}</span><br>
+    ${esc(exName(ex))} · ${ul(t('1RM estimado: {w} kg', { w: Math.round(toW(l.oneRM)) }))}<br>
+    <span class="muted">${l.src.test ? t('teste de força') : esc(setStr(l.src))} · ${fmtDate(l.src.date, false)}</span>`;
+};

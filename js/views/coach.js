@@ -21,6 +21,7 @@ const PROVIDER_ICON = {
   openai: '<svg class="ic prov" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="#10A37F" stroke-width="1.9">'
     + [0, 60, 120].map(a => `<ellipse cx="12" cy="12" rx="4" ry="9" transform="rotate(${a} 12 12)"/>`).join('') + '</g></svg>',
 };
+const SEND_IC = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 const coachIcon = () => (aiEnabled() && PROVIDER_ICON[aiProvider()]) || icon.spark;
 
 const KEY = 'overload:coach';
@@ -108,10 +109,12 @@ function render() {
     ${busy ? '' : `<div class="coach-sugs">${suggestions().map(q => `<button class="chip" data-act="coachAsk" data-q="${esc(q)}">${esc(q)}</button>`).join('')}</div>`}
     <form class="coach-form" data-submit="coachSend">
       <textarea name="q" rows="1" maxlength="1000" placeholder="${t('Escreva sua pergunta…')}" ${busy ? 'disabled' : ''}></textarea>
-      <button class="btn primary" ${busy ? 'disabled' : ''} aria-label="${t('Enviar')}">${icon.next}</button>
+      <button class="coach-send" ${busy ? 'disabled' : ''} aria-label="${t('Enviar')}">${SEND_IC}</button>
     </form>
     <p class="small muted coach-note">${t('Usa {p} com a sua chave. A conversa fica só neste aparelho.', { p: PROVIDERS[aiProvider()]?.name || 'IA' })}</p>
   </div>`);
+  // borda e detalhes na cor da IA em uso
+  $('#sheet .sheet-card')?.classList.add('coach-card', `prov-${aiProvider()}`);
   const log = $('#coachLog');
   if (log) log.scrollTop = log.scrollHeight;
 }

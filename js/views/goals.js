@@ -46,7 +46,10 @@ function render() {
   const exRow = ex => {
     const st = exGoalStatus(ex, now);
     if (!st) {
-      return `<tr data-act="editExGoal" data-id="${esc(ex.id)}" tabindex="0">
+      const mini = scenarioMini(ex);
+      return mini ? `<tr data-act="editExGoal" data-id="${esc(ex.id)}" tabindex="0">
+        <td class="n" colspan="2"><span class="row between"><span>${esc(exName(ex))}</span><span class="small muted">${t('escolha uma meta')}</span></span>${mini}</td></tr>`
+        : `<tr data-act="editExGoal" data-id="${esc(ex.id)}" tabindex="0">
         <td class="n">${esc(exName(ex))}</td>
         <td class="v muted">${t('definir meta')}</td></tr>`;
     }
@@ -396,3 +399,25 @@ actions.fillApply = el => {
   save(); closeSheet(); rerender();
   toast(t('Ficha ajustada: {n} séries de {g} por semana.', { n: p.total, g: tg(g).toLowerCase() }), 3500);
 };
+
+// ---------- Cenários à vista: na lista de Metas e na tela do exercício ----------
+const SHORT = () => ({ conservador: t('Conservador'), moderado: t('Moderado'), dificil: t('Difícil') });
+/** Três botões pequenos (um por cenário); tocar escolhe a meta. Null sem histórico. */
+export function scenarioMini(ex) {
+  const sc = scenarios(ex);
+  if (!sc) return null;
+  const S = SHORT();
+  return `<span class="scen-mini">${sc.map(x => `<button class="scen-m scen-${x.key}" data-act="pickScenario" data-id="${esc(ex.id)}" data-w="${x.set.w}" data-r="${x.set.r}" data-k="${x.key}">
+    <span class="k">${esc(S[x.key])}</span><b class="num">${esc(setStr(x.set))}</b><span class="g">+${esc(fmt1(x.growth * 100))}%</span></button>`).join('')}</span>`;
+}
+/** Cartão da tela do exercício sem meta: cenários do mês e a opção de definir a própria. */
+export function scenarioCard(ex) {
+  const mini = scenarioMini(ex);
+  if (!mini) return null;
+  return `<div class="card stack">
+    <div class="row between"><h3>${t('Metas possíveis até o fim de {mes}', { mes: monthName(new Date().getMonth()) })}</h3></div>
+    <p class="small muted">${t('Pelas suas cargas atuais neste exercício. Toque para escolher.')}</p>
+    ${mini}
+    <button class="link-btn" data-act="editExGoal" data-id="${esc(ex.id)}">${t('Definir a minha meta')}</button>
+  </div>`;
+}
