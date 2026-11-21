@@ -983,7 +983,8 @@ body.has-install .w-top { padding-right: 52px; }
 /* sugestão em destaque no chat do Treinador */
 /* fundo branco, borda de arco-íris e um brilho leve; só um pouco maior que as outras */
 .coach-sugs .chip.pitch {
-  display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14.5px; padding: 7px 14px; color: #141414;
+  display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; padding: 7px 14px; color: #141414;
+  max-width: 100%; white-space: normal; text-align: left; line-height: 1.25;
   border: 2px solid transparent; border-radius: 99px;
   background: linear-gradient(#fff, #fff) padding-box,
     linear-gradient(90deg, #ff5f6d, #ffb347, #f9f871, #4ade80, #38bdf8, #a78bfa, #f472b6) border-box;
@@ -993,3 +994,6 @@ body.has-install .w-top { padding-right: 52px; }
 .coach-sugs .chip.pitch .ic { width: 15px; height: 15px; color: #a855f7; }
 @keyframes pitchGlow { 50% { box-shadow: 0 0 14px rgba(244, 114, 182, .5), 0 0 22px rgba(255, 179, 71, .3); } }
 @media (prefers-reduced-motion: reduce) { .coach-sugs .chip.pitch { animation: none; } }
+/* nenhuma sugestão passa da largura da janela: se não couber, quebra a linha */
+.coach-sugs .chip { max-width: 100%; white-space: normal; text-align: right; }
+.coach-sugs .chip.pitch .ic { flex: none; }
