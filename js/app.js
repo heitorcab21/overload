@@ -1,5 +1,6 @@
 // Ponto de entrada: liga as telas, os eventos globais e o modo offline.
 import { state, save } from './store.js';
+import { defaultGroupGoals } from './logic.js';
 import { $, $$, icon, actions, changes, submits, closeSheet } from './ui.js';
 import { rerender } from './router.js';
 import './views/home.js';
@@ -52,6 +53,8 @@ document.addEventListener('submit', ev => {
   submits[form.dataset.submit]?.(form, ev);
 });
 
+// uma vez: metas de séries pela ciência / pelo objetivo (antes eram a cópia da ficha)
+if (state.onboarded && !state.settings.goalsV2) { defaultGroupGoals(); state.settings.goalsV2 = true; save(); }
 initInstall();
 applyTheme();
 applyLang();

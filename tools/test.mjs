@@ -153,16 +153,29 @@ const { defaultGroupGoals, setWeekOverride, autoWeekSet } = await import('../js/
 state.goals.groups = {};
 state.routines = [{ id: 'r', name: 'A', ex: ['x'] }];
 defaultGroupGoals(now);
-eq(state.goals.groups.Peito, { week: 3, month: 13, auto: true }, 'meta criada pela rotina');
+eq(state.goals.groups.Peito, { week: 10, month: 43, auto: true }, 'sem objetivo: 10 séries por semana pela ciência (não a cópia da ficha)');
 state.exercises.y = { id: 'y', name: 'Crucifixo', group: 'Peito', sets: 4, repMin: 10, repMax: 15, step: 5 };
 state.exercises.z = { id: 'z', name: 'Remada', group: 'Costas', sets: 3, repMin: 8, repMax: 12, step: 2.5 };
 state.routines[0].ex.push('y', 'z');
 defaultGroupGoals(now);
-eq([state.goals.groups.Peito.week, state.goals.groups.Costas.week], [7, 3], 'rotina mudou: metas automáticas acompanham');
+eq([state.goals.groups.Peito.week, state.goals.groups.Costas.week], [10, 10], 'grupo novo na ficha ganha meta');
 state.goals.groups.Costas = { week: 10, month: 40, auto: false };
 state.routines[0].ex = ['x'];
 defaultGroupGoals(now);
-eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [3, { week: 10, month: 40, auto: false }], 'meta editada fica; automática ajusta');
+eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [10, { week: 10, month: 40, auto: false }], 'meta editada fica; automática ajusta');
+{
+  const { isEffective, fillPlan } = await import('../js/logic.js');
+  eq([isEffective({ w: 60, r: 10 }, 100), isEffective({ w: 50, r: 25 }, 100), isEffective({ w: 80, r: 8, rir: 6 }, 100), isEffective({ w: 0, r: 12 }, 0)],
+    [true, false, false, true], 'série efetiva: carga >= 60% da força estimada e até 4 reps sobrando');
+  state.routines = [{ id: 'r', name: 'A', ex: ['x', 'y'] }, { id: 'r2', name: 'B', ex: ['x'] }];
+  const keepX = state.exercises.x.sets, keepY = state.exercises.y.sets;
+  const fp = fillPlan('Peito', 12);
+  eq([fp.have, fp.total, fp.plan.map(p => `${p.ex.id}:${p.from}>${p.to}`)], [10, 12, ['x:3>4']], 'completar a ficha: +1 série no exercício com menos séries (x está em 2 treinos: +2 na semana)');
+  eq(fp.total >= 12 && fp.plan.every(p => p.to <= 6), true, 'completar a ficha: chega na meta sem passar de 6 séries por exercício');
+  eq(fillPlan('Peito', 9), null, 'ficha já entrega: nada a completar');
+  state.exercises.x.sets = keepX; state.exercises.y.sets = keepY;
+  state.routines = [{ id: 'r', name: 'A', ex: ['x'] }];
+}
 
 // ---- metas pelo objetivo (séries e cardio) e metas de carga em 3 cenários ----
 {

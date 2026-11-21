@@ -12,7 +12,7 @@ import { t, tn } from '../i18n.js';
 import { toW, fromW, toStep } from '../units.js';
 import { intent, saveIntent, trainedDaysThisWeek, GOAL_IDS } from '../intent.js';
 import { scenarios, judgeGoal } from '../scenarios.js';
-import { GOAL_PLANS, FOCUS_GROUPS, intentWeekSets } from '../logic.js';
+import { GOAL_PLANS, FOCUS_GROUPS, intentWeekSets, fillPlan } from '../logic.js';
 
 let mode = 'week';
 const cap = s => s[0].toUpperCase() + s.slice(1);
@@ -33,6 +33,8 @@ function render() {
     return `<tr data-act="editGroupGoal" data-g="${esc(g.group)}" tabindex="0">
       <td class="n">${esc(tg(g.group))}${!isWeek && g.monthTon ? `<span class="sub">${t('{v} no mês', { v: compact(g.monthTon) })}</span>` : ''}
         ${manual ? `<span class="sub">${t('definida por você')}</span>` : ''}
+        ${isWeek && g.weekGoal && (routineGroupSets()[g.group] || 0) < g.weekGoal
+          ? `<span class="sub gap">${t('Sua ficha entrega {n} de {m}', { n: routineGroupSets()[g.group] || 0, m: g.weekGoal })} · <button class="link-btn" data-act="fillRoutine" data-g="${esc(g.group)}">${t('Completar')}</button></span>` : ''}
         ${goal ? meter(done / goal, done >= goal) : ''}</td>
       <td class="v">${goal ? `${done} / ${goal}` : `${done} <span class="muted">${t('sem meta')}</span>`}</td>
     </tr>`;
@@ -96,6 +98,7 @@ function render() {
           <tbody>${groupRows || `<tr><td colspan="2" class="empty">${t('Adicione exercícios em Treinos para criar metas.')}</td></tr>`}</tbody>
         </table>
       </div>
+      <p class="small muted">${t('Contam as séries efetivas: carga de pelo menos 60% da sua força estimada no exercício (até ~20 reps) e, se você anotou, no máximo 4 reps sobrando.')}</p>
 
       <div class="row between ex-goals-head"><h3>${t('Exercícios ativos')}</h3><span class="small muted">${isWeek ? t('Meta da semana') : t('Meta do mês')}</span></div>
       ${exSections || `<div class="card"><p class="empty">${t('Nenhum exercício nos seus treinos. Adicione em Treinos.')}</p></div>`}
@@ -362,4 +365,32 @@ actions.pickScenario = el => {
   Object.assign(state.goals.ex[ex.id], { auto: false, scenario: el.dataset.k });
   save(); closeSheet(); rerender();
   toast(t('Meta escolhida: {c} · {set}.', { c: SCEN_NAME()[el.dataset.k], set: setStr({ w, r }) }), 3500);
+};
+
+// ---------- Completar a ficha para bater a meta de séries ----------
+actions.fillRoutine = el => {
+  const g = el.dataset.g;
+  const goal = state.goals.groups[g]?.week;
+  const p = fillPlan(g, goal);
+  if (!p) return;
+  if (!p.plan.length) {
+    sheet(`<h2>${esc(tg(g))}</h2><p class="muted">${t('Nenhum exercício de {g} nas suas fichas. Adicione um em Treinos para bater a meta.', { g: esc(tg(g).toLowerCase()) })}</p>
+      <a class="btn primary block" href="#/exercicios" data-act="closeSheet">${t('Ir para Treinos')}</a>`);
+    return;
+  }
+  sheet(`<h2>${t('Completar {g}', { g: esc(tg(g).toLowerCase()) })}</h2>
+    <p class="muted">${t('Sua ficha entrega {n} séries por semana e a meta é {m}. Proposta:', { n: p.have, m: p.goal })}</p>
+    <div class="card flat"><div class="list">${p.plan.map(x => `<div class="item"><span class="grow t">${esc(exName(x.ex))}</span><b class="num">${x.from} → ${x.to} ${t('séries')}</b></div>`).join('')}</div></div>
+    ${p.total < p.goal ? `<p class="small muted">${t('Mesmo assim ficam {n} de {m}: vale adicionar mais um exercício de {g}.', { n: p.total, m: p.goal, g: esc(tg(g).toLowerCase()) })}</p>` : ''}
+    <p class="small muted">${t('Lembre: contam as séries feitas perto da falha, com carga de verdade.')}</p>
+    <button class="btn primary block" data-act="fillApply" data-g="${esc(g)}">${t('Aplicar na ficha')}</button>
+    <button class="btn block" data-act="closeSheet">${t('Cancelar')}</button>`);
+};
+actions.fillApply = el => {
+  const g = el.dataset.g;
+  const p = fillPlan(g, state.goals.groups[g]?.week);
+  if (!p) return;
+  for (const x of p.plan) x.ex.sets = x.to;
+  save(); closeSheet(); rerender();
+  toast(t('Ficha ajustada: {n} séries de {g} por semana.', { n: p.total, g: tg(g).toLowerCase() }), 3500);
 };

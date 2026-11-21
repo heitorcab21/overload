@@ -227,13 +227,33 @@ export function exGoalStatus(ex, now = new Date(), opts = {}) {
 
 // ---------- Metas por grupamento ----------
 
+/**
+ * Série efetiva (a que conta para o volume): carga de pelo menos 60% da força estimada no exercício
+ * (cerca de 20 reps até a falha) e, se as reps que sobraram foram anotadas, no máximo 4.
+ * top = melhor 1RM estimado do exercício nos 90 dias até a data.
+ */
+export const EFFECTIVE_LOAD = 0.6;
+export const isEffective = (s, top) => s.r > 0 && (s.rir == null || s.rir <= 4) && (!(s.w > 0) || !(top > 0) || s.w >= top * EFFECTIVE_LOAD);
+const topBefore = (exId, until) => {
+  const from = addDays(until, -90);
+  let top = 0;
+  for (const e of entriesFor(exId)) {
+    const d = new Date(e.date);
+    if (d < from || d > until) continue;
+    for (const s of e.sets) if (s.w > 0) top = Math.max(top, e1rm(s.w, s.r));
+  }
+  return top;
+};
+
 export function groupSets(a, b) {
   const m = {};
+  const tops = new Map();
   for (const s of sessionsIn(a, b)) {
     for (const e of s.entries) {
       const ex = state.exercises[e.exId];
       if (!ex || e.skipped) continue;
-      m[ex.group] = (m[ex.group] || 0) + workSets(e.sets).filter(x => x.r > 0).length;
+      if (!tops.has(ex.id)) tops.set(ex.id, topBefore(ex.id, b));
+      m[ex.group] = (m[ex.group] || 0) + workSets(e.sets).filter(x => isEffective(x, tops.get(ex.id))).length;
     }
   }
   return m;
@@ -264,8 +284,8 @@ export function routineGroupSets() {
 }
 
 /**
- * Metas de grupamento que acompanham a rotina (cumprir o plano = bater a meta).
- * As automáticas mudam quando a rotina muda; as que você editou ficam como estão.
+ * Metas de grupamento: com objetivo, pela tabela dele; sem objetivo, pela ciência (10 séries por semana,
+ * 7 nos grupos pequenos) para cada grupo que está nas fichas. As que você editou ficam como estão.
  */
 /**
  * Planos por objetivo: séries por semana em cada grupo (base e priorizados), crescimento da meta de carga
@@ -306,9 +326,11 @@ export function defaultGroupGoals(now = new Date()) {
     return;
   }
   const per = routineGroupSets();
-  for (const [g, n] of Object.entries(per)) {
+  for (const g of Object.keys(per)) {
     const cur = state.goals.groups[g];
     if (cur && cur.auto === false) continue;
+    // ciência: a partir de ~10 séries duras por semana o ganho é bem maior
+    const n = SMALL_GROUPS.includes(g) ? 7 : 10;
     state.goals.groups[g] = { week: n, month: Math.round(n * daysInMonth(now) / 7), auto: true };
   }
   for (const [g, cur] of Object.entries(state.goals.groups)) {
@@ -390,4 +412,25 @@ export function stalledExercises(now = new Date()) {
     }
   }
   return out.sort((a, b) => b.n - a.n);
+}
+
+/**
+ * Proposta para a ficha entregar a meta semanal de um grupo: +1 série por vez no exercício do grupo com
+ * menos séries (até 6 cada). Devolve { have, goal, plan: [{ ex, from, to }] } ou null se já entrega.
+ */
+export function fillPlan(group, goal) {
+  const have = routineGroupSets()[group] || 0;
+  if (!goal || have >= goal) return null;
+  const uses = {};
+  for (const r of state.routines) for (const id of r.ex) if (state.exercises[id]?.group === group) uses[id] = (uses[id] || 0) + 1;
+  const sets = Object.fromEntries(Object.keys(uses).map(id => [id, state.exercises[id].sets]));
+  let total = have;
+  while (total < goal) {
+    const next = Object.keys(sets).filter(id => sets[id] < 6).sort((a, b) => sets[a] - sets[b])[0];
+    if (!next) break;
+    sets[next]++;
+    total += uses[next];
+  }
+  const plan = Object.keys(sets).filter(id => sets[id] !== state.exercises[id].sets).map(id => ({ ex: state.exercises[id], from: state.exercises[id].sets, to: sets[id] }));
+  return { have, goal, total, plan };
 }

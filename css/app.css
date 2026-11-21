@@ -839,3 +839,7 @@ body.has-coach #view { padding-bottom: calc(var(--tab-h) + var(--safe-b) + 76px)
 .judge { margin: 0; font-weight: 600; font-size: 14px; }
 .judge-facil { color: var(--muted); } .judge-realista { color: #3fae5b; } .judge-ambiciosa { color: var(--data); }
 .judge-muito-dificil { color: var(--accent); } .judge-ilusoria { color: #e05555; }
+
+/* metas: a ficha não entrega a meta */
+.sheet-table .sub.gap { color: var(--accent); }
+.link-btn { border: 0; background: none; padding: 0; color: var(--accent); font: inherit; font-weight: 700; text-decoration: underline; }
