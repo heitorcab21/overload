@@ -278,14 +278,10 @@ export function parseJSON(text) {
 const versionOf = id => Number((id.match(/(\d+(?:\.\d+)?)/) || [])[1] || 0);
 
 /**
- * Modelo experimental: prévias, versões "exp"/"latest" e, no Gemini, codinomes sem família (ex.: gemini-4-hydrogen),
- * que costumam ter acesso limitado, ficar sobrecarregados ou nem responder.
+ * Modelo experimental: prévias e versões "exp"/"latest", que mudam sem aviso e costumam ter limites menores.
+ * (Os Gemini 4 com nome de elemento, como Hydrogen, Neon e Carbon, são modelos lançados, não experimentais.)
  */
-export function isExperimental(p, id) {
-  if (/(preview|exp|latest)/.test(id)) return true;
-  if (p === 'gemini') return !/(flash|pro|ultra|nano)/.test(id);
-  return false;
-}
+export const isExperimental = (p, id) => /(preview|exp|latest)/.test(id);
 
 /** Busca os modelos de texto disponíveis na chave e indica um padrão rápido e barato. */
 export async function listModels(provider, key) {
@@ -329,8 +325,10 @@ export async function listModels(provider, key) {
       .filter(id => id.startsWith('gemini') && !skip.test(id))
       .sort((a, b) => (isExperimental('gemini', a) - isExperimental('gemini', b)) || versionOf(b) - versionOf(a));
     const stable = ids.filter(id => !isExperimental('gemini', id));
-    const pick = stable.find(id => /flash/.test(id) && !/lite/.test(id)) || stable[0] || ids[0];
-    return { models: ids, recommended: pick };
+    const flash = stable.find(id => /flash/.test(id) && !/lite/.test(id));
+    // recomendado: o modelo do dia a dia mais novo (Gemini 4 Hydrogen); reserva: o Flash mais novo
+    const pick = stable.find(id => /hydrogen/.test(id)) || flash || stable[0] || ids[0];
+    return { models: ids, recommended: pick, fallback: flash && flash !== pick ? flash : stable.find(id => id !== pick) || null };
   }
   // Claude: lista pelo SDK oficial; o padrão continua sendo o Claude Opus 5.5
   try {
