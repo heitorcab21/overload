@@ -369,7 +369,7 @@ function strengthOverview() {
   return `<a class="card stack strength-card link-card" href="#/forca">
     <div class="row between"><h3>${t('Seu nível de força')}</h3>${icon.next}</div>
     ${radarSvg(p)}
-    <div class="r-info small muted">${icon.target} ${t('Toque numa fatia para ver os exercícios dela e quanto de carga você precisa para o top que quiser.')}<br>${t('Esquerda: frente do corpo · direita: trás.')}</div>
+    <div class="r-info r-tap">${icon.target} ${t('Toque numa fatia para ver os exercícios dela e quanto de carga você precisa para o top que quiser.')}</div>
   </a>`;
 }
 

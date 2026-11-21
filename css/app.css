@@ -1016,3 +1016,5 @@ body.has-install .w-top { padding-right: 52px; }
 .lock-ic .ic { width: 24px; height: 24px; }
 .lock-title { font-size: 20px; line-height: 1.25; max-width: 300px; }
 .lock-msg .btn { max-width: 300px; }
+.r-info.r-tap { color: var(--ink); font-weight: 700; font-size: 15px; line-height: 1.4; }
+.r-info.r-tap .ic { width: 16px; height: 16px; }
