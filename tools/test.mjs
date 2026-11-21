@@ -219,7 +219,19 @@ eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [10, { week: 10, 
     ['facil', 'realista', 'ambiciosa', 'muito-dificil', 'ilusoria'], 'veredito da meta própria');
   state.intent = { goal: 'emagrecer', focus: [], days: 3 };
   eq(Math.round(scenarios(ex, now)[1].growth * 1000) / 10, 2.5, 'emagrecendo, o ritmo cai pela metade');
-  state.intent = null; state.sessions = keepSessions; state.goals = keepGoals; state.cardioGoal = keepCardio;
+  state.intent = null;
+  state.sessions = [];
+  eq(scenarios(ex, now)?.[0].est ?? null, ex.lib && !ex.bw ? 'std' : (ex.startW > 0 ? 'start' : null), 'sem treino: estima (padrões de força ou carga inicial) quando dá');
+  const withStart = { ...ex, id: 'zz', lib: undefined, bw: false, startW: 30, repMin: 8 };
+  eq([scenarios(withStart, now)[0].est, scenarios(withStart, now)[1].set.w >= 30], ['start', true], 'sem treino e com carga inicial: estima por ela');
+  const keepProfile = state.profile;
+  state.profile = null;
+  eq(scenarios({ ...withStart, startW: 0, group: 'Peito' }, now), null, 'sem treino, sem carga inicial e sem perfil: sem cenários');
+  state.profile = { sex: 'm', birthYear: 2000, height: 180, weight: 80 };
+  eq([scenarios({ ...withStart, startW: 0, group: 'Peito', step: 5 }, now)[0].est, scenarios({ ...withStart, startW: 0, group: 'Peito', step: 5 }, now)[0].set.w >= 25],
+    ['bw', true], 'aparelho sem treino: parte da carga típica pelo peso corporal (80 kg × 0,35 = 28 → 30)');
+  state.profile = keepProfile;
+  state.sessions = keepSessions; state.goals = keepGoals; state.cardioGoal = keepCardio;
   state.routines = [{ id: 'r', name: 'A', ex: ['x'] }];
 }
 

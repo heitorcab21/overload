@@ -916,3 +916,9 @@ body.has-coach #view { padding-bottom: calc(var(--tab-h) + var(--safe-b) + 76px)
 .ctpl:active { background: var(--surface-2); }
 .crun-btns .danger { grid-column: 1 / -1; }
 body.has-install .w-top { padding-right: 52px; }
+/* cartão do objetivo mais compacto */
+.intent-card { gap: 8px; padding-top: 12px; padding-bottom: 12px; }
+.intent-card .btn.sm { min-height: 34px; padding: 4px 12px; }
+.intent-card .meter { margin: 0; }
+.est-note { color: var(--ink-2); background: var(--surface-2); border-radius: 10px; padding: 8px 10px; margin: 0; }
+.est-mini { display: block; margin-top: 6px; }

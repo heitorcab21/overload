@@ -1247,6 +1247,12 @@ const ui = {
   "Ligar a voz": "Turn voice on",
   "Rotina concluída. Muito bem!": "Routine complete. Well done!",
   "Esquerda: frente do corpo · direita: trás. Toque num eixo para ver o detalhe.": "Left: front of the body · right: back. Tap an axis for details.",
+  "Estimado pela carga inicial que você informou, porque ainda não há treino registrado. Ajuste depois do primeiro treino.": "Estimated from the starting load you entered, since there is no workout logged yet. Adjust after your first workout.",
+  "Estimado pelos padrões de força de quem tem o seu peso, idade e sexo, porque ainda não há treino registrado. Ajuste depois do primeiro treino.": "Estimated from strength standards for people of your weight, age and sex, since there is no workout logged yet. Adjust after your first workout.",
+  "Estimativa: ainda sem treino neste exercício.": "Estimate: no workout logged for this exercise yet.",
+  "Para ver os 3 cenários, registre um treino neste exercício ou informe a carga inicial dele em Treinos. Enquanto isso, defina a sua meta abaixo.": "To see the 3 scenarios, log a workout for this exercise or enter its starting load in Workouts. Meanwhile, set your own goal below.",
+  "Estimado pela carga típica de quem está começando, pelo seu peso corporal, porque ainda não há treino registrado. Cada aparelho pesa diferente: ajuste depois do primeiro treino.": "Estimated from the typical beginner load for your body weight, since there is no workout logged yet. Every machine differs: adjust after your first workout.",
+  "Ainda sem treino registrado: os cenários partem de poucas repetições. Ajuste depois do primeiro treino.": "No workout logged yet: the scenarios start from a few reps. Adjust after your first workout.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };

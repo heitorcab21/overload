@@ -1247,6 +1247,12 @@ const ui = {
   "Ligar a voz": "Encender la voz",
   "Rotina concluída. Muito bem!": "Rutina completada. ¡Muy bien!",
   "Esquerda: frente do corpo · direita: trás. Toque num eixo para ver o detalhe.": "Izquierda: parte delantera · derecha: trasera. Toca un eje para ver el detalle.",
+  "Estimado pela carga inicial que você informou, porque ainda não há treino registrado. Ajuste depois do primeiro treino.": "Estimado por la carga inicial que indicaste, porque aún no hay entreno registrado. Ajusta después del primer entreno.",
+  "Estimado pelos padrões de força de quem tem o seu peso, idade e sexo, porque ainda não há treino registrado. Ajuste depois do primeiro treino.": "Estimado por los estándares de fuerza de personas con tu peso, edad y sexo, porque aún no hay entreno registrado. Ajusta después del primer entreno.",
+  "Estimativa: ainda sem treino neste exercício.": "Estimación: aún sin entreno en este ejercicio.",
+  "Para ver os 3 cenários, registre um treino neste exercício ou informe a carga inicial dele em Treinos. Enquanto isso, defina a sua meta abaixo.": "Para ver los 3 escenarios, registra un entreno en este ejercicio o indica su carga inicial en Entrenos. Mientras tanto, define tu meta abajo.",
+  "Estimado pela carga típica de quem está começando, pelo seu peso corporal, porque ainda não há treino registrado. Cada aparelho pesa diferente: ajuste depois do primeiro treino.": "Estimado por la carga típica de quien empieza, según tu peso corporal, porque aún no hay entreno registrado. Cada máquina es distinta: ajusta después del primer entreno.",
+  "Ainda sem treino registrado: os cenários partem de poucas repetições. Ajuste depois do primeiro treino.": "Aún sin entreno registrado: los escenarios parten de pocas repeticiones. Ajusta después del primer entreno.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

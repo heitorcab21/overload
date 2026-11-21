@@ -177,11 +177,12 @@ actions.editExGoal = el => {
   sheet(`<h2>${esc(exName(ex))}</h2>
     <h3>${t('Meta do mês (até o fim de {mes})', { mes: monthName(now.getMonth()) })}</h3>
     ${sc ? `<p class="small muted">${t('Três cenários pelo seu ritmo e nível. Escolha um:')}</p>
+    ${sc[0].est ? `<p class="small est-note">${estNote(sc[0].est)}</p>` : ''}
     <div class="scen-list">${sc.map(x => `<button class="scen scen-${x.key}${isPick(x) ? ' on' : ''}" data-act="pickScenario" data-id="${esc(ex.id)}" data-w="${x.set.w}" data-r="${x.set.r}" data-k="${x.key}">
       <span class="scen-head"><b>${esc(SN[x.key])}</b><span class="chance">${esc(CH[x.chance])}</span></span>
       <span class="scen-set num">${esc(setStr(x.set))}</span>
       <span class="small muted">${esc(t('+{p}% de força', { p: fmt1(x.growth * 100) }))}${x.top ? ` · ${esc(t('chega ao Top {n}%', { n: x.top }))}` : ''}</span>
-    </button>`).join('')}</div>` : `<p class="small muted">${t('Sem treinos recentes neste exercício: defina uma meta e ajuste depois do primeiro treino.')}</p>`}
+    </button>`).join('')}</div>` : `<p class="small muted">${t('Para ver os 3 cenários, registre um treino neste exercício ou informe a carga inicial dele em Treinos. Enquanto isso, defina a sua meta abaixo.')}</p>`}
     <details class="own-goal"${own || !sc ? ' open' : ''}><summary><b>${t('Definir a minha meta')}</b></summary>
     <form class="stack" data-submit="saveExGoal" data-id="${esc(ex.id)}" data-change="goalJudge" data-live
       data-week0="${active ? `${st.weekSet.w}|${st.weekSet.r}` : ''}">
@@ -401,6 +402,12 @@ actions.fillApply = el => {
 };
 
 // ---------- Cenários à vista: na lista de Metas e na tela do exercício ----------
+const estNote = est => ({
+  start: t('Estimado pela carga inicial que você informou, porque ainda não há treino registrado. Ajuste depois do primeiro treino.'),
+  std: t('Estimado pelos padrões de força de quem tem o seu peso, idade e sexo, porque ainda não há treino registrado. Ajuste depois do primeiro treino.'),
+  bw: t('Estimado pela carga típica de quem está começando, pelo seu peso corporal, porque ainda não há treino registrado. Cada aparelho pesa diferente: ajuste depois do primeiro treino.'),
+  reps: t('Ainda sem treino registrado: os cenários partem de poucas repetições. Ajuste depois do primeiro treino.'),
+})[est];
 const SHORT = () => ({ conservador: t('Conservador'), moderado: t('Moderado'), dificil: t('Difícil') });
 /** Três botões pequenos (um por cenário); tocar escolhe a meta. Null sem histórico. */
 export function scenarioMini(ex) {
@@ -408,7 +415,7 @@ export function scenarioMini(ex) {
   if (!sc) return null;
   const S = SHORT();
   return `<span class="scen-mini">${sc.map(x => `<button class="scen-m scen-${x.key}" data-act="pickScenario" data-id="${esc(ex.id)}" data-w="${x.set.w}" data-r="${x.set.r}" data-k="${x.key}">
-    <span class="k">${esc(S[x.key])}</span><b class="num">${esc(setStr(x.set))}</b><span class="g">+${esc(fmt1(x.growth * 100))}%</span></button>`).join('')}</span>`;
+    <span class="k">${esc(S[x.key])}</span><b class="num">${esc(setStr(x.set))}</b><span class="g">+${esc(fmt1(x.growth * 100))}%</span></button>`).join('')}</span>${sc[0].est ? `<span class="small muted est-mini">${t('Estimativa: ainda sem treino neste exercício.')}</span>` : ''}`;
 }
 /** Cartão da tela do exercício sem meta: cenários do mês e a opção de definir a própria. */
 export function scenarioCard(ex) {
