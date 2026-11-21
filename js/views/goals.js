@@ -1,6 +1,6 @@
 // Metas semanais e mensais por grupamento e por exercício, em formato de planilha.
 import { state, save } from '../store.js';
-import { $, esc, setStr, compact, icon, actions, changes, submits, toast, sheet, closeSheet, meter, stepper, fmtDate, monthName, shareFile } from '../ui.js';
+import { $, esc, fmt, setStr, compact, icon, actions, changes, submits, toast, sheet, closeSheet, meter, stepper, fmtDate, monthName, shareFile } from '../ui.js';
 import { route, go, current, rerender } from '../router.js';
 import { activeExercises, BODY_PARTS, GROUPS, exName, tg, loadLabel, loadHint } from '../data.js';
 import {
@@ -11,6 +11,7 @@ import { goalsCSV, importGoalsCSV } from '../export.js';
 import { t, tn } from '../i18n.js';
 import { toW, fromW, toStep } from '../units.js';
 import { intent, saveIntent, trainedDaysThisWeek, GOAL_IDS } from '../intent.js';
+import { scenarios, judgeGoal } from '../scenarios.js';
 import { GOAL_PLANS, FOCUS_GROUPS, intentWeekSets } from '../logic.js';
 
 let mode = 'week';
@@ -154,24 +155,34 @@ actions.groupAuto = el => {
 actions.editExGoal = el => {
   const ex = state.exercises[el.dataset.id];
   if (!ex) return;
+  const now = new Date();
   const st = exGoalStatus(ex);
   const active = st && !st.expired;
   const sug = suggestGoal(ex);
-  const start = active ? st.goal : sug || { w: ex.startW || 0, r: ex.repMax };
+  const start = active ? st.goal : scenarios(ex, now)?.[1]?.set || sug || { w: ex.startW || 0, r: ex.repMax };
   const auto = active ? autoWeekSet(ex) : null;
   const wLabel = loadLabel(ex);
-  const now = new Date();
+  const sc = scenarios(ex, now);
+  const isPick = s2 => active && st.goal.w === s2.set.w && st.goal.r === s2.set.r;
+  const own = active && (!sc || !sc.some(isPick));
+  const SN = SCEN_NAME(), CH = { 0.85: t('chance alta'), 0.6: t('chance média'), 0.3: t('chance baixa') };
   sheet(`<h2>${esc(exName(ex))}</h2>
-    <form class="stack" data-submit="saveExGoal" data-id="${esc(ex.id)}"
+    <h3>${t('Meta do mês (até o fim de {mes})', { mes: monthName(now.getMonth()) })}</h3>
+    ${sc ? `<p class="small muted">${t('Três cenários pelo seu ritmo e nível. Escolha um:')}</p>
+    <div class="scen-list">${sc.map(x => `<button class="scen scen-${x.key}${isPick(x) ? ' on' : ''}" data-act="pickScenario" data-id="${esc(ex.id)}" data-w="${x.set.w}" data-r="${x.set.r}" data-k="${x.key}">
+      <span class="scen-head"><b>${esc(SN[x.key])}</b><span class="chance">${esc(CH[x.chance])}</span></span>
+      <span class="scen-set num">${esc(setStr(x.set))}</span>
+      <span class="small muted">${esc(t('+{p}% de força', { p: fmt1(x.growth * 100) }))}${x.top ? ` · ${esc(t('chega ao Top {n}%', { n: x.top }))}` : ''}</span>
+    </button>`).join('')}</div>` : `<p class="small muted">${t('Sem treinos recentes neste exercício: defina uma meta e ajuste depois do primeiro treino.')}</p>`}
+    <details class="own-goal"${own || !sc ? ' open' : ''}><summary><b>${t('Definir a minha meta')}</b></summary>
+    <form class="stack" data-submit="saveExGoal" data-id="${esc(ex.id)}" data-change="goalJudge" data-live
       data-week0="${active ? `${st.weekSet.w}|${st.weekSet.r}` : ''}">
-      <h3>${t('Meta do mês (até o fim de {mes})', { mes: monthName(now.getMonth()) })}</h3>
       <div class="two">
         ${stepper('w', toW(start.w), toStep(ex.step || 1), wLabel)}
         ${stepper('r', start.r, 1, t('Repetições'), 1)}
       </div>
       <p class="small muted">${esc(loadHint(ex))}</p>
-      ${sug ? `<p class="small muted">${t('Sugestão do app (cerca de 5% acima do seu melhor recente): <b>{set}</b>', { set: setStr(sug) })}</p>`
-            : `<p class="small muted">${t('Sem histórico ainda: defina uma meta realista e ajuste depois do primeiro treino.')}</p>`}
+      <p class="judge" id="goalJudge" aria-live="polite">${judgeHtml(ex, start.w, start.r)}</p>
       ${active ? `<h3>${t('Meta desta semana')}</h3>
       <div class="two">
         ${stepper('ww', toW(st.weekSet.w), toStep(ex.step || 1), wLabel)}
@@ -182,8 +193,8 @@ actions.editExGoal = el => {
         : t('Calculada sozinha, em degraus até a meta do mês. Mude se quiser outra meta só nesta semana.')}</p>
       ${st.weekManual ? `<button type="button" class="btn ghost block" data-act="weekAuto" data-id="${esc(ex.id)}">${t('Voltar ao cálculo automático')}</button>` : ''}` : ''}
       <button class="btn primary big">${t('Salvar meta')}</button>
-      ${st ? `<button type="button" class="btn ghost danger block" data-act="delExGoal" data-id="${esc(ex.id)}">${t('Remover meta')}</button>` : ''}
-    </form>`);
+    </form></details>
+    ${st ? `<button type="button" class="btn ghost danger block" data-act="delExGoal" data-id="${esc(ex.id)}">${t('Remover meta')}</button>` : ''}`);
 };
 submits.saveExGoal = form => {
   const ex = state.exercises[form.dataset.id];
@@ -212,7 +223,7 @@ actions.suggestAll = () => {
   for (const ex of activeExercises()) {
     const st = exGoalStatus(ex);
     if (st && !st.expired) continue;
-    const sug = suggestGoal(ex);
+    const sug = scenarios(ex)?.[1]?.set;
     if (sug) { setExGoal(ex, sug.w, sug.r); n++; }
   }
   save(); rerender();
@@ -280,7 +291,7 @@ function renderIntent(arg) {
   idraft ??= it ? { ...it, focus: [...(it.focus || [])] } : { goal: '', focus: [], days: Math.max(2, Math.min(6, state.routines.length || 3)) };
   const editing = arg === 'editar';
   const plan = idraft.goal && GOAL_PLANS[idraft.goal];
-  const preview = plan ? t('Metas: {a} séries por semana em cada grupo{b}, cargas {c} e {d} min de cardio por semana.', {
+  const preview = plan ? t('Metas: {a} séries por semana em cada grupo{b} e {d} min de cardio por semana. Cargas: cenários {c}.', {
     a: plan.base, b: idraft.focus.length ? t(' e {n} nos priorizados', { n: plan.focus }) : '',
     c: plan.growth > 1 ? t('subindo cerca de {p}% por mês', { p: Math.round((plan.growth - 1) * 100) }) : t('mantidas'), d: plan.cardio,
   }) : '';
@@ -309,14 +320,46 @@ changes.intentDays = el => { idraft.days = Math.max(1, Math.min(7, Math.round(Nu
 actions.intentSave = () => {
   if (!idraft?.goal) return;
   const days = Number($('#view input[name="days"]')?.value) || idraft.days;
-  const n = saveIntent({ ...idraft, days });
+  saveIntent({ ...idraft, days });
   state.settings.intentAsked = true;
   save();
   const editing = current().arg === 'editar';
   idraft = null;
-  toast(n ? tn(n, 'Metas montadas pelo seu objetivo ({n} de carga).', 'Metas montadas pelo seu objetivo ({n} de carga).') : t('Metas montadas pelo seu objetivo.'), 4000);
+  toast(t('Metas de séries e cardio montadas pelo seu objetivo. As de carga você escolhe em cada exercício.'), 4500);
   go(editing ? '#/metas' : '#/hoje');
 };
 actions.intentSkip = () => { state.settings.intentAsked = true; idraft = null; save(); go('#/hoje'); };
 
 route('objetivo', renderIntent, { noTabs: true, tab: 'metas' });
+
+// ---------- Cenários e veredito ----------
+
+const fmt1 = v => fmt(Math.round(v * 10) / 10);
+const SCEN_NAME = () => ({ conservador: t('Conservador'), moderado: t('Moderado'), dificil: t('Difícil, mas possível') });
+function judgeHtml(ex, w, r) {
+  const j = judgeGoal(ex, w, r);
+  if (!j) return '';
+  const p = fmt1(j.growth * 100), q = fmt1(j.max * 100);
+  const txt = {
+    facil: t('Abaixo do seu melhor recente: fácil para um mês.'),
+    realista: t('Realista: +{p}% de força, dentro do ritmo moderado para o seu nível.', { p }),
+    ambiciosa: t('Ambiciosa, mas possível: +{p}% de força pede um mês muito bom.', { p }),
+    'muito-dificil': t('Muito difícil para um mês: +{p}% de força. O cenário difícil fica perto de +{q}%.', { p, q }),
+    ilusoria: t('Ilusória para um mês: +{p}% de força. O máximo realista é perto de +{q}%.', { p, q }),
+  }[j.level];
+  return `<span class="judge-${j.level}">${esc(txt)}</span>`;
+}
+changes.goalJudge = form => {
+  const ex = state.exercises[form.dataset.id];
+  const box = form.querySelector('#goalJudge');
+  if (ex && box) box.innerHTML = judgeHtml(ex, fromW(Number(form.w.value) || 0), Math.round(Number(form.r.value) || 0));
+};
+actions.pickScenario = el => {
+  const ex = state.exercises[el.dataset.id];
+  if (!ex) return;
+  const w = Number(el.dataset.w), r = Number(el.dataset.r);
+  setExGoal(ex, w, r);
+  Object.assign(state.goals.ex[ex.id], { auto: false, scenario: el.dataset.k });
+  save(); closeSheet(); rerender();
+  toast(t('Meta escolhida: {c} · {set}.', { c: SCEN_NAME()[el.dataset.k], set: setStr({ w, r }) }), 3500);
+};

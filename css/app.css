@@ -825,3 +825,17 @@ body.has-coach #view { padding-bottom: calc(var(--tab-h) + var(--safe-b) + 76px)
 .radar .r-val { fill: var(--accent); font-size: 11px; font-weight: 700; }
 .radar .r-val.none { fill: var(--muted); }
 .next-tier { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+
+/* metas em 3 cenários */
+.scen-list { display: grid; gap: 8px; }
+.scen { display: grid; gap: 3px; text-align: left; padding: 12px 14px; border-radius: 14px; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; }
+.scen.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--surface)); }
+.scen-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.scen .chance { font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--surface-2); color: var(--muted); }
+.scen-conservador .chance { color: #3fae5b; } .scen-moderado .chance { color: var(--data); } .scen-dificil .chance { color: var(--accent); }
+.scen-set { font-size: 20px; font-weight: 800; }
+.own-goal { border-top: 1px solid var(--line); padding-top: 10px; }
+.own-goal summary { cursor: pointer; padding: 4px 0 10px; }
+.judge { margin: 0; font-weight: 600; font-size: 14px; }
+.judge-facil { color: var(--muted); } .judge-realista { color: #3fae5b; } .judge-ambiciosa { color: var(--data); }
+.judge-muito-dificil { color: var(--accent); } .judge-ilusoria { color: #e05555; }

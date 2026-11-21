@@ -164,28 +164,29 @@ state.routines[0].ex = ['x'];
 defaultGroupGoals(now);
 eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [3, { week: 10, month: 40, auto: false }], 'meta editada fica; automática ajusta');
 
-// ---- metas pelo objetivo ----
+// ---- metas pelo objetivo (séries e cardio) e metas de carga em 3 cenários ----
 {
-  const { saveIntent, autoExGoals } = await import('../js/intent.js');
+  const { saveIntent } = await import('../js/intent.js');
   const { intentWeekSets } = await import('../js/logic.js');
+  const { scenarios, judgeGoal } = await import('../js/scenarios.js');
   const keepSessions = state.sessions, keepGoals = state.goals, keepCardio = state.cardioGoal;
   state.goals = { ex: {}, groups: { Costas: { week: 10, month: 40, auto: false } } };
   state.routines = [{ id: 'r', name: 'A', ex: ['x', 'y'] }];
   state.sessions = [sess(10, [{ w: 40, r: 10 }, { w: 40, r: 10 }, { w: 40, r: 10 }])];
-  const made = saveIntent({ goal: 'massa', focus: ['Glúteos', 'Braços'], days: 4 }, now);
+  saveIntent({ goal: 'massa', focus: ['Glúteos', 'Braços'], days: 4 }, now);
   eq([state.goals.groups.Peito.week, state.goals.groups['Glúteos'].week, state.goals.groups['Bíceps'].week, state.goals.groups.Costas.week], [12, 18, 14, 10],
     'massa: 12 séries nos grupos dos treinos, 18 nos priorizados (braços 3/4) e a meta editada à mão fica');
-  eq([state.cardioGoal, made, state.goals.ex.x.auto], [90, 1, true], 'cardio pelo objetivo e meta de carga criada sozinha para quem tem histórico');
-  eq(state.goals.ex.x.w * (1 + state.goals.ex.x.r / 30) > 40 * (1 + 10 / 30), true, 'massa: meta acima do melhor recente');
+  eq([state.cardioGoal, Object.keys(state.goals.ex).length], [90, 0], 'cardio pelo objetivo; metas de carga a pessoa escolhe');
   eq([intentWeekSets('Peito', { goal: 'forca', focus: [] }), intentWeekSets('Panturrilhas', { goal: 'emagrecer', focus: ['Panturrilhas'] })], [8, 11], 'força: 8 séries; panturrilha priorizada no emagrecer: 14 × 3/4');
-  // mês seguinte sem bater a meta, duas vezes: a meta alivia para manter o melhor recente
-  const dec = new Date(2026, 11, 3, 12), jan = new Date(2027, 0, 3, 12);
-  state.sessions = [sess(10, [{ w: 40, r: 10 }, { w: 40, r: 10 }, { w: 40, r: 10 }]), { ...sess(1, [{ w: 40, r: 10 }]), date: new Date(2026, 11, 1, 18).toISOString() }];
-  autoExGoals(dec);
-  eq(state.goals.ex.x.misses, 1, 'não bateu: conta 1 falha e mantém o crescimento');
-  state.sessions.push({ ...sess(2, [{ w: 40, r: 10 }]), id: 'sj', date: new Date(2027, 0, 2, 18).toISOString() });
-  autoExGoals(jan);
-  eq([state.goals.ex.x.misses, state.goals.ex.x.w, state.goals.ex.x.r], [2, 40, 10], 'duas falhas: a meta vira manter o melhor recente');
+  const sc = scenarios(ex, now);
+  eq(sc.map(x => x.key), ['conservador', 'moderado', 'dificil'], 'três cenários');
+  eq(sc.map(x => Math.round(x.growth * 1000) / 10), [2.5, 5, 8], 'iniciante (sem percentil, pouco histórico): +2,5%, +5% e +8% no mês');
+  const e = (w, r) => w * (1 + r / 30);
+  eq(sc.every((x, i) => i === 0 || e(x.set.w, x.set.r) > e(sc[i - 1].set.w, sc[i - 1].set.r)), true, 'cada cenário pede mais que o anterior');
+  eq([judgeGoal(ex, 40, 9, now).level, judgeGoal(ex, 40, 11, now).level, judgeGoal(ex, 42.5, 10, now).level, judgeGoal(ex, 42.5, 11, now).level, judgeGoal(ex, 45, 11, now).level],
+    ['facil', 'realista', 'ambiciosa', 'muito-dificil', 'ilusoria'], 'veredito da meta própria');
+  state.intent = { goal: 'emagrecer', focus: [], days: 3 };
+  eq(Math.round(scenarios(ex, now)[1].growth * 1000) / 10, 2.5, 'emagrecendo, o ritmo cai pela metade');
   state.intent = null; state.sessions = keepSessions; state.goals = keepGoals; state.cardioGoal = keepCardio;
   state.routines = [{ id: 'r', name: 'A', ex: ['x'] }];
 }

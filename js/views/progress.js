@@ -10,7 +10,7 @@ import {
   weekSeries, sessionsIn, monthStart, monthEnd, monthPRCount, entriesFor, bestOf, e1rm, exGoalStatus, tonnage, workSets, addDays,
 } from '../logic.js';
 import { columnChart, lineChart } from '../charts.js';
-import { imperial, toW, fromW, wUnit, toLen, fromLen, heightStr, ul, toStep, snapW, LB } from '../units.js';
+import { imperial, toW, fromW, wUnit, toLen, fromLen, heightStr, ul } from '../units.js';
 
 
 // modo do gráfico de cada exercício: métrica (força ou volume) e período (por treino ou por mês)
@@ -115,7 +115,6 @@ function render() {
   $('#view').innerHTML = `
     <div class="head"><h1>${t('Progresso')}</h1></div>
     <div class="stack">
-      ${strengthRadar()}
       ${strengthOverview()}
       ${bodyCard()}
       <div class="card stack">
@@ -295,21 +294,8 @@ const RADAR_AXES = () => [
   [t('Empurrar'), ['bench', 'dip']], [t('Puxar'), ['row', 'pullup']], [t('Ombros'), ['ohp']],
   [t('Pernas'), ['squat']], [t('Posterior'), ['deadlift', 'hipthrust']], [t('Braços'), ['curl']],
 ];
-const TIERS = [50, 25, 10, 5, 1];
-/** Carga necessária (com as reps mínimas do exercício) para chegar a um top de força. */
-function loadForTop(ex, top, p) {
-  const r = ex.repMin || 8;
-  const ok = w => (quickLevel(ex.lib, w, r, p)?.top ?? 100) <= top;
-  if (ok(0)) return { w: 0, r };
-  let lo = 0, hi = 600;
-  if (!ok(hi)) return null;
-  for (let i = 0; i < 40; i++) { const mid = (lo + hi) / 2; if (ok(mid)) hi = mid; else lo = mid; }
-  const step = ex.step > 0 ? ex.step : 2.5;
-  return { w: imperial() ? snapW(Math.ceil(toW(hi) / toStep(step)) * toStep(step) * LB, step) : Math.ceil(hi / step) * step, r };
-}
-function strengthRadar() {
-  const p = profile();
-  if (!p) return '';
+/** Radar de força (só o gráfico), usado dentro do cartão "Seu nível de força". */
+function radarSvg(p) {
   const axes = RADAR_AXES().map(([name, lifts]) => {
     const best = Object.values(state.exercises).map(ex => ({ ex, l: strengthLevel(ex, p) }))
       .filter(x => x.l.pct !== undefined && lifts.includes(x.l.lift)).sort((a, b) => b.l.pct - a.l.pct)[0];
@@ -329,21 +315,8 @@ function strengthRadar() {
       <text x="${x.toFixed(1)}" y="${(y + 11).toFixed(1)}" text-anchor="${anchor}" class="r-val${a.best ? '' : ' none'}">${a.best ? esc(t('Top {n}%', { n: a.best.l.top })) : '—'}</text>`;
   }).join('');
   const dots = axes.map((a, i) => (a.best ? (() => { const [x, y] = pt(i, Math.max(0.04, a.best.l.pct / 100)); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5" class="r-dot"/>`; })() : '')).join('');
-  // próximo nível nos eixos mais fracos
-  const next = axes.filter(a => a.best && a.best.l.top > 1).sort((a, b) => a.best.l.pct - b.best.l.pct).slice(0, 2).map(a => {
-    const tier = TIERS.find(x => x < a.best.l.top);
-    const need = tier && loadForTop(a.best.ex, tier, p);
-    return need ? `<li><b>${esc(a.name)}</b> · ${esc(t('para o Top {n}%: {set} em {x}', { n: tier, set: setStr(need), x: exName(a.best.ex).toLowerCase() }))}</li>` : '';
-  }).join('');
-  const missing = axes.filter(a => !a.best).map(a => a.name);
-  return `<div class="card stack radar-card">
-    <h3>${t('Radar de força')}</h3>
-    <svg viewBox="0 0 ${W} ${H}" class="radar" role="img" aria-label="${esc(axes.map(a => `${a.name}: ${a.best ? t('Top {n}%', { n: a.best.l.top }) : t('sem dado')}`).join(', '))}">
-      ${rings}${spokes}<polygon points="${vals}" class="r-area"/>${dots}${labels}</svg>
-    <p class="small muted">${t('Quanto mais longe do centro, mais forte em relação a quem tem seu sexo, idade e peso.')}</p>
-    ${next ? `<h3>${t('Próximo nível')}</h3><ul class="next-tier">${next}</ul>` : ''}
-    ${missing.length ? `<p class="small muted">${t('Sem dado ainda: {x}. Registre um desses movimentos para completar o radar.', { x: missing.join(', ') })}</p>` : ''}
-  </div>`;
+  return `<svg viewBox="0 0 ${W} ${H}" class="radar" role="img" aria-label="${esc(axes.map(a => `${a.name}: ${a.best ? t('Top {n}%', { n: a.best.l.top }) : t('sem dado')}`).join(', '))}">
+      ${rings}${spokes}<polygon points="${vals}" class="r-area"/>${dots}${labels}</svg>`;
 }
 
 function strengthOverview() {
@@ -360,6 +333,7 @@ function strengthOverview() {
     <div class="row between"><h3>${t('Seu nível de força')}</h3>${icon.next}</div>
     <div class="row between"><span class="grow"><span class="small muted">${t('Seu destaque')}</span><br><b>${esc(exName(best.ex))}</b></span>
       <span class="top-chip big">${t('Top {n}%', { n: best.lv.top })}</span></div>
+    ${radarSvg(p)}
     <p class="small muted">${tn(rows.length, 'Veja o seu nível em {n} exercício', 'Veja o seu nível em cada um dos {n} exercícios')}</p>
   </a>`;
 }
