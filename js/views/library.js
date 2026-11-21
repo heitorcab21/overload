@@ -8,6 +8,7 @@ import { planFor, exGoalStatus, entriesFor, defaultGroupGoals } from '../logic.j
 import { ensureExercise, planStr } from './home.js';
 import { exerciseProgress, groupWord } from './progress.js';
 import { scenarioCard } from './goals.js';
+import { lgBanner } from './loadgoals.js';
 import { strengthLevel, profile, oneRepMax } from '../body.js';
 import { aiEnabled, aiAskExecution, aiCuesFor } from '../ai.js';
 import { imperial, toW, fromW, toStep, wUnit, ul } from '../units.js';
@@ -28,6 +29,7 @@ function renderRoutines() {
   $('#view').innerHTML = `
     <div class="head"><h1>${t('Treinos')}</h1></div>
     <div class="stack">
+      ${lgBanner('exercicios')}
       <div class="two top-acts">
         <button class="btn accent-soft" data-act="addTemplate">${icon.list}${t('Treinos prontos e salvos')}</button>
         <a class="btn accent-soft dashed" href="#/importar">${icon.edit}${t('Importar do bloco de notas')}</a>

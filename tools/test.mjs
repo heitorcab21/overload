@@ -244,6 +244,19 @@ eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [10, { week: 10, 
   eq(cardioScenarios(null).map(x => x.n), [90, 150, 300], 'cardio: 90, 150 (OMS) e 300');
 }
 
+// ---- metas de carga: decisão por exercício ----
+{
+  const lg = await import('../js/goalchoice.js');
+  const keepGoals = state.goals;
+  state.goals = { ex: {}, groups: {} };
+  const ids = lg.undecided().map(x => x.id);
+  eq(ids.length > 0, true, 'exercícios das fichas sem meta: falta escolher');
+  const first = state.exercises[ids[0]];
+  state.goals.own = { [first.id]: true };
+  eq([lg.decision(first), lg.undecided().length], ['own', ids.length - 1], 'seguir a própria progressão conta como decisão');
+  state.goals = keepGoals;
+}
+
 // ---- memória do Treinador ----
 {
   const cm = await import('../js/coachmem.js');

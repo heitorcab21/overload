@@ -13,6 +13,7 @@ import { toW, fromW, toStep } from '../units.js';
 import { intent, saveIntent, trainedDaysThisWeek, GOAL_IDS } from '../intent.js';
 import { scenarios, judgeGoal } from '../scenarios.js';
 import { bodyMap } from './bodymap.js';
+import { lgBanner } from './loadgoals.js';
 import { GOAL_PLANS, FOCUS_GROUPS, intentWeekSets, fillPlan, groupScenarios } from '../logic.js';
 
 let mode = 'week';
@@ -91,6 +92,7 @@ function render() {
         <label class="btn sheet-green-soft">${icon.download}${t('Importar planilha')}<input type="file" accept=".csv,text/csv,text/plain" data-change="importGoals" class="sr"></label>
       </div>
       ${intentCard()}
+      ${lgBanner('metas')}
       <div class="seg" role="tablist">
         <button role="tab" aria-selected="${isWeek}" class="${isWeek ? 'on' : ''}" data-act="goalMode" data-m="week">${t('Semana')}</button>
         <button role="tab" aria-selected="${!isWeek}" class="${!isWeek ? 'on' : ''}" data-act="goalMode" data-m="month">${t('Mês')}</button>
@@ -352,8 +354,8 @@ actions.intentSave = () => {
   save();
   const editing = current().arg === 'editar';
   idraft = null;
-  toast(t('Metas de séries e cardio montadas pelo seu objetivo. As de carga você escolhe em cada exercício.'), 4500);
-  go(editing ? '#/metas' : '#/hoje');
+  toast(t('Metas de séries e cardio montadas. Agora escolha a meta de carga de cada exercício.'), 4500);
+  go(state.routines.length ? `#/metas-carga/${editing ? 'metas' : 'hoje'}` : (editing ? '#/metas' : '#/hoje'));
 };
 actions.intentSkip = () => { state.settings.intentAsked = true; idraft = null; save(); go('#/hoje'); };
 
@@ -381,13 +383,19 @@ changes.goalJudge = form => {
   const box = form.querySelector('#goalJudge');
   if (ex && box) box.innerHTML = judgeHtml(ex, fromW(Number(form.w.value) || 0), Math.round(Number(form.r.value) || 0));
 };
-actions.pickScenario = el => {
+actions.pickScenario = (el, ev, opts = {}) => {
   const ex = state.exercises[el.dataset.id];
   if (!ex) return;
   const w = Number(el.dataset.w), r = Number(el.dataset.r);
   setExGoal(ex, w, r);
   Object.assign(state.goals.ex[ex.id], { auto: false, scenario: el.dataset.k });
-  save(); closeSheet(); rerender();
+  if (state.goals.own) delete state.goals.own[ex.id]; // escolheu um cenário: deixa de seguir só a própria progressão
+  // no treino em andamento, ainda sem séries: a carga já começa no degrau desta semana
+  const a = state.active, en = a?.entries?.[a.idx];
+  if (en && en.exId === ex.id && !en.sets.length && en.cur && !(en.cur.w > 0)) en.cur.w = exGoalStatus(ex)?.weekSet?.w || w;
+  save();
+  if (opts.quiet) return;
+  closeSheet(); rerender();
   toast(t('Meta escolhida: {c} · {set}.', { c: SCEN_NAME()[el.dataset.k], set: setStr({ w, r }) }), 3500);
 };
 
@@ -428,11 +436,12 @@ const estNote = est => ({
 })[est];
 const SHORT = () => ({ conservador: t('Conservador'), moderado: t('Moderado'), dificil: t('Difícil') });
 /** Três botões pequenos (um por cenário); tocar escolhe a meta. Null sem histórico. */
-export function scenarioMini(ex) {
+export function scenarioMini(ex, chosen = null) {
   const sc = scenarios(ex);
   if (!sc) return null;
   const S = SHORT();
-  return `<span class="scen-mini">${sc.map(x => `<button class="scen-m scen-${x.key}" data-act="pickScenario" data-id="${esc(ex.id)}" data-w="${x.set.w}" data-r="${x.set.r}" data-k="${x.key}">
+  const on = x => (chosen && (chosen.scenario ? chosen.scenario === x.key : chosen.w === x.set.w && chosen.r === x.set.r) ? ' on' : '');
+  return `<span class="scen-mini">${sc.map(x => `<button class="scen-m scen-${x.key}${on(x)}" data-act="pickScenario" data-id="${esc(ex.id)}" data-w="${x.set.w}" data-r="${x.set.r}" data-k="${x.key}">
     <span class="k">${esc(S[x.key])}</span><b class="num">${esc(setStr(x.set))}</b><span class="g">+${esc(fmt1(x.growth * 100))}%</span></button>`).join('')}</span>${sc[0].est ? `<span class="small muted est-mini">${t('Estimativa: ainda sem treino neste exercício.')}</span>` : ''}`;
 }
 /** Cartão da tela do exercício sem meta: cenários do mês e a opção de definir a própria. */

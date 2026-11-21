@@ -5,6 +5,7 @@ import { route, go, current, rerender } from '../router.js';
 import { exPhotos, exName, exCues, tg, loadLabel, loadHint, routineName, GROUPS, LIB, ensureExercise, restOf, substitutes, supGroups } from '../data.js';
 import { planFor, defaultGroupGoals, entriesFor } from '../logic.js';
 import { strengthLevel } from '../body.js';
+import { decision, lgOptions } from './loadgoals.js';
 import { openCardioSheet, cardioLine } from './cardio.js';
 import { parseUtterance, voiceSupported, listen, stopListening, abortListening } from '../voice.js';
 import { aiEnabled, aiParseVoice } from '../ai.js';
@@ -198,6 +199,10 @@ function render() {
     ${ex.note ? `<button class="ex-note" data-act="editNote" data-id="${esc(ex.id)}" aria-label="${t('Editar anotação')}">${icon.edit}<span>${esc(ex.note)}</span></button>` : ''}
     <p class="muted ex-info">${esc(tg(ex.group))} · ${ex.sets} × ${ex.repMin}–${ex.repMax} reps · ${en.sg && en.sgi < en.sgn - 1 ? t('sem descanso até o próximo do {x}', { x: en.sgn === 3 ? t('Tri-set') : t('Bi-set') }) : t('descanso {s} s', { s: restOf(ex) })}${(() => { const lv = strengthLevel(ex); return lv.top ? ` · <a class="top-link" href="#/exercicio/${encodeURIComponent(ex.id)}">${t('Top {n}% de força', { n: lv.top })}</a>` : ''; })()}${ex.note ? '' : ` · <button class="note-link" data-act="editNote" data-id="${esc(ex.id)}">${icon.edit}${t('Anotar')}</button>`}</p>
     ${en.plan?.goal && !isDone(en, ex) ? `<p class="small goal-line">${icon.target}${t('Meta da semana: {set}', { set: setStr(en.plan.goal) })}</p>` : ''}
+    ${!en.skipped && !en.sets.length && !decision(ex) ? `<div class="card stack lg-prompt">
+      <b>${icon.target}${t('Qual a meta deste exercício no mês?')}</b>
+      <p class="small muted">${t('Escolha uma das opções calculadas para você ou siga a sua progressão. Dá para mudar depois em Metas.')}</p>
+      ${lgOptions(ex)}</div>` : ''}
     <div class="ex-actions">
       <button class="btn sm ghost" data-act="wSwap">${icon.sync}${t('Trocar exercício')}</button>
       <button class="btn sm ghost" data-act="wAdd">${icon.plus}${t('Adicionar exercício')}</button>

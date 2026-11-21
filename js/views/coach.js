@@ -79,30 +79,31 @@ function suggestions() {
   if (last) {
     const days = Math.round((day(now) - day(last.date)) / 864e5);
     const when = days <= 0 ? t('de hoje') : days === 1 ? t('de ontem') : t('de {d}', { d: fmtDate(last.date, false) });
-    out.push(t('Analise meu treino {quando} ({x})', { quando: when, x: routineName(last) }));
+    out.push([t('Analisar último treino'), t('Analise meu treino {quando} ({x})', { quando: when, x: routineName(last) })]);
   }
   const st = stalledExercises(now)[0];
-  if (st) out.push(t('Travei no {x}: o que faço para voltar a evoluir?', { x: exName(st.ex) }));
+  if (st) out.push([t('Travei no {x}', { x: exName(st.ex).split(' (')[0] }), t('Travei no {x}: o que faço para voltar a evoluir?', { x: exName(st.ex) })]);
   if (state.routines.length) {
     const r = state.routines[(state.next || 0) % state.routines.length];
-    out.push(t('Monte um aquecimento para o {x}', { x: routineName(r) }));
+    out.push([t('Aquecimento de hoje'), t('Monte um aquecimento para o {x}', { x: routineName(r) })]);
   }
   const behind = groupGoalStatus(now).filter(g => g.weekGoal && g.weekDone < g.weekGoal)
     .sort((a, b) => (b.weekGoal - b.weekDone) - (a.weekGoal - a.weekDone))[0];
-  if (behind) out.push(t('Faltam {n} séries de {g} nesta semana. Como encaixo?', { n: behind.weekGoal - behind.weekDone, g: tg(behind.group).toLowerCase() }));
+  if (behind) out.push([t('Séries de {g} da semana', { g: tg(behind.group).toLowerCase() }), t('Faltam {n} séries de {g} nesta semana. Como encaixo?', { n: behind.weekGoal - behind.weekDone, g: tg(behind.group).toLowerCase() })]);
   const ws = weekStart(now);
   const cMin = cardioMinutes(cardioIn(ws, addDays(ws, 7)));
   const cGoal = state.cardioGoal || 150;
-  if (cMin < cGoal) out.push(t('Fiz {n} de {g} min de cardio na semana. Como completo?', { n: cMin, g: cGoal }));
+  if (cMin < cGoal) out.push([t('Completar o cardio'), t('Fiz {n} de {g} min de cardio na semana. Como completo?', { n: cMin, g: cGoal })]);
   const p = profile();
   if (p) {
     // o exercício em que a pessoa está mais longe do topo: onde há mais para subir
     const lv = Object.values(state.exercises).map(ex => ({ ex, l: strengthLevel(ex, p) })).filter(x => x.l.top).sort((a, b) => b.l.top - a.l.top)[0];
-    if (lv) out.push(t('Como subo do Top {n}% no {x}?', { n: lv.l.top, x: exName(lv.ex).toLowerCase() }));
+    if (lv) out.push([t('Evoluir no {x}', { x: exName(lv.ex).split(' (')[0].toLowerCase() }), t('Como subo do Top {n}% no {x}?', { n: lv.l.top, x: exName(lv.ex).toLowerCase() })]);
   }
-  if (!last) out.push(t('Como começo com segurança?'));
-  out.push(t('Estou cansado hoje: como adapto o treino?'));
-  return [...new Set(out)].slice(0, 6);
+  if (!last) out.push([t('Como começar'), t('Como começo com segurança?')]);
+  out.push([t('Estou cansado hoje'), t('Estou cansado hoje: como adapto o treino?')]);
+  // rótulo curto no botão; a pergunta completa vai para a IA
+  return out.slice(0, 5);
 }
 
 /** Texto da IA com o mínimo de formatação: parágrafos, listas "- " e **negrito**. */
@@ -142,12 +143,11 @@ function render() {
     <div class="coach-head"><h2>${coachIcon()}${t('Treinador')}</h2>
       <button class="btn sm ghost coach-mem-btn" data-act="coachMem">${MEM_IC}${c.notes.length ? t('Memória ({n})', { n: c.notes.length }) : t('Memória')}</button></div>
     <div class="coach-log" id="coachLog">${chat().length || busy ? bubbles() : `<p class="muted small">${t('Pergunte o que quiser sobre os seus treinos. Eu vejo seus registros, fichas, metas e cardio, e lembro do que você me contar.')}</p>`}</div>
-    ${busy ? '' : `<div class="coach-sugs">${suggestions().map(q => `<button class="chip" data-act="coachAsk" data-q="${esc(q)}">${esc(q)}</button>`).join('')}</div>`}
+    ${busy ? '' : `<div class="coach-sugs">${suggestions().map(([label, q]) => `<button class="chip" data-act="coachAsk" data-q="${esc(q)}">${esc(label)}</button>`).join('')}</div>`}
     <form class="coach-form" data-submit="coachSend">
       <textarea name="q" rows="1" maxlength="1000" placeholder="${t('Escreva sua pergunta…')}" ${busy ? 'disabled' : ''}></textarea>
       <button class="coach-send" ${busy ? 'disabled' : ''} aria-label="${t('Enviar')}">${SEND_IC}</button>
     </form>
-    <p class="small muted coach-note">${t('Usa {p} com a sua chave. A conversa e a memória ficam nos seus dados e sincronizam com o seu Drive.', { p: PROVIDERS[aiProvider()]?.name || 'IA' })}</p>
   </div>`);
   // borda e detalhes na cor da IA em uso
   $('#sheet .sheet-card')?.classList.add('coach-card', `prov-${aiProvider()}`);
