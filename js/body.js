@@ -1,7 +1,7 @@
 // Composição corporal e nível de força: estimativas a partir do perfil e das cargas registradas.
 // Tudo aqui é aproximado e o app mostra isso para a pessoa.
 import { state } from './store.js';
-import { entriesFor, e1rm, addDays } from './logic.js';
+import { entriesFor, e1rm, addDays, workSets } from './logic.js';
 
 // ---------- Perfil ----------
 
@@ -152,21 +152,36 @@ export const oneRepMax = (w, reps) => (reps <= 1 ? w : e1rm(w, reps));
  * dos últimos 180. Carga total; nos exercícios de peso corporal, soma o peso da pessoa.
  * Retorna { value, w, r, rir, date, test } ou null.
  */
+/**
+ * Reps que provavelmente sobraram numa série sem RIR anotado, pelas séries repetidas do mesmo treino.
+ * Indo até a falha, as reps caem de uma série para a outra (1 a 3 por série, com 1 a 3 min de descanso).
+ * Repetir a mesma carga e as mesmas reps em k séries indica reserva: 2 séries iguais → 0, 3 → 1, 4 → 2, 5+ → 3.
+ */
+export function inferredRir(s, sets) {
+  if (s.rir != null) return { rir: s.rir, inferred: false };
+  if (s.t) return { rir: 0, inferred: false }; // falhou: sem reserva
+  const k = sets.filter(x => x.w === s.w && x.r >= s.r && !x.t).length;
+  const rir = Math.min(3, Math.floor((k - 1) * 0.75));
+  return { rir: Math.max(0, rir), inferred: rir > 0 };
+}
+
 export function best1RM(ex, bw, isBw) {
   let best = null;
-  const consider = (s, date, test) => {
+  const consider = (s, date, test, sets = []) => {
     if (!s.r) return;
     const w = isBw ? bw * bwShare(isBw) + (s.w || 0) : s.w;
     if (!(w > 0)) return;
-    // com RIR informado, as reps que sobraram contam para estimar o máximo (até 4)
-    const rir = Math.min(4, s.rir || 0);
+    // reps que sobraram (anotadas, ou estimadas pelas séries repetidas) contam para estimar o máximo (até 4)
+    const { rir: r0, inferred } = test ? { rir: s.rir || 0, inferred: false } : inferredRir(s, sets);
+    const rir = Math.min(4, r0 || 0);
     const value = oneRepMax(w, s.r + rir);
-    if (!best || value > best.value) best = { value, w: s.w || 0, r: s.r, rir: s.rir ?? null, date, test };
+    if (!best || value > best.value) best = { value, w: s.w || 0, r: s.r, rir: s.rir ?? (inferred ? rir : null), rirInferred: inferred, sets: inferred ? sets.filter(x => x.w === s.w && x.r >= s.r).length : 0, date, test };
   };
   const from90 = addDays(new Date(), -90), from180 = addDays(new Date(), -180);
   for (const e of entriesFor(ex.id)) {
     if (new Date(e.date) < from90) continue;
-    for (const s of e.sets) consider(s, e.date, false);
+    const work = workSets(e.sets);
+    for (const s of work) consider(s, e.date, false, work);
   }
   for (const tst of ex.tests || []) {
     if (new Date(tst.date) >= from180) consider(tst, tst.date, true);

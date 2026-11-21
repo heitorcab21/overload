@@ -449,7 +449,7 @@ function strengthCard(ex) {
   const p = profile();
   const s = lv.src;
   const load = lv.bw ? (s.w ? ul(t('peso corporal + {w} kg', { w: fmt(toW(s.w)) })) : t('peso corporal')) : kg(s.w);
-  const setTxt = `${load} × ${s.r}${s.rir ? ` (${t('sobraram {n}', { n: s.rir >= 4 ? '4+' : s.rir })})` : ''}`;
+  const setTxt = `${load} × ${s.r}${s.rir ? ` (${s.rirInferred ? t('{k} séries iguais: ~{n} de reserva', { k: s.sets, n: s.rir }) : t('sobraram {n}', { n: s.rir >= 4 ? '4+' : s.rir })})` : ''}`;
   const reps = s.r + Math.min(4, s.rir || 0);
   const how = reps <= 1 ? t('Uma repetição máxima: o 1RM é a própria carga.')
     : t('Calculado pela fórmula de Epley: carga × (1 + reps ÷ 30).');
@@ -457,7 +457,7 @@ function strengthCard(ex) {
     <h3>${t('Seu nível de força')}</h3>
     <div class="row between"><span class="big-num">${t('Top {n}%', { n: lv.top })}</span><span class="small muted">${ul(t('1RM estimado: {w} kg', { w: Math.round(toW(lv.oneRM)) }))}</span></div>
     ${meter(lv.pct / 100)}
-    <p class="small muted">${ul(t('Entre {grupo} que treinam musculação, com {idade} anos e cerca de {peso} kg. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.', { grupo: groupWord(p), idade: p.age, peso: Math.round(toW(p.weight)) }))}</p>
+    <p class="small muted">${ul(t('Comparado com {grupo} de {idade} anos e cerca de {peso} kg que registram treinos na Strength Level (público dedicado). Top 50% = intermediário de academia. Estimativa, não é um ranking oficial.', { grupo: groupWord(p), idade: p.age, peso: Math.round(toW(p.weight)) }))}</p>
     <div class="src-box small">
       <b>${s.test ? t('Base: teste de força de {d}', { d: fmtDate(s.date, false) }) : t('Base: sua melhor série dos últimos 90 dias ({d})', { d: fmtDate(s.date, false) })}</b><br>
       ${esc(setTxt)}. ${how}${lv.bw ? ` ${t('Nos exercícios de peso corporal, seu peso entra na conta.')}` : ''}

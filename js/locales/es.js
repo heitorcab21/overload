@@ -1337,6 +1337,9 @@ const ui = {
   "Para {g}, {a} anos e {w} kg. Carga total, como você anota no treino; nos exercícios com peso do corpo, o peso extra.": "Para {g}, {a} años y {w} kg. Carga total, como la anotas; en ejercicios con peso corporal, el peso extra.",
   "Exercícios que contam neste eixo": "Ejercicios que cuentan en este eje",
   "O radar usa o seu melhor exercício do eixo. Cargas calculadas pela tabela da Strength Level de cada exercício.": "El radar usa tu mejor ejercicio del eje. Cargas calculadas con la tabla de Strength Level de cada ejercicio.",
+  "Comparado com {grupo} de {idade} anos e cerca de {peso} kg que registram treinos na Strength Level: um público dedicado, então a tabela é exigente. Top 50% = intermediário de academia.": "Comparado con {grupo} de {idade} años y unos {peso} kg que registran entrenos en Strength Level: un público dedicado, así que la tabla es exigente. Top 50% = intermedio de gimnasio.",
+  "Comparado com {grupo} de {idade} anos e cerca de {peso} kg que registram treinos na Strength Level (público dedicado). Top 50% = intermediário de academia. Estimativa, não é um ranking oficial.": "Comparado con {grupo} de {idade} años y unos {peso} kg que registran entrenos en Strength Level (público dedicado). Top 50% = intermedio de gimnasio. Es una estimación, no un ranking oficial.",
+  "{k} séries iguais: ~{n} de reserva": "{k} series iguales: ~{n} de reserva",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

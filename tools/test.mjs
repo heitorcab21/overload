@@ -440,6 +440,10 @@ S().sessions.push({ id: 'bench2', date: nowIso, entries: [{ exId: 'supino-reto',
 eq(Math.round(body.strengthLevel(S().exercises['supino-reto']).oneRM), Math.round(e1rm(100, 8)), 'RIR entra na estimativa do 1RM');
 const lvR = body.strengthLevel(S().exercises['supino-reto']);
 eq([lvR.src.w, lvR.src.r, lvR.src.rir, lvR.src.test], [100, 5, 3, false], 'mostra a série que gerou o 1RM');
+eq([body.inferredRir({ w: 75, r: 10 }, [{ w: 75, r: 10 }, { w: 75, r: 10 }, { w: 75, r: 10 }, { w: 75, r: 10 }]).rir,
+  body.inferredRir({ w: 75, r: 10 }, [{ w: 75, r: 10 }, { w: 75, r: 8 }, { w: 75, r: 7 }]).rir,
+  body.inferredRir({ w: 75, r: 10, rir: 1 }, [{ w: 75, r: 10 }, { w: 75, r: 10 }, { w: 75, r: 10 }, { w: 75, r: 10 }]).rir], [2, 0, 1],
+  '4 séries iguais sem RIR anotado: ~2 de reserva; reps caindo: foi até a falha; RIR anotado vale mais');
 S().exercises['supino-reto'].tests = [{ date: nowIso, w: 140, r: 1 }];
 const lvT = body.strengthLevel(S().exercises['supino-reto']);
 eq([lvT.oneRM, lvT.src.test], [140, true], 'teste de 1 rep: o 1RM é a própria carga');

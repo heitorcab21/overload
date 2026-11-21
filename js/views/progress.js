@@ -419,7 +419,7 @@ function renderStrength() {
     <div class="stack">
       ${!p ? `<div class="card stack"><p>${t('Descubra em que top de força você está em cada exercício, comparado a pessoas do seu sexo, idade e peso que treinam musculação.')}</p>
         <button class="btn primary block" data-act="editProfile">${t('Preencher perfil')}</button></div>` : `
-      <p class="muted small">${ul(t('Entre {grupo} que treinam musculação, com {idade} anos e cerca de {peso} kg.', { grupo: groupWord(p), idade: p.age, peso: Math.round(toW(p.weight)) }))}
+      <p class="muted small">${ul(t('Comparado com {grupo} de {idade} anos e cerca de {peso} kg que registram treinos na Strength Level: um público dedicado, então a tabela é exigente. Top 50% = intermediário de academia.', { grupo: groupWord(p), idade: p.age, peso: Math.round(toW(p.weight)) }))}
         ${t('Top 10% quer dizer que você é mais forte que 90% dessas pessoas.')}</p>
       ${quickCalc()}
       ${rows.length ? `<h3 class="group-title">${t('Pelos seus treinos')}</h3>` : ''}

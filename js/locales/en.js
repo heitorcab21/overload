@@ -1337,6 +1337,9 @@ const ui = {
   "Para {g}, {a} anos e {w} kg. Carga total, como você anota no treino; nos exercícios com peso do corpo, o peso extra.": "For {g}, {a} years old and {w} kg. Total load, as you log it; for bodyweight exercises, the extra weight.",
   "Exercícios que contam neste eixo": "Exercises that count on this axis",
   "O radar usa o seu melhor exercício do eixo. Cargas calculadas pela tabela da Strength Level de cada exercício.": "The radar uses your best exercise on the axis. Loads calculated from each exercise's Strength Level table.",
+  "Comparado com {grupo} de {idade} anos e cerca de {peso} kg que registram treinos na Strength Level: um público dedicado, então a tabela é exigente. Top 50% = intermediário de academia.": "Compared with {grupo} aged {idade} at about {peso} kg who log their training on Strength Level: a dedicated crowd, so the table is demanding. Top 50% = intermediate gym-goer.",
+  "Comparado com {grupo} de {idade} anos e cerca de {peso} kg que registram treinos na Strength Level (público dedicado). Top 50% = intermediário de academia. Estimativa, não é um ranking oficial.": "Compared with {grupo} aged {idade} at about {peso} kg who log their training on Strength Level (a dedicated crowd). Top 50% = intermediate gym-goer. An estimate, not an official ranking.",
+  "{k} séries iguais: ~{n} de reserva": "{k} equal sets: ~{n} in reserve",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
