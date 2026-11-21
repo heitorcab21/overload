@@ -427,7 +427,7 @@ function renderStrength() {
       ${pending.length ? `<h3 class="group-title">${t('Ainda sem registro')}</h3>
         <div class="card flat"><div class="list">${pending.map(ex => `<a class="item" href="#/exercicio/${encodeURIComponent(ex.id)}">
           <span class="grow t">${esc(exName(ex))}</span><span class="small muted">${t('treine ou faça um teste')}</span>${icon.next}</a>`).join('')}</div></div>` : ''}
-      <p class="small muted">${t('Só entram exercícios com barra, halteres ou peso corporal; aparelhos e polias variam demais entre academias. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.')}</p>`}
+      <p class="small muted">${t('Entram exercícios com barra, halteres ou peso corporal e as puxadas e remadas na polia; os outros aparelhos variam demais entre academias. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.')}</p>`}
     </div>`;
 }
 

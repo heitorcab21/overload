@@ -650,7 +650,7 @@ const ui = {
   "teste de força": "strength test",
   "Ainda sem registro": "No records yet",
   "treine ou faça um teste": "train it or take a test",
-  "Só entram exercícios com barra, halteres ou peso corporal; aparelhos e polias variam demais entre academias. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.": "Only barbell, dumbbell and bodyweight exercises count; machines and cables vary too much between gyms. Estimate based on strength standards for lifters; not an official ranking.",
+  "Entram exercícios com barra, halteres ou peso corporal e as puxadas e remadas na polia; os outros aparelhos variam demais entre academias. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.": "Barbell, dumbbell and bodyweight exercises count, plus cable pulldowns and rows; other machines vary too much between gyms. Estimate based on strength standards for lifters; not an official ranking.",
   "Veja o seu nível em {n} exercício": "See your level in {n} exercise",
   "Veja o seu nível em cada um dos {n} exercícios": "See your level in each of your {n} exercises",
   "Arnold split": "Arnold split",
@@ -1438,7 +1438,7 @@ const help = [
       <li><b>Estimated body fat</b>: with waist and neck (and hips, for women), the app uses the US Navy formula (about 3 to 4 points of error). Without them, it uses BMI, age and sex (about 5 points) and subtracts up to 4 points if you are strong for your weight.</li>
       <li><b>Body weight</b>: the chart sits right below the values. One entry per day.</li>
       <li><b>Strength level</b>: a <b>radar</b> with the 6 movement patterns (horizontal and vertical push and pull, squat and hip hinge). The left side is the front of the body and the right side the back: the shape shows imbalances. Tap an axis to see the exercise and your percentile. Top 10% = stronger than 90% of lifters of the same sex, age and weight.</li>
-      <li>Tap the card to see each exercise, grouped by movement pattern, and <b>Check any exercise</b> to see your percentile instantly, without saving. Only barbell, dumbbell and bodyweight exercises count.</li>
+      <li>Tap the card to see each exercise, grouped by movement pattern, and <b>Check any exercise</b> to see your percentile instantly, without saving. Barbell, dumbbell and bodyweight exercises count, plus cable pulldowns and rows.</li>
       <li><b>Where the 1RM comes from</b>: your best set in the last 90 days. For a more reliable number, use <b>Take a strength test</b> on the exercise screen.</li>
     </ul>
     <p class="tip">These are estimates. For a reliable body fat number, get a body assessment (bioimpedance, skinfolds or DEXA).</p>`],

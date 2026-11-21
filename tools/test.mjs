@@ -244,6 +244,14 @@ eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [10, { week: 10, 
   eq(cardioScenarios(null).map(x => x.n), [90, 150, 300], 'cardio: 90, 150 (OMS) e 300');
 }
 
+// ---- polia no nível de força ----
+{
+  const { quickLevel } = await import('../js/body.js');
+  const p = { sex: 'm', age: 23, weight: 82, height: 181 };
+  const pd = quickLevel('puxada-frente', 60, 10, p), rw = quickLevel('remada-baixa', 60, 10, p);
+  eq([pd.pct > 35 && pd.pct < 75, rw.pct > 35 && rw.pct < 80], [true, true], 'puxada e remada na polia (60 kg × 10, 82 kg): perto do intermediário');
+}
+
 // ---- metas de carga: decisão por exercício ----
 {
   const lg = await import('../js/goalchoice.js');

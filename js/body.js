@@ -70,6 +70,9 @@ export const STRENGTH_LIFTS = {
   'supino-fechado': ['bench', 0.9],
   'desenvolvimento-barra': ['ohp', 1.0],
   'terra-sumo': ['deadlift', 1.0],
+  // polia com tabelas de força bem estabelecidas: a pilha de placas varia pouco entre academias
+  'puxada-frente': ['pullup', 0.7],   // puxada ≈ 70% da carga total da barra fixa (peso do corpo + extra)
+  'remada-baixa': ['row', 1.0],       // remada sentada na polia ≈ remada curvada
 };
 
 /** Força cai depois dos 40 e ainda não chegou ao pico na adolescência. */

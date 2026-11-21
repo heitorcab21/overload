@@ -650,7 +650,7 @@ const ui = {
   "teste de força": "prueba de fuerza",
   "Ainda sem registro": "Aún sin registros",
   "treine ou faça um teste": "entrena o haz una prueba",
-  "Só entram exercícios com barra, halteres ou peso corporal; aparelhos e polias variam demais entre academias. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.": "Solo cuentan ejercicios con barra, mancuernas o peso corporal; las máquinas y poleas varían demasiado entre gimnasios. Estimación basada en estándares de fuerza de quienes entrenan; no es un ranking oficial.",
+  "Entram exercícios com barra, halteres ou peso corporal e as puxadas e remadas na polia; os outros aparelhos variam demais entre academias. Estimativa baseada em padrões de força de praticantes; não é um ranking oficial.": "Cuentan ejercicios con barra, mancuernas o peso corporal, y los jalones y remos en polea; las demás máquinas varían demasiado entre gimnasios. Estimación basada en estándares de fuerza de quienes entrenan; no es un ranking oficial.",
   "Veja o seu nível em {n} exercício": "Mira tu nivel en {n} ejercicio",
   "Veja o seu nível em cada um dos {n} exercícios": "Mira tu nivel en cada uno de tus {n} ejercicios",
   "Arnold split": "Arnold split",
@@ -1438,7 +1438,7 @@ const help = [
       <li><b>Grasa estimada</b>: con cintura y cuello (y cadera, en mujeres), la app usa la fórmula de la Marina de EE. UU. (error de unos 3 a 4 puntos). Sin esas medidas, usa IMC, edad y sexo (unos 5 puntos) y descuenta hasta 4 puntos si eres fuerte para tu peso.</li>
       <li><b>Peso corporal</b>: el gráfico está justo debajo de los valores. Un registro por día.</li>
       <li><b>Nivel de fuerza</b>: un <b>radar</b> con los 6 patrones de movimiento (empuje y tracción horizontal y vertical, sentadilla y bisagra de cadera). A la izquierda la parte delantera del cuerpo y a la derecha la trasera: la forma muestra desequilibrios. Toca un eje para ver el ejercicio y tu top. Top 10% = más fuerte que el 90% de quienes entrenan, con el mismo sexo, edad y peso.</li>
-      <li>Toca la tarjeta para ver cada ejercicio, agrupado por patrón de movimiento, y <b>Consultar cualquier ejercicio</b> para ver el top al instante, sin guardar. Solo cuentan ejercicios con barra, mancuernas o peso corporal.</li>
+      <li>Toca la tarjeta para ver cada ejercicio, agrupado por patrón de movimiento, y <b>Consultar cualquier ejercicio</b> para ver el top al instante, sin guardar. Cuentan ejercicios con barra, mancuernas o peso corporal, y los jalones y remos en polea.</li>
       <li><b>De dónde sale el 1RM</b>: de tu mejor serie de los últimos 90 días. Para un número más confiable, usa <b>Hacer prueba de fuerza</b> en la pantalla del ejercicio.</li>
     </ul>
     <p class="tip">Son estimaciones. Para una grasa corporal confiable, haz una evaluación física (bioimpedancia, pliegues cutáneos o DEXA).</p>`],

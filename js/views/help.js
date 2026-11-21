@@ -120,7 +120,7 @@ const TOPICS = [
       <li><b>Gordura estimada</b>: com cintura e pescoço (e quadril, para mulheres), o app usa a fórmula da Marinha americana (erro de cerca de 3 a 4 pontos). Sem essas medidas, usa IMC, idade e sexo (cerca de 5 pontos) e desconta até 4 pontos se você for forte para o seu peso.</li>
       <li><b>Peso corporal</b>: o gráfico fica logo abaixo dos valores. Um registro por dia.</li>
       <li><b>Nível de força</b>: um <b>radar</b> com os 6 padrões de movimento (empurrar e puxar na horizontal e na vertical, agachar e dobradiça de quadril). À esquerda fica a frente do corpo e à direita a parte de trás: o formato mostra desequilíbrios. Toque num eixo para ver o exercício e o seu top. Top 10% = mais forte que 90% de quem treina, com o mesmo sexo, idade e peso.</li>
-      <li>Toque no cartão para ver cada exercício, agrupado por padrão de movimento, e em <b>Consultar qualquer exercício</b> para ver o top na hora, sem salvar. Só entram exercícios com barra, halteres ou peso corporal.</li>
+      <li>Toque no cartão para ver cada exercício, agrupado por padrão de movimento, e em <b>Consultar qualquer exercício</b> para ver o top na hora, sem salvar. Entram exercícios com barra, halteres ou peso corporal e as puxadas e remadas na polia.</li>
       <li><b>De onde vem o 1RM</b>: da melhor série dos últimos 90 dias. Para um número mais confiável, use <b>Fazer teste de força</b> na tela do exercício.</li>
     </ul>
     <p class="tip">São estimativas. Para gordura corporal confiável, faça uma avaliação física (bioimpedância, dobras cutâneas ou DEXA).</p>`],
