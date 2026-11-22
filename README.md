@@ -32,6 +32,7 @@ Funciona no navegador do celular, pode ser instalado na tela inicial e roda sem 
 - **Exercício parado**: depois de 3 treinos sem superar o melhor, um toque recua 10% ou muda a faixa de reps, e o próximo treino já vem ajustado.
 - **Pouco tempo e dia ruim**: no treino, deixa 2 séries por exercício ou baixa as cargas em 10% sem que aquele dia puxe as próximas cargas para baixo.
 - **Duas academias**: máquinas e polias guardam a carga de cada academia; barra e halteres valem em todas.
+- **Tempo do treino**: estimativa pelas séries, descanso e troca de aparelho, ajustada ao seu ritmo real depois de 3 treinos cronometrados.
 
 **Força e corpo**
 - **Nível de força** por exercício com as tabelas da Strength Level (89 exercícios), e **radar** com 6 padrões de movimento. O nível de treino compara com adultos em geral (normas do Cooper Institute, referência do ACSM) e a força máxima (1RM) com quem treina.
@@ -122,6 +123,7 @@ O servidor abre em `http://localhost:5173`. Em localhost o service worker fica d
 | `js/data.js` | Biblioteca de exercícios, execução ideal, treinos prontos e faixa de reps por objetivo |
 | `js/logic.js` | Progressão de carga, séries efetivas, metas e estatísticas |
 | `js/shares.js` | Quanto cada série conta para cada músculo nos compostos |
+| `js/duration.js` | Tempo estimado do treino, ajustado ao seu ritmo |
 | `js/loads.js` | Tipo de carga de cada exercício (barra, halteres, polia, máquina...) |
 | `js/scenarios.js` | Cenários das metas de carga e veredito da meta própria |
 | `js/body.js` | Nível de força (tabelas da Strength Level e normas do Cooper Institute) e composição corporal |

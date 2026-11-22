@@ -1,5 +1,6 @@
 // Treinos (rotinas), exercícios e a tela de execução ideal de cada exercício.
 import { state, save, uid } from '../store.js';
+import { routineMinutes, fmtMinutes } from '../duration.js';
 import { $, esc, kg, fmt, fmtDate, setStr, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, meter, waitDone } from '../ui.js';
 import { route, go, rerender } from '../router.js';
 import { activeExercises, BODY_PARTS as BODY_PARTS_DATA, supGroups, TEMPLATES, exPhotos, GROUPS, LIB, exName, exCues, tg, loadHint, loadShort, routineName } from '../data.js';
@@ -39,7 +40,7 @@ function renderRoutines() {
       ${state.routines.length ? saveBtn() : ''}
       ${state.routines.map((r, ri) => `<div class="card flat">
         <div class="row" style="padding:12px 8px 4px 16px">
-          <h2 class="grow">${esc(routineName(r))}</h2>
+          <h2 class="grow">${esc(routineName(r))}${(m => (m ? `<small class="dur-sub">${fmtMinutes(m.min)}</small>` : ''))(routineMinutes(r))}</h2>
           <button class="icon-btn" data-act="editRoutine" data-id="${r.id}" aria-label="${t('Renomear ou excluir {x}', { x: esc(routineName(r)) })}">${icon.edit}</button>
         </div>
         <div class="list">${r.ex.map((id, i) => {

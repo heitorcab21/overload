@@ -1453,7 +1453,6 @@ const ui = {
   "Os exercícios que faltam ficam com 2 séries. Com a mesma carga, isso mantém o que você ganhou; o volume volta no próximo treino.": "Los ejercicios que faltan quedan con 2 series. Con la misma carga, eso mantiene lo que ganaste; el volumen vuelve en el próximo entreno.",
   "Dia ruim": "Día malo",
   "Cansaço, sono ruim ou pouca energia: as cargas que faltam ficam cerca de 10% menores e este treino não baixa as suas próximas cargas. As séries contam no volume normalmente.": "Cansancio, mal sueño o poca energía: las cargas que faltan bajan cerca de un 10% y este entreno no baja tus próximas cargas. Las series cuentan en el volumen normalmente.",
-  "Pouco tempo: 2 séries em cada exercício que falta.": "Poco tiempo: 2 series en cada ejercicio que falta.",
   "Séries normais de novo.": "Series normales de nuevo.",
   "Dia ruim: cargas menores hoje, e suas próximas cargas ficam como estavam.": "Día malo: cargas menores hoy, y tus próximas cargas quedan como estaban.",
   "Cargas normais de novo.": "Cargas normales de nuevo.",
@@ -1465,6 +1464,15 @@ const ui = {
   "Pouco tempo ou dia ruim": "Poco tiempo o día malo",
   "Parado há {n} treino sem superar seu melhor.": "Estancado {n} entreno sin superar tu mejor marca.",
   "Parado há {n} treinos sem superar seu melhor.": "Estancado {n} entrenos sin superar tu mejor marca.",
+  "Leva {x}": "Dura {x}",
+  "pelo seu ritmo": "a tu ritmo",
+  "cerca de {n} min": "unos {n} min",
+  "cerca de {h} h {m} min": "unas {h} h {m} min",
+  "cerca de {h} h": "unas {h} h",
+  "Falta {x} de treino.": "Falta {x} de entreno.",
+  "Sem o pouco tempo: {x}.": "Sin poco tiempo: {x}.",
+  "Com pouco tempo: {x}.": "Con poco tiempo: {x}.",
+  "Pouco tempo: 2 séries em cada exercício que falta. Falta {x}.": "Poco tiempo: 2 series en cada ejercicio que falta. Falta {x}.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -1565,6 +1573,7 @@ const help = [
       <li><b>Cambié de aparato</b>: ese entreno no cuenta para la próxima carga.</li>
       <li><b>Pausa de 14 días o más</b> en el ejercicio (viaje, enfermedad): el primer entreno vuelve con cerca de un 10% menos (20% después de 4 semanas, 30% después de 8), y los siguientes suben la mitad de lo que falta cada vez hasta la carga de antes. La fuerza vuelve mucho más rápido de lo que costó construirla.</li>
       <li><b>Poco tiempo o día malo</b>: en el entreno, toca <b>¿Poco tiempo o día malo?</b> arriba (o en la lista del entreno). Poco tiempo deja 2 series en cada ejercicio que falta. Día malo baja las cargas que faltan cerca de un 10%, y ese entreno no sirve de base para las próximas cargas; las series cuentan en el volumen normalmente.</li>
+      <li><b>Tiempo del entreno</b>: el próximo entreno muestra cuánto debería durar (series, reps, descanso y cambio de aparato). Después de 3 entrenos cronometrados, la cuenta se ajusta a tu ritmo real. En el entreno, <b>¿Poco tiempo o día malo?</b> muestra cuánto falta, con y sin poco tiempo.</li>
       <li><b>Dos gimnasios</b>: en Ajustes, añade cada uno. En máquinas y poleas la app guarda la carga de cada gimnasio; en el entreno, toca el nombre del gimnasio para cambiar. Barra, mancuernas y peso corporal valen en todos.</li>
     </ul>`],
 

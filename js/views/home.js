@@ -8,6 +8,7 @@ import {
   sessionPRs, tonnage, exGoalStatus, entriesFor, stalledExercises, stallOf, planReset, shiftRange,
 } from '../logic.js';
 import { toW } from '../units.js';
+import { routineMinutes, fmtMinutes } from '../duration.js';
 import { startWorkout, startFreeWorkout, askNotifyOnce } from './workout.js';
 import { openCardioSheet, cardioLine } from './cardio.js';
 import { cardioIn } from '../cardio.js';
@@ -161,6 +162,7 @@ function renderHome() {
       <div class="row between"><h3>${t('Próximo treino')}</h3>
         ${state.routines.length > 1 ? `<button class="btn sm ghost" data-act="chooseRoutine">${t('Trocar')}</button>` : ''}</div>
       <h2>${esc(routineName(r))}</h2>
+      ${durLine(r)}
       <div>${exs.map(ex => {
         const p = planFor(ex);
         return `<div class="plan-line"><span class="n">${esc(exName(ex))}</span>
@@ -310,11 +312,18 @@ function activeEmpty() {
 actions.start = el => startWorkout(el.dataset.id);
 actions.freeWorkout = () => startFreeWorkout();
 actions.resume = () => go('#/treino');
+/** Tempo estimado do treino, com o aviso de que já segue o seu ritmo. */
+function durLine(r) {
+  const d = routineMinutes(r);
+  if (!d) return '';
+  return `<p class="small muted dur-line">${t('Leva {x}', { x: fmtMinutes(d.min) })}${d.fit ? ` · ${t('pelo seu ritmo')}` : ''}</p>`;
+}
+
 actions.chooseRoutine = () => {
   sheet(`<h2>${t('Qual treino hoje?')}</h2>
     <div class="card flat"><div class="list">
       ${state.routines.map((r, i) => `<button class="item" data-act="setNext" data-i="${i}">
-        <span class="grow"><span class="t">${esc(routineName(r))}</span><br><span class="d">${tn(r.ex.length, '{n} exercício', '{n} exercícios')}</span></span>
+        <span class="grow"><span class="t">${esc(routineName(r))}</span><br><span class="d">${tn(r.ex.length, '{n} exercício', '{n} exercícios')}${(m => (m ? ` · ${fmtMinutes(m.min)}` : ''))(routineMinutes(r))}</span></span>
         ${i === state.next % state.routines.length ? `<span class="badge">${t('próximo')}</span>` : ''}
       </button>`).join('')}
     </div></div>`);

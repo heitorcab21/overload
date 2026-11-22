@@ -11,6 +11,7 @@ import { parseUtterance, voiceSupported, listen, stopListening, abortListening }
 import { aiEnabled, aiParseVoice } from '../ai.js';
 import { refreshIfNeeded, sync, driveConnected } from '../drive.js';
 import { t, tn, exPack } from '../i18n.js';
+import { activeMinutesLeft, fmtMinutes } from '../duration.js';
 import { toW, fromW, toStep } from '../units.js';
 
 const FEEL = () => ({ easy: t('Fácil'), ok: t('Na medida'), hard: t('Pesado'), fail: t('Até a falha') });
@@ -79,7 +80,10 @@ function replan() {
 actions.wDay = () => {
   const a = state.active;
   closeSheet();
+  const now = activeMinutesLeft(a, goal);
+  const other = activeMinutesLeft(a, goal, a.short ? 'full' : 'short');
   sheet(`<h2>${t('Como está hoje?')}</h2>
+    <p class="small muted">${t('Falta {x} de treino.', { x: fmtMinutes(now) })}${other !== now ? ` ${a.short ? t('Sem o pouco tempo: {x}.', { x: fmtMinutes(other) }) : t('Com pouco tempo: {x}.', { x: fmtMinutes(other) })}` : ''}</p>
     <div class="stack">
       <button class="btn block day-opt${a.short ? ' on' : ''}" data-act="wShort" aria-pressed="${!!a.short}">
         <span class="grow"><b>${a.short ? icon.check : ''}${t('Pouco tempo hoje')}</b><br><small>${t('Os exercícios que faltam ficam com 2 séries. Com a mesma carga, isso mantém o que você ganhou; o volume volta no próximo treino.')}</small></span></button>
@@ -93,7 +97,7 @@ actions.wShort = () => {
   a.short = !a.short;
   for (const en of a.entries) { const ex = state.exercises[en.exId]; if (ex) (a.short ? applyShort : undoShort)(en, ex); }
   save({ touch: false }); closeSheet(); render();
-  toast(a.short ? t('Pouco tempo: 2 séries em cada exercício que falta.') : t('Séries normais de novo.'));
+  toast(a.short ? t('Pouco tempo: 2 séries em cada exercício que falta. Falta {x}.', { x: fmtMinutes(activeMinutesLeft(a, goal)) }) : t('Séries normais de novo.'));
 };
 actions.wBad = () => {
   const a = state.active;

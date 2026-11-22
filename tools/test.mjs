@@ -322,6 +322,32 @@ eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [10, { week: 10, 
   state.sessions = keep.s; state.exercises = keep.e; state.gyms = keep.g; state.settings.gym = keep.sg;
 }
 
+// ---- tempo estimado do treino ----
+{
+  const D = await import('../js/duration.js');
+  const keep = { s: state.sessions, e: state.exercises, r: state.settings.rest };
+  state.settings.rest = 90;
+  const A = { id: 'a', name: 'A', group: 'Peito', sets: 3, repMin: 8, repMax: 12, step: 2.5 };
+  const B = { id: 'b', name: 'B', group: 'Costas', sets: 3, repMin: 8, repMax: 12, step: 2.5 };
+  state.exercises = { a: A, b: B };
+  state.sessions = [];
+  // aquecimento 240 + A: 3 × (15 + 40) + 2 × 90 = 345 + troca 90 + B: 345 = 1020 s = 17 min
+  eq(D.routineMinutes({ ex: ['a', 'b'] }), { min: 17, fit: false }, 'séries, descanso, troca de aparelho e aquecimento');
+  // bi-set: A vai direto para B (3 × (55 + 15)), B descansa: 240 + 210 + 345 = 795 s ≈ 13 min
+  eq(D.routineMinutes({ ex: ['a', 'b'], link: { a: true } }).min, 13, 'bi-set não descansa entre os exercícios do grupo');
+  // ritmo real: 3 treinos de A+B que levaram 30% a mais do que a conta
+  const est = D.rawSeconds([{ ex: A, sets: 3, reps: 10 }, { ex: B, sets: 3, reps: 10 }]) / 60;
+  state.sessions = [1, 2, 3].map(i => ({ id: `d${i}`, date: new Date(2026, 10, i).toISOString(), dur: Math.round(est * 1.3),
+    entries: ['a', 'b'].map(id => ({ exId: id, sets: [{ w: 50, r: 10 }, { w: 50, r: 10 }, { w: 50, r: 10 }], flags: [] })) }));
+  const p = D.paceFactor();
+  eq([p.fit, Math.round(p.f * 10) / 10], [true, 1.3], 'quem leva 30% a mais: a estimativa sobe 30%');
+  eq(D.routineMinutes({ ex: ['a', 'b'] }), { min: 20, fit: true });
+  const act = { entries: [{ exId: 'a', sets: [{ w: 50, r: 10 }], plan: { reps: [10, 10, 10] } }, { exId: 'b', sets: [], plan: { reps: [10, 10, 10] } }] };
+  const goal = (en, ex) => ex.sets;
+  eq(D.activeMinutesLeft(act, goal, 'short') < D.activeMinutesLeft(act, goal), true, 'pouco tempo encurta o que falta');
+  state.sessions = keep.s; state.exercises = keep.e; state.settings.rest = keep.r;
+}
+
 // ---- metas de séries em 30 dias corridos ----
 {
   const { last30, sets30 } = await import('../js/logic.js');

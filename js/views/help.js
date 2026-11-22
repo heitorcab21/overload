@@ -104,6 +104,7 @@ const TOPICS = [
       <li><b>Troquei o aparelho</b>: aquele treino não conta para a próxima carga.</li>
       <li><b>Pausa de 14 dias ou mais</b> no exercício (viagem, doença): o primeiro treino volta com cerca de 10% a menos (20% depois de 4 semanas, 30% depois de 8), e os próximos sobem metade do que falta por vez até a carga de antes. A força volta bem mais rápido do que levou para ser construída.</li>
       <li><b>Pouco tempo ou dia ruim</b>: no treino, toque em <b>Pouco tempo ou dia ruim?</b> no topo (ou na lista do treino). Pouco tempo deixa 2 séries em cada exercício que falta. Dia ruim baixa as cargas que faltam em cerca de 10%, e aquele treino não serve de base para as próximas cargas; as séries contam no volume normalmente.</li>
+      <li><b>Tempo do treino</b>: o próximo treino mostra quanto deve levar (séries, reps, descanso e troca de aparelho). Depois de 3 treinos cronometrados, a conta se ajusta ao seu ritmo real. No treino, <b>Pouco tempo ou dia ruim?</b> mostra quanto falta, com e sem o pouco tempo.</li>
       <li><b>Duas academias</b>: em Ajustes, cadastre cada uma. Nas máquinas e polias o app guarda a carga de cada academia; no treino, toque no nome da academia para trocar. Barra, halteres e peso corporal valem em todas.</li>
     </ul>`],
 

@@ -1453,7 +1453,6 @@ const ui = {
   "Os exercícios que faltam ficam com 2 séries. Com a mesma carga, isso mantém o que você ganhou; o volume volta no próximo treino.": "The remaining exercises get 2 sets. At the same load, that keeps what you have gained; full volume returns next workout.",
   "Dia ruim": "Bad day",
   "Cansaço, sono ruim ou pouca energia: as cargas que faltam ficam cerca de 10% menores e este treino não baixa as suas próximas cargas. As séries contam no volume normalmente.": "Tired, slept badly or low energy: the remaining loads drop about 10% and this workout will not lower your next loads. The sets still count toward volume.",
-  "Pouco tempo: 2 séries em cada exercício que falta.": "Short on time: 2 sets on each remaining exercise.",
   "Séries normais de novo.": "Normal sets again.",
   "Dia ruim: cargas menores hoje, e suas próximas cargas ficam como estavam.": "Bad day: lighter loads today, and your next loads stay as they were.",
   "Cargas normais de novo.": "Normal loads again.",
@@ -1465,6 +1464,15 @@ const ui = {
   "Pouco tempo ou dia ruim": "Short on time or a bad day",
   "Parado há {n} treino sem superar seu melhor.": "Stuck for {n} workout without beating your best.",
   "Parado há {n} treinos sem superar seu melhor.": "Stuck for {n} workouts without beating your best.",
+  "Leva {x}": "Takes {x}",
+  "pelo seu ritmo": "at your pace",
+  "cerca de {n} min": "about {n} min",
+  "cerca de {h} h {m} min": "about {h} h {m} min",
+  "cerca de {h} h": "about {h} h",
+  "Falta {x} de treino.": "{x} left in this workout.",
+  "Sem o pouco tempo: {x}.": "Without short on time: {x}.",
+  "Com pouco tempo: {x}.": "Short on time: {x}.",
+  "Pouco tempo: 2 séries em cada exercício que falta. Falta {x}.": "Short on time: 2 sets on each remaining exercise. {x} left.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -1565,6 +1573,7 @@ const help = [
       <li><b>Changed equipment</b>: that workout does not count for the next load.</li>
       <li><b>A break of 14 days or more</b> from the exercise (travel, illness): the first workout comes back about 10% lighter (20% after 4 weeks, 30% after 8), and the next ones climb half of what is left each time until your previous load. Strength comes back much faster than it took to build.</li>
       <li><b>Short on time or a bad day</b>: during a workout, tap <b>Short on time or a bad day?</b> at the top (or in the workout list). Short on time leaves 2 sets on each remaining exercise. Bad day lowers the remaining loads by about 10%, and that workout is not used as the base for your next loads; the sets still count toward volume.</li>
+      <li><b>Workout time</b>: the next workout shows how long it should take (sets, reps, rest and changing machines). After 3 timed workouts, the estimate adapts to your real pace. During a workout, <b>Short on time or a bad day?</b> shows how much is left, with and without short on time.</li>
       <li><b>Two gyms</b>: in Settings, add each one. On machines and cables the app keeps each gym's load; during a workout, tap the gym name to switch. Barbell, dumbbells and bodyweight count everywhere.</li>
     </ul>`],
 
