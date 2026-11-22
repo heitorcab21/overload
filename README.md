@@ -32,6 +32,7 @@ Funciona no navegador do celular, pode ser instalado na tela inicial e roda sem 
 - **Exercício parado**: depois de 3 treinos sem superar o melhor, um toque recua 10% ou muda a faixa de reps, e o próximo treino já vem ajustado.
 - **Pouco tempo e dia ruim**: no treino, deixa 2 séries por exercício ou baixa as cargas em 10% sem que aquele dia puxe as próximas cargas para baixo.
 - **Duas academias**: máquinas e polias guardam a carga de cada academia; barra e halteres valem em todas.
+- **Calculadora de anilhas**: nos exercícios com anilhas, mostra o que pôr de cada lado enquanto você ajusta a carga.
 - **Tempo do treino**: estimativa pelas séries, descanso e troca de aparelho, ajustada ao seu ritmo real depois de 3 treinos cronometrados.
 
 **Força e corpo**
@@ -123,6 +124,7 @@ O servidor abre em `http://localhost:5173`. Em localhost o service worker fica d
 | `js/data.js` | Biblioteca de exercícios, execução ideal, treinos prontos e faixa de reps por objetivo |
 | `js/logic.js` | Progressão de carga, séries efetivas, metas e estatísticas |
 | `js/shares.js` | Quanto cada série conta para cada músculo nos compostos |
+| `js/plates.js` | Calculadora de anilhas |
 | `js/duration.js` | Tempo estimado do treino, ajustado ao seu ritmo |
 | `js/loads.js` | Tipo de carga de cada exercício (barra, halteres, polia, máquina...) |
 | `js/scenarios.js` | Cenários das metas de carga e veredito da meta própria |

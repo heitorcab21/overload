@@ -1473,6 +1473,21 @@ const ui = {
   "Sem o pouco tempo: {x}.": "Sin poco tiempo: {x}.",
   "Com pouco tempo: {x}.": "Con poco tiempo: {x}.",
   "Pouco tempo: 2 séries em cada exercício que falta. Falta {x}.": "Poco tiempo: 2 series en cada ejercicio que falta. Falta {x}.",
+  "Olímpica": "Olímpica",
+  "Feminina ou técnica": "Femenina o técnica",
+  "W ou curta": "Z o corta",
+  "Sem barra (só anilhas)": "Sin barra (solo discos)",
+  "Anilhas desta carga. Toque para trocar a barra.": "Discos para esta carga. Toca para cambiar la barra.",
+  "Anilhas desta carga": "Discos para esta carga",
+  "Só a barra ({b} {u})": "Solo la barra ({b} {u})",
+  "Menos que a barra de {b} {u}: toque para trocar a barra": "Menos que la barra de {b} {u}: toca para cambiar la barra",
+  "Na ponta: {x}": "En la punta: {x}",
+  "Cada lado: {x}": "Cada lado: {x}",
+  "barra de {b} {u}": "barra de {b} {u}",
+  "sem barra": "sin barra",
+  "+{x} {u} por lado que as anilhas comuns não fecham": "+{x} {u} por lado que los discos comunes no completan",
+  "Qual barra?": "¿Qué barra?",
+  "Fica salva para este exercício. A carga anotada continua sendo a total (barra + anilhas).": "Queda guardada para este ejercicio. La carga anotada sigue siendo la total (barra + discos).",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -1573,6 +1588,7 @@ const help = [
       <li><b>Cambié de aparato</b>: ese entreno no cuenta para la próxima carga.</li>
       <li><b>Pausa de 14 días o más</b> en el ejercicio (viaje, enfermedad): el primer entreno vuelve con cerca de un 10% menos (20% después de 4 semanas, 30% después de 8), y los siguientes suben la mitad de lo que falta cada vez hasta la carga de antes. La fuerza vuelve mucho más rápido de lo que costó construirla.</li>
       <li><b>Poco tiempo o día malo</b>: en el entreno, toca <b>¿Poco tiempo o día malo?</b> arriba (o en la lista del entreno). Poco tiempo deja 2 series en cada ejercicio que falta. Día malo baja las cargas que faltan cerca de un 10%, y ese entreno no sirve de base para las próximas cargas; las series cuentan en el volumen normalmente.</li>
+      <li><b>Discos</b>: en los ejercicios con barra, prensa, hack y Smith, encima de la carga aparecen los discos de cada lado ("Cada lado: 25 + 5 + 1,25 · barra de 20 kg"), y cambian al ajustar la carga. Tócalo para cambiar la barra (olímpica, femenina, Z o sin barra).</li>
       <li><b>Tiempo del entreno</b>: el próximo entreno muestra cuánto debería durar (series, reps, descanso y cambio de aparato). Después de 3 entrenos cronometrados, la cuenta se ajusta a tu ritmo real. En el entreno, <b>¿Poco tiempo o día malo?</b> muestra cuánto falta, con y sin poco tiempo.</li>
       <li><b>Dos gimnasios</b>: en Ajustes, añade cada uno. En máquinas y poleas la app guarda la carga de cada gimnasio; en el entreno, toca el nombre del gimnasio para cambiar. Barra, mancuernas y peso corporal valen en todos.</li>
     </ul>`],

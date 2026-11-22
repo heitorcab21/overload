@@ -322,6 +322,20 @@ eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [10, { week: 10, 
   state.sessions = keep.s; state.exercises = keep.e; state.gyms = keep.g; state.settings.gym = keep.sg;
 }
 
+// ---- calculadora de anilhas ----
+{
+  const P = await import('../js/plates.js');
+  eq(P.platesFor(72.5, { bar: 20 }), { side: [25, 1.25], bar: 20, ends: 2, rest: 0 }, '72,5 kg: barra 20 + 25 + 1,25 de cada lado');
+  eq(P.platesFor(140, { bar: 20 }).side, [25, 25, 10], '140 kg: 25 + 25 + 10');
+  eq(P.platesFor(200, {}).side, [25, 25, 25, 25], 'leg press 200 kg: só anilhas, 4 de 25 de cada lado');
+  eq(P.platesFor(60, { ends: 1 }).side, [25, 25, 10], 'cavalinho: tudo numa ponta');
+  eq(P.platesFor(21, { bar: 20 }), { side: [], bar: 20, ends: 2, rest: 0.5 }, 'carga que não fecha: avisa o que sobra');
+  eq(P.platesFor(20, { bar: 20 }), null, 'só a barra');
+  eq([P.plateKind({ lib: 'supino-reto' }), P.plateKind({ lib: 'leg-press' }), P.plateKind({ lib: 'supino-smith' }), P.plateKind({ lib: 'rosca-martelo' })],
+    ['bar', 'plate', 'plate', null], 'só nos exercícios com anilhas');
+  eq([P.barOf({ lib: 'triceps-testa' }), P.barOf({ lib: 'supino-reto' }), P.barOf({ lib: 'supino-reto', bar: 15 })], [10, 20, 15], 'barra W no tríceps testa; dá para trocar');
+}
+
 // ---- tempo estimado do treino ----
 {
   const D = await import('../js/duration.js');

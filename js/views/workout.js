@@ -10,9 +10,10 @@ import { openCardioSheet, cardioLine } from './cardio.js';
 import { parseUtterance, voiceSupported, listen, stopListening, abortListening } from '../voice.js';
 import { aiEnabled, aiParseVoice } from '../ai.js';
 import { refreshIfNeeded, sync, driveConnected } from '../drive.js';
-import { t, tn, exPack } from '../i18n.js';
+import { t, tn, exPack, locale } from '../i18n.js';
+import { plateKind, platesOf, barOf, BARS } from '../plates.js';
 import { activeMinutesLeft, fmtMinutes } from '../duration.js';
-import { toW, fromW, toStep } from '../units.js';
+import { toW, fromW, toStep, imperial } from '../units.js';
 
 const FEEL = () => ({ easy: t('Fácil'), ok: t('Na medida'), hard: t('Pesado'), fail: t('Até a falha') });
 const FLAGS = () => ({ dor: t('Dor ou desconforto'), troca: t('Troquei o aparelho'), execucao: t('Execução ruim'), tempo: t('Sem tempo') });
@@ -337,6 +338,7 @@ function render() {
         <button data-act="restSkip">${t('Pular')}</button>
         ${bellAsk() ? `<button class="rest-bell" data-act="restBell" aria-label="${t('Avisar o fim do descanso com o app fora da tela')}">${icon.bell}</button>` : ''}
       </div>
+      ${logging && !en.skipped ? plateLine(ex, en.cur.w) : ''}
       ${logging && !en.skipped ? `<div class="two w-steps">
         ${stepper('w', toW(en.cur.w), toStep(ex.step || 1), loadLabel(ex), 0, 'wCur').replace('data-change="wCur"', 'data-change="wCur" data-live')}
         ${stepper('r', en.cur.r, 1, t('Repetições'), 0, 'wCur').replace('data-change="wCur"', 'data-change="wCur" data-live')}
@@ -598,7 +600,52 @@ changes.wCur = el => {
   save({ touch: false });
   const label = setStr(en.cur);
   if ($('#curLabel')) $('#curLabel').textContent = label;
+  const pl = $('#plates');
+  if (pl) { pl.innerHTML = plateText(ex, en.cur.w); pl.hidden = !pl.innerHTML; }
   paintDone(en, ex);
+};
+
+// ---------- Calculadora de anilhas ----------
+// Só aparece nos exercícios com anilhas (barra, leg press, hack, Smith) e acompanha a carga enquanto você ajusta.
+
+const BAR_NAME = () => ({ 20: t('Olímpica'), 15: t('Feminina ou técnica'), 10: t('W ou curta'), 0: t('Sem barra (só anilhas)') });
+const barShown = b => (imperial() ? { 20: 45, 15: 35, 10: 25, 0: 0 }[b] : b);
+
+function plateLine(ex, w) {
+  if (!plateKind(ex)) return '';
+  const bar = plateKind(ex) === 'bar';
+  const txt = plateText(ex, w);
+  return `<button class="plates" id="plates"${txt ? '' : ' hidden'}${bar ? ' data-act="wBar"' : ''} aria-label="${bar ? t('Anilhas desta carga. Toque para trocar a barra.') : t('Anilhas desta carga')}">${txt}</button>`;
+}
+
+function plateText(ex, w) {
+  const u = imperial() ? 'lb' : 'kg';
+  const n = v => v.toLocaleString(locale());
+  const p = platesOf(ex, w);
+  if (!p) {
+    if (plateKind(ex) !== 'bar' || !(w > 0)) return '';
+    const b = barShown(barOf(ex));
+    return esc(toW(w) >= b - 0.01 ? t('Só a barra ({b} {u})', { b: n(b), u }) : t('Menos que a barra de {b} {u}: toque para trocar a barra', { b: n(b), u }));
+  }
+  const list = p.side.length ? p.side.map(n).join(' + ') : '—';
+  let txt = p.ends === 1 ? t('Na ponta: {x}', { x: list }) : t('Cada lado: {x}', { x: list });
+  if (p.kind === 'bar') txt += ` · ${p.bar ? t('barra de {b} {u}', { b: n(p.bar), u }) : t('sem barra')}`;
+  if (p.rest) txt += ` · ${t('+{x} {u} por lado que as anilhas comuns não fecham', { x: n(p.rest), u })}`;
+  return `<b>${esc(txt.split(' · ')[0])}</b>${txt.includes(' · ') ? ` · ${esc(txt.split(' · ').slice(1).join(' · '))}` : ''}`;
+}
+
+actions.wBar = () => {
+  const { ex } = cur();
+  const u = imperial() ? 'lb' : 'kg';
+  sheet(`<h2>${t('Qual barra?')}</h2>
+    <p class="small muted">${t('Fica salva para este exercício. A carga anotada continua sendo a total (barra + anilhas).')}</p>
+    <div class="card flat"><div class="list">${BARS.map(b => `<button class="item" data-act="wBarPick" data-v="${b}">
+      <span class="grow t">${BAR_NAME()[b]}${b ? ` · ${barShown(b)} ${u}` : ''}</span>${barOf(ex) === b ? `<span class="badge good">${icon.check}</span>` : ''}</button>`).join('')}</div></div>`);
+};
+actions.wBarPick = el => {
+  const { ex } = cur();
+  ex.bar = Number(el.dataset.v);
+  save(); closeSheet(); render();
 };
 
 /** Com esta carga, a série conta como aquecimento? (1ª série com menos de 70% da carga sugerida) */

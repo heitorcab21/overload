@@ -868,6 +868,8 @@ body.has-coach #view { padding-bottom: calc(var(--tab-h) + var(--safe-b) + 76px)
 .goal-line { display: flex; align-items: center; gap: 6px; margin: -2px 0 8px; color: var(--accent); font-weight: 600; }
 .goal-line .ic { width: 15px; height: 15px; }
 .dur-line { margin: -6px 0 2px; }
+.plates { width: 100%; max-width: 528px; display: block; text-align: left; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 7px 12px; margin-bottom: 8px; font-size: .85rem; color: var(--muted); }
+.plates b { color: var(--ink); font-weight: 700; }
 .dur-sub { display: block; font-size: .8rem; font-weight: 500; color: var(--muted); margin-top: 2px; }
 .day-line { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 6px; }
 .day-line .chip { min-height: 32px; padding: 4px 12px; font-size: .85rem; }

@@ -1473,6 +1473,21 @@ const ui = {
   "Sem o pouco tempo: {x}.": "Without short on time: {x}.",
   "Com pouco tempo: {x}.": "Short on time: {x}.",
   "Pouco tempo: 2 séries em cada exercício que falta. Falta {x}.": "Short on time: 2 sets on each remaining exercise. {x} left.",
+  "Olímpica": "Olympic",
+  "Feminina ou técnica": "Women's or technique",
+  "W ou curta": "EZ or short",
+  "Sem barra (só anilhas)": "No bar (plates only)",
+  "Anilhas desta carga. Toque para trocar a barra.": "Plates for this load. Tap to change the bar.",
+  "Anilhas desta carga": "Plates for this load",
+  "Só a barra ({b} {u})": "Just the bar ({b} {u})",
+  "Menos que a barra de {b} {u}: toque para trocar a barra": "Less than the {b} {u} bar: tap to change the bar",
+  "Na ponta: {x}": "On the end: {x}",
+  "Cada lado: {x}": "Each side: {x}",
+  "barra de {b} {u}": "{b} {u} bar",
+  "sem barra": "no bar",
+  "+{x} {u} por lado que as anilhas comuns não fecham": "+{x} {u} per side that standard plates can't make",
+  "Qual barra?": "Which bar?",
+  "Fica salva para este exercício. A carga anotada continua sendo a total (barra + anilhas).": "Saved for this exercise. The logged load is still the total (bar + plates).",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -1573,6 +1588,7 @@ const help = [
       <li><b>Changed equipment</b>: that workout does not count for the next load.</li>
       <li><b>A break of 14 days or more</b> from the exercise (travel, illness): the first workout comes back about 10% lighter (20% after 4 weeks, 30% after 8), and the next ones climb half of what is left each time until your previous load. Strength comes back much faster than it took to build.</li>
       <li><b>Short on time or a bad day</b>: during a workout, tap <b>Short on time or a bad day?</b> at the top (or in the workout list). Short on time leaves 2 sets on each remaining exercise. Bad day lowers the remaining loads by about 10%, and that workout is not used as the base for your next loads; the sets still count toward volume.</li>
+      <li><b>Plates</b>: on barbell, leg press, hack and Smith exercises, the plates for each side show above the load ("Each side: 25 + 5 + 1.25 · 20 kg bar") and update as you adjust it. Tap it to change the bar (Olympic, women's, EZ or no bar).</li>
       <li><b>Workout time</b>: the next workout shows how long it should take (sets, reps, rest and changing machines). After 3 timed workouts, the estimate adapts to your real pace. During a workout, <b>Short on time or a bad day?</b> shows how much is left, with and without short on time.</li>
       <li><b>Two gyms</b>: in Settings, add each one. On machines and cables the app keeps each gym's load; during a workout, tap the gym name to switch. Barbell, dumbbells and bodyweight count everywhere.</li>
     </ul>`],
