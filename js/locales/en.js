@@ -1399,8 +1399,25 @@ const ui = {
   "Próximo treino: o app já ajustou": "Next workout: already adjusted",
   "Pela dupla progressão: mais repetições com a mesma carga até o topo da faixa; aí a carga sobe e as reps recomeçam.": "Double progression: more reps with the same load up to the top of the range; then the load goes up and reps start over.",
   "Você fez {n} reps em todas as séries: suba para {w} kg × {r}, o mesmo nível de força com mais carga.": "You did {n} reps on every set: move up to {w} kg × {r}, the same strength level with more load.",
-  "Nos exercícios compostos, os músculos auxiliares também contam uma fração (no supino: peito 1, tríceps e ombros 0,5).": "In compound exercises, the helper muscles also count a fraction (bench press: chest 1, triceps and shoulders 0.5).",
+  "Nos exercícios compostos, os músculos auxiliares também contam uma fração (no supino: peito 1, tríceps 0,5, ombros 0,25).": "In compound exercises, the helper muscles also count a fraction (bench press: chest 1, triceps 0.5, shoulders 0.25).",
   "Cada série conta:": "Each set counts:",
+  "Metas: {a} séries por semana em cada grupo{b} e {d} min de cardio por semana. Cargas: 3 cenários pelo seu nível{c}.": "Goals: {a} sets per week in each group{b} and {d} min of cardio per week. Loads: 3 scenarios based on your level{c}.",
+  ", na metade do ritmo para manter a força": ", at half the pace to keep your strength",
+  " (quem está começando sobe mais rápido)": " (beginners progress faster)",
+  "Últimos 30 dias: {a} a {b}": "Last 30 days: {a} to {b}",
+  "Feito em 30 dias": "Done in 30 days",
+  "30 dias batidos": "30 days hit",
+  "nos últimos 30 dias": "in the last 30 days",
+  "{v} em 30 dias": "{v} in 30 days",
+  "30 dias": "30 days",
+  "Séries em 30 dias": "Sets in 30 days",
+  "Deixe os 30 dias em 0 para calcular a partir da semana.": "Leave 30 days at 0 to work it out from the week.",
+  "Abaixo do seu melhor recente: fácil para 30 dias.": "Below your recent best: easy for 30 days.",
+  "Ambiciosa, mas possível: +{p}% de força pede 30 dias muito bons.": "Ambitious but possible: +{p}% strength needs a very good 30 days.",
+  "Muito difícil para 30 dias: +{p}% de força. O cenário difícil fica perto de +{q}%.": "Very hard for 30 days: +{p}% strength. The hard scenario is around +{q}%.",
+  "Ilusória para 30 dias: +{p}% de força. O máximo realista é perto de +{q}%.": "Unrealistic for 30 days: +{p}% strength. The realistic maximum is around +{q}%.",
+  "Registre cada série com um toque ou com a voz. O app calcula a próxima carga e acompanha suas metas da semana e de 30 dias.": "Log each set with one tap or by voice. The app works out the next load and tracks your weekly and 30-day goals.",
+  "Qual a meta deste exercício para os próximos 30 dias?": "What's your goal for this exercise over the next 30 days?",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -1495,7 +1512,7 @@ const help = [
       <li>If you fall <b>below the range twice</b>, it suggests reducing about 10%.</li>
     </ol>
     <ul class="errs">
-      <li><b>Active monthly goal</b>: if the suggestion is below this week's step, the app pulls toward it, at most one load increase per workout and the rest in reps ("Toward this week's goal").</li>
+      <li><b>Active 30-day goal</b>: if the suggestion is below this week's step, the app pulls toward it, at most one load increase per workout and the rest in reps ("Toward this week's goal").</li>
       <li><b>3 or more reps left</b> on every set: +2 reps. <b>None left</b> on the last one: repeat the numbers.</li>
       <li><b>Pain</b>: repeats the same numbers.</li>
       <li><b>Changed equipment</b>: that workout does not count for the next load.</li>
@@ -1504,11 +1521,11 @@ const help = [
   ['Goals', 'Goal, sets, loads and cardio', `
     <p>It all starts with your <b>goal</b>, at the top of the Goals tab (tap it to change). It sets how many weekly sets each group needs and your cardio goal.</p>
     <ul class="errs">
-      <li><b>Muscle map</b>: your body front and back, colored by this week's (or month's) sets versus the goal. Tap a muscle to see how many are left.</li>
+      <li><b>Muscle map</b>: your body front and back, colored by this week's (or the last 30 days') sets versus the goal. Tap a muscle to see how many are left.</li>
       <li><b>Sets per group</b>: tap a group and pick one of 3 options based on volume research (conservative, moderate, hard) or set your own. <b>Effective sets</b> (at least 60% of your strength in the exercise and up to 4 reps in reserve) count in full; warm-ups and light sets count in part, by how far from failure they ended (8 reps left = half a set; 12 or more = nothing). In compound lifts, helper muscles get their share of that value. If your routine doesn't deliver the goal, tap <b>Fill in</b>.</li>
-      <li><b>Loads per exercise</b>: each exercise shows 3 options for the month (conservative, moderate, hard), from your recent best and your level. With no workout logged, the app estimates and tells you. You can also <b>follow your own progression</b> or set your own goal: the app tells you if it is realistic, ambitious or unrealistic.</li>
+      <li><b>Loads per exercise</b>: each exercise shows 3 options for the next 30 days (conservative, moderate, hard), from your recent best and your level. With no workout logged, the app estimates and tells you. You can also <b>follow your own progression</b> or set your own goal: the app tells you if it is realistic, ambitious or unrealistic.</li>
       <li>While anything is left to choose, a notice shows on Goals and Workouts, and the workout asks for a choice when a new exercise comes in.</li>
-      <li>The monthly goal is split into <b>weekly steps</b>. Switch between <b>Week</b> and <b>Month</b> at the top.</li>
+      <li>The load goal lasts 30 days and is split into <b>weekly steps</b>. Switch between <b>Week</b> and <b>30 days</b> at the top: 30-day sets count the last 30 days, the same window as load goals.</li>
     </ul>`],
 
   ['Your body and strength level', 'Body composition, radar and strength percentile', `

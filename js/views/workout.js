@@ -201,7 +201,7 @@ function render() {
     <p class="muted ex-info">${esc(tg(ex.group))} · ${ex.sets} × ${ex.repMin}–${ex.repMax} reps · ${en.sg && en.sgi < en.sgn - 1 ? t('sem descanso até o próximo do {x}', { x: en.sgn === 3 ? t('Tri-set') : t('Bi-set') }) : t('descanso {s} s', { s: restOf(ex) })}${(() => { const lv = strengthLevel(ex); return lv.top ? ` · <a class="top-link" href="#/exercicio/${encodeURIComponent(ex.id)}">${t('Top {n}% de força', { n: lv.top })}</a>` : ''; })()}${ex.note ? '' : ` · <button class="note-link" data-act="editNote" data-id="${esc(ex.id)}">${icon.edit}${t('Anotar')}</button>`}</p>
     ${en.plan?.goal && !isDone(en, ex) ? `<p class="small goal-line">${icon.target}${t('Meta da semana: {set}', { set: setStr(en.plan.goal) })}</p>` : ''}
     ${!en.skipped && !en.sets.length && !decision(ex) ? `<div class="card stack lg-prompt">
-      <b>${icon.target}${t('Qual a meta deste exercício no mês?')}</b>
+      <b>${icon.target}${t('Qual a meta deste exercício para os próximos 30 dias?')}</b>
       <p class="small muted">${t('Escolha uma das opções calculadas para você ou siga a sua progressão. Dá para mudar depois em Metas.')}</p>
       ${lgOptions(ex)}</div>` : ''}
     <div class="ex-actions">
@@ -574,7 +574,6 @@ actions.wExtra = () => { cur().en.extra = true; done(); };
 // "+ Série a mais": acrescenta uma série a este exercício só neste treino (a ficha não muda)
 actions.wMore = () => { const { en } = cur(); en.more = (en.more || 0) + 1; done(); };
 actions.wLess = () => { const { en, ex } = cur(); if (en.more > 0 && en.sets.length < goal(en, ex)) { en.more--; done(); } };
-actions.wFeel = el => { const { en } = cur(); en.feel = en.feel === el.dataset.v ? null : el.dataset.v; done(); };
 actions.wFlag = el => {
   const { en } = cur();
   const k = el.dataset.v;

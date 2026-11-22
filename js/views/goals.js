@@ -1,10 +1,10 @@
 // Metas semanais e mensais por grupamento e por exercício, em formato de planilha.
 import { state, save } from '../store.js';
-import { $, esc, fmt, setStr, compact, icon, actions, changes, submits, toast, sheet, closeSheet, meter, stepper, fmtDate, monthName, shareFile } from '../ui.js';
+import { $, esc, fmt, setStr, compact, icon, actions, changes, submits, toast, sheet, closeSheet, meter, stepper, fmtDate, shareFile } from '../ui.js';
 import { route, go, current, rerender } from '../router.js';
 import { activeExercises, BODY_PARTS, GROUPS, exName, tg, loadLabel, loadHint } from '../data.js';
 import {
-  groupGoalStatus, exGoalStatus, suggestGoal, weekStart, addDays, monthKey, daysInMonth, entriesFor,
+  groupGoalStatus, exGoalStatus, suggestGoal, weekStart, addDays, monthKey, entriesFor, sets30, last30,
   setExGoal, setWeekOverride, autoWeekSet, routineGroupSets,
 } from '../logic.js';
 import { goalsCSV, importGoalsCSV } from '../export.js';
@@ -17,7 +17,6 @@ import { lgBanner } from './loadgoals.js';
 import { GOAL_PLANS, FOCUS_GROUPS, intentWeekSets, fillPlan, groupScenarios } from '../logic.js';
 
 let mode = 'week';
-const cap = s => s[0].toUpperCase() + s.slice(1);
 
 function render() {
   const now = new Date();
@@ -25,7 +24,7 @@ function render() {
   const isWeek = mode === 'week';
   const period = isWeek
     ? t('Semana de {a} a {b}', { a: fmtDate(ws, false), b: fmtDate(addDays(ws, 6), false) })
-    : t('{mes} de {ano}', { mes: cap(monthName(now.getMonth())), ano: now.getFullYear() });
+    : t('Últimos 30 dias: {a} a {b}', { a: fmtDate(last30(now)[0], false), b: fmtDate(now, false) });
 
   const gs = groupGoalStatus(now).sort((a, b) => GROUPS.indexOf(a.group) - GROUPS.indexOf(b.group));
   const groupRows = gs.map(g => {
@@ -33,7 +32,7 @@ function render() {
     const goal = isWeek ? g.weekGoal : g.monthGoal;
     const manual = state.goals.groups[g.group]?.auto === false;
     return `<tr data-act="editGroupGoal" data-g="${esc(g.group)}" tabindex="0">
-      <td class="n">${esc(tg(g.group))}${!isWeek && g.monthTon ? `<span class="sub">${t('{v} no mês', { v: compact(g.monthTon) })}</span>` : ''}
+      <td class="n">${esc(tg(g.group))}${!isWeek && g.monthTon ? `<span class="sub">${t('{v} em 30 dias', { v: compact(g.monthTon) })}</span>` : ''}
         ${manual ? `<span class="sub">${t('definida por você')}</span>` : ''}
         ${isWeek && g.weekGoal && (routineGroupSets()[g.group] || 0) < g.weekGoal
           ? `<span class="sub gap">${t('Sua ficha entrega {n} de {m}', { n: fmt(routineGroupSets()[g.group] || 0), m: g.weekGoal })} · <button class="link-btn" data-act="fillRoutine" data-g="${esc(g.group)}">${t('Completar')}</button></span>` : ''}
@@ -95,7 +94,7 @@ function render() {
       ${lgBanner('metas')}
       <div class="seg" role="tablist">
         <button role="tab" aria-selected="${isWeek}" class="${isWeek ? 'on' : ''}" data-act="goalMode" data-m="week">${t('Semana')}</button>
-        <button role="tab" aria-selected="${!isWeek}" class="${!isWeek ? 'on' : ''}" data-act="goalMode" data-m="month">${t('Mês')}</button>
+        <button role="tab" aria-selected="${!isWeek}" class="${!isWeek ? 'on' : ''}" data-act="goalMode" data-m="month">${t('30 dias')}</button>
       </div>
       ${gs.length ? bodyMap(gs, isWeek) : ''}
 
@@ -105,7 +104,7 @@ function render() {
           <tbody>${groupRows || `<tr><td colspan="2" class="empty">${t('Adicione exercícios em Treinos para criar metas.')}</td></tr>`}</tbody>
         </table>
       </div>
-      <p class="small muted">${t('Série efetiva conta inteira: carga de pelo menos 60% da sua força estimada no exercício (até ~20 reps) e, se você anotou, no máximo 4 reps sobrando. Aquecimento e séries leves contam uma parte, pela distância da falha: com 8 reps sobrando, meia série; com 12 ou mais, nada.')} ${t('Nos exercícios compostos, os músculos auxiliares também contam uma fração (no supino: peito 1, tríceps e ombros 0,5).')}</p>
+      <p class="small muted">${t('Série efetiva conta inteira: carga de pelo menos 60% da sua força estimada no exercício (até ~20 reps) e, se você anotou, no máximo 4 reps sobrando. Aquecimento e séries leves contam uma parte, pela distância da falha: com 8 reps sobrando, meia série; com 12 ou mais, nada.')} ${t('Nos exercícios compostos, os músculos auxiliares também contam uma fração (no supino: peito 1, tríceps 0,5, ombros 0,25).')}</p>
 
       <div class="row between ex-goals-head"><h3>${t('Exercícios ativos')}</h3><span class="small muted">${isWeek ? t('Meta da semana') : t('Meta de 30 dias')}</span></div>
       ${exSections || `<div class="card"><p class="empty">${t('Nenhum exercício nos seus treinos. Adicione em Treinos.')}</p></div>`}
@@ -144,19 +143,19 @@ actions.editGroupGoal = el => {
     <form class="stack" data-submit="saveGroupGoal" data-g="${esc(g)}">
       <div class="two">
         ${stepper('week', cur.week || 0, 1, t('Séries por semana'))}
-        ${stepper('month', cur.month || 0, 1, t('Séries no mês'))}
+        ${stepper('month', cur.month || 0, 1, t('Séries em 30 dias'))}
       </div>
       <p class="small muted">${cur.auto === false
         ? t('Definida por você: não muda quando você altera os treinos.')
         : t('Hoje esta meta segue a sua rotina e se ajusta sozinha quando você muda os exercícios. Se salvar um valor, ela passa a ser fixa.')}
-        ${t('Deixe o mês em 0 para calcular a partir da semana.')}</p>
+        ${t('Deixe os 30 dias em 0 para calcular a partir da semana.')}</p>
       <button class="btn primary big">${t('Salvar')}</button>
       ${fromRoutine && cur.auto === false ? `<button type="button" class="btn ghost block" data-act="groupAuto" data-g="${esc(g)}">${t('Seguir a rotina ({n} séries por semana)', { n: Math.round(fromRoutine) })}</button>` : ''}
     </form></details>`);
 };
 actions.pickGroupScen = el => {
   const g = el.dataset.g, week = Number(el.dataset.n);
-  state.goals.groups[g] = { week, month: Math.round(week * daysInMonth() / 7), auto: false };
+  state.goals.groups[g] = { week, month: sets30(week), auto: false };
   save(); closeSheet(); rerender();
   toast(t('Meta de {g}: {n} séries por semana.', { g: tg(g).toLowerCase(), n: week }), 3000);
 };
@@ -165,7 +164,7 @@ submits.saveGroupGoal = form => {
   let month = Math.max(0, Math.round(Number(form.month.value) || 0));
   const old = state.goals.groups[form.dataset.g] || {};
   // se só a semana mudou, o mês acompanha
-  if (!month || (week !== (old.week || 0) && month === (old.month || 0))) month = Math.round(week * daysInMonth() / 7);
+  if (!month || (week !== (old.week || 0) && month === (old.month || 0))) month = sets30(week);
   if (!week && !month) state.goals.groups[form.dataset.g] = { week: 0, month: 0, auto: false };
   else if (week !== old.week || month !== old.month) state.goals.groups[form.dataset.g] = { week, month, auto: false };
   save(); closeSheet(); rerender();
@@ -173,7 +172,7 @@ submits.saveGroupGoal = form => {
 actions.groupAuto = el => {
   const g = el.dataset.g;
   const n = Math.round(routineGroupSets()[g] || 0);
-  state.goals.groups[g] = { week: n, month: Math.round(n * daysInMonth() / 7), auto: true };
+  state.goals.groups[g] = { week: n, month: sets30(n), auto: true };
   save(); closeSheet(); rerender();
 };
 
@@ -319,9 +318,10 @@ function renderIntent(arg) {
   idraft ??= it ? { ...it, focus: [...(it.focus || [])] } : { goal: '', focus: [], days: Math.max(2, Math.min(6, state.routines.length || 3)) };
   const editing = arg === 'editar';
   const plan = idraft.goal && GOAL_PLANS[idraft.goal];
-  const preview = plan ? t('Metas: {a} séries por semana em cada grupo{b} e {d} min de cardio por semana. Cargas: cenários {c}.', {
-    a: plan.base, b: idraft.focus.length ? t(' e {n} nos priorizados', { n: plan.focus }) : '',
-    c: plan.growth > 1 ? t('subindo cerca de {p}% por mês', { p: Math.round((plan.growth - 1) * 100) }) : t('mantidas'), d: plan.cardio,
+  // as cargas seguem o ritmo do nível de cada pessoa (scenarios.js), não um percentual fixo por objetivo
+  const preview = plan ? t('Metas: {a} séries por semana em cada grupo{b} e {d} min de cardio por semana. Cargas: 3 cenários pelo seu nível{c}.', {
+    a: plan.vol[1], b: idraft.focus.length ? t(' e {n} nos priorizados', { n: plan.focusVol[1] }) : '',
+    c: idraft.goal === 'emagrecer' ? t(', na metade do ritmo para manter a força') : t(' (quem está começando sobe mais rápido)'), d: plan.cardio,
   }) : '';
   $('#view').innerHTML = `
     <div class="head intent-top">${editing ? `<a class="icon-btn" href="#/metas" aria-label="${t('Voltar')}">${icon.back}</a>` : ''}</div>
@@ -370,11 +370,11 @@ function judgeHtml(ex, w, r) {
   if (!j) return '';
   const p = fmt1(j.growth * 100), q = fmt1(j.max * 100);
   const txt = {
-    facil: t('Abaixo do seu melhor recente: fácil para um mês.'),
+    facil: t('Abaixo do seu melhor recente: fácil para 30 dias.'),
     realista: t('Realista: +{p}% de força, dentro do ritmo moderado para o seu nível.', { p }),
-    ambiciosa: t('Ambiciosa, mas possível: +{p}% de força pede um mês muito bom.', { p }),
-    'muito-dificil': t('Muito difícil para um mês: +{p}% de força. O cenário difícil fica perto de +{q}%.', { p, q }),
-    ilusoria: t('Ilusória para um mês: +{p}% de força. O máximo realista é perto de +{q}%.', { p, q }),
+    ambiciosa: t('Ambiciosa, mas possível: +{p}% de força pede 30 dias muito bons.', { p }),
+    'muito-dificil': t('Muito difícil para 30 dias: +{p}% de força. O cenário difícil fica perto de +{q}%.', { p, q }),
+    ilusoria: t('Ilusória para 30 dias: +{p}% de força. O máximo realista é perto de +{q}%.', { p, q }),
   }[j.level];
   return `<span class="judge-${j.level}">${esc(txt)}</span>`;
 }

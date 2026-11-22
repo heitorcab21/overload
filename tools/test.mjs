@@ -257,6 +257,14 @@ eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [10, { week: 10, 
   eq(cardioScenarios(null).map(x => x.n), [90, 150, 300], 'cardio: 90, 150 (OMS) e 300');
 }
 
+// ---- metas de séries em 30 dias corridos ----
+{
+  const { last30, sets30 } = await import('../js/logic.js');
+  const [a, b] = last30(new Date(2026, 10, 22, 15));
+  eq([a.getDate(), a.getMonth(), b.getDate()], [24, 9, 23], '30 dias: de 24/10 até 22/11, hoje incluído');
+  eq([sets30(10), sets30(14)], [43, 60], 'meta de 30 dias = semanal × 30/7');
+}
+
 // ---- aquecimento e séries leves contam uma parte ----
 {
   const { setValue, groupSets } = await import('../js/logic.js');
@@ -297,7 +305,11 @@ eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [10, { week: 10, 
 // ---- contagem fracionada por músculo ----
 {
   const { muscleShares } = await import('../js/shares.js');
-  eq(muscleShares({ lib: 'supino-reto', group: 'Peito' }), [['Peito', 1], ['Tríceps', 0.5], ['Ombros', 0.5]], 'supino: peito 1, tríceps e ombros 0,5');
+  eq(muscleShares({ lib: 'supino-reto', group: 'Peito' }), [['Peito', 1], ['Tríceps', 0.5], ['Ombros', 0.25]], 'supino reto: peito 1, tríceps 0,5, ombros 0,25 (só o deltoide anterior)');
+  eq(muscleShares({ lib: 'supino-inclinado-barra', group: 'Peito' }).find(x => x[0] === 'Ombros')[1], 0.5, 'supino inclinado: ombros 0,5');
+  eq(muscleShares({ lib: 'agachamento-livre', group: 'Quadríceps' }), [['Quadríceps', 1], ['Glúteos', 0.75]], 'agachamento: glúteos 0,75 (Kubo 2019, Plotkin 2023)');
+  eq(muscleShares({ lib: 'elevacao-pelvica', group: 'Glúteos' }), [['Glúteos', 1]], 'elevação pélvica: só glúteos');
+  eq(muscleShares({ lib: 'supino-fechado', group: 'Tríceps' }).find(x => x[0] === 'Peito')[1], 0.5, 'supino fechado: peito 0,5');
   eq(muscleShares({ lib: 'agachamento-livre', group: 'Quadríceps' }).map(x => x[0]).includes('Posteriores'), false, 'agachamento não conta posteriores (Kubo 2019)');
   eq(muscleShares({ lib: 'cadeira-extensora', group: 'Quadríceps' }), [['Quadríceps', 1]], 'isolador conta só o principal');
   eq(muscleShares({ name: 'Meu exercício', group: 'Costas' }), [['Costas', 1]], 'exercício próprio: só o grupo dele');

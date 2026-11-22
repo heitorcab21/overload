@@ -98,7 +98,7 @@ const TOPICS = [
       <li>Se ficar <b>duas vezes abaixo da faixa</b>, ele sugere reduzir cerca de 10%.</li>
     </ol>
     <ul class="errs">
-      <li><b>Meta do mês ativa</b>: se a sugestão ficar abaixo do degrau desta semana, o app puxa em direção a ele, no máximo um aumento de carga por treino e o resto em repetições ("Rumo à meta da semana").</li>
+      <li><b>Meta de 30 dias ativa</b>: se a sugestão ficar abaixo do degrau desta semana, o app puxa em direção a ele, no máximo um aumento de carga por treino e o resto em repetições ("Rumo à meta da semana").</li>
       <li><b>Sobraram 3 ou mais reps</b> em todas as séries: +2 reps. <b>Nenhuma sobrando</b> na última: repete os números.</li>
       <li><b>Dor</b>: repete os mesmos números.</li>
       <li><b>Troquei o aparelho</b>: aquele treino não conta para a próxima carga.</li>
@@ -107,11 +107,11 @@ const TOPICS = [
   ['Metas', 'Objetivo, séries, cargas e cardio', `
     <p>Tudo começa pelo <b>objetivo</b>, no topo da aba Metas (toque nele para mudar). Ele define quantas séries por semana cada grupo precisa e a meta de cardio.</p>
     <ul class="errs">
-      <li><b>Mapa muscular</b>: o corpo de frente e de costas, pintado pelas séries da semana (ou do mês) em relação à meta. Toque num músculo para ver quantas faltam.</li>
+      <li><b>Mapa muscular</b>: o corpo de frente e de costas, pintado pelas séries da semana (ou dos últimos 30 dias) em relação à meta. Toque num músculo para ver quantas faltam.</li>
       <li><b>Séries por grupo</b>: toque num grupo e escolha uma de 3 opções pela ciência do volume (conservador, moderado, difícil) ou defina a sua. As <b>séries efetivas</b> (carga de pelo menos 60% da sua força no exercício e até 4 reps sobrando) contam inteiras; aquecimento e séries leves contam uma parte, pela distância da falha (8 reps sobrando = meia série; 12 ou mais = nada). Nos compostos, os músculos auxiliares recebem a fração deles desse valor. Se a sua ficha não entrega a meta, toque em <b>Completar</b>.</li>
-      <li><b>Cargas por exercício</b>: cada exercício mostra 3 opções para o mês (conservador, moderado, difícil), pelo seu melhor recente e pelo seu nível. Sem treino registrado, o app estima e avisa. Você também pode <b>seguir a sua progressão</b> ou definir a sua meta: o app diz se ela é realista, ambiciosa ou ilusória.</li>
+      <li><b>Cargas por exercício</b>: cada exercício mostra 3 opções para os próximos 30 dias (conservador, moderado, difícil), pelo seu melhor recente e pelo seu nível. Sem treino registrado, o app estima e avisa. Você também pode <b>seguir a sua progressão</b> ou definir a sua meta: o app diz se ela é realista, ambiciosa ou ilusória.</li>
       <li>Enquanto faltar escolher, um aviso aparece em Metas e em Treinos, e o treino pede a escolha quando entra um exercício novo.</li>
-      <li>A meta do mês é dividida em <b>degraus semanais</b>. Alterne entre <b>Semana</b> e <b>Mês</b> no topo.</li>
+      <li>A meta de carga vale por 30 dias e é dividida em <b>degraus semanais</b>. Alterne entre <b>Semana</b> e <b>30 dias</b> no topo: as séries de 30 dias contam os últimos 30 dias, o mesmo prazo das metas de carga.</li>
     </ul>`],
 
   ['Seu corpo e nível de força', 'Composição corporal, radar e top de força', `

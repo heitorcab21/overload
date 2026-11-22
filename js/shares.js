@@ -3,19 +3,21 @@
 // O músculo principal do exercício conta 1 série. Nos multiarticulares, os músculos que também trabalham contam uma
 // fração, como na meta-análise de Pelland e cols. (2024), em que contar o trabalho indireto como 0,5 previu melhor a
 // hipertrofia. Critérios: 0,5 = auxiliar importante (padrão); 0,75 = auxiliar que faz quase tanto quanto o principal
-// (bíceps na puxada supinada, peito no supino fechado, glúteos no afundo e no búlgaro); 0,25 = estabilizador ou
-// participação pequena. Fica 0 (fora da lista) quando estudos mostram que o músculo quase não cresce com o exercício:
-// posteriores de coxa no agachamento e no leg press (Kubo e cols., 2019). Isoladores contam só para o músculo principal.
+// (bíceps na puxada supinada, glúteos no agachamento, no afundo e no búlgaro, quadríceps na subida no banco); 0,25 =
+// estabilizador ou participação pequena. Fica 0 (fora da lista) quando estudos mostram que o músculo quase não cresce
+// com o exercício: posteriores de coxa no agachamento e no leg press (Kubo e cols., 2019) e na elevação pélvica.
+// Isoladores contam só para o músculo principal.
+// "Ombros" junta as três cabeças do deltoide: nos supinos retos só a anterior trabalha, por isso 0,25 (no inclinado, 0,5).
 export const MUSCLE_SHARE = {
   // peito: tríceps estende o cotovelo e o deltoide anterior flexiona o ombro em todos os supinos
-  'supino-reto': { 'Tríceps': 0.5, Ombros: 0.5 },
-  'supino-reto-halteres': { 'Tríceps': 0.5, Ombros: 0.5 },
+  'supino-reto': { 'Tríceps': 0.5, Ombros: 0.25 },
+  'supino-reto-halteres': { 'Tríceps': 0.5, Ombros: 0.25 },
   'supino-inclinado-barra': { Ombros: 0.5, 'Tríceps': 0.5 },
   'supino-inclinado-halteres': { Ombros: 0.5, 'Tríceps': 0.5 },
   'supino-declinado': { 'Tríceps': 0.5, Ombros: 0.25 }, // declinado usa menos o deltoide anterior
-  'supino-maquina': { 'Tríceps': 0.5, Ombros: 0.5 },
-  'supino-smith': { 'Tríceps': 0.5, Ombros: 0.5 },
-  'flexao': { 'Tríceps': 0.5, Ombros: 0.5 },
+  'supino-maquina': { 'Tríceps': 0.5, Ombros: 0.25 },
+  'supino-smith': { 'Tríceps': 0.5, Ombros: 0.25 },
+  'flexao': { 'Tríceps': 0.5, Ombros: 0.25 },
   'pullover': { Costas: 0.5 }, // o grande dorsal estende o ombro junto com o peito
   // costas: o bíceps flexiona o cotovelo em puxadas e remadas; nas remadas, o deltoide posterior ajuda um pouco
   'puxada-frente': { 'Bíceps': 0.5 },
@@ -39,23 +41,24 @@ export const MUSCLE_SHARE = {
   // tríceps: nos mergulhos e no supino fechado, peito e deltoide anterior trabalham junto
   'mergulho': { Peito: 0.5, Ombros: 0.25 },
   'paralelas-maquina': { Peito: 0.5, Ombros: 0.25 },
-  'supino-fechado': { Peito: 0.75, Ombros: 0.5 },
+  'supino-fechado': { Peito: 0.5, Ombros: 0.5 }, // pegada fechada usa menos peito que o supino normal
   'triceps-banco': { Ombros: 0.25, Peito: 0.25 },
-  // quadríceps: glúteos crescem com o agachamento profundo; posteriores quase não (Kubo e cols., 2019)
-  'agachamento-livre': { 'Glúteos': 0.5 },
-  'agachamento-smith': { 'Glúteos': 0.5 },
-  'agachamento-goblet': { 'Glúteos': 0.5 },
+  // quadríceps: no agachamento profundo o glúteo cresce tanto quanto o quadríceps (Kubo e cols., 2019) e tanto quanto
+  // na elevação pélvica (Plotkin e cols., 2023); posteriores quase não crescem
+  'agachamento-livre': { 'Glúteos': 0.75 },
+  'agachamento-smith': { 'Glúteos': 0.75 },
+  'agachamento-goblet': { 'Glúteos': 0.75 },
   'leg-press': { 'Glúteos': 0.5 },
   'leg-press-horizontal': { 'Glúteos': 0.5 },
-  'hack': { 'Glúteos': 0.25 }, // tronco mais em pé: menos quadril
+  'hack': { 'Glúteos': 0.5 }, // flexão de quadril parecida com a do leg press
   'agachamento-bulgaro': { 'Glúteos': 0.75 }, // passada e búlgaro exigem muito do glúteo
   'afundo': { 'Glúteos': 0.75 },
   'afundo-caminhando': { 'Glúteos': 0.75 },
   // glúteos
   'agachamento-sumo': { 'Quadríceps': 0.5 },
-  'subida-banco': { 'Quadríceps': 0.5 },
-  'elevacao-pelvica': { Posteriores: 0.25 },
-  'ponte-gluteo': { Posteriores: 0.25 },
+  'subida-banco': { 'Quadríceps': 0.75 }, // o quadríceps é motor principal ao subir
+  'elevacao-pelvica': {}, // posteriores ativam pouco e não crescem: conta só glúteos
+  'ponte-gluteo': {},
   // posteriores: extensão de quadril com glúteos; no terra, lombar/trapézio e algo de quadríceps
   'stiff': { 'Glúteos': 0.5 },
   'bom-dia': { 'Glúteos': 0.5, Costas: 0.25 },

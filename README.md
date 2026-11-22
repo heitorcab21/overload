@@ -1,26 +1,56 @@
 # Overload
 
-Aplicativo web (PWA) de **progressão de carga** para musculação, com metas semanais e mensais por exercício e por grupamento muscular. Feito para registrar o treino em poucos toques ou por voz, sem a sensação de preencher planilha.
+Aplicativo web (PWA) de **progressão de carga** para musculação. Você escolhe um objetivo (ganhar massa, ficar mais forte, emagrecer ou saúde) e o app monta as metas de volume, de carga e de cardio com base em estudos, sugere a carga e as repetições de cada série e registra o treino em poucos toques ou por voz.
 
-Funciona no navegador do celular, pode ser instalado na tela inicial e roda sem internet. Os dados ficam salvos só no aparelho.
+Funciona no navegador do celular, pode ser instalado na tela inicial e roda sem internet. Os dados ficam no aparelho e, se você entrar com o Google, numa pasta do seu próprio Drive.
 
 ## O que ele faz
 
-- **Registro rápido de séries**: um botão grande confirma a série como planejada. Se foi diferente, há botões de cenário (+1 rep, −2 reps, falhei nesta, todas como a meta, pular exercício) e, no fim do exercício, como foi (fácil, na medida, pesado, até a falha) e o que aconteceu (dor, troca de aparelho, execução ruim, sem tempo).
-- **Ajustes no meio do treino**: troque um exercício (aparelho ocupado) ou adicione outro, com a opção de levar a mudança para a ficha. Há também o **treino livre**, que começa vazio. Séries de **aquecimento** ficam guardadas à parte, fora da progressão, das metas e dos recordes. O **RIR** (reps que sobraram) é opcional e afina a sugestão e a estimativa de força. Cada exercício pode ter o próprio **descanso**.
-- **Importar de texto**: quem já anotava no bloco de notas ou no WhatsApp cola o texto ("15kg 10 rep", "3x10 com 50kg", "• Tríceps"...) no primeiro acesso ou em Ajustes, confere o que o app entendeu e salva tudo de uma vez. Com IA ligada, organiza até texto bagunçado.
-- **Cargas iniciais e correções**: informe de uma vez a carga que você já usa em cada exercício, ou escolha em um toque no primeiro treino. Errou um número? Toque na série para corrigir, durante o treino ou depois, no histórico.
-- **Voz**: toque no microfone e fale "40 quilos, 12 repetições", "três séries de dez com cinquenta", "bati a meta", "mais uma", "estava pesado", "desfazer", "próximo".
-- **Progressão automática** (dupla progressão): o app sugere a carga e as reps de cada série do próximo treino. Primeiro você ganha repetições dentro da faixa; quando bate o topo em todas as séries, ele manda subir a carga. Duas sessões abaixo da faixa geram uma redução de cerca de 10%.
-- **Metas em formato de planilha**: séries por semana e por mês para cada grupamento, e meta de carga do mês para cada exercício, com a meta de cada semana calculada em degraus até lá (e editável à mão). As metas de grupamento acompanham a rotina sozinhas até você editá-las. Exporte em CSV, edite no Excel ou no Google Planilhas e importe de volta.
-- **Execução ideal** de cada movimento: fotos do início e do fim do movimento, passo a passo, erros comuns e uma dica para 73 exercícios, acessível durante o treino.
-- **Progresso**: séries por semana, evolução da força estimada por exercício, recordes e histórico.
-- **Força com transparência**: o top de força mostra de qual série saiu o 1RM e a fórmula usada. Um **teste de força** (uma série até a falha) deixa o número mais confiável sem mexer na progressão. O **peso corporal** tem registro rápido e gráfico.
-- **Planilhas**: exporta treinos e metas em CSV (abre no Excel e no Google Planilhas) e faz backup completo em JSON.
-- **Português, inglês e espanhol**: escolha o idioma em Ajustes (o inicial segue o do celular). Telas, exercícios, tutoriais, planilhas, respostas da IA e o registro por voz mudam junto.
-- **Carga total**: toda carga anotada é a total levantada. Cada exercício mostra como somar: barra + anilhas dos dois lados, os dois halteres somados, um halter só, o valor do aparelho ou da polia, ou só o peso extra.
-- **Login com Google e Ajuda**: na primeira abertura o app pede para entrar com a conta Google (com a opção de usar sem conta), e a aba Ajuda tem tutoriais de cada parte do app.
-- **Treinador IA (opcional)**: com uma chave de API do Claude, do ChatGPT ou do Gemini (este com uso gratuito), entende frases de voz mais livres, analisa a semana, tira dúvidas de execução e gera orientações para exercícios personalizados.
+**Objetivo e metas**
+- **Objetivo**: massa, força, emagrecer ou saúde, com grupos priorizados e dias por semana. A partir dele o app monta as metas de séries, os cenários de carga, a faixa de repetições e a meta de cardio. Tudo pode ser editado à mão.
+- **Séries por grupo pela ciência do volume** (Schoenfeld 2017, Baz-Valle 2022, Pelland 2024), em 3 cenários: conservador, moderado e difícil.
+- **Séries efetivas**: conta inteira a série com carga de pelo menos 60% da sua força no exercício e até 4 reps sobrando. Aquecimento e séries leves contam uma parte, pela distância da falha (8 reps sobrando = meia série; 12 ou mais = nada).
+- **Contagem fracionada por músculo**: nos compostos, os músculos auxiliares recebem uma fração da série (no supino: peito 1, tríceps 0,5, ombros 0,25), como em Pelland e cols. (2024).
+- **Mapa muscular** (masculino e feminino) com o andamento da semana e botão para completar a ficha quando ela não entrega a meta.
+- **Metas de 30 dias**: séries por grupo nos últimos 30 dias e meta de carga por exercício em 3 cenários pelo seu nível, com degraus semanais até o prazo e veredito para a meta que você digitar.
+- **Planilhas**: metas e treinos em CSV, para editar no Excel ou no Google Planilhas e importar de volta.
+
+**Treino**
+- **Registro rápido**: um botão confirma a série como planejada; toque na série para corrigir. Bi-set e tri-set, série a mais a qualquer momento, troca de exercício com substituto sugerido, anotação fixa por exercício (regulagem, pegada) e treino livre.
+- **Aquecimento reconhecido sozinho** quando a carga fica bem abaixo da meta, e corrigível no histórico. O **RIR** (reps que sobraram) é opcional e afina a sugestão.
+- **Descanso** com alarme e notificação no fim. No iPhone o som toca com o app aberto.
+- **Voz**: "40 quilos, 12 repetições", "três séries de dez com cinquenta", "foi aquecimento", "desfazer", "próximo".
+- **Descartar o treino** em andamento e apagar treinos antigos, com confirmação de 5 segundos.
+
+**Progressão automática**
+- **Dupla progressão**: ganha 1 rep por vez dentro da faixa; ao bater o topo em todas as séries, sobe a carga.
+- **Recomeço inteligente**: com a carga nova, as reps saem da força que você mostrou (80 kg × 10 → 82,5 kg × 8), em vez de voltar ao início da faixa.
+- **Rumo à meta**: com meta de carga ativa, o treino puxa até o degrau da semana, no máximo um aumento de carga por treino.
+- **Faixa de repetições pelo objetivo**, sempre até 12: em força, compostos em 8 a 10; em massa, 6 a 10 nos com barra e 8 a 12 nos demais.
+- Dor segura a carga, duas sessões abaixo da faixa reduzem cerca de 10% e o fim do treino mostra o que já foi ajustado para a próxima vez.
+
+**Força e corpo**
+- **Nível de força** por exercício com as tabelas da Strength Level (89 exercícios), e **radar** com 6 padrões de movimento. O nível de treino compara com adultos em geral (normas do Cooper Institute, referência do ACSM) e a força máxima (1RM) com quem treina.
+- Toque numa fatia do radar para ver a carga que leva ao top % que você quiser.
+- **Composição corporal** (fórmula da Marinha americana ou pelo IMC, ajustada pela força) e gráfico do peso.
+
+**Treinos e biblioteca**
+- **98 exercícios** com fotos do início e do fim do movimento, passo a passo, erros comuns e uma dica.
+- **9 treinos prontos** (ABC, Push/Pull/Legs, Superior/Inferior, Arnold, ABCDE, três com foco em glúteos e corpo inteiro), montar do zero e até 10 treinos salvos.
+- **Importar de texto**: cole o que você anotava no bloco de notas ou no WhatsApp ("15kg 10 rep", "3x10 com 50kg"); o app monta a ficha e usa as cargas como último treino.
+
+**Cardio**
+- Registro, metas semanais em 3 cenários e rotinas com cronômetro (anel, linha do tempo, contagem 3-2-1, voz, +30 s), faixa de batimentos e progressão pelo esforço.
+
+**Treinador IA (opcional)**
+- Chat com os dados do app usando a sua chave de Claude, ChatGPT, Gemini, Grok, DeepSeek ou Perplexity.
+- **Memória**: conversa contínua sincronizada, caderno de fatos (como limitações físicas), resumo das conversas e contexto de meses.
+- Tenta de novo quando a conexão cai, tem limite de 60 s com cancelar e troca para um modelo reserva quando o escolhido falha.
+
+**Geral**
+- **Português, inglês e espanhol**, inclusive exercícios, Ajuda, planilhas e voz. **Quilos ou libras** (com pés e polegadas e milhas).
+- **Carga total**: toda carga anotada é a total levantada; cada exercício mostra como somar.
+- Atualiza sozinho e mostra a versão em Ajustes. A Ajuda fica dentro de Ajustes.
 
 ## Instalar no celular
 
@@ -37,14 +67,14 @@ O app é só HTML, CSS e JavaScript, sem etapa de build.
 2. No repositório, abra **Settings > Pages**, escolha **Deploy from a branch**, branch `main`, pasta `/ (root)`.
 3. Em alguns minutos o app fica disponível em `https://SEU-USUARIO.github.io/NOME-DO-REPOSITORIO/`.
 
-Ao publicar uma versão nova, aumente o número em `VERSION` no arquivo `sw.js` para que os aparelhos atualizem o cache.
+Ao publicar uma versão nova, aumente o número em `VERSION` no arquivo `sw.js` para que os aparelhos atualizem o cache. Arquivos JavaScript novos precisam entrar na lista de arquivos do mesmo `sw.js`.
 
 ## Treinador IA
 
-Em **Ajustes > Treinador IA**, cole uma chave criada no Console da Anthropic (platform.claude.com).
+Em **Ajustes > Treinador IA**, escolha a IA e cole uma chave criada no site dela (o app mostra o link de cada uma). O Gemini tem uso gratuito.
 
-- A chave fica salva apenas no aparelho e é enviada somente à Anthropic.
-- O uso é cobrado na sua conta da API. Vale definir um limite de gastos no Console.
+- A chave fica salva apenas no aparelho e é enviada somente à empresa da IA escolhida. Ela não vai para o Drive nem para o backup.
+- O uso é cobrado na sua conta da API. Vale definir um limite de gastos no painel da IA.
 - Sem chave, todo o resto funciona normalmente, inclusive offline.
 
 ## Google Drive (opcional)
@@ -85,11 +115,17 @@ O servidor abre em `http://localhost:5173`. Em localhost o service worker fica d
 
 | Arquivo | Conteúdo |
 |---|---|
-| `js/data.js` | Biblioteca de exercícios com a execução ideal e os modelos de rotina |
-| `js/logic.js` | Progressão de carga, metas e estatísticas |
-| `js/voice.js` | Reconhecimento de voz e interpretador de frases em português |
-| `js/ai.js` | Chamadas opcionais à API do Claude |
-| `js/views/` | Telas: hoje, treino, metas, progresso, treinos, ajuda e ajustes |
+| `js/data.js` | Biblioteca de exercícios, execução ideal, treinos prontos e faixa de reps por objetivo |
+| `js/logic.js` | Progressão de carga, séries efetivas, metas e estatísticas |
+| `js/shares.js` | Quanto cada série conta para cada músculo nos compostos |
+| `js/scenarios.js` | Cenários das metas de carga e veredito da meta própria |
+| `js/body.js` | Nível de força (tabelas da Strength Level e normas do Cooper Institute) e composição corporal |
+| `js/intent.js` | Objetivo da pessoa e metas automáticas |
+| `js/cardio.js`, `js/cardioplan.js` | Cardio: registro, metas e rotinas |
+| `js/voice.js` | Reconhecimento de voz e interpretador de frases (PT, EN, ES) |
+| `js/textimport.js` | Leitura de treinos colados do bloco de notas |
+| `js/ai.js`, `js/coachmem.js` | Chamadas às IAs e memória do treinador |
+| `js/views/` | Telas: hoje, treino, metas, progresso, treinos, cardio, treinador, ajuda e ajustes |
 | `js/i18n.js`, `js/locales/` | Tradução: o texto em português no código é a chave; `en.js` e `es.js` trazem as traduções, os tutoriais e os exercícios |
 | `js/charts.js` | Gráficos em SVG |
 | `sw.js` | Cache para uso offline |

@@ -1399,8 +1399,25 @@ const ui = {
   "Próximo treino: o app já ajustou": "Próximo entreno: la app ya ajustó",
   "Pela dupla progressão: mais repetições com a mesma carga até o topo da faixa; aí a carga sobe e as reps recomeçam.": "Doble progresión: más repeticiones con la misma carga hasta el tope del rango; luego la carga sube y las reps vuelven a empezar.",
   "Você fez {n} reps em todas as séries: suba para {w} kg × {r}, o mesmo nível de força com mais carga.": "Hiciste {n} reps en todas las series: sube a {w} kg × {r}, el mismo nivel de fuerza con más carga.",
-  "Nos exercícios compostos, os músculos auxiliares também contam uma fração (no supino: peito 1, tríceps e ombros 0,5).": "En los ejercicios compuestos, los músculos auxiliares también cuentan una fracción (press de banca: pecho 1, tríceps y hombros 0,5).",
+  "Nos exercícios compostos, os músculos auxiliares também contam uma fração (no supino: peito 1, tríceps 0,5, ombros 0,25).": "En los ejercicios compuestos, los músculos auxiliares también cuentan una fracción (press de banca: pecho 1, tríceps 0,5, hombros 0,25).",
   "Cada série conta:": "Cada serie cuenta:",
+  "Metas: {a} séries por semana em cada grupo{b} e {d} min de cardio por semana. Cargas: 3 cenários pelo seu nível{c}.": "Metas: {a} series por semana en cada grupo{b} y {d} min de cardio por semana. Cargas: 3 escenarios según tu nivel{c}.",
+  ", na metade do ritmo para manter a força": ", a la mitad del ritmo para mantener la fuerza",
+  " (quem está começando sobe mais rápido)": " (quien está empezando sube más rápido)",
+  "Últimos 30 dias: {a} a {b}": "Últimos 30 días: {a} a {b}",
+  "Feito em 30 dias": "Hecho en 30 días",
+  "30 dias batidos": "30 días cumplidos",
+  "nos últimos 30 dias": "en los últimos 30 días",
+  "{v} em 30 dias": "{v} en 30 días",
+  "30 dias": "30 días",
+  "Séries em 30 dias": "Series en 30 días",
+  "Deixe os 30 dias em 0 para calcular a partir da semana.": "Deja los 30 días en 0 para calcularlo a partir de la semana.",
+  "Abaixo do seu melhor recente: fácil para 30 dias.": "Por debajo de tu mejor marca reciente: fácil para 30 días.",
+  "Ambiciosa, mas possível: +{p}% de força pede 30 dias muito bons.": "Ambiciosa, pero posible: +{p}% de fuerza pide 30 días muy buenos.",
+  "Muito difícil para 30 dias: +{p}% de força. O cenário difícil fica perto de +{q}%.": "Muy difícil para 30 días: +{p}% de fuerza. El escenario difícil queda cerca de +{q}%.",
+  "Ilusória para 30 dias: +{p}% de força. O máximo realista é perto de +{q}%.": "Ilusoria para 30 días: +{p}% de fuerza. El máximo realista está cerca de +{q}%.",
+  "Registre cada série com um toque ou com a voz. O app calcula a próxima carga e acompanha suas metas da semana e de 30 dias.": "Registra cada serie con un toque o con la voz. La app calcula la próxima carga y sigue tus metas de la semana y de 30 días.",
+  "Qual a meta deste exercício para os próximos 30 dias?": "¿Cuál es la meta de este ejercicio para los próximos 30 días?",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -1495,7 +1512,7 @@ const help = [
       <li>Si quedas <b>dos veces por debajo del rango</b>, sugiere bajar cerca de un 10%.</li>
     </ol>
     <ul class="errs">
-      <li><b>Meta del mes activa</b>: si la sugerencia queda por debajo del escalón de esta semana, la app tira hacia él, como máximo un aumento de carga por entreno y el resto en repeticiones ("Rumbo a la meta de la semana").</li>
+      <li><b>Meta de 30 días activa</b>: si la sugerencia queda por debajo del escalón de esta semana, la app tira hacia él, como máximo un aumento de carga por entreno y el resto en repeticiones ("Rumbo a la meta de la semana").</li>
       <li><b>Sobraron 3 o más reps</b> en todas las series: +2 reps. <b>Ninguna</b> en la última: repite los números.</li>
       <li><b>Dolor</b>: repite los mismos números.</li>
       <li><b>Cambié de aparato</b>: ese entreno no cuenta para la próxima carga.</li>
@@ -1504,11 +1521,11 @@ const help = [
   ['Metas', 'Objetivo, series, cargas y cardio', `
     <p>Todo empieza por el <b>objetivo</b>, arriba en la pestaña Metas (tócalo para cambiarlo). Define cuántas series por semana necesita cada grupo y la meta de cardio.</p>
     <ul class="errs">
-      <li><b>Mapa muscular</b>: el cuerpo de frente y de espaldas, pintado según las series de la semana (o del mes) frente a la meta. Toca un músculo para ver cuántas faltan.</li>
+      <li><b>Mapa muscular</b>: el cuerpo de frente y de espaldas, pintado según las series de la semana (o de los últimos 30 días) frente a la meta. Toca un músculo para ver cuántas faltan.</li>
       <li><b>Series por grupo</b>: toca un grupo y elige una de 3 opciones según la ciencia del volumen (conservador, moderado, difícil) o define la tuya. Las <b>series efectivas</b> (al menos el 60% de tu fuerza en el ejercicio y hasta 4 reps de reserva) cuentan enteras; el calentamiento y las series ligeras cuentan una parte, según lo lejos del fallo que terminaron (8 reps de reserva = media serie; 12 o más = nada). En los compuestos, los músculos auxiliares reciben su fracción de ese valor. Si tu rutina no alcanza la meta, toca <b>Completar</b>.</li>
-      <li><b>Cargas por ejercicio</b>: cada ejercicio muestra 3 opciones para el mes (conservador, moderado, difícil), según tu mejor marca reciente y tu nivel. Sin entreno registrado, la app estima y avisa. También puedes <b>seguir tu progresión</b> o definir tu meta: la app dice si es realista, ambiciosa o ilusoria.</li>
+      <li><b>Cargas por ejercicio</b>: cada ejercicio muestra 3 opciones para los próximos 30 días (conservador, moderado, difícil), según tu mejor marca reciente y tu nivel. Sin entreno registrado, la app estima y avisa. También puedes <b>seguir tu progresión</b> o definir tu meta: la app dice si es realista, ambiciosa o ilusoria.</li>
       <li>Mientras falte elegir, aparece un aviso en Metas y en Entrenos, y el entreno pide la elección cuando entra un ejercicio nuevo.</li>
-      <li>La meta del mes se divide en <b>escalones semanales</b>. Alterna entre <b>Semana</b> y <b>Mes</b> arriba.</li>
+      <li>La meta de carga dura 30 días y se divide en <b>escalones semanales</b>. Alterna entre <b>Semana</b> y <b>30 días</b> arriba: las series de 30 días cuentan los últimos 30 días, el mismo plazo de las metas de carga.</li>
     </ul>`],
 
   ['Tu cuerpo y nivel de fuerza', 'Composición corporal, radar y top de fuerza', `

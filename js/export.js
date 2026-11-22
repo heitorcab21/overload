@@ -3,7 +3,7 @@
 import { state } from './store.js';
 import { CARDIO_TYPES } from './cardio.js';
 import { GROUPS, exName, tg, routineName } from './data.js';
-import { groupGoalStatus, exGoalStatus, setExGoal, setWeekOverride, daysInMonth } from './logic.js';
+import { groupGoalStatus, exGoalStatus, setExGoal, setWeekOverride, sets30 } from './logic.js';
 import { t, lang, locale, allLangs, exNamesAll } from './i18n.js';
 import { imperial, toW, wUnit, toDist, distUnit, ul, LB } from './units.js';
 
@@ -41,9 +41,9 @@ export function sessionsCSV() {
 }
 
 export function goalsCSV(now = new Date()) {
-  const rows = [[t('Tipo'), t('Nome'), t('Grupamento'), t('Meta da semana'), t('Feito na semana'), t('Meta do mês'), t('Feito no mês'), t('Situação')]];
+  const rows = [[t('Tipo'), t('Nome'), t('Grupamento'), t('Meta da semana'), t('Feito na semana'), t('Meta de 30 dias'), t('Feito em 30 dias'), t('Situação')]];
   const series = n => t('{n} séries', { n: Math.round(n * 100) / 100 });
-  const status = (month, week) => (month ? t('mês batido') : week ? t('semana batida') : t('em andamento'));
+  const status = (month, week) => (month ? t('30 dias batidos') : week ? t('semana batida') : t('em andamento'));
   for (const g of groupGoalStatus(now)) {
     rows.push([t('Grupamento'), tg(g.group), tg(g.group), series(g.weekGoal), series(g.weekDone), series(g.monthGoal), series(g.monthDone),
       status(g.monthGoal && g.monthDone >= g.monthGoal, g.weekGoal && g.weekDone >= g.weekGoal)]);
@@ -112,7 +112,7 @@ export function importGoalsCSV(text, now = new Date()) {
   const cTipo = col(...names('Tipo'));
   const cNome = col(...names('Nome', 'Exercício'));
   const cWeek = col(...names('Meta da semana'), 'meta semana', 'semana', 'week');
-  const cMonth = col(...names('Meta do mês'), 'meta mes', 'mes', 'month');
+  const cMonth = col(...names('Meta de 30 dias', 'Meta do mês'), 'meta de 30', '30 dias', '30 days', '30 dias', 'meta mes', 'mes', 'month');
   if (cNome < 0 || (cWeek < 0 && cMonth < 0)) {
     throw new Error(t('Não reconheci as colunas. Exporte as metas pelo app e use esse arquivo como modelo.'));
   }
@@ -142,7 +142,7 @@ export function importGoalsCSV(text, now = new Date()) {
       if (w == null && m == null) continue;
       const cur = state.goals.groups[g] || {};
       const week = w ?? cur.week ?? 0;
-      const month = m ?? Math.round(week * daysInMonth(now) / 7);
+      const month = m ?? sets30(week);
       if (cur.week === week && cur.month === month) continue;
       state.goals.groups[g] = { week, month, auto: false };
       res.groups++;

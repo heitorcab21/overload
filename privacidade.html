@@ -17,7 +17,7 @@
 </head>
 <body>
   <main id="view" class="page">
-    <div class="head"><div class="grow"><h1>Política de privacidade</h1><p class="sub">Overload · atualizada em 13 de novembro de 2026</p></div></div>
+    <div class="head"><div class="grow"><h1>Política de privacidade</h1><p class="sub">Overload · atualizada em 22 de novembro de 2026</p></div></div>
     <div class="stack">
       <p><a href="sobre.html">← Sobre o Overload</a> · <a href="#en">English version</a></p>
 
@@ -29,7 +29,9 @@
       <div class="card stack">
         <h2>Que dados o app usa</h2>
         <ul>
-          <li><b>Dados de treino</b> que você registra: exercícios, cargas, repetições, metas e ajustes.</li>
+          <li><b>Dados de treino</b> que você registra: exercícios, cargas, repetições, cardio, metas, objetivo e ajustes.</li>
+          <li><b>Dados do corpo</b>, se você preencher o perfil: sexo, data de nascimento, altura, peso, medidas e as estimativas que o app calcula com eles (composição corporal e nível de força). Você pode deixar o perfil em branco.</li>
+          <li><b>Conversas com o Treinador IA</b>, se você usar: as mensagens e as anotações de memória que o treinador guarda (fatos sobre você, como limitações físicas, e resumos das conversas).</li>
           <li><b>Seu e-mail do Google</b>, apenas para mostrar com qual conta você está conectado.</li>
           <li>Nenhum dado de localização, contatos, anúncios ou análise de uso é coletado.</li>
         </ul>
@@ -39,7 +41,8 @@
         <h2>Onde os dados ficam</h2>
         <ul>
           <li><b>No seu aparelho</b>, no armazenamento do navegador.</li>
-          <li><b>No seu Google Drive</b>, se você entrar com o Google: um arquivo "overload-dados.json" numa pasta "Overload".</li>
+          <li><b>No seu Google Drive</b>, se você entrar com o Google: um arquivo "overload-dados.json" numa pasta "Overload", com os treinos, o perfil e as conversas do treinador.</li>
+          <li>As <b>chaves de API</b> das IAs ficam só no aparelho: não vão para o Drive nem para o backup.</li>
           <li>O desenvolvedor do app não recebe nem consegue ver esses dados.</li>
         </ul>
       </div>
@@ -52,7 +55,14 @@
 
       <div class="card stack">
         <h2>Treinador IA (opcional)</h2>
-        <p>Só funciona se você colar em Ajustes a sua própria chave de API de uma das IAs disponíveis: Claude (Anthropic), ChatGPT (OpenAI) ou Gemini (Google). Nesse caso, quando você pede uma análise ou faz uma pergunta, o app envia o texto necessário (por exemplo, um resumo dos seus últimos treinos) diretamente do seu aparelho para a empresa da IA escolhida, sob as regras de privacidade dela. No plano gratuito do Gemini, o Google pode usar esse conteúdo para melhorar os produtos dele. A chave fica guardada só no seu aparelho e não vai para o Google Drive. Sem chave, nada é enviado.</p>
+        <p>Só funciona se você colar em Ajustes a sua própria chave de API de uma das IAs disponíveis: Claude (Anthropic), ChatGPT (OpenAI), Gemini (Google), Grok (xAI), DeepSeek ou Perplexity.</p>
+        <p>Quando você conversa com o treinador ou pede uma análise, o app envia diretamente do seu aparelho para a empresa da IA escolhida a sua mensagem e um resumo dos seus dados no app: treinos, metas, cardio, peso e perfil do corpo, dores e anotações que você registrou e as anotações de memória do treinador. Esse envio segue as regras de privacidade da empresa escolhida. No plano gratuito do Gemini, o Google pode usar esse conteúdo para melhorar os produtos dele; a DeepSeek processa os dados em servidores na China.</p>
+        <p>Com o Claude, o app baixa a biblioteca oficial da Anthropic do serviço esm.sh na primeira vez que a IA é usada. Sem chave, nada é enviado para nenhuma IA.</p>
+      </div>
+
+      <div class="card stack">
+        <h2>Voz e notificações</h2>
+        <p>O registro por voz usa o reconhecimento de fala do próprio navegador. No Chrome e no Android, o áudio é enviado ao Google para virar texto; no Safari, à Apple. O app recebe só o texto. As notificações de fim de descanso são geradas no próprio aparelho, sem servidor.</p>
       </div>
 
       <div class="card stack">
@@ -78,9 +88,11 @@
       <div class="card stack" lang="en">
         <h2>Privacy policy (English)</h2>
         <p><b>Summary.</b> Overload has no server and collects no data for its developer. Your workouts are stored on your device and, if you sign in with Google, in a folder in your own Google Drive. Nobody but you can access them.</p>
-        <p><b>Data used.</b> The workout data you log (exercises, loads, reps, goals and settings) and your Google email address, used only to show which account is connected. No location, contacts, ads or usage analytics.</p>
+        <p><b>Data used.</b> The workout data you log (exercises, loads, reps, cardio, goals, objective and settings); body data if you fill in the profile (sex, date of birth, height, weight, measurements and the estimates the app derives from them); your conversations with the AI coach and the memory notes it keeps, if you use it; and your Google email address, used only to show which account is connected. No location, contacts, ads or usage analytics.</p>
+        <p><b>Where it is stored.</b> On your device and, if you sign in with Google, in an "overload-dados.json" file in an "Overload" folder in your own Drive (workouts, profile and coach conversations). AI API keys stay on the device only and are never uploaded to Drive or included in backups.</p>
         <p><b>Google Drive access.</b> The app requests only the <code>drive.file</code> scope, which grants access solely to files created by Overload. It cannot see, read or change any other file in your Drive. Access is used only to save and restore your workout data. Overload's use and transfer of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy" rel="noopener">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
-        <p><b>AI coach (optional).</b> Only works if you paste your own API key for one of the available AIs in Settings: Claude (Anthropic), ChatGPT (OpenAI) or Gemini (Google). Then, when you request an analysis or ask a question, the required text (for example, a summary of your recent workouts) is sent directly from your device to the chosen AI company, under its own privacy terms. On Gemini's free tier, Google may use that content to improve its products. The key is stored only on your device and is never uploaded to Google Drive. Without a key, nothing is sent.</p>
+        <p><b>AI coach (optional).</b> Only works if you paste your own API key for one of the available AIs in Settings: Claude (Anthropic), ChatGPT (OpenAI), Gemini (Google), Grok (xAI), DeepSeek or Perplexity. When you chat with the coach or request an analysis, your message and a summary of your app data (workouts, goals, cardio, weight and body profile, pains and notes you logged, and the coach's memory notes) are sent directly from your device to the chosen AI company, under its own privacy terms. On Gemini's free tier, Google may use that content to improve its products; DeepSeek processes data on servers in China. With Claude, the app downloads Anthropic's official library from esm.sh the first time the AI is used. Without a key, nothing is sent to any AI.</p>
+        <p><b>Voice and notifications.</b> Voice logging uses the browser's own speech recognition: in Chrome and on Android the audio is sent to Google to be transcribed; in Safari, to Apple. The app only receives the text. Rest-timer notifications are created on the device, with no server.</p>
         <p><b>Sharing.</b> Data is never sold, rented or shared. There are no ads.</p>
         <p><b>Deleting your data.</b> In the app: Settings &gt; Erase everything and start over. In Google Drive: delete the "Overload" folder. To revoke the app's access: <a href="https://myaccount.google.com/permissions" rel="noopener">myaccount.google.com/permissions</a>.</p>
         <p><b>Contact.</b> <a href="https://github.com/heitorcab21/overload/issues">github.com/heitorcab21/overload/issues</a>.</p>

@@ -68,11 +68,7 @@ const roundStep = (v, step) => (step > 0 ? Math.round(v / step) * step : Math.ro
 const fit = (reps, n) => Array.from({ length: n }, (_, i) => reps[i] ?? reps.at(-1));
 
 /**
- * Sugestão para o treino de hoje (dupla progressão):
- * primeiro ganha repetições dentro da faixa, depois sobe a carga.
- */
-/**
- * Próximo treino do exercício. Calcula a progressão normal e, se houver meta do mês ativa e a sugestão
+ * Próximo treino (dupla progressão: primeiro ganha repetições dentro da faixa, depois sobe a carga) do exercício. Calcula a progressão normal e, se houver meta do mês ativa e a sugestão
  * ficar abaixo do degrau desta semana, puxa até ele: no máximo um degrau de carga por treino, o resto em reps.
  * Não empurra quando a progressão manda segurar ou reduzir (dor, falha, abaixo da faixa).
  */
@@ -149,6 +145,7 @@ function basePlan(ex) {
     }
     return out(w, lr.map(r => r + 1), tr('Abaixo da faixa: ganhe 1 rep por série antes de mexer na carga.'), 'hold');
   }
+  // "Como foi?" (fácil, até a falha) saiu do treino; vale para treinos antigos. Hoje o RIR faz esse papel.
   if (last.feel === 'fail') {
     return out(w, lr, tr('Você foi até a falha da última vez: repita os mesmos números com mais folga.'), 'hold');
   }
@@ -208,6 +205,13 @@ export const weekKey = (d = new Date()) => { const w = weekStart(d); return `${w
 
 /** Prazo das metas de carga: 30 dias corridos a partir da escolha. */
 export const GOAL_DAYS = 30;
+/** Meta de séries de 30 dias a partir da meta semanal (30 dias = 30/7 semanas). */
+export const sets30 = week => Math.round(week * GOAL_DAYS / 7);
+/** Janela das metas de séries de 30 dias: os últimos 30 dias, hoje incluído. Devolve [início, fim exclusivo]. */
+export function last30(now = new Date()) {
+  const end = new Date(now); end.setHours(0, 0, 0, 0);
+  return [addDays(end, 1 - GOAL_DAYS), addDays(end, 1)];
+}
 /** Cria a meta de 30 dias de um exercício, usando o melhor resultado recente como ponto de partida. */
 export function setExGoal(ex, w, r, now = new Date()) {
   const best = bestInRange(ex.id, addDays(now, -45), addDays(now, 1));
@@ -349,14 +353,9 @@ export function routineGroupSets() {
 }
 
 /**
- * Metas de grupamento: com objetivo, pela tabela dele; sem objetivo, pela ciência (10 séries por semana,
- * 7 nos grupos pequenos) para cada grupo que está nas fichas. As que você editou ficam como estão.
- */
-/**
- * Planos por objetivo: séries por semana em cada grupo (base e priorizados), crescimento da meta de carga
- * do mês e minutos de cardio por semana. Grupos pequenos (braços, panturrilhas, abdômen) recebem 3/4.
- */
-/**
+ * Planos por objetivo: séries efetivas por semana (vol e focusVol) e minutos de cardio por semana (cardio).
+ * O ritmo das metas de carga não fica aqui: vem do nível da pessoa (scenarios.js).
+ *
  * Séries efetivas por semana para cada grupamento grande, por objetivo: [conservador, moderado, difícil].
  * Base científica: ≥10 séries/semana geram mais hipertrofia que <5 (Schoenfeld, Ogborn e Krieger, 2017); para
  * quem já treina, 12 a 20 séries por músculo (Baz-Valle e cols., 2022); o ganho segue subindo com o volume, mas
@@ -366,10 +365,10 @@ export function routineGroupSets() {
  * já recebem volume indireto dos compostos: 3/4 do valor.
  */
 export const GOAL_PLANS = {
-  massa: { vol: [10, 14, 20], focusVol: [14, 18, 22], base: 14, focus: 18, growth: 1.05, cardio: 90 },
-  forca: { vol: [8, 10, 14], focusVol: [10, 14, 18], base: 10, focus: 14, growth: 1.05, cardio: 60 },
-  emagrecer: { vol: [8, 10, 14], focusVol: [10, 14, 18], base: 10, focus: 14, growth: 1, cardio: 225 },
-  saude: { vol: [6, 10, 12], focusVol: [8, 12, 14], base: 10, focus: 12, growth: 1.025, cardio: 150 },
+  massa: { vol: [10, 14, 20], focusVol: [14, 18, 22], cardio: 90 },
+  forca: { vol: [8, 10, 14], focusVol: [10, 14, 18], cardio: 60 },
+  emagrecer: { vol: [8, 10, 14], focusVol: [10, 14, 18], cardio: 225 },
+  saude: { vol: [6, 10, 12], focusVol: [8, 12, 14], cardio: 150 },
 };
 const NO_GOAL_VOL = [8, 10, 14];
 /** Opções de prioridade e os grupamentos que cada uma inclui. */
@@ -407,6 +406,10 @@ export function cardioScenarios(it = state.intent) {
   return [{ key: 'conservador', n: Math.max(60, r15(mod * 0.6)) }, { key: 'moderado', n: mod }, { key: 'dificil', n: Math.min(420, Math.max(300, r15(mod * 1.4))) }];
 }
 
+/**
+ * Metas de grupamento: com objetivo, pela tabela dele; sem objetivo, o moderado geral (10 séries por semana,
+ * 3/4 nos grupos pequenos) para cada grupo que está nas fichas. As que você editou ficam como estão.
+ */
 export function defaultGroupGoals(now = new Date()) {
   const it = state.intent && GOAL_PLANS[state.intent.goal] ? state.intent : null;
   if (it) {
@@ -415,7 +418,7 @@ export function defaultGroupGoals(now = new Date()) {
     for (const g of groups) {
       if (state.goals.groups[g]?.auto === false) continue;
       const n = intentWeekSets(g, it);
-      state.goals.groups[g] = { week: n, month: Math.round(n * daysInMonth(now) / 7), auto: true };
+      state.goals.groups[g] = { week: n, month: sets30(n), auto: true };
     }
     for (const [g, cur] of Object.entries(state.goals.groups)) if (cur.auto !== false && !groups.has(g)) delete state.goals.groups[g];
     return;
@@ -426,7 +429,7 @@ export function defaultGroupGoals(now = new Date()) {
     if (cur && cur.auto === false) continue;
     // sem objetivo: o moderado geral (10 séries; 3/4 nos grupos pequenos)
     const n = Math.round(SMALL_GROUPS.includes(g) ? NO_GOAL_VOL[1] * 0.75 : NO_GOAL_VOL[1]);
-    state.goals.groups[g] = { week: n, month: Math.round(n * daysInMonth(now) / 7), auto: true };
+    state.goals.groups[g] = { week: n, month: sets30(n), auto: true };
   }
   for (const [g, cur] of Object.entries(state.goals.groups)) {
     if (cur.auto !== false && !per[g]) delete state.goals.groups[g];
@@ -436,8 +439,10 @@ export function defaultGroupGoals(now = new Date()) {
 export function groupGoalStatus(now = new Date()) {
   const ws = weekStart(now);
   const week = groupSets(ws, addDays(ws, 7));
-  const month = groupSets(monthStart(now), monthEnd(now));
-  const ton = groupTonnage(monthStart(now), monthEnd(now));
+  // "30 dias" = os últimos 30 dias, o mesmo prazo das metas de carga (e não o mês do calendário)
+  const [a30, b30] = last30(now);
+  const month = groupSets(a30, b30);
+  const ton = groupTonnage(a30, b30);
   const groups = new Set([...Object.keys(state.goals.groups), ...Object.keys(routineGroupSets())]);
   return [...groups].map(g => {
     const goal = state.goals.groups[g] || {};

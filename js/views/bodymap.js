@@ -65,7 +65,7 @@ actions.mapPick = node => {
       ? t('{d} de {m} séries efetivas: meta batida.', { d: fmt(done), m: goal })
       : t('{d} de {m} séries efetivas: faltam {f}.', { d: fmt(done), m: goal, f: fmt(goal - done) }))
     : t('{d} séries efetivas, sem meta.', { d: fmt(done) });
-  info.innerHTML = `<b>${esc(tg(g))}</b> · ${isWeek ? t('nesta semana') : t('neste mês')}<br>${line}
+  info.innerHTML = `<b>${esc(tg(g))}</b> · ${isWeek ? t('nesta semana') : t('nos últimos 30 dias')}<br>${line}
     <span class="bm-acts"><button class="link-btn" data-act="editGroupGoal" data-g="${esc(g)}">${goal ? t('Editar meta') : t('Definir meta')}</button>
     ${isWeek && goal && have < goal ? ` · <button class="link-btn" data-act="fillRoutine" data-g="${esc(g)}">${t('Completar a ficha')}</button>` : ''}</span>`;
 };

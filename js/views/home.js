@@ -55,7 +55,7 @@ function renderOnboarding() {
   const hero = `${langs}<div class="hero">
       <img class="logo" src="icons/icon.svg" alt="">
       <h1>Overload</h1>
-      <p class="muted">${t('Registre cada série com um toque ou com a voz. O app calcula a próxima carga e acompanha suas metas da semana e do mês.')}</p>
+      <p class="muted">${t('Registre cada série com um toque ou com a voz. O app calcula a próxima carga e acompanha suas metas da semana e de 30 dias.')}</p>
     </div>`;
 
   // 1º passo: entrar com Google (se o Drive estiver configurado e a pessoa ainda não escolheu)
@@ -316,7 +316,7 @@ export function buildSummary() {
   }
   L.push('', 'METAS DE SÉRIES POR GRUPAMENTO (feito / meta):');
   for (const g of groupGoalStatus(now)) {
-    if (g.weekGoal || g.monthGoal) L.push(`- ${g.group}: semana ${+g.weekDone.toFixed(2)}/${g.weekGoal}, mês ${+g.monthDone.toFixed(2)}/${g.monthGoal}`);
+    if (g.weekGoal || g.monthGoal) L.push(`- ${g.group}: semana ${+g.weekDone.toFixed(2)}/${g.weekGoal}, últimos 30 dias ${+g.monthDone.toFixed(2)}/${g.monthGoal}`);
   }
   L.push('', 'METAS DE CARGA POR EXERCÍCIO (30 DIAS, EM DEGRAUS SEMANAIS):');
   for (const ex of Object.values(state.exercises)) {
