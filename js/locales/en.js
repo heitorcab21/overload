@@ -1323,7 +1323,7 @@ const ui = {
   "Como o Overload maximiza meus ganhos?": "How does Overload maximize my gains?",
   "Ainda sem registro. Treine um destes (ou faça a consulta rápida no Nível de força): {ex}.": "No record yet. Train one of these (or use the quick check in Strength level): {ex}.",
   "Como o Overload irá potencializar meus ganhos na academia?": "How will Overload boost my gains at the gym?",
-  "Toque numa fatia para ver os exercícios dela e quanto de carga você precisa para o top que quiser.": "Tap a slice to see its exercises and the load you need for the percentile you want.",
+  "Toque numa fatia para ver os exercícios dela e quanto de carga você precisa para o top % que quiser.": "Tap a slice to see its exercises and the load you need for the top % you want.",
   "Esquerda: frente do corpo · direita: trás.": "Left: front of the body · right: back.",
   "{r} reps só com o peso do corpo": "{r} reps with bodyweight only",
   "Você hoje: Top {n}%": "You today: Top {n}%",
