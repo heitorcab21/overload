@@ -257,6 +257,15 @@ eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [10, { week: 10, 
   eq(cardioScenarios(null).map(x => x.n), [90, 150, 300], 'cardio: 90, 150 (OMS) e 300');
 }
 
+// ---- contagem fracionada por músculo ----
+{
+  const { muscleShares } = await import('../js/shares.js');
+  eq(muscleShares({ lib: 'supino-reto', group: 'Peito' }), [['Peito', 1], ['Tríceps', 0.5], ['Ombros', 0.5]], 'supino: peito 1, tríceps e ombros 0,5');
+  eq(muscleShares({ lib: 'agachamento-livre', group: 'Quadríceps' }).map(x => x[0]).includes('Posteriores'), false, 'agachamento não conta posteriores (Kubo 2019)');
+  eq(muscleShares({ lib: 'cadeira-extensora', group: 'Quadríceps' }), [['Quadríceps', 1]], 'isolador conta só o principal');
+  eq(muscleShares({ name: 'Meu exercício', group: 'Costas' }), [['Costas', 1]], 'exercício próprio: só o grupo dele');
+}
+
 // ---- polia no nível de força ----
 {
   const { quickLevel } = await import('../js/body.js');

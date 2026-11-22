@@ -1399,6 +1399,8 @@ const ui = {
   "Próximo treino: o app já ajustou": "Próximo entreno: la app ya ajustó",
   "Pela dupla progressão: mais repetições com a mesma carga até o topo da faixa; aí a carga sobe e as reps recomeçam.": "Doble progresión: más repeticiones con la misma carga hasta el tope del rango; luego la carga sube y las reps vuelven a empezar.",
   "Você fez {n} reps em todas as séries: suba para {w} kg × {r}, o mesmo nível de força com mais carga.": "Hiciste {n} reps en todas las series: sube a {w} kg × {r}, el mismo nivel de fuerza con más carga.",
+  "Nos exercícios compostos, os músculos auxiliares também contam uma fração (no supino: peito 1, tríceps e ombros 0,5).": "En los ejercicios compuestos, los músculos auxiliares también cuentan una fracción (press de banca: pecho 1, tríceps y hombros 0,5).",
+  "Cada série conta:": "Cada serie cuenta:",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

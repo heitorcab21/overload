@@ -36,9 +36,9 @@ function render() {
       <td class="n">${esc(tg(g.group))}${!isWeek && g.monthTon ? `<span class="sub">${t('{v} no mês', { v: compact(g.monthTon) })}</span>` : ''}
         ${manual ? `<span class="sub">${t('definida por você')}</span>` : ''}
         ${isWeek && g.weekGoal && (routineGroupSets()[g.group] || 0) < g.weekGoal
-          ? `<span class="sub gap">${t('Sua ficha entrega {n} de {m}', { n: routineGroupSets()[g.group] || 0, m: g.weekGoal })} · <button class="link-btn" data-act="fillRoutine" data-g="${esc(g.group)}">${t('Completar')}</button></span>` : ''}
+          ? `<span class="sub gap">${t('Sua ficha entrega {n} de {m}', { n: fmt(routineGroupSets()[g.group] || 0), m: g.weekGoal })} · <button class="link-btn" data-act="fillRoutine" data-g="${esc(g.group)}">${t('Completar')}</button></span>` : ''}
         ${goal ? meter(done / goal, done >= goal) : ''}</td>
-      <td class="v">${goal ? `${done} / ${goal}` : `${done} <span class="muted">${t('sem meta')}</span>`}</td>
+      <td class="v">${goal ? `${fmt(done)} / ${goal}` : `${fmt(done)} <span class="muted">${t('sem meta')}</span>`}</td>
     </tr>`;
   }).join('');
 
@@ -105,7 +105,7 @@ function render() {
           <tbody>${groupRows || `<tr><td colspan="2" class="empty">${t('Adicione exercícios em Treinos para criar metas.')}</td></tr>`}</tbody>
         </table>
       </div>
-      <p class="small muted">${t('Contam as séries efetivas: carga de pelo menos 60% da sua força estimada no exercício (até ~20 reps) e, se você anotou, no máximo 4 reps sobrando.')}</p>
+      <p class="small muted">${t('Contam as séries efetivas: carga de pelo menos 60% da sua força estimada no exercício (até ~20 reps) e, se você anotou, no máximo 4 reps sobrando.')} ${t('Nos exercícios compostos, os músculos auxiliares também contam uma fração (no supino: peito 1, tríceps e ombros 0,5).')}</p>
 
       <div class="row between ex-goals-head"><h3>${t('Exercícios ativos')}</h3><span class="small muted">${isWeek ? t('Meta da semana') : t('Meta de 30 dias')}</span></div>
       ${exSections || `<div class="card"><p class="empty">${t('Nenhum exercício nos seus treinos. Adicione em Treinos.')}</p></div>`}
@@ -139,7 +139,7 @@ actions.editGroupGoal = el => {
       <span class="scen-head"><b>${esc(SN[x.key])}</b></span>
       <span class="scen-set num">${tn(x.n, '{n} série por semana', '{n} séries por semana')}</span>
       <span class="small muted">${esc(GN[x.key])}</span></button>`).join('')}</div>
-    ${fromRoutine != null ? `<p class="small muted">${t('Sua ficha entrega {n} por semana.', { n: fromRoutine || 0 })}</p>` : ''}
+    ${fromRoutine != null ? `<p class="small muted">${t('Sua ficha entrega {n} por semana.', { n: fmt(fromRoutine || 0) })}</p>` : ''}
     <details class="own-goal"${own ? ' open' : ''}><summary><b>${t('Definir a minha meta')}</b></summary>
     <form class="stack" data-submit="saveGroupGoal" data-g="${esc(g)}">
       <div class="two">
@@ -151,7 +151,7 @@ actions.editGroupGoal = el => {
         : t('Hoje esta meta segue a sua rotina e se ajusta sozinha quando você muda os exercícios. Se salvar um valor, ela passa a ser fixa.')}
         ${t('Deixe o mês em 0 para calcular a partir da semana.')}</p>
       <button class="btn primary big">${t('Salvar')}</button>
-      ${fromRoutine && cur.auto === false ? `<button type="button" class="btn ghost block" data-act="groupAuto" data-g="${esc(g)}">${t('Seguir a rotina ({n} séries por semana)', { n: fromRoutine })}</button>` : ''}
+      ${fromRoutine && cur.auto === false ? `<button type="button" class="btn ghost block" data-act="groupAuto" data-g="${esc(g)}">${t('Seguir a rotina ({n} séries por semana)', { n: Math.round(fromRoutine) })}</button>` : ''}
     </form></details>`);
 };
 actions.pickGroupScen = el => {
@@ -172,7 +172,7 @@ submits.saveGroupGoal = form => {
 };
 actions.groupAuto = el => {
   const g = el.dataset.g;
-  const n = routineGroupSets()[g] || 0;
+  const n = Math.round(routineGroupSets()[g] || 0);
   state.goals.groups[g] = { week: n, month: Math.round(n * daysInMonth() / 7), auto: true };
   save(); closeSheet(); rerender();
 };
@@ -411,9 +411,9 @@ actions.fillRoutine = el => {
     return;
   }
   sheet(`<h2>${t('Completar {g}', { g: esc(tg(g).toLowerCase()) })}</h2>
-    <p class="muted">${t('Sua ficha entrega {n} séries por semana e a meta é {m}. Proposta:', { n: p.have, m: p.goal })}</p>
+    <p class="muted">${t('Sua ficha entrega {n} séries por semana e a meta é {m}. Proposta:', { n: fmt(p.have), m: p.goal })}</p>
     <div class="card flat"><div class="list">${p.plan.map(x => `<div class="item"><span class="grow t">${esc(exName(x.ex))}</span><b class="num">${x.from} → ${x.to} ${t('séries')}</b></div>`).join('')}</div></div>
-    ${p.total < p.goal ? `<p class="small muted">${t('Mesmo assim ficam {n} de {m}: vale adicionar mais um exercício de {g}.', { n: p.total, m: p.goal, g: esc(tg(g).toLowerCase()) })}</p>` : ''}
+    ${p.total < p.goal ? `<p class="small muted">${t('Mesmo assim ficam {n} de {m}: vale adicionar mais um exercício de {g}.', { n: fmt(p.total), m: p.goal, g: esc(tg(g).toLowerCase()) })}</p>` : ''}
     <p class="small muted">${t('Lembre: contam as séries feitas perto da falha, com carga de verdade.')}</p>
     <button class="btn primary block" data-act="fillApply" data-g="${esc(g)}">${t('Aplicar na ficha')}</button>
     <button class="btn block" data-act="closeSheet">${t('Cancelar')}</button>`);
@@ -424,7 +424,7 @@ actions.fillApply = el => {
   if (!p) return;
   for (const x of p.plan) x.ex.sets = x.to;
   save(); closeSheet(); rerender();
-  toast(t('Ficha ajustada: {n} séries de {g} por semana.', { n: p.total, g: tg(g).toLowerCase() }), 3500);
+  toast(t('Ficha ajustada: {n} séries de {g} por semana.', { n: fmt(p.total), g: tg(g).toLowerCase() }), 3500);
 };
 
 // ---------- Cenários à vista: na lista de Metas e na tela do exercício ----------

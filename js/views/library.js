@@ -4,6 +4,7 @@ import { $, esc, kg, fmt, fmtDate, setStr, icon, actions, changes, submits, toas
 import { route, go, rerender } from '../router.js';
 import { activeExercises, BODY_PARTS as BODY_PARTS_DATA, supGroups, TEMPLATES, exPhotos, GROUPS, LIB, exName, exCues, tg, loadHint, loadShort, routineName } from '../data.js';
 import { t, tn, exPack } from '../i18n.js';
+import { muscleShares } from '../shares.js';
 import { planFor, exGoalStatus, entriesFor, defaultGroupGoals } from '../logic.js';
 import { ensureExercise, planStr } from './home.js';
 import { exerciseProgress, groupWord } from './progress.js';
@@ -390,6 +391,7 @@ function renderExercise(id) {
     </div>
     <h1>${esc(exName(ex))}</h1>
     <p class="muted" style="margin-bottom:16px">${ex.sets} × ${ex.repMin}–${ex.repMax} reps · ${t('aumento de {w}', { w: ex.step > 0 ? kg(ex.step) : `0 ${wUnit()}` })}</p>
+    ${muscleShares(ex).length > 1 ? `<p class="small muted share-line">${t('Cada série conta:')} ${muscleShares(ex).map(([g, sh]) => `<b>${esc(tg(g))} ${fmt(sh)}</b>`).join(' · ')}</p>` : ''}
     <div class="stack">
       <div class="target" style="margin:0">
         <h3>${t('Próximo treino')}</h3>

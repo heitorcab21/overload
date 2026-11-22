@@ -2,6 +2,7 @@
 import { state } from './store.js';
 import { t as tr, locale } from './i18n.js';
 import { imperial, toW, fromW, toStep, snapW, ul } from './units.js';
+import { muscleShares } from './shares.js';
 
 export const DAY = 864e5;
 
@@ -298,7 +299,9 @@ export function groupSets(a, b) {
       const ex = state.exercises[e.exId];
       if (!ex || e.skipped) continue;
       if (!tops.has(ex.id)) tops.set(ex.id, topBefore(ex.id, b));
-      m[ex.group] = (m[ex.group] || 0) + workSets(e.sets).filter(x => isEffective(x, tops.get(ex.id))).length;
+      const n = workSets(e.sets).filter(x => isEffective(x, tops.get(ex.id))).length;
+      // contagem fracionada: o principal conta 1 série; os auxiliares, a fração deles
+      for (const [g, share] of muscleShares(ex)) m[g] = (m[g] || 0) + n * share;
     }
   }
   return m;
@@ -322,7 +325,7 @@ export function routineGroupSets() {
   for (const r of state.routines) {
     for (const id of r.ex) {
       const ex = state.exercises[id];
-      if (ex) m[ex.group] = (m[ex.group] || 0) + ex.sets;
+      if (ex) for (const [g, share] of muscleShares(ex)) m[g] = (m[g] || 0) + ex.sets * share;
     }
   }
   return m;

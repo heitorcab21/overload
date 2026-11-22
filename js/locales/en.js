@@ -1399,6 +1399,8 @@ const ui = {
   "Próximo treino: o app já ajustou": "Next workout: already adjusted",
   "Pela dupla progressão: mais repetições com a mesma carga até o topo da faixa; aí a carga sobe e as reps recomeçam.": "Double progression: more reps with the same load up to the top of the range; then the load goes up and reps start over.",
   "Você fez {n} reps em todas as séries: suba para {w} kg × {r}, o mesmo nível de força com mais carga.": "You did {n} reps on every set: move up to {w} kg × {r}, the same strength level with more load.",
+  "Nos exercícios compostos, os músculos auxiliares também contam uma fração (no supino: peito 1, tríceps e ombros 0,5).": "In compound exercises, the helper muscles also count a fraction (bench press: chest 1, triceps and shoulders 0.5).",
+  "Cada série conta:": "Each set counts:",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };

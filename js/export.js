@@ -42,7 +42,7 @@ export function sessionsCSV() {
 
 export function goalsCSV(now = new Date()) {
   const rows = [[t('Tipo'), t('Nome'), t('Grupamento'), t('Meta da semana'), t('Feito na semana'), t('Meta do mês'), t('Feito no mês'), t('Situação')]];
-  const series = n => t('{n} séries', { n });
+  const series = n => t('{n} séries', { n: Math.round(n * 100) / 100 });
   const status = (month, week) => (month ? t('mês batido') : week ? t('semana batida') : t('em andamento'));
   for (const g of groupGoalStatus(now)) {
     rows.push([t('Grupamento'), tg(g.group), tg(g.group), series(g.weekGoal), series(g.weekDone), series(g.monthGoal), series(g.monthDone),

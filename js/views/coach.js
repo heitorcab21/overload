@@ -1,7 +1,7 @@
 // Treinador: conversa contínua com a IA (Claude, ChatGPT ou Gemini) usando os dados do app como contexto,
 // com memória: caderno de fatos sobre a pessoa e resumo das conversas antigas (em state.coach, que sincroniza).
 import { state, save } from '../store.js';
-import { $, esc, icon, actions, submits, sheet, fmtDate, setStr, toast } from '../ui.js';
+import { $, esc, fmt as fmtN, icon, actions, submits, sheet, fmtDate, setStr, toast } from '../ui.js';
 import { stalledExercises, groupGoalStatus, weekStart, addDays, entriesFor, bestInRange, sessionsIn } from '../logic.js';
 import { coach, apiMessages, foldRange, applyNotes, trimChat, shouldCheckin, memoryText } from '../coachmem.js';
 import { cardioIn, cardioMinutes } from '../cardio.js';
@@ -80,7 +80,7 @@ function suggestions() {
   }
   const behind = groupGoalStatus(now).filter(g => g.weekGoal && g.weekDone < g.weekGoal)
     .sort((a, b) => (b.weekGoal - b.weekDone) - (a.weekGoal - a.weekDone))[0];
-  if (behind) out.push([t('Séries de {g} da semana', { g: tg(behind.group).toLowerCase() }), t('Faltam {n} séries de {g} nesta semana. Como encaixo?', { n: behind.weekGoal - behind.weekDone, g: tg(behind.group).toLowerCase() })]);
+  if (behind) out.push([t('Séries de {g} da semana', { g: tg(behind.group).toLowerCase() }), t('Faltam {n} séries de {g} nesta semana. Como encaixo?', { n: fmtN(behind.weekGoal - behind.weekDone), g: tg(behind.group).toLowerCase() })]);
   const ws = weekStart(now);
   const cMin = cardioMinutes(cardioIn(ws, addDays(ws, 7)));
   const cGoal = state.cardioGoal || 150;

@@ -316,7 +316,7 @@ export function buildSummary() {
   }
   L.push('', 'METAS DE SÉRIES POR GRUPAMENTO (feito / meta):');
   for (const g of groupGoalStatus(now)) {
-    if (g.weekGoal || g.monthGoal) L.push(`- ${g.group}: semana ${g.weekDone}/${g.weekGoal}, mês ${g.monthDone}/${g.monthGoal}`);
+    if (g.weekGoal || g.monthGoal) L.push(`- ${g.group}: semana ${+g.weekDone.toFixed(2)}/${g.weekGoal}, mês ${+g.monthDone.toFixed(2)}/${g.monthGoal}`);
   }
   L.push('', 'METAS DE CARGA POR EXERCÍCIO (30 DIAS, EM DEGRAUS SEMANAIS):');
   for (const ex of Object.values(state.exercises)) {

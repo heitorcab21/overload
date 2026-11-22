@@ -1,7 +1,7 @@
 // Mapa muscular (frente e costas): cada músculo pintado pelas séries efetivas em relação à meta.
 // Tocar num músculo mostra as séries e os atalhos (editar meta, completar a ficha).
 import { state } from '../store.js';
-import { esc, actions } from '../ui.js';
+import { esc, actions, fmt } from '../ui.js';
 import { t } from '../i18n.js';
 import { tg } from '../data.js';
 import { routineGroupSets, groupGoalStatus } from '../logic.js';
@@ -62,9 +62,9 @@ actions.mapPick = node => {
   const have = routineGroupSets()[g] || 0;
   const line = goal
     ? (done >= goal
-      ? t('{d} de {m} séries efetivas: meta batida.', { d: done, m: goal })
-      : t('{d} de {m} séries efetivas: faltam {f}.', { d: done, m: goal, f: goal - done }))
-    : t('{d} séries efetivas, sem meta.', { d: done });
+      ? t('{d} de {m} séries efetivas: meta batida.', { d: fmt(done), m: goal })
+      : t('{d} de {m} séries efetivas: faltam {f}.', { d: fmt(done), m: goal, f: fmt(goal - done) }))
+    : t('{d} séries efetivas, sem meta.', { d: fmt(done) });
   info.innerHTML = `<b>${esc(tg(g))}</b> · ${isWeek ? t('nesta semana') : t('neste mês')}<br>${line}
     <span class="bm-acts"><button class="link-btn" data-act="editGroupGoal" data-g="${esc(g)}">${goal ? t('Editar meta') : t('Definir meta')}</button>
     ${isWeek && goal && have < goal ? ` · <button class="link-btn" data-act="fillRoutine" data-g="${esc(g)}">${t('Completar a ficha')}</button>` : ''}</span>`;
