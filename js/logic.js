@@ -3,6 +3,7 @@ import { state } from './store.js';
 import { t as tr, locale } from './i18n.js';
 import { imperial, toW, fromW, toStep, snapW, ul } from './units.js';
 import { muscleShares } from './shares.js';
+import { LOAD_TYPE, GYM_BOUND } from './loads.js';
 
 export const DAY = 864e5;
 
@@ -32,7 +33,7 @@ export function entriesFor(exId) {
   const out = [];
   for (const s of state.sessions) {
     for (const e of s.entries) {
-      if (e.exId === exId && !e.skipped && e.sets.length) out.push({ ...e, date: s.date });
+      if (e.exId === exId && !e.skipped && e.sets.length) out.push({ ...e, date: s.date, gym: s.gym });
     }
   }
   return out;
@@ -65,6 +66,52 @@ export function workWeight(sets) {
 }
 
 const roundStep = (v, step) => (step > 0 ? Math.round(v / step) * step : Math.round(v));
+/** Arredonda uma carga para o degrau do exercício (em libras, para os pesos que existem na academia). */
+export const snapLoad = (v, ex) => Math.max(0, imperial() ? snapW(v, ex.step) : +roundStep(v, ex.step).toFixed(2));
+/** Reduz uma carga por um fator (0,9 = 10% a menos), caindo pelo menos um degrau: com degraus grandes (5 kg), 10% de 25 kg arredondaria de volta para 25. */
+export function cutLoad(w, f, ex) {
+  const x = snapLoad(w * f, ex);
+  return x < w || !(ex.step > 0) ? x : snapLoad(Math.max(0, w - ex.step), ex);
+}
+
+// ---------- Academias ----------
+// Quem treina em mais de um lugar: nas máquinas e polias a carga de uma academia não vale na outra.
+// Treinos sem academia marcada (os de antes do cadastro) contam como da primeira academia.
+
+export const gyms = () => state.gyms || [];
+export function currentGym() {
+  const g = gyms();
+  return (g.find(x => x.id === state.settings.gym) || g[0])?.id ?? null;
+}
+/** A carga deste exercício depende do aparelho (e por isso da academia)? */
+export const gymBound = ex => GYM_BOUND.has(LOAD_TYPE[ex?.lib || ex?.base]);
+
+/**
+ * Histórico que serve de base para a progressão: sem os treinos em que o aparelho foi trocado nem os de dia ruim;
+ * nas máquinas, com 2 ou mais academias, só os da academia escolhida. Devolve { hist, other }: other é o último
+ * treino em outra academia, quando nesta ainda não há nenhum.
+ */
+export function baseHistory(ex, gym = currentGym()) {
+  const all = entriesFor(ex.id).filter(e => !(e.flags || []).some(f => f === 'troca' || f === 'ruim'));
+  const g = gyms();
+  if (g.length < 2 || !gymBound(ex)) return { hist: all, other: null };
+  const here = all.filter(e => (e.gym || g[0].id) === gym);
+  return { hist: here, other: here.length ? null : all.at(-1) ?? null };
+}
+
+// ---------- Pausas ----------
+// Força e massa se mantêm bem por umas 3 semanas sem treino e caem aos poucos depois (Mujika e Padilla, 2000;
+// Bosquet e cols., 2013). Ao voltar, a força volta bem mais rápido do que levou para ser construída
+// (Psilander e cols., 2019). Por isso: recua um pouco no primeiro treino e volta à carga de antes em poucos treinos.
+export const PAUSE_DAYS = 14;
+const pauseCut = days => (days >= 56 ? 0.7 : days >= 28 ? 0.8 : 0.9);
+/** Treino de antes da última pausa, se a pausa terminou nos últimos 3 treinos. */
+function beforePause(hist) {
+  for (let i = hist.length - 1; i >= Math.max(1, hist.length - 3); i--) {
+    if ((new Date(hist[i].date) - new Date(hist[i - 1].date)) / DAY >= PAUSE_DAYS) return hist[i - 1];
+  }
+  return null;
+}
 const fit = (reps, n) => Array.from({ length: n }, (_, i) => reps[i] ?? reps.at(-1));
 
 /**
@@ -73,7 +120,7 @@ const fit = (reps, n) => Array.from({ length: n }, (_, i) => reps[i] ?? reps.at(
  * Não empurra quando a progressão manda segurar ou reduzir (dor, falha, abaixo da faixa).
  */
 export function planFor(ex, now = new Date()) {
-  return towardGoal(ex, basePlan(ex), now);
+  return towardGoal(ex, basePlan(ex, now), now);
 }
 
 function towardGoal(ex, p, now) {
@@ -94,9 +141,9 @@ function towardGoal(ex, p, now) {
   return { ...p, w, reps, kind: 'goal', goal: tgt, note: tr('Rumo à meta da semana: {set} na primeira série.', { set: setTxt }) };
 }
 
-function basePlan(ex) {
-  // treinos em que o aparelho foi trocado não servem de base para a próxima carga
-  const hist = entriesFor(ex.id).filter(e => !(e.flags || []).includes('troca'));
+function basePlan(ex, now = new Date()) {
+  // treinos em que o aparelho foi trocado e os de dia ruim não servem de base para a próxima carga
+  const { hist, other } = baseHistory(ex);
   // cargas importadas do bloco de notas valem como "treino anterior" até haver um treino mais novo
   if (ex.ref?.sets?.length && (!hist.length || new Date(ex.ref.date) > new Date(hist.at(-1).date))) {
     hist.push({ exId: ex.id, sets: ex.ref.sets, date: ex.ref.date, flags: [], ref: true });
@@ -104,6 +151,15 @@ function basePlan(ex) {
   const lastRaw = hist.at(-1);
   const last = lastRaw && { ...lastRaw, sets: workSets(lastRaw.sets) };
   const n = ex.sets;
+  const mid = Math.round((ex.repMin + ex.repMax) / 2);
+  if (!last && other) {
+    // máquina nova: parte da carga da outra academia, mas a primeira série decide
+    const ow = workWeight(workSets(other.sets));
+    return {
+      w: ow, reps: Array(n).fill(mid), first: true, kind: 'gym',
+      note: tr('Primeira vez nesta academia: a máquina pode pesar diferente. Comece pela carga da outra academia e ajuste na primeira série.'),
+    };
+  }
   if (!last) {
     return {
       w: ex.startW ?? 0, reps: Array(n).fill(ex.repMin), first: true,
@@ -114,6 +170,38 @@ function basePlan(ex) {
   const lr = fit(last.sets.map(s => s.r), n);
   const lastTxt = { w, reps: last.sets.map(s => s.r), date: last.date };
   const out = (w2, reps, note, kind) => ({ w: w2, reps, note, kind, last: lastTxt });
+
+  // recomeço escolhido em "Exercícios parados" (recuar 10% ou mudar a faixa): vale até o próximo treino
+  if (ex.reset && new Date(ex.reset.date) > new Date(last.date)) {
+    const R = ex.reset, wt = toW(R.w).toLocaleString(locale());
+    return out(R.w, Array(n).fill(R.r), ul(R.why === 'range'
+      ? tr('Faixa nova de {a}–{b} reps: {w} kg × {r}, o mesmo nível de força com outra carga.', { a: ex.repMin, b: ex.repMax, w: wt, r: R.r })
+      : tr('Recomeço planejado: {w} kg × {r}, cerca de 10% abaixo, para voltar a progredir com boa execução.', { w: wt, r: R.r })), 'reset');
+  }
+
+  // pausa: 14 dias ou mais sem este exercício (contando qualquer treino dele, inclusive dia ruim)
+  const lastAny = entriesFor(ex.id).at(-1);
+  const gap = lastAny && !last.ref ? Math.floor((now - new Date(lastAny.date)) / DAY) : 0;
+  if (gap >= PAUSE_DAYS && w > 0) {
+    const cut = pauseCut(gap);
+    const w2 = cutLoad(w, cut, ex);
+    return out(w2, Array(n).fill(mid), ul(tr('Você ficou {n} dias sem fazer este exercício: comece com {w} kg (cerca de {p}% a menos). A força volta rápido, em poucos treinos.',
+      { n: gap, w: toW(w2).toLocaleString(locale()), p: Math.round((1 - cut) * 100) })), 'back');
+  }
+
+  // voltando da pausa: sobe metade do que falta para a carga de antes a cada treino (pelo menos um degrau)
+  const pre = beforePause(hist);
+  if (pre && ex.step > 0 && w > 0 && !(last.flags || []).includes('dor') && !lr.every(r => r < ex.repMin)) {
+    const preW = workWeight(workSets(pre.sets));
+    if (preW > w + 1e-6) {
+      const up = imperial() ? fromW(toW(w) + toStep(ex.step)) : w + ex.step;
+      const w2 = Math.min(preW, Math.max(up, snapLoad(w + (preW - w) / 2, ex)));
+      const E = e1rm(w, Math.min(...lr));
+      const r = Math.max(ex.repMin, Math.min(Math.max(ex.repMin, ex.repMax - 1), Math.floor(30 * (E / w2 - 1) + 1e-9)));
+      return { ...out(w2, Array(n).fill(r), ul(tr('Voltando da pausa: {w} kg agora, a caminho dos {p} kg de antes.',
+        { w: toW(w2).toLocaleString(locale()), p: toW(preW).toLocaleString(locale()) })), 'up'), pause: true };
+    }
+  }
 
   if ((last.flags || []).includes('dor')) {
     return out(w, lr, tr('Você marcou dor ou desconforto da última vez: repita a carga e priorize a execução.'), 'hold');
@@ -498,20 +586,54 @@ export function monthPRCount(now = new Date()) {
  * (e o último foi nos últimos 30 dias). Devolve [{ ex, n, best, since }].
  */
 export function stalledExercises(now = new Date()) {
-  const out = [];
-  for (const ex of Object.values(state.exercises)) {
-    const hist = entriesFor(ex.id).filter(e => !(e.flags || []).includes('troca'));
-    if (hist.length < 4) continue;
-    if ((now - new Date(hist.at(-1).date)) / 864e5 > 30) continue;
-    const before = Math.max(...hist.slice(0, -3).map(h => bestOf(workSets(h.sets))));
-    const recent = hist.slice(-3);
-    if (recent.every(h => bestOf(workSets(h.sets)) <= before + 1e-6)) {
-      // treinos desde que o melhor foi alcançado pela primeira vez
-      const bestIdx = hist.findIndex(h => bestOf(workSets(h.sets)) >= before - 1e-6);
-      out.push({ ex, n: hist.length - 1 - bestIdx, best: before });
-    }
+  return Object.values(state.exercises).map(ex => stallOf(ex, now)).filter(Boolean).sort((a, b) => b.n - a.n);
+}
+
+/**
+ * Um exercício está parado? Mesma regra de stalledExercises, com o histórico base (sem dia ruim e, nas máquinas,
+ * só desta academia) e só depois da última saída escolhida (recuar ou mudar a faixa), para o aviso recomeçar do zero.
+ */
+export function stallOf(ex, now = new Date()) {
+  const fix = ex.stallFix ? new Date(ex.stallFix) : null;
+  const hist = baseHistory(ex).hist.filter(e => !fix || new Date(e.date) > fix);
+  if (hist.length < 4) return null;
+  if ((now - new Date(hist.at(-1).date)) / DAY > 30) return null;
+  const before = Math.max(...hist.slice(0, -3).map(h => bestOf(workSets(h.sets))));
+  if (!hist.slice(-3).every(h => bestOf(workSets(h.sets)) <= before + 1e-6)) return null;
+  // treinos desde que o melhor foi alcançado pela primeira vez
+  const bestIdx = hist.findIndex(h => bestOf(workSets(h.sets)) >= before - 1e-6);
+  return { ex, n: hist.length - 1 - bestIdx, best: before };
+}
+
+/** Saída do platô 1: recuar cerca de 10% e subir de novo. Grava o recomeço no exercício; devolve-o (ou null). */
+export function planReset(ex, now = new Date()) {
+  const last = baseHistory(ex).hist.at(-1);
+  const w = last ? workWeight(workSets(last.sets)) : 0;
+  if (!(w > 0) || !(ex.step > 0)) return null;
+  ex.reset = { w: cutLoad(w, 0.9, ex), r: Math.round((ex.repMin + ex.repMax) / 2), date: now.toISOString(), why: 'down' };
+  ex.stallFix = now.toISOString();
+  return ex.reset;
+}
+
+/**
+ * Saída do platô 2: mudar a faixa de reps em 2 (8–12 vira 6–10; 6–10 vira 8–12; nunca acima de 12).
+ * A carga do próximo treino sai da força que você mostrou, como no recomeço inteligente. Devolve { lo, hi, reset }.
+ */
+export function shiftRange(ex, now = new Date()) {
+  const [lo, hi] = ex.repMin >= 8 ? [ex.repMin - 2, ex.repMax - 2] : [ex.repMin + 2, Math.min(12, ex.repMax + 2)];
+  const last = baseHistory(ex).hist.at(-1);
+  const sets = last ? workSets(last.sets) : [];
+  const w = workWeight(sets);
+  ex.repMin = lo; ex.repMax = Math.max(lo + 1, hi); ex.repAuto = false;
+  ex.stallFix = now.toISOString();
+  delete ex.reset;
+  if (w > 0 && ex.step > 0 && sets.length) {
+    const E = e1rm(w, Math.min(...sets.map(s => s.r)));
+    const w2 = snapLoad(E / (1 + (lo + 1) / 30), ex);
+    const r = Math.max(lo, Math.min(ex.repMax - 1, Math.floor(30 * (E / w2 - 1) + 1e-9)));
+    ex.reset = { w: w2, r, date: now.toISOString(), why: 'range' };
   }
-  return out.sort((a, b) => b.n - a.n);
+  return { lo, hi: ex.repMax, reset: ex.reset || null };
 }
 
 /**

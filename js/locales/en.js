@@ -719,10 +719,6 @@ const ui = {
   "Era série válida": "It was a working set",
   "Exercícios parados": "Stalled exercises",
   "O que fazer": "What to do",
-  "Normal acontecer. Escolha uma saída e mantenha por 2 a 3 semanas:": "It happens. Pick one way out and stick with it for 2 to 3 weeks:",
-  "<b>Recue e suba de novo</b>: reduza cerca de 10% da carga e volte a progredir com boa execução.": "<b>Back off and build up again</b>: drop the load about 10% and progress again with good form.",
-  "<b>Mude a faixa de reps</b>: se treina 8–12, passe para 6–8 com mais carga (ou o contrário).": "<b>Change the rep range</b>: if you train 8–12, switch to 6–8 with more load (or the other way around).",
-  "<b>Troque por uma variação</b>: halter no lugar da barra, inclinado no lugar do reto.": "<b>Swap for a variation</b>: dumbbells instead of a barbell, incline instead of flat.",
   "<b>Confira o básico</b>: sono, alimentação e descanso entre séries fazem diferença.": "<b>Check the basics</b>: sleep, food and rest between sets make a difference.",
   "Entendi, esconder aviso": "Got it, hide this",
   "há {n} treino sem superar seu melhor": "{n} workout without beating your best",
@@ -1418,6 +1414,57 @@ const ui = {
   "Ilusória para 30 dias: +{p}% de força. O máximo realista é perto de +{q}%.": "Unrealistic for 30 days: +{p}% strength. The realistic maximum is around +{q}%.",
   "Registre cada série com um toque ou com a voz. O app calcula a próxima carga e acompanha suas metas da semana e de 30 dias.": "Log each set with one tap or by voice. The app works out the next load and tracks your weekly and 30-day goals.",
   "Qual a meta deste exercício para os próximos 30 dias?": "What's your goal for this exercise over the next 30 days?",
+  "Primeira vez nesta academia: a máquina pode pesar diferente. Comece pela carga da outra academia e ajuste na primeira série.": "First time at this gym: the machine may feel different. Start with the load from your other gym and adjust on the first set.",
+  "Faixa nova de {a}–{b} reps: {w} kg × {r}, o mesmo nível de força com outra carga.": "New range of {a}–{b} reps: {w} kg × {r}, the same strength level with a different load.",
+  "Recomeço planejado: {w} kg × {r}, cerca de 10% abaixo, para voltar a progredir com boa execução.": "Planned reset: {w} kg × {r}, about 10% lower, to start progressing again with good form.",
+  "Você ficou {n} dias sem fazer este exercício: comece com {w} kg (cerca de {p}% a menos). A força volta rápido, em poucos treinos.": "You haven't done this exercise in {n} days: start with {w} kg (about {p}% less). Strength comes back fast, in a few workouts.",
+  "Voltando da pausa: {w} kg agora, a caminho dos {p} kg de antes.": "Coming back from a break: {w} kg now, on the way to your previous {p} kg.",
+  "Normal acontecer. Escolha uma saída e mantenha por 2 a 3 semanas: o app já ajusta o próximo treino.": "It happens. Pick a way out and stick with it for 2 to 3 weeks: the app adjusts your next workout.",
+  "Recuar e subir de novo": "Back off and build up again",
+  "Cerca de 10% menos carga no próximo treino, e a progressão segue dali com boa execução.": "About 10% less load next workout, and progression continues from there with good form.",
+  "Mudar a faixa para {a}–{b} reps": "Change the range to {a}–{b} reps",
+  "Hoje: {a}–{b}. A carga do próximo treino sai da força que você já mostrou.": "Now: {a}–{b}. The next load comes from the strength you have already shown.",
+  "Hoje: {a}–{b}.": "Now: {a}–{b}.",
+  "<b>Ou troque por uma variação</b>, como {x}: no treino, em Trocar exercício.": "<b>Or swap for a variation</b>, such as {x}: during the workout, in Swap exercise.",
+  " ou ": " or ",
+  "<b>Ou troque por uma variação</b>: halter no lugar da barra, inclinado no lugar do reto.": "<b>Or swap for a variation</b>: dumbbells instead of the bar, incline instead of flat.",
+  "Sem carga registrada para recuar.": "No load logged to back off from.",
+  "Pronto: no próximo treino, {set}.": "Done: next workout, {set}.",
+  "Faixa agora {a}–{b} reps. No próximo treino, {set}.": "Range is now {a}–{b} reps. Next workout, {set}.",
+  "Faixa agora {a}–{b} reps.": "Range is now {a}–{b} reps.",
+  "Academias": "Gyms",
+  "Treina em mais de um lugar? Cadastre cada academia: as cargas de máquinas e polias ficam separadas, porque o peso muda de um aparelho para outro. Barra, halteres e peso corporal valem em todas.": "Train in more than one place? Add each gym: machine and cable loads are kept apart, because the weight changes from one machine to another. Barbell, dumbbells and bodyweight count everywhere.",
+  "treinos antigos contam como desta": "older workouts count as this one",
+  "atual": "current",
+  "Usar": "Use",
+  "Remover {x}": "Remove {x}",
+  "Cadastre a segunda para separar as cargas.": "Add a second one to keep the loads apart.",
+  "Outra academia": "Another gym",
+  "Ex.: Academia do trabalho": "E.g. Gym near work",
+  "Nome da academia": "Gym name",
+  "Adicionar": "Add",
+  "{x} adicionada. No treino, toque no nome da academia para trocar.": "{x} added. During a workout, tap the gym name to switch.",
+  "{x} adicionada.": "{x} added.",
+  "Remover {x}?": "Remove {x}?",
+  "Os treinos feitos lá continuam salvos. As cargas de máquina deles passam a valer para a primeira academia da lista.": "Workouts done there stay saved. Their machine loads will count for the first gym on the list.",
+  "Dia ruim: carga cerca de 10% menor hoje. Se a primeira série sair leve, suba na próxima.": "Bad day: load about 10% lower today. If the first set feels light, go up on the next one.",
+  "Como está hoje?": "How is today going?",
+  "Pouco tempo hoje": "Short on time today",
+  "Os exercícios que faltam ficam com 2 séries. Com a mesma carga, isso mantém o que você ganhou; o volume volta no próximo treino.": "The remaining exercises get 2 sets. At the same load, that keeps what you have gained; full volume returns next workout.",
+  "Dia ruim": "Bad day",
+  "Cansaço, sono ruim ou pouca energia: as cargas que faltam ficam cerca de 10% menores e este treino não baixa as suas próximas cargas. As séries contam no volume normalmente.": "Tired, slept badly or low energy: the remaining loads drop about 10% and this workout will not lower your next loads. The sets still count toward volume.",
+  "Pouco tempo: 2 séries em cada exercício que falta.": "Short on time: 2 sets on each remaining exercise.",
+  "Séries normais de novo.": "Normal sets again.",
+  "Dia ruim: cargas menores hoje, e suas próximas cargas ficam como estavam.": "Bad day: lighter loads today, and your next loads stay as they were.",
+  "Cargas normais de novo.": "Normal loads again.",
+  "Onde você está treinando?": "Where are you training?",
+  "Nas máquinas e polias, cada academia tem a sua carga. Barra, halteres e peso corporal valem em todas.": "On machines and cables, each gym has its own load. Barbell, dumbbells and bodyweight count everywhere.",
+  "Cargas das máquinas ajustadas para {x}.": "Machine loads set for {x}.",
+  "Pouco tempo": "Short on time",
+  "Pouco tempo ou dia ruim?": "Short on time or a bad day?",
+  "Pouco tempo ou dia ruim": "Short on time or a bad day",
+  "Parado há {n} treino sem superar seu melhor.": "Stuck for {n} workout without beating your best.",
+  "Parado há {n} treinos sem superar seu melhor.": "Stuck for {n} workouts without beating your best.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -1516,6 +1563,9 @@ const help = [
       <li><b>3 or more reps left</b> on every set: +2 reps. <b>None left</b> on the last one: repeat the numbers.</li>
       <li><b>Pain</b>: repeats the same numbers.</li>
       <li><b>Changed equipment</b>: that workout does not count for the next load.</li>
+      <li><b>A break of 14 days or more</b> from the exercise (travel, illness): the first workout comes back about 10% lighter (20% after 4 weeks, 30% after 8), and the next ones climb half of what is left each time until your previous load. Strength comes back much faster than it took to build.</li>
+      <li><b>Short on time or a bad day</b>: during a workout, tap <b>Short on time or a bad day?</b> at the top (or in the workout list). Short on time leaves 2 sets on each remaining exercise. Bad day lowers the remaining loads by about 10%, and that workout is not used as the base for your next loads; the sets still count toward volume.</li>
+      <li><b>Two gyms</b>: in Settings, add each one. On machines and cables the app keeps each gym's load; during a workout, tap the gym name to switch. Barbell, dumbbells and bodyweight count everywhere.</li>
     </ul>`],
 
   ['Goals', 'Goal, sets, loads and cardio', `
@@ -1566,7 +1616,7 @@ const help = [
   ['Progress and history', 'Charts and past workouts', `
     <ul class="errs">
       <li>The <b>Progress</b> tab shows your strength level, your body, sets per week and a chart for each exercise: choose <b>Strength</b> or <b>Volume</b>, <b>Per workout</b> or <b>Per month</b>. The <b>This month</b> card compares workouts, sets and volume with the same days last month.</li>
-      <li>On the Today screen, the <b>Stalled exercises</b> notice shows up when an exercise goes 3 workouts without beating your best, with tips on what to do.</li>
+      <li>On the Today screen, the <b>Stalled exercises</b> notice shows up when an exercise goes 3 workouts without beating your best, with buttons that adjust your next workout: back off about 10% and build up again, or shift the rep range by 2 (the load comes from the strength you have already shown). The notice starts over after you choose.</li>
       <li>In the <b>history</b>, tap a workout and then an exercise to correct past sets, including marking or unmarking a set as a warm-up (<b>Warm</b> button).</li>
     </ul>`],
   ['AI coach (optional)', 'A chat with memory', `

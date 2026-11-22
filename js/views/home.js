@@ -2,11 +2,12 @@
 import { state, save, uid } from '../store.js';
 import { googleBtn, $, esc, fmt, kg, setStr, compact, icon, actions, toast, sheet, closeSheet, meter, fmtDate, weekLetters, shareFile } from '../ui.js';
 import { route, go, rerender } from '../router.js';
-import { TEMPLATES, LIB_BY_ID, OLD_STEP, exName, tg, routineName, templateKey, ensureExercise } from '../data.js';
+import { TEMPLATES, LIB_BY_ID, OLD_STEP, exName, tg, routineName, templateKey, ensureExercise, substitutes } from '../data.js';
 import {
   planFor, weekStart, addDays, sessionsIn, groupGoalStatus, defaultGroupGoals, DAY,
-  sessionPRs, tonnage, exGoalStatus, entriesFor, stalledExercises,
+  sessionPRs, tonnage, exGoalStatus, entriesFor, stalledExercises, stallOf, planReset, shiftRange,
 } from '../logic.js';
+import { toW } from '../units.js';
 import { startWorkout, startFreeWorkout, askNotifyOnce } from './workout.js';
 import { openCardioSheet, cardioLine } from './cardio.js';
 import { cardioIn } from '../cardio.js';
@@ -214,15 +215,48 @@ function stalledCard() {
 }
 actions.stallTips = el => {
   const ex = state.exercises[el.dataset.id];
+  if (!ex) return;
+  const lo = ex.repMin >= 8 ? ex.repMin - 2 : ex.repMin + 2;
+  const hi = Math.max(lo + 1, ex.repMin >= 8 ? ex.repMax - 2 : Math.min(12, ex.repMax + 2));
+  const subs = substitutes(ex).map(s => exName({ lib: s.id, name: LIB_BY_ID[s.id]?.name })).filter(Boolean);
+  const canLoad = ex.step > 0 && !ex.bw;
   sheet(`<h2>${esc(exName(ex))}</h2>
-    <p class="muted">${t('Normal acontecer. Escolha uma saída e mantenha por 2 a 3 semanas:')}</p>
+    <p class="muted">${t('Normal acontecer. Escolha uma saída e mantenha por 2 a 3 semanas: o app já ajusta o próximo treino.')}</p>
+    <div class="stack">
+      ${canLoad ? `<button class="btn block day-opt" data-act="stallReset" data-id="${esc(ex.id)}"><span class="grow"><b>${t('Recuar e subir de novo')}</b><br><small>${t('Cerca de 10% menos carga no próximo treino, e a progressão segue dali com boa execução.')}</small></span></button>` : ''}
+      <button class="btn block day-opt" data-act="stallRange" data-id="${esc(ex.id)}"><span class="grow"><b>${t('Mudar a faixa para {a}–{b} reps', { a: lo, b: hi })}</b><br><small>${canLoad ? t('Hoje: {a}–{b}. A carga do próximo treino sai da força que você já mostrou.', { a: ex.repMin, b: ex.repMax }) : t('Hoje: {a}–{b}.', { a: ex.repMin, b: ex.repMax })}</small></span></button>
+    </div>
     <ol class="steps">
-      <li>${t('<b>Recue e suba de novo</b>: reduza cerca de 10% da carga e volte a progredir com boa execução.')}</li>
-      <li>${t('<b>Mude a faixa de reps</b>: se treina 8–12, passe para 6–8 com mais carga (ou o contrário).')}</li>
-      <li>${t('<b>Troque por uma variação</b>: halter no lugar da barra, inclinado no lugar do reto.')}</li>
+      <li>${subs.length ? t('<b>Ou troque por uma variação</b>, como {x}: no treino, em Trocar exercício.', { x: esc(subs.slice(0, 2).join(t(' ou '))) }) : t('<b>Ou troque por uma variação</b>: halter no lugar da barra, inclinado no lugar do reto.')}</li>
       <li>${t('<b>Confira o básico</b>: sono, alimentação e descanso entre séries fazem diferença.')}</li>
     </ol>
-    <button class="btn block" data-act="stallDismiss" data-id="${esc(ex.id)}">${t('Entendi, esconder aviso')}</button>`);
+    <button class="btn ghost block" data-act="stallDismiss" data-id="${esc(ex.id)}">${t('Entendi, esconder aviso')}</button>`);
+};
+/** Depois de escolher uma saída: refaz a sugestão se o exercício está no treino em andamento e ainda não começou. */
+function replanActive(ex) {
+  for (const en of state.active?.entries || []) {
+    if (en.exId !== ex.id || en.sets.length) continue;
+    en.plan = planFor(ex);
+    en.cur = { w: en.plan.w, r: en.plan.reps[0] };
+    en.stall = stallOf(ex)?.n || 0;
+  }
+}
+actions.stallReset = el => {
+  const ex = state.exercises[el.dataset.id];
+  const R = ex && planReset(ex);
+  if (!R) { toast(t('Sem carga registrada para recuar.')); return; }
+  replanActive(ex);
+  save(); closeSheet(); rerender();
+  toast(t('Pronto: no próximo treino, {set}.', { set: setStr({ w: R.w, r: R.r }) }), 4000);
+};
+actions.stallRange = el => {
+  const ex = state.exercises[el.dataset.id];
+  if (!ex) return;
+  const { lo, hi, reset } = shiftRange(ex);
+  replanActive(ex);
+  save(); closeSheet(); rerender();
+  toast(reset ? t('Faixa agora {a}–{b} reps. No próximo treino, {set}.', { a: lo, b: hi, set: setStr({ w: reset.w, r: reset.r }) })
+    : t('Faixa agora {a}–{b} reps.', { a: lo, b: hi }), 4000);
 };
 actions.stallDismiss = el => {
   const x = stalledExercises().find(s => s.ex.id === el.dataset.id);

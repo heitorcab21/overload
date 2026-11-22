@@ -102,6 +102,9 @@ const TOPICS = [
       <li><b>Sobraram 3 ou mais reps</b> em todas as séries: +2 reps. <b>Nenhuma sobrando</b> na última: repete os números.</li>
       <li><b>Dor</b>: repete os mesmos números.</li>
       <li><b>Troquei o aparelho</b>: aquele treino não conta para a próxima carga.</li>
+      <li><b>Pausa de 14 dias ou mais</b> no exercício (viagem, doença): o primeiro treino volta com cerca de 10% a menos (20% depois de 4 semanas, 30% depois de 8), e os próximos sobem metade do que falta por vez até a carga de antes. A força volta bem mais rápido do que levou para ser construída.</li>
+      <li><b>Pouco tempo ou dia ruim</b>: no treino, toque em <b>Pouco tempo ou dia ruim?</b> no topo (ou na lista do treino). Pouco tempo deixa 2 séries em cada exercício que falta. Dia ruim baixa as cargas que faltam em cerca de 10%, e aquele treino não serve de base para as próximas cargas; as séries contam no volume normalmente.</li>
+      <li><b>Duas academias</b>: em Ajustes, cadastre cada uma. Nas máquinas e polias o app guarda a carga de cada academia; no treino, toque no nome da academia para trocar. Barra, halteres e peso corporal valem em todas.</li>
     </ul>`],
 
   ['Metas', 'Objetivo, séries, cargas e cardio', `
@@ -155,7 +158,7 @@ const TOPICS = [
   ['Progresso e histórico', 'Gráficos e treinos antigos', `
     <ul class="errs">
       <li>A aba <b>Progresso</b> mostra o seu nível de força, o seu corpo, séries por semana e um gráfico para cada exercício: escolha <b>Força</b> ou <b>Volume</b>, <b>Por treino</b> ou <b>Por mês</b>. O cartão <b>Este mês</b> compara treinos, séries e volume com o mesmo período do mês passado.</li>
-      <li>Na tela Hoje, o aviso <b>Exercícios parados</b> aparece quando um exercício passa 3 treinos sem superar seu melhor, com sugestões do que fazer.</li>
+      <li>Na tela Hoje, o aviso <b>Exercícios parados</b> aparece quando um exercício passa 3 treinos sem superar seu melhor, com botões que já ajustam o próximo treino: recuar cerca de 10% e subir de novo, ou mudar a faixa de reps em 2 (a carga sai da força que você já mostrou). O aviso recomeça do zero depois da escolha.</li>
       <li>No <b>histórico</b>, toque em um treino e depois em um exercício para corrigir séries antigas, inclusive marcar ou desmarcar uma série como aquecimento (botão <b>Aquec.</b>).</li>
     </ul>`],
 

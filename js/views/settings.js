@@ -1,5 +1,5 @@
 // Ajustes: idioma, descanso, tema, IA, conta, dados e instalação.
-import { state, save, exportJSON, importJSON, emptyData, resetKeepAccount } from '../store.js';
+import { state, save, uid, exportJSON, importJSON, emptyData, resetKeepAccount } from '../store.js';
 import { googleBtn, $, $$, esc, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, shareFile, fmtDate, fmtTime, waitDone, startWait, stopWait } from '../ui.js';
 import { route, go, rerender } from '../router.js';
 import { sessionsCSV } from '../export.js';
@@ -89,6 +89,8 @@ function render() {
             <option value="light"${s.theme === 'light' ? ' selected' : ''}>${t('Claro')}</option>
           </select></label>
       </div>
+
+      ${gymCard()}
 
       ${aiCard()}
 
@@ -207,6 +209,53 @@ function aiCard() {
 }
 
 changes.setAiProvider = el => { state.settings.aiProvider = el.value; save(); rerender(); };
+// ---------- Academias ----------
+// Com 2 ou mais, as cargas de máquinas e polias ficam separadas por academia (logic.js, baseHistory).
+
+function gymCard() {
+  const g = state.gyms || [];
+  const cur = state.settings.gym || g[0]?.id;
+  return `<div class="card stack">
+    <h3>${t('Academias')}</h3>
+    <p class="small muted">${t('Treina em mais de um lugar? Cadastre cada academia: as cargas de máquinas e polias ficam separadas, porque o peso muda de um aparelho para outro. Barra, halteres e peso corporal valem em todas.')}</p>
+    ${g.length ? `<div class="list">${g.map((x, i) => `<div class="item">
+      <span class="grow"><span class="t">${esc(x.name)}</span>${i === 0 ? `<br><span class="d">${t('treinos antigos contam como desta')}</span>` : ''}</span>
+      ${g.length > 1 && x.id === cur ? `<span class="badge good">${t('atual')}</span>` : g.length > 1 ? `<button class="btn sm ghost" data-act="gymUse" data-id="${esc(x.id)}">${t('Usar')}</button>` : ''}
+      <button class="icon-btn" data-act="gymDelAsk" data-id="${esc(x.id)}" aria-label="${t('Remover {x}', { x: esc(x.name) })}">${icon.trash}</button>
+    </div>`).join('')}</div>` : ''}
+    ${g.length === 1 ? `<p class="small muted">${t('Cadastre a segunda para separar as cargas.')}</p>` : ''}
+    <form class="row" data-submit="gymAdd">
+      <input type="text" class="grow" name="name" maxlength="40" placeholder="${g.length ? t('Outra academia') : t('Ex.: Academia do trabalho')}" aria-label="${t('Nome da academia')}">
+      <button class="btn">${icon.plus}${t('Adicionar')}</button>
+    </form>
+  </div>`;
+}
+submits.gymAdd = form => {
+  const name = form.name.value.trim().slice(0, 40);
+  if (!name) return;
+  state.gyms = [...(state.gyms || []), { id: uid(), name }];
+  if (!state.settings.gym) state.settings.gym = state.gyms[0].id;
+  save(); rerender();
+  toast(state.gyms.length > 1 ? t('{x} adicionada. No treino, toque no nome da academia para trocar.', { x: name }) : t('{x} adicionada.', { x: name }));
+};
+actions.gymUse = el => { state.settings.gym = el.dataset.id; save(); rerender(); };
+actions.gymDelAsk = el => {
+  const g = (state.gyms || []).find(x => x.id === el.dataset.id);
+  if (!g) return;
+  sheet(`<h2>${t('Remover {x}?', { x: esc(g.name) })}</h2>
+    <p class="muted">${t('Os treinos feitos lá continuam salvos. As cargas de máquina deles passam a valer para a primeira academia da lista.')}</p>
+    <button class="btn danger block" data-act="gymDel" data-id="${esc(g.id)}">${icon.trash}${t('Remover')}</button>
+    <button class="btn block" data-act="closeSheet">${t('Cancelar')}</button>`);
+};
+actions.gymDel = el => {
+  const id = el.dataset.id;
+  state.gyms = (state.gyms || []).filter(x => x.id !== id);
+  // os treinos de lá ficam sem academia, ou seja, da primeira da lista
+  for (const s of state.sessions) if (s.gym === id) delete s.gym;
+  if (state.settings.gym === id) state.settings.gym = state.gyms[0]?.id;
+  save(); closeSheet(); rerender();
+};
+
 actions.pickAiProvider = el => { state.settings.aiProvider = el.dataset.p; save(); rerender(); };
 
 /** Busca os modelos da chave e guarda a configuração. Devolve o modelo escolhido. */

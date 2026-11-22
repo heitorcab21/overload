@@ -867,6 +867,16 @@ body.has-coach #view { padding-bottom: calc(var(--tab-h) + var(--safe-b) + 76px)
 .link-btn { border: 0; background: none; padding: 0; color: var(--accent); font: inherit; font-weight: 700; text-decoration: underline; }
 .goal-line { display: flex; align-items: center; gap: 6px; margin: -2px 0 8px; color: var(--accent); font-weight: 600; }
 .goal-line .ic { width: 15px; height: 15px; }
+.day-line { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 6px; }
+.day-line .chip { min-height: 32px; padding: 4px 12px; font-size: .85rem; }
+.plan-note { display: flex; align-items: flex-start; gap: 6px; margin: -2px 0 8px; color: var(--warm); font-weight: 600; }
+.plan-note .ic { width: 15px; height: 15px; flex: none; margin-top: 2px; }
+.stall-line { margin: -2px 0 8px; color: var(--muted); }
+.stall-line .link { background: none; border: 0; padding: 0; color: var(--accent); font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; }
+.day-opt { text-align: left; justify-content: flex-start; white-space: normal; height: auto; padding: 12px 14px; }
+.day-opt small { font-weight: 400; opacity: .8; }
+.day-opt.on { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.day-opt .ic { width: 16px; height: 16px; margin-right: 4px; vertical-align: -3px; }
 .radar .r-side { fill: var(--muted); font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
 /* mapa muscular em Metas */
 .bm-figs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 300px; width: 100%; margin: 0 auto; }

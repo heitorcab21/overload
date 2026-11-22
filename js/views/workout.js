@@ -3,7 +3,7 @@ import { state, save, uid } from '../store.js';
 import { $, esc, kg, setStr, icon, actions, changes, submits, toast, sheet, closeSheet, stepper, fmtDate } from '../ui.js';
 import { route, go, current, rerender } from '../router.js';
 import { exPhotos, exName, exCues, tg, loadLabel, loadHint, routineName, GROUPS, LIB, ensureExercise, restOf, substitutes, supGroups } from '../data.js';
-import { planFor, defaultGroupGoals, entriesFor } from '../logic.js';
+import { planFor, defaultGroupGoals, entriesFor, stallOf, cutLoad, gyms, currentGym } from '../logic.js';
 import { strengthLevel } from '../body.js';
 import { decision, lgOptions } from './loadgoals.js';
 import { openCardioSheet, cardioLine } from './cardio.js';
@@ -22,8 +22,101 @@ let wakeLock = null;
 
 function newEntry(ex) {
   const plan = planFor(ex);
-  return { exId: ex.id, plan, sets: [], warmup: [], cur: { w: plan.w, r: plan.reps[0] }, feel: null, flags: [], skipped: false };
+  const en = { exId: ex.id, plan, sets: [], warmup: [], cur: { w: plan.w, r: plan.reps[0] }, feel: null, flags: [], skipped: false, stall: stallOf(ex)?.n || 0 };
+  // exercício acrescentado no meio de um treino curto ou de dia ruim entra no mesmo modo
+  if (state.active?.bad) applyBad(en, ex);
+  if (state.active?.short) applyShort(en, ex);
+  return en;
 }
+
+// ---------- Dia ruim e pouco tempo ----------
+// Dia ruim: as cargas que faltam ficam ~10% menores e o treino não serve de base para as próximas cargas
+// (flag 'ruim'), então um dia fraco não puxa a progressão para baixo. As séries contam no volume normalmente.
+// Pouco tempo: os exercícios que faltam ficam com 2 séries. Com cerca de 1/3 do volume, mantendo a carga, os
+// ganhos se mantêm por semanas (Bickel e cols., 2011; Spiering e cols., 2021).
+
+function applyBad(en, ex) {
+  if (en.sets.length || en.bad || !(en.plan.w > 0)) return;
+  en.bad = en.plan;
+  const w = cutLoad(en.plan.w, 0.9, ex);
+  // academia nova: o recado dela continua valendo (a máquina pode pesar diferente)
+  const gymNote = en.plan.kind === 'gym' ? ` ${en.plan.note}` : '';
+  en.plan = { ...en.plan, w, kind: 'bad', note: t('Dia ruim: carga cerca de 10% menor hoje. Se a primeira série sair leve, suba na próxima.') + gymNote };
+  en.cur = { ...en.cur, w };
+}
+function undoBad(en) {
+  if (!en.bad) return;
+  if (!en.sets.length) { en.plan = en.bad; en.cur = { ...en.cur, w: en.plan.w }; }
+  delete en.bad;
+}
+function applyShort(en, ex) {
+  const target = Math.max(2, en.sets.length);
+  if (en.skipped || en.cut || goal(en, ex) <= target) return;
+  en.cut = goal(en, ex) - target;
+  en.more = (en.more || 0) - en.cut;
+  if (!en.flags.includes('tempo')) en.flags.push('tempo');
+}
+function undoShort(en) {
+  if (!en.cut) return;
+  en.more += en.cut;
+  en.cut = 0;
+  en.flags = en.flags.filter(f => f !== 'tempo');
+}
+
+/** Refaz a sugestão dos exercícios ainda não começados (ao trocar de academia). */
+function replan() {
+  for (const en of state.active.entries) {
+    const ex = state.exercises[en.exId];
+    if (!ex || en.sets.length || en.skipped) continue;
+    delete en.bad;
+    en.plan = planFor(ex);
+    en.cur = { w: en.plan.w, r: en.plan.reps[0] };
+    en.stall = stallOf(ex)?.n || 0;
+    if (state.active.bad) applyBad(en, ex);
+  }
+}
+
+actions.wDay = () => {
+  const a = state.active;
+  closeSheet();
+  sheet(`<h2>${t('Como está hoje?')}</h2>
+    <div class="stack">
+      <button class="btn block day-opt${a.short ? ' on' : ''}" data-act="wShort" aria-pressed="${!!a.short}">
+        <span class="grow"><b>${a.short ? icon.check : ''}${t('Pouco tempo hoje')}</b><br><small>${t('Os exercícios que faltam ficam com 2 séries. Com a mesma carga, isso mantém o que você ganhou; o volume volta no próximo treino.')}</small></span></button>
+      <button class="btn block day-opt${a.bad ? ' on' : ''}" data-act="wBad" aria-pressed="${!!a.bad}">
+        <span class="grow"><b>${a.bad ? icon.check : ''}${t('Dia ruim')}</b><br><small>${t('Cansaço, sono ruim ou pouca energia: as cargas que faltam ficam cerca de 10% menores e este treino não baixa as suas próximas cargas. As séries contam no volume normalmente.')}</small></span></button>
+      <button class="btn ghost block" data-act="closeSheet">${t('Fechar')}</button>
+    </div>`);
+};
+actions.wShort = () => {
+  const a = state.active;
+  a.short = !a.short;
+  for (const en of a.entries) { const ex = state.exercises[en.exId]; if (ex) (a.short ? applyShort : undoShort)(en, ex); }
+  save({ touch: false }); closeSheet(); render();
+  toast(a.short ? t('Pouco tempo: 2 séries em cada exercício que falta.') : t('Séries normais de novo.'));
+};
+actions.wBad = () => {
+  const a = state.active;
+  a.bad = !a.bad;
+  for (const en of a.entries) { const ex = state.exercises[en.exId]; if (ex) (a.bad ? applyBad : undoBad)(en, ex); }
+  save({ touch: false }); closeSheet(); render();
+  toast(a.bad ? t('Dia ruim: cargas menores hoje, e suas próximas cargas ficam como estavam.') : t('Cargas normais de novo.'));
+};
+
+actions.wGym = () => {
+  const a = state.active;
+  sheet(`<h2>${t('Onde você está treinando?')}</h2>
+    <p class="small muted">${t('Nas máquinas e polias, cada academia tem a sua carga. Barra, halteres e peso corporal valem em todas.')}</p>
+    <div class="card flat"><div class="list">${gyms().map(g => `<button class="item" data-act="wGymPick" data-id="${esc(g.id)}">
+      <span class="grow t">${esc(g.name)}</span>${g.id === a.gym ? `<span class="badge good">${icon.check}${t('agora')}</span>` : ''}</button>`).join('')}</div></div>`);
+};
+actions.wGymPick = el => {
+  const a = state.active;
+  a.gym = state.settings.gym = el.dataset.id;
+  replan();
+  save({ touch: false }); closeSheet(); render();
+  toast(t('Cargas das máquinas ajustadas para {x}.', { x: gyms().find(g => g.id === a.gym)?.name || '' }));
+};
 
 export function startWorkout(routineId, onDate = null) {
   const r = state.routines.find(x => x.id === routineId);
@@ -36,7 +129,7 @@ export function startWorkout(routineId, onDate = null) {
   }));
   // Renova a autorização do Google agora, no toque de "Começar": ela cobre o treino inteiro
   refreshIfNeeded();
-  state.active = { id: uid(), routineId: r.id, name: r.name, tpl: !!r.tpl, startedAt: Date.now(), idx: 0, restEnd: 0, entries, ...(onDate ? { onDate } : {}) };
+  state.active = { id: uid(), routineId: r.id, name: r.name, tpl: !!r.tpl, startedAt: Date.now(), idx: 0, restEnd: 0, entries, ...(onDate ? { onDate } : {}), ...(currentGym() ? { gym: currentGym() } : {}) };
   save({ touch: false });
   go('#/treino');
 }
@@ -45,7 +138,7 @@ export function startWorkout(routineId, onDate = null) {
 export function startFreeWorkout() {
   if (state.active) { go('#/treino'); return; }
   refreshIfNeeded();
-  state.active = { id: uid(), routineId: null, name: 'Treino livre', tpl: true, startedAt: Date.now(), idx: 0, restEnd: 0, entries: [] };
+  state.active = { id: uid(), routineId: null, name: 'Treino livre', tpl: true, startedAt: Date.now(), idx: 0, restEnd: 0, entries: [], ...(currentGym() ? { gym: currentGym() } : {}) };
   save({ touch: false });
   go('#/treino');
   openPicker('add');
@@ -116,6 +209,25 @@ function undo(en) {
 }
 
 // ---------- Tela ----------
+
+/** Academia (com 2 ou mais cadastradas), pouco tempo e dia ruim: tudo numa linha, tocável. */
+function dayLine(a) {
+  const g = gyms().length > 1 ? gyms().find(x => x.id === a.gym) : null;
+  const modes = [a.short && t('Pouco tempo'), a.bad && t('Dia ruim')].filter(Boolean);
+  const started = a.entries.some(e => e.sets.length);
+  const day = modes.length
+    ? `<button class="chip on" data-act="wDay">${esc(modes.join(' · '))}</button>`
+    : started ? '' : `<button class="chip" data-act="wDay">${t('Pouco tempo ou dia ruim?')}</button>`;
+  if (!g && !day) return '';
+  return `<div class="day-line">${g ? `<button class="chip" data-act="wGym">${esc(g.name)}</button>` : ''}${day}</div>`;
+}
+
+/** Recados que mudam a carga de hoje: pausa, recomeço, dia ruim e academia nova. */
+function planNote(en) {
+  const p = en.plan;
+  if (!p?.note || en.sets.length || !(p.pause || ['back', 'reset', 'gym', 'bad'].includes(p.kind))) return '';
+  return `<p class="small plan-note">${icon.info}${esc(p.note)}</p>`;
+}
 
 function render() {
   const a = state.active;
@@ -188,6 +300,7 @@ function render() {
       <button class="icon-btn" data-act="wList" aria-label="${t('Lista de exercícios')}">${icon.list}</button>
     </div>
     ${a.onDate ? `<p class="small past-day">${icon.edit}${t('Registrando o treino de {d}', { d: fmtDate(a.onDate) })}</p>` : ''}
+    ${dayLine(a)}
     <div class="dots" aria-hidden="true">${a.entries.map((e, i) => {
       const x = state.exercises[e.exId];
       return `<i class="${i === a.idx ? 'cur' : x && isDone(e, x) ? 'done' : ''}"></i>`;
@@ -199,6 +312,8 @@ function render() {
     ${en.sg ? `<p class="sup-tag">${icon.link}<b>${en.sgn === 3 ? t('Tri-set') : t('Bi-set')}</b> ${esc(a.entries.filter(e => e.sg === en.sg).map(e => exName(state.exercises[e.exId])).join(' + '))}</p>` : ''}
     ${ex.note ? `<button class="ex-note" data-act="editNote" data-id="${esc(ex.id)}" aria-label="${t('Editar anotação')}">${icon.edit}<span>${esc(ex.note)}</span></button>` : ''}
     <p class="muted ex-info">${esc(tg(ex.group))} · ${ex.sets} × ${ex.repMin}–${ex.repMax} reps · ${en.sg && en.sgi < en.sgn - 1 ? t('sem descanso até o próximo do {x}', { x: en.sgn === 3 ? t('Tri-set') : t('Bi-set') }) : t('descanso {s} s', { s: restOf(ex) })}${(() => { const lv = strengthLevel(ex); return lv.top ? ` · <a class="top-link" href="#/exercicio/${encodeURIComponent(ex.id)}">${t('Top {n}% de força', { n: lv.top })}</a>` : ''; })()}${ex.note ? '' : ` · <button class="note-link" data-act="editNote" data-id="${esc(ex.id)}">${icon.edit}${t('Anotar')}</button>`}</p>
+    ${planNote(en)}
+    ${en.stall && !en.sets.length && !en.skipped ? `<p class="small stall-line">${tn(en.stall, 'Parado há {n} treino sem superar seu melhor.', 'Parado há {n} treinos sem superar seu melhor.')} <button class="link" data-act="stallTips" data-id="${esc(ex.id)}">${t('O que fazer')}</button></p>` : ''}
     ${en.plan?.goal && !isDone(en, ex) ? `<p class="small goal-line">${icon.target}${t('Meta da semana: {set}', { set: setStr(en.plan.goal) })}</p>` : ''}
     ${!en.skipped && !en.sets.length && !decision(ex) ? `<div class="card stack lg-prompt">
       <b>${icon.target}${t('Qual a meta deste exercício para os próximos 30 dias?')}</b>
@@ -606,6 +721,7 @@ actions.wList = () => {
     ${(state.cardio || []).filter(c => c.sessionId === a.id).map(c => `<p class="small cardio-in">${icon.heart}${esc(cardioLine(c))}</p>`).join('')}
     <button class="btn block" data-act="wAdd">${icon.plus}${t('Adicionar exercício')}</button>
     <button class="btn block" data-act="wCardio">${icon.heart}${t('Adicionar cardio')}</button>
+    <button class="btn block" data-act="wDay">${t('Pouco tempo ou dia ruim')}</button>
     <button class="btn primary block" data-act="wFinish">${t('Finalizar treino')}</button>
     <button class="btn ghost danger block" data-act="wDiscardAsk">${t('Descartar treino')}</button>`);
 };
@@ -662,11 +778,13 @@ function finish() {
   const a = state.active;
   // séries de aquecimento ficam guardadas à parte: não entram na progressão, nas metas, no volume nem nos recordes
   const entries = a.entries.filter(e => e.sets.length || e.skipped || e.warmup?.length)
-    .map(({ exId, sets, warmup, feel, flags, skipped }) => ({ exId, sets, ...(warmup?.length ? { warmup } : {}), feel, flags, skipped: skipped && !sets.length }));
+    .map(({ exId, sets, warmup, feel, flags, skipped }) => ({ exId, sets, ...(warmup?.length ? { warmup } : {}), feel,
+      flags: a.bad && !flags.includes('ruim') ? [...flags, 'ruim'] : flags, skipped: skipped && !sets.length }));
   // treino registrado depois (dia esquecido): fica salvo na data escolhida, sem duração
   state.sessions.push({
     id: a.id, date: a.onDate || new Date(a.startedAt).toISOString(), routineId: a.routineId, name: a.name, tpl: !!a.tpl,
     ...(a.onDate ? {} : { dur: Math.max(1, Math.round((Date.now() - a.startedAt) / 60000)) }), entries,
+    ...(a.gym && gyms().length > 1 ? { gym: a.gym } : {}), ...(a.bad ? { bad: true } : {}), ...(a.short ? { short: true } : {}),
   });
   if (a.onDate) state.sessions.sort((x, y) => new Date(x.date) - new Date(y.date));
   const i = state.routines.findIndex(r => r.id === a.routineId);

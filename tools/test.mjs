@@ -1,6 +1,16 @@
 // Testes rápidos do interpretador de voz e da progressão:  node tools/test.mjs
 import assert from 'node:assert/strict';
 
+// relógio fixo (11/11/2026, 20h): as regras de pausa e de prazo dependem da data de hoje, e os testes não podem
+// mudar de resultado conforme o dia em que rodam
+{
+  const Real = Date, FIX = new Real(2026, 10, 11, 20).getTime();
+  globalThis.Date = class extends Real {
+    constructor(...a) { super(...(a.length ? a : [FIX])); }
+    static now() { return FIX; }
+  };
+}
+
 // localStorage mínimo para os módulos carregarem fora do navegador
 const mem = {};
 globalThis.localStorage = { getItem: k => mem[k] ?? null, setItem: (k, v) => { mem[k] = v; } };
@@ -255,6 +265,61 @@ eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [10, { week: 10, 
   eq(groupScenarios('Peito', { goal: 'massa', focus: ['Peito'] }).map(x => x.n), [14, 18, 22], 'peito priorizado na hipertrofia: 14, 18 e 22');
   eq(cardioScenarios({ goal: 'emagrecer', focus: [] })[1].n, 225, 'cardio segue o objetivo (emagrecer: 225 min)');
   eq(cardioScenarios(null).map(x => x.n), [90, 150, 300], 'cardio: 90, 150 (OMS) e 300');
+}
+
+// ---- pausa, platô, dia ruim e academias (relógio fixo em 11/11/2026) ----
+{
+  const L = await import('../js/logic.js');
+  const keep = { s: state.sessions, e: state.exercises, g: state.gyms, sg: state.settings.gym };
+  const E = { id: 'pz', lib: 'supino-reto', name: 'Supino reto', group: 'Peito', sets: 3, repMin: 8, repMax: 12, step: 2.5 };
+  const LP = { id: 'lp', lib: 'leg-press', name: 'Leg press 45°', group: 'Quadríceps', sets: 3, repMin: 8, repMax: 12, step: 5 };
+  state.exercises = { pz: E, lp: LP };
+  const ago = d => new Date(2026, 10, 11 - d, 18).toISOString();
+  const S = (d, w, r, o = {}) => ({ id: `p${d}${o.ex || 'pz'}`, date: ago(d), ...(o.gym ? { gym: o.gym } : {}),
+    entries: [{ exId: o.ex || 'pz', sets: [{ w, r }, { w, r }, { w, r }], flags: o.flags || [] }] });
+  const P = (x = E) => L.planFor(x);
+
+  state.sessions = [S(20, 100, 10)];
+  eq([P().kind, P().w, P().reps], ['back', 90, [10, 10, 10]], '20 dias sem o exercício: 10% a menos, reps no meio da faixa');
+  state.sessions = [S(35, 100, 10)]; eq(P().w, 80, '5 semanas: 20% a menos');
+  state.sessions = [S(60, 100, 10)]; eq(P().w, 70, '2 meses: 30% a menos');
+  state.sessions = [S(10, 100, 10)]; eq([P().kind, P().w], ['reps', 100], '10 dias: progressão normal');
+
+  state.sessions = [S(40, 100, 10), S(5, 80, 10)];
+  eq([P().w, P().reps[0], P().pause], [90, 8, true], 'voltando da pausa: metade do caminho até a carga de antes');
+  state.sessions = [S(40, 100, 10), S(5, 80, 10), S(2, 90, 8)];
+  eq(P().w, 95, 'segundo treino depois da pausa: mais meio caminho');
+  state.sessions = [S(40, 100, 10), S(9, 80, 10), S(6, 90, 10), S(4, 95, 10), S(2, 100, 8)];
+  eq([P().pause, P().w], [undefined, 100], 'de volta à carga de antes: progressão normal');
+
+  state.sessions = [S(5, 100, 10), S(2, 80, 6, { flags: ['ruim'] })];
+  eq([P().kind, P().w], ['reps', 100], 'dia ruim não vira base: a sugestão sai do treino anterior');
+  eq(L.stallOf(E), null);
+  state.sessions = [S(12, 100, 10), S(10, 100, 10), S(8, 100, 10), S(6, 100, 10), S(4, 100, 10)];
+  eq(L.stallOf(E)?.n, 4, 'parado há 4 treinos sem superar o melhor');
+  const R = L.planReset(E, new Date(2026, 10, 11, 9));
+  eq([R.w, R.r, P().kind, P().w], [90, 10, 'reset', 90], 'recuar: 10% a menos no próximo treino');
+  eq(L.stallOf(E), null, 'depois de escolher uma saída, o aviso recomeça do zero');
+  delete E.reset; delete E.stallFix;
+  const sr = L.shiftRange(E, new Date(2026, 10, 11, 9));
+  eq([sr.lo, sr.hi, sr.reset.w, sr.reset.r, P().kind], [6, 10, 107.5, 7, 'reset'], '8–12 vira 6–10 e a carga sai da força mostrada (100 × 10 → 107,5 × 7)');
+  eq([L.shiftRange(E).lo, E.repMax], [8, 12], '6–10 volta a 8–12');
+  Object.assign(E, { repMin: 8, repMax: 12 }); delete E.reset; delete E.stallFix; delete E.repAuto;
+
+  state.gyms = [{ id: 'a', name: 'Casa' }, { id: 'b', name: 'Trabalho' }];
+  state.settings.gym = 'b';
+  state.sessions = [S(4, 200, 10, { ex: 'lp' }), S(3, 100, 10)];
+  eq([P(LP).first, P(LP).kind, P(LP).w], [true, 'gym', 200], 'máquina numa academia nova: parte da carga da outra e a 1ª série decide');
+  eq(P().w, 100, 'barra vale em qualquer academia');
+  state.sessions.push(S(2, 150, 10, { ex: 'lp', gym: 'b' }));
+  eq(P(LP).w, 150, 'na academia B, a carga da B');
+  state.settings.gym = 'a';
+  eq(P(LP).w, 200, 'de volta à A (treinos sem academia contam como da primeira)');
+  state.gyms = [{ id: 'a', name: 'Casa' }];
+  eq(P(LP).w, 150, 'com uma academia só, tudo junto');
+
+  eq([L.cutLoad(25, 0.9, { step: 5 }), L.cutLoad(80, 0.9, { step: 2.5 })], [20, 72.5], '10% a menos cai pelo menos um degrau');
+  state.sessions = keep.s; state.exercises = keep.e; state.gyms = keep.g; state.settings.gym = keep.sg;
 }
 
 // ---- metas de séries em 30 dias corridos ----

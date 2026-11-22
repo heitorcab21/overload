@@ -28,6 +28,10 @@ Funciona no navegador do celular, pode ser instalado na tela inicial e roda sem 
 - **Rumo à meta**: com meta de carga ativa, o treino puxa até o degrau da semana, no máximo um aumento de carga por treino.
 - **Faixa de repetições pelo objetivo**, sempre até 12: em força, compostos em 8 a 10; em massa, 6 a 10 nos com barra e 8 a 12 nos demais.
 - Dor segura a carga, duas sessões abaixo da faixa reduzem cerca de 10% e o fim do treino mostra o que já foi ajustado para a próxima vez.
+- **Volta de pausa**: 14 dias ou mais sem o exercício recuam 10% (20% depois de 4 semanas, 30% depois de 8), e os treinos seguintes sobem metade do que falta até a carga de antes.
+- **Exercício parado**: depois de 3 treinos sem superar o melhor, um toque recua 10% ou muda a faixa de reps, e o próximo treino já vem ajustado.
+- **Pouco tempo e dia ruim**: no treino, deixa 2 séries por exercício ou baixa as cargas em 10% sem que aquele dia puxe as próximas cargas para baixo.
+- **Duas academias**: máquinas e polias guardam a carga de cada academia; barra e halteres valem em todas.
 
 **Força e corpo**
 - **Nível de força** por exercício com as tabelas da Strength Level (89 exercícios), e **radar** com 6 padrões de movimento. O nível de treino compara com adultos em geral (normas do Cooper Institute, referência do ACSM) e a força máxima (1RM) com quem treina.
@@ -118,6 +122,7 @@ O servidor abre em `http://localhost:5173`. Em localhost o service worker fica d
 | `js/data.js` | Biblioteca de exercícios, execução ideal, treinos prontos e faixa de reps por objetivo |
 | `js/logic.js` | Progressão de carga, séries efetivas, metas e estatísticas |
 | `js/shares.js` | Quanto cada série conta para cada músculo nos compostos |
+| `js/loads.js` | Tipo de carga de cada exercício (barra, halteres, polia, máquina...) |
 | `js/scenarios.js` | Cenários das metas de carga e veredito da meta própria |
 | `js/body.js` | Nível de força (tabelas da Strength Level e normas do Cooper Institute) e composição corporal |
 | `js/intent.js` | Objetivo da pessoa e metas automáticas |

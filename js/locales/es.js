@@ -719,10 +719,6 @@ const ui = {
   "Era série válida": "Era una serie válida",
   "Exercícios parados": "Ejercicios estancados",
   "O que fazer": "Qué hacer",
-  "Normal acontecer. Escolha uma saída e mantenha por 2 a 3 semanas:": "Es normal. Elige una salida y mantenla de 2 a 3 semanas:",
-  "<b>Recue e suba de novo</b>: reduza cerca de 10% da carga e volte a progredir com boa execução.": "<b>Retrocede y vuelve a subir</b>: baja cerca de un 10% la carga y vuelve a progresar con buena técnica.",
-  "<b>Mude a faixa de reps</b>: se treina 8–12, passe para 6–8 com mais carga (ou o contrário).": "<b>Cambia el rango de reps</b>: si entrenas 8–12, pasa a 6–8 con más carga (o al revés).",
-  "<b>Troque por uma variação</b>: halter no lugar da barra, inclinado no lugar do reto.": "<b>Cambia por una variante</b>: mancuernas en lugar de barra, inclinado en lugar de plano.",
   "<b>Confira o básico</b>: sono, alimentação e descanso entre séries fazem diferença.": "<b>Revisa lo básico</b>: sueño, alimentación y descanso entre series marcan la diferencia.",
   "Entendi, esconder aviso": "Entendido, ocultar aviso",
   "há {n} treino sem superar seu melhor": "{n} entrenamiento sin superar tu mejor marca",
@@ -1418,6 +1414,57 @@ const ui = {
   "Ilusória para 30 dias: +{p}% de força. O máximo realista é perto de +{q}%.": "Ilusoria para 30 días: +{p}% de fuerza. El máximo realista está cerca de +{q}%.",
   "Registre cada série com um toque ou com a voz. O app calcula a próxima carga e acompanha suas metas da semana e de 30 dias.": "Registra cada serie con un toque o con la voz. La app calcula la próxima carga y sigue tus metas de la semana y de 30 días.",
   "Qual a meta deste exercício para os próximos 30 dias?": "¿Cuál es la meta de este ejercicio para los próximos 30 días?",
+  "Primeira vez nesta academia: a máquina pode pesar diferente. Comece pela carga da outra academia e ajuste na primeira série.": "Primera vez en este gimnasio: la máquina puede pesar distinto. Empieza con la carga del otro gimnasio y ajusta en la primera serie.",
+  "Faixa nova de {a}–{b} reps: {w} kg × {r}, o mesmo nível de força com outra carga.": "Rango nuevo de {a}–{b} reps: {w} kg × {r}, el mismo nivel de fuerza con otra carga.",
+  "Recomeço planejado: {w} kg × {r}, cerca de 10% abaixo, para voltar a progredir com boa execução.": "Reinicio planificado: {w} kg × {r}, cerca de un 10% menos, para volver a progresar con buena técnica.",
+  "Você ficou {n} dias sem fazer este exercício: comece com {w} kg (cerca de {p}% a menos). A força volta rápido, em poucos treinos.": "Llevas {n} días sin hacer este ejercicio: empieza con {w} kg (cerca de un {p}% menos). La fuerza vuelve rápido, en pocos entrenos.",
+  "Voltando da pausa: {w} kg agora, a caminho dos {p} kg de antes.": "Volviendo de la pausa: {w} kg ahora, camino de los {p} kg de antes.",
+  "Normal acontecer. Escolha uma saída e mantenha por 2 a 3 semanas: o app já ajusta o próximo treino.": "Es normal. Elige una salida y mantenla 2 o 3 semanas: la app ya ajusta el próximo entreno.",
+  "Recuar e subir de novo": "Retroceder y volver a subir",
+  "Cerca de 10% menos carga no próximo treino, e a progressão segue dali com boa execução.": "Cerca de un 10% menos de carga en el próximo entreno, y la progresión sigue desde ahí con buena técnica.",
+  "Mudar a faixa para {a}–{b} reps": "Cambiar el rango a {a}–{b} reps",
+  "Hoje: {a}–{b}. A carga do próximo treino sai da força que você já mostrou.": "Ahora: {a}–{b}. La carga del próximo entreno sale de la fuerza que ya mostraste.",
+  "Hoje: {a}–{b}.": "Ahora: {a}–{b}.",
+  "<b>Ou troque por uma variação</b>, como {x}: no treino, em Trocar exercício.": "<b>O cámbialo por una variante</b>, como {x}: en el entreno, en Cambiar ejercicio.",
+  " ou ": " o ",
+  "<b>Ou troque por uma variação</b>: halter no lugar da barra, inclinado no lugar do reto.": "<b>O cámbialo por una variante</b>: mancuernas en vez de barra, inclinado en vez de plano.",
+  "Sem carga registrada para recuar.": "No hay carga registrada para retroceder.",
+  "Pronto: no próximo treino, {set}.": "Listo: en el próximo entreno, {set}.",
+  "Faixa agora {a}–{b} reps. No próximo treino, {set}.": "Rango ahora {a}–{b} reps. En el próximo entreno, {set}.",
+  "Faixa agora {a}–{b} reps.": "Rango ahora {a}–{b} reps.",
+  "Academias": "Gimnasios",
+  "Treina em mais de um lugar? Cadastre cada academia: as cargas de máquinas e polias ficam separadas, porque o peso muda de um aparelho para outro. Barra, halteres e peso corporal valem em todas.": "¿Entrenas en más de un sitio? Añade cada gimnasio: las cargas de máquinas y poleas quedan separadas, porque el peso cambia de un aparato a otro. Barra, mancuernas y peso corporal valen en todos.",
+  "treinos antigos contam como desta": "los entrenos antiguos cuentan como de este",
+  "atual": "actual",
+  "Usar": "Usar",
+  "Remover {x}": "Quitar {x}",
+  "Cadastre a segunda para separar as cargas.": "Añade el segundo para separar las cargas.",
+  "Outra academia": "Otro gimnasio",
+  "Ex.: Academia do trabalho": "Ej.: Gimnasio del trabajo",
+  "Nome da academia": "Nombre del gimnasio",
+  "Adicionar": "Añadir",
+  "{x} adicionada. No treino, toque no nome da academia para trocar.": "{x} añadido. En el entreno, toca el nombre del gimnasio para cambiar.",
+  "{x} adicionada.": "{x} añadido.",
+  "Remover {x}?": "¿Quitar {x}?",
+  "Os treinos feitos lá continuam salvos. As cargas de máquina deles passam a valer para a primeira academia da lista.": "Los entrenos hechos allí se quedan guardados. Sus cargas de máquina pasan a contar para el primer gimnasio de la lista.",
+  "Dia ruim: carga cerca de 10% menor hoje. Se a primeira série sair leve, suba na próxima.": "Día malo: carga cerca de un 10% menor hoy. Si la primera serie sale ligera, sube en la siguiente.",
+  "Como está hoje?": "¿Cómo va hoy?",
+  "Pouco tempo hoje": "Poco tiempo hoy",
+  "Os exercícios que faltam ficam com 2 séries. Com a mesma carga, isso mantém o que você ganhou; o volume volta no próximo treino.": "Los ejercicios que faltan quedan con 2 series. Con la misma carga, eso mantiene lo que ganaste; el volumen vuelve en el próximo entreno.",
+  "Dia ruim": "Día malo",
+  "Cansaço, sono ruim ou pouca energia: as cargas que faltam ficam cerca de 10% menores e este treino não baixa as suas próximas cargas. As séries contam no volume normalmente.": "Cansancio, mal sueño o poca energía: las cargas que faltan bajan cerca de un 10% y este entreno no baja tus próximas cargas. Las series cuentan en el volumen normalmente.",
+  "Pouco tempo: 2 séries em cada exercício que falta.": "Poco tiempo: 2 series en cada ejercicio que falta.",
+  "Séries normais de novo.": "Series normales de nuevo.",
+  "Dia ruim: cargas menores hoje, e suas próximas cargas ficam como estavam.": "Día malo: cargas menores hoy, y tus próximas cargas quedan como estaban.",
+  "Cargas normais de novo.": "Cargas normales de nuevo.",
+  "Onde você está treinando?": "¿Dónde estás entrenando?",
+  "Nas máquinas e polias, cada academia tem a sua carga. Barra, halteres e peso corporal valem em todas.": "En máquinas y poleas, cada gimnasio tiene su carga. Barra, mancuernas y peso corporal valen en todos.",
+  "Cargas das máquinas ajustadas para {x}.": "Cargas de las máquinas ajustadas para {x}.",
+  "Pouco tempo": "Poco tiempo",
+  "Pouco tempo ou dia ruim?": "¿Poco tiempo o día malo?",
+  "Pouco tempo ou dia ruim": "Poco tiempo o día malo",
+  "Parado há {n} treino sem superar seu melhor.": "Estancado {n} entreno sin superar tu mejor marca.",
+  "Parado há {n} treinos sem superar seu melhor.": "Estancado {n} entrenos sin superar tu mejor marca.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -1516,6 +1563,9 @@ const help = [
       <li><b>Sobraron 3 o más reps</b> en todas las series: +2 reps. <b>Ninguna</b> en la última: repite los números.</li>
       <li><b>Dolor</b>: repite los mismos números.</li>
       <li><b>Cambié de aparato</b>: ese entreno no cuenta para la próxima carga.</li>
+      <li><b>Pausa de 14 días o más</b> en el ejercicio (viaje, enfermedad): el primer entreno vuelve con cerca de un 10% menos (20% después de 4 semanas, 30% después de 8), y los siguientes suben la mitad de lo que falta cada vez hasta la carga de antes. La fuerza vuelve mucho más rápido de lo que costó construirla.</li>
+      <li><b>Poco tiempo o día malo</b>: en el entreno, toca <b>¿Poco tiempo o día malo?</b> arriba (o en la lista del entreno). Poco tiempo deja 2 series en cada ejercicio que falta. Día malo baja las cargas que faltan cerca de un 10%, y ese entreno no sirve de base para las próximas cargas; las series cuentan en el volumen normalmente.</li>
+      <li><b>Dos gimnasios</b>: en Ajustes, añade cada uno. En máquinas y poleas la app guarda la carga de cada gimnasio; en el entreno, toca el nombre del gimnasio para cambiar. Barra, mancuernas y peso corporal valen en todos.</li>
     </ul>`],
 
   ['Metas', 'Objetivo, series, cargas y cardio', `
@@ -1566,7 +1616,7 @@ const help = [
   ['Progreso e historial', 'Gráficos y entrenamientos anteriores', `
     <ul class="errs">
       <li>La pestaña <b>Progreso</b> muestra tu nivel de fuerza, tu cuerpo, series por semana y un gráfico por ejercicio: elige <b>Fuerza</b> o <b>Volumen</b>, <b>Por entrenamiento</b> o <b>Por mes</b>. La tarjeta <b>Este mes</b> compara entrenamientos, series y volumen con el mismo período del mes pasado.</li>
-      <li>En la pantalla Hoy, el aviso <b>Ejercicios estancados</b> aparece cuando un ejercicio pasa 3 entrenamientos sin superar tu mejor marca, con sugerencias.</li>
+      <li>En la pantalla Hoy, el aviso <b>Ejercicios estancados</b> aparece cuando un ejercicio pasa 3 entrenamientos sin superar tu mejor marca, con botones que ya ajustan el próximo entreno: retroceder cerca de un 10% y volver a subir, o cambiar el rango de reps en 2 (la carga sale de la fuerza que ya mostraste). El aviso empieza de cero después de elegir.</li>
       <li>En el <b>historial</b>, toca un entrenamiento y luego un ejercicio para corregir series anteriores, incluso marcar o desmarcar una serie como calentamiento (botón <b>Calent.</b>).</li>
     </ul>`],
   ['Entrenador IA (opcional)', 'Conversación con memoria', `
