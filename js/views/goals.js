@@ -105,7 +105,7 @@ function render() {
           <tbody>${groupRows || `<tr><td colspan="2" class="empty">${t('Adicione exercícios em Treinos para criar metas.')}</td></tr>`}</tbody>
         </table>
       </div>
-      <p class="small muted">${t('Contam as séries efetivas: carga de pelo menos 60% da sua força estimada no exercício (até ~20 reps) e, se você anotou, no máximo 4 reps sobrando.')} ${t('Nos exercícios compostos, os músculos auxiliares também contam uma fração (no supino: peito 1, tríceps e ombros 0,5).')}</p>
+      <p class="small muted">${t('Série efetiva conta inteira: carga de pelo menos 60% da sua força estimada no exercício (até ~20 reps) e, se você anotou, no máximo 4 reps sobrando. Aquecimento e séries leves contam uma parte, pela distância da falha: com 8 reps sobrando, meia série; com 12 ou mais, nada.')} ${t('Nos exercícios compostos, os músculos auxiliares também contam uma fração (no supino: peito 1, tríceps e ombros 0,5).')}</p>
 
       <div class="row between ex-goals-head"><h3>${t('Exercícios ativos')}</h3><span class="small muted">${isWeek ? t('Meta da semana') : t('Meta de 30 dias')}</span></div>
       ${exSections || `<div class="card"><p class="empty">${t('Nenhum exercício nos seus treinos. Adicione em Treinos.')}</p></div>`}

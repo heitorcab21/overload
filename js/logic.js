@@ -280,6 +280,21 @@ export function exGoalStatus(ex, now = new Date(), opts = {}) {
  */
 export const EFFECTIVE_LOAD = 0.6;
 export const isEffective = (s, top) => s.r > 0 && (s.rir == null || s.rir <= 4) && (!(s.w > 0) || !(top > 0) || s.w >= top * EFFECTIVE_LOAD);
+/**
+ * Quanto uma série vale na contagem de volume, de 0 a 1. Série efetiva vale 1. As outras (aquecimento e séries leves)
+ * valem uma fração pela distância da falha, estimada pela carga e pela sua força no exercício (Epley invertida):
+ * até 4 reps sobrando conta inteira; daí cai em linha reta até 0 com 12 ou mais sobrando. O ganho de massa cai aos
+ * poucos conforme a série termina mais longe da falha, sem um corte brusco (Robinson e cols., 2024; Refalo e cols., 2023).
+ * Sem carga ou sem força de referência não dá para estimar a distância: o aquecimento fica em 0.
+ * Arredonda para 0,05 para os números ficarem legíveis.
+ */
+export function setValue(s, top, warm = false) {
+  if (!(s.r > 0)) return 0;
+  if (!warm && isEffective(s, top)) return 1;
+  if (!(s.w > 0) || !(top > 0)) return 0;
+  const left = Math.max(0, 30 * (top / s.w - 1) - s.r, s.rir ?? 0);
+  return Math.round(Math.max(0, Math.min(1, (12 - left) / 8)) * 20) / 20;
+}
 const topBefore = (exId, until) => {
   const from = addDays(until, -90);
   let top = 0;
@@ -299,8 +314,10 @@ export function groupSets(a, b) {
       const ex = state.exercises[e.exId];
       if (!ex || e.skipped) continue;
       if (!tops.has(ex.id)) tops.set(ex.id, topBefore(ex.id, b));
-      const n = workSets(e.sets).filter(x => isEffective(x, tops.get(ex.id))).length;
-      // contagem fracionada: o principal conta 1 série; os auxiliares, a fração deles
+      // cada série vale de 0 a 1 (efetiva = 1; aquecimento e séries leves, pela distância da falha)
+      const top = tops.get(ex.id);
+      const n = e.sets.reduce((acc, x) => acc + setValue(x, top), 0) + (e.warmup || []).reduce((acc, x) => acc + setValue(x, top, true), 0);
+      // contagem fracionada: o principal conta o valor da série; os auxiliares, esse valor × a fração deles
       for (const [g, share] of muscleShares(ex)) m[g] = (m[g] || 0) + n * share;
     }
   }

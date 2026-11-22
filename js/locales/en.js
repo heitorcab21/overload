@@ -1184,7 +1184,7 @@ const ui = {
   "Lembre: contam as séries feitas perto da falha, com carga de verdade.": "Remember: only sets done close to failure, with a real load, count.",
   "Aplicar na ficha": "Apply to routine",
   "Ficha ajustada: {n} séries de {g} por semana.": "Routine adjusted: {n} sets of {g} per week.",
-  "Contam as séries efetivas: carga de pelo menos 60% da sua força estimada no exercício (até ~20 reps) e, se você anotou, no máximo 4 reps sobrando.": "Effective sets count: a load of at least 60% of your estimated strength in the exercise (up to ~20 reps) and, if you logged it, at most 4 reps left in reserve.",
+  "Série efetiva conta inteira: carga de pelo menos 60% da sua força estimada no exercício (até ~20 reps) e, se você anotou, no máximo 4 reps sobrando. Aquecimento e séries leves contam uma parte, pela distância da falha: com 8 reps sobrando, meia série; com 12 ou mais, nada.": "An effective set counts in full: at least 60% of your estimated strength in the exercise (up to ~20 reps) and, if you logged it, at most 4 reps in reserve. Warm-ups and light sets count in part, by how far from failure they ended: 8 reps left is half a set; 12 or more, nothing.",
   "Rumo à meta da semana: {set} na primeira série.": "Toward this week's goal: {set} on the first set.",
   "Meta da semana: {set}": "This week's goal: {set}",
   "Empurrar na horizontal": "Horizontal push",
@@ -1505,7 +1505,7 @@ const help = [
     <p>It all starts with your <b>goal</b>, at the top of the Goals tab (tap it to change). It sets how many weekly sets each group needs and your cardio goal.</p>
     <ul class="errs">
       <li><b>Muscle map</b>: your body front and back, colored by this week's (or month's) sets versus the goal. Tap a muscle to see how many are left.</li>
-      <li><b>Sets per group</b>: tap a group and pick one of 3 options based on volume research (conservative, moderate, hard) or set your own. Only <b>effective sets</b> count: at least 60% of your strength in the exercise and up to 4 reps in reserve. If your routine doesn't deliver the goal, tap <b>Fill in</b>.</li>
+      <li><b>Sets per group</b>: tap a group and pick one of 3 options based on volume research (conservative, moderate, hard) or set your own. <b>Effective sets</b> (at least 60% of your strength in the exercise and up to 4 reps in reserve) count in full; warm-ups and light sets count in part, by how far from failure they ended (8 reps left = half a set; 12 or more = nothing). In compound lifts, helper muscles get their share of that value. If your routine doesn't deliver the goal, tap <b>Fill in</b>.</li>
       <li><b>Loads per exercise</b>: each exercise shows 3 options for the month (conservative, moderate, hard), from your recent best and your level. With no workout logged, the app estimates and tells you. You can also <b>follow your own progression</b> or set your own goal: the app tells you if it is realistic, ambitious or unrealistic.</li>
       <li>While anything is left to choose, a notice shows on Goals and Workouts, and the workout asks for a choice when a new exercise comes in.</li>
       <li>The monthly goal is split into <b>weekly steps</b>. Switch between <b>Week</b> and <b>Month</b> at the top.</li>

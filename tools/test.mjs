@@ -257,6 +257,24 @@ eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [10, { week: 10, 
   eq(cardioScenarios(null).map(x => x.n), [90, 150, 300], 'cardio: 90, 150 (OMS) e 300');
 }
 
+// ---- aquecimento e séries leves contam uma parte ----
+{
+  const { setValue, groupSets } = await import('../js/logic.js');
+  const top = 100 * (1 + 10 / 30); // 100 kg × 10
+  eq(setValue({ w: 100, r: 10 }, top), 1, 'série efetiva vale 1');
+  eq(setValue({ w: 50, r: 10 }, top, true), 0, 'aquecimento muito leve (50 reps sobrando) vale 0');
+  eq(setValue({ w: 90, r: 5 }, top, true), 0.3, 'aquecimento perto da carga de trabalho: ~9,4 reps sobrando = 0,3 série');
+  eq(setValue({ w: 55, r: 40 }, top), 1, 'série leve levada perto da falha (abaixo de 60%, mas ~3 reps sobrando): conta inteira');
+  eq(setValue({ w: 0, r: 10 }, 0, true), 0, 'sem carga não dá para estimar: aquecimento 0');
+  const keepS = state.sessions, keepE = state.exercises;
+  state.exercises = { sup: { id: 'sup', lib: 'supino-reto', group: 'Peito', sets: 3, repMin: 6, repMax: 10, step: 2.5 } };
+  const d = new Date(2026, 10, 18, 10).toISOString();
+  state.sessions = [{ id: 's1', date: d, entries: [{ exId: 'sup', sets: [{ w: 100, r: 10 }, { w: 100, r: 10 }], warmup: [{ w: 90, r: 5 }], flags: [] }] }];
+  const m = groupSets(new Date(2026, 10, 16), new Date(2026, 10, 23));
+  eq([m.Peito, m['Tríceps']], [2.3, 1.15], 'peito 2 + 0,3 do aquecimento; tríceps recebe a metade de tudo');
+  state.sessions = keepS; state.exercises = keepE;
+}
+
 // ---- faixa de reps pelo objetivo ----
 {
   const { repRange, applyRepRanges } = await import('../js/data.js');

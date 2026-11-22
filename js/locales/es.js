@@ -1184,7 +1184,7 @@ const ui = {
   "Lembre: contam as séries feitas perto da falha, com carga de verdade.": "Recuerda: cuentan las series hechas cerca del fallo, con carga de verdad.",
   "Aplicar na ficha": "Aplicar a la rutina",
   "Ficha ajustada: {n} séries de {g} por semana.": "Rutina ajustada: {n} series de {g} por semana.",
-  "Contam as séries efetivas: carga de pelo menos 60% da sua força estimada no exercício (até ~20 reps) e, se você anotou, no máximo 4 reps sobrando.": "Cuentan las series efectivas: carga de al menos 60% de tu fuerza estimada en el ejercicio (hasta ~20 reps) y, si lo anotaste, como máximo 4 reps de reserva.",
+  "Série efetiva conta inteira: carga de pelo menos 60% da sua força estimada no exercício (até ~20 reps) e, se você anotou, no máximo 4 reps sobrando. Aquecimento e séries leves contam uma parte, pela distância da falha: com 8 reps sobrando, meia série; com 12 ou mais, nada.": "Una serie efectiva cuenta entera: carga de al menos el 60% de tu fuerza estimada en el ejercicio (hasta ~20 reps) y, si lo anotaste, como máximo 4 reps de reserva. El calentamiento y las series ligeras cuentan una parte, según lo lejos del fallo que terminaron: con 8 reps de reserva, media serie; con 12 o más, nada.",
   "Rumo à meta da semana: {set} na primeira série.": "Rumbo a la meta de la semana: {set} en la primera serie.",
   "Meta da semana: {set}": "Meta de la semana: {set}",
   "Empurrar na horizontal": "Empuje horizontal",
@@ -1505,7 +1505,7 @@ const help = [
     <p>Todo empieza por el <b>objetivo</b>, arriba en la pestaña Metas (tócalo para cambiarlo). Define cuántas series por semana necesita cada grupo y la meta de cardio.</p>
     <ul class="errs">
       <li><b>Mapa muscular</b>: el cuerpo de frente y de espaldas, pintado según las series de la semana (o del mes) frente a la meta. Toca un músculo para ver cuántas faltan.</li>
-      <li><b>Series por grupo</b>: toca un grupo y elige una de 3 opciones según la ciencia del volumen (conservador, moderado, difícil) o define la tuya. Solo cuentan las <b>series efectivas</b>: al menos el 60% de tu fuerza en el ejercicio y hasta 4 reps de reserva. Si tu rutina no alcanza la meta, toca <b>Completar</b>.</li>
+      <li><b>Series por grupo</b>: toca un grupo y elige una de 3 opciones según la ciencia del volumen (conservador, moderado, difícil) o define la tuya. Las <b>series efectivas</b> (al menos el 60% de tu fuerza en el ejercicio y hasta 4 reps de reserva) cuentan enteras; el calentamiento y las series ligeras cuentan una parte, según lo lejos del fallo que terminaron (8 reps de reserva = media serie; 12 o más = nada). En los compuestos, los músculos auxiliares reciben su fracción de ese valor. Si tu rutina no alcanza la meta, toca <b>Completar</b>.</li>
       <li><b>Cargas por ejercicio</b>: cada ejercicio muestra 3 opciones para el mes (conservador, moderado, difícil), según tu mejor marca reciente y tu nivel. Sin entreno registrado, la app estima y avisa. También puedes <b>seguir tu progresión</b> o definir tu meta: la app dice si es realista, ambiciosa o ilusoria.</li>
       <li>Mientras falte elegir, aparece un aviso en Metas y en Entrenos, y el entreno pide la elección cuando entra un ejercicio nuevo.</li>
       <li>La meta del mes se divide en <b>escalones semanales</b>. Alterna entre <b>Semana</b> y <b>Mes</b> arriba.</li>
