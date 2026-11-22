@@ -1384,6 +1384,10 @@ const ui = {
   "Sim, excluir treino": "Sí, eliminar entreno",
   "Ainda pensando… alguns modelos levam até 1 minuto.": "Sigue pensando… algunos modelos tardan hasta 1 minuto.",
   "Cancelado. Toque em Tentar de novo quando quiser.": "Cancelado. Toca Intentar de nuevo cuando quieras.",
+  "Volume mínimo que já faz crescer": "Volumen mínimo que ya hace crecer",
+  "Faixa que mais rende para o seu objetivo": "El rango que más rinde para tu objetivo",
+  "Perto do máximo que dá para recuperar": "Cerca del máximo del que puedes recuperarte",
+  "Séries efetivas por semana. Pela ciência do volume: 10 ou mais séries já crescem bem mais que menos de 5, e entre 12 e 20 fica a faixa ideal para quem treina, com ganhos cada vez menores no topo. Escolha um:": "Series efectivas por semana. Según la ciencia del volumen: 10 o más series hacen crecer mucho más que menos de 5, y entre 12 y 20 está el rango ideal para quien entrena, con retornos cada vez menores arriba. Elige uno:",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

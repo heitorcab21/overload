@@ -130,11 +130,11 @@ actions.editGroupGoal = el => {
   const fromRoutine = routineGroupSets()[g];
   const sc = groupScenarios(g);
   const SN = SCEN_NAME();
-  const GN = { conservador: t('Mantém e ganha devagar'), moderado: t('O que mais rende por série'), dificil: t('Perto do máximo útil; exige boa recuperação') };
+  const GN = { conservador: t('Volume mínimo que já faz crescer'), moderado: t('Faixa que mais rende para o seu objetivo'), dificil: t('Perto do máximo que dá para recuperar') };
   const isPick = x => cur.week === x.n;
   const own = cur.week && !sc.some(isPick);
   sheet(`<h2>${t('Meta de {g}', { g: esc(tg(g)) })}</h2>
-    <p class="small muted">${t('Séries efetivas por semana. Três cenários pela ciência do volume e pelo seu objetivo. Escolha um:')}</p>
+    <p class="small muted">${t('Séries efetivas por semana. Pela ciência do volume: 10 ou mais séries já crescem bem mais que menos de 5, e entre 12 e 20 fica a faixa ideal para quem treina, com ganhos cada vez menores no topo. Escolha um:')}</p>
     <div class="scen-list">${sc.map(x => `<button class="scen scen-${x.key}${isPick(x) ? ' on' : ''}" data-act="pickGroupScen" data-g="${esc(g)}" data-n="${x.n}">
       <span class="scen-head"><b>${esc(SN[x.key])}</b></span>
       <span class="scen-set num">${tn(x.n, '{n} série por semana', '{n} séries por semana')}</span>

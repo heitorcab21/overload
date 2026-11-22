@@ -1384,6 +1384,10 @@ const ui = {
   "Sim, excluir treino": "Yes, delete workout",
   "Ainda pensando… alguns modelos levam até 1 minuto.": "Still thinking… some models take up to a minute.",
   "Cancelado. Toque em Tentar de novo quando quiser.": "Canceled. Tap Try again whenever you like.",
+  "Volume mínimo que já faz crescer": "Minimum volume that already builds muscle",
+  "Faixa que mais rende para o seu objetivo": "The range that pays off most for your goal",
+  "Perto do máximo que dá para recuperar": "Close to the most you can recover from",
+  "Séries efetivas por semana. Pela ciência do volume: 10 ou mais séries já crescem bem mais que menos de 5, e entre 12 e 20 fica a faixa ideal para quem treina, com ganhos cada vez menores no topo. Escolha um:": "Effective sets per week. Volume research: 10+ sets grow much more than under 5, and 12 to 20 is the ideal range for trained people, with smaller returns at the top. Pick one:",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };

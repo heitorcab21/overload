@@ -217,10 +217,10 @@ eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [10, { week: 10, 
   state.routines = [{ id: 'r', name: 'A', ex: ['x', 'y'] }];
   state.sessions = [sess(10, [{ w: 40, r: 10 }, { w: 40, r: 10 }, { w: 40, r: 10 }])];
   saveIntent({ goal: 'massa', focus: ['Glúteos', 'Braços'], days: 4 }, now);
-  eq([state.goals.groups.Peito.week, state.goals.groups['Glúteos'].week, state.goals.groups['Bíceps'].week, state.goals.groups.Costas.week], [12, 18, 14, 10],
-    'massa: 12 séries nos grupos dos treinos, 18 nos priorizados (braços 3/4) e a meta editada à mão fica');
+  eq([state.goals.groups.Peito.week, state.goals.groups['Glúteos'].week, state.goals.groups['Bíceps'].week, state.goals.groups.Costas.week], [14, 18, 14, 10],
+    'massa: 14 séries nos grupos dos treinos, 18 nos priorizados (braços 3/4) e a meta editada à mão fica');
   eq([state.cardioGoal, Object.keys(state.goals.ex).length], [90, 0], 'cardio pelo objetivo; metas de carga a pessoa escolhe');
-  eq([intentWeekSets('Peito', { goal: 'forca', focus: [] }), intentWeekSets('Panturrilhas', { goal: 'emagrecer', focus: ['Panturrilhas'] })], [8, 11], 'força: 8 séries; panturrilha priorizada no emagrecer: 14 × 3/4');
+  eq([intentWeekSets('Peito', { goal: 'forca', focus: [] }), intentWeekSets('Panturrilhas', { goal: 'emagrecer', focus: ['Panturrilhas'] })], [10, 11], 'força: 10 séries; panturrilha priorizada no emagrecer: 14 × 3/4');
   const sc = scenarios(ex, now);
   eq(sc.map(x => x.key), ['conservador', 'moderado', 'dificil'], 'três cenários');
   eq(sc.map(x => Math.round(x.growth * 1000) / 10), [2.5, 5, 8], 'iniciante (sem percentil, pouco histórico): +2,5%, +5% e +8% no mês');
@@ -249,9 +249,11 @@ eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [10, { week: 10, 
 // ---- cenários de séries e de cardio ----
 {
   const { groupScenarios, cardioScenarios } = await import('../js/logic.js');
-  eq(groupScenarios('Peito', null).map(x => x.n), [7, 10, 14], 'séries sem objetivo: 7, 10 e 14');
-  eq(groupScenarios('Bíceps', null).map(x => x.n), [5, 7, 10], 'grupo pequeno: 5, 7 e 10');
-  eq(groupScenarios('Peito', { goal: 'massa', focus: [] }).map(x => x.n), [8, 12, 17], 'massa: moderado 12');
+  eq(groupScenarios('Peito', null).map(x => x.n), [8, 10, 14], 'séries sem objetivo: 8, 10 e 14');
+  eq(groupScenarios('Bíceps', null).map(x => x.n), [6, 8, 11], 'grupo pequeno: 3/4');
+  eq(groupScenarios('Peito', { goal: 'massa', focus: [] }).map(x => x.n), [10, 14, 20], 'hipertrofia: 10, 14 e 20 (faixa de 12 a 20 da literatura)');
+  eq(groupScenarios('Peito', { goal: 'massa', focus: ['Peito'] }).map(x => x.n), [14, 18, 22], 'peito priorizado na hipertrofia: 14, 18 e 22');
+  eq(cardioScenarios({ goal: 'emagrecer', focus: [] })[1].n, 225, 'cardio segue o objetivo (emagrecer: 225 min)');
   eq(cardioScenarios(null).map(x => x.n), [90, 150, 300], 'cardio: 90, 150 (OMS) e 300');
 }
 

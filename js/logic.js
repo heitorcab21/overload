@@ -330,12 +330,22 @@ export function routineGroupSets() {
  * Planos por objetivo: séries por semana em cada grupo (base e priorizados), crescimento da meta de carga
  * do mês e minutos de cardio por semana. Grupos pequenos (braços, panturrilhas, abdômen) recebem 3/4.
  */
+/**
+ * Séries efetivas por semana para cada grupamento grande, por objetivo: [conservador, moderado, difícil].
+ * Base científica: ≥10 séries/semana geram mais hipertrofia que <5 (Schoenfeld, Ogborn e Krieger, 2017); para
+ * quem já treina, 12 a 20 séries por músculo (Baz-Valle e cols., 2022); o ganho segue subindo com o volume, mas
+ * com retornos decrescentes, e a força satura antes da hipertrofia (meta-regressões de Pelland e cols., 2024).
+ * Marcos práticos (volume mínimo efetivo, faixa adaptativa e máximo recuperável, como os de Israetel) para peito/costas:
+ * ~8, 12–20 e ~22. Grupos priorizados usam a segunda linha. Grupos pequenos (bíceps, tríceps, panturrilha, abdômen)
+ * já recebem volume indireto dos compostos: 3/4 do valor.
+ */
 export const GOAL_PLANS = {
-  massa: { base: 12, focus: 18, growth: 1.05, cardio: 90 },
-  forca: { base: 8, focus: 12, growth: 1.05, cardio: 60 },
-  emagrecer: { base: 10, focus: 14, growth: 1, cardio: 225 },
-  saude: { base: 8, focus: 10, growth: 1.025, cardio: 150 },
+  massa: { vol: [10, 14, 20], focusVol: [14, 18, 22], base: 14, focus: 18, growth: 1.05, cardio: 90 },
+  forca: { vol: [8, 10, 14], focusVol: [10, 14, 18], base: 10, focus: 14, growth: 1.05, cardio: 60 },
+  emagrecer: { vol: [8, 10, 14], focusVol: [10, 14, 18], base: 10, focus: 14, growth: 1, cardio: 225 },
+  saude: { vol: [6, 10, 12], focusVol: [8, 12, 14], base: 10, focus: 12, growth: 1.025, cardio: 150 },
 };
+const NO_GOAL_VOL = [8, 10, 14];
 /** Opções de prioridade e os grupamentos que cada uma inclui. */
 export const FOCUS_GROUPS = {
   Peito: ['Peito'], Costas: ['Costas'], Ombros: ['Ombros'], 'Braços': ['Bíceps', 'Tríceps'],
@@ -347,7 +357,7 @@ export function intentWeekSets(group, it = state.intent) {
   const plan = it && GOAL_PLANS[it.goal];
   if (!plan) return null;
   const focus = (it.focus || []).flatMap(f => FOCUS_GROUPS[f] || []).includes(group);
-  const n = focus ? plan.focus : plan.base;
+  const n = (focus ? plan.focusVol : plan.vol)[1];
   return Math.round(SMALL_GROUPS.includes(group) ? n * 0.75 : n);
 }
 
@@ -356,16 +366,17 @@ export function intentWeekSets(group, it = state.intent) {
  * Moderado = o do objetivo (ou 10, 7 nos grupos pequenos). Acima de ~20 séries o ganho extra é pequeno.
  */
 export function groupScenarios(group, it = state.intent) {
+  const plan = it && GOAL_PLANS[it.goal];
+  const focus = plan && (it.focus || []).flatMap(f => FOCUS_GROUPS[f] || []).includes(group);
+  const vol = plan ? (focus ? plan.focusVol : plan.vol) : NO_GOAL_VOL;
   const small = SMALL_GROUPS.includes(group);
-  const mod = intentWeekSets(group, it) ?? (small ? 7 : 10);
-  const cons = Math.min(mod - 1, Math.max(small ? 4 : 6, Math.round(mod * 0.7)));
-  const hard = Math.max(mod + 2, Math.min(small ? 16 : 22, Math.round(mod * 1.4)));
-  return [{ key: 'conservador', n: cons }, { key: 'moderado', n: mod }, { key: 'dificil', n: hard }];
+  const n = vol.map(v => Math.max(4, Math.round(small ? v * 0.75 : v)));
+  return [{ key: 'conservador', n: n[0] }, { key: 'moderado', n: n[1] }, { key: 'dificil', n: n[2] }];
 }
 
 /** Três metas de cardio por semana, em minutos, a partir do objetivo (ou dos 150 da OMS). */
 export function cardioScenarios(it = state.intent) {
-  const mod = (it && GOAL_PLANS[it.goal]?.[3]) || 150;
+  const mod = (it && GOAL_PLANS[it.goal]?.cardio) || 150;
   const r15 = x => Math.round(x / 15) * 15;
   return [{ key: 'conservador', n: Math.max(60, r15(mod * 0.6)) }, { key: 'moderado', n: mod }, { key: 'dificil', n: Math.min(420, Math.max(300, r15(mod * 1.4))) }];
 }
@@ -387,8 +398,8 @@ export function defaultGroupGoals(now = new Date()) {
   for (const g of Object.keys(per)) {
     const cur = state.goals.groups[g];
     if (cur && cur.auto === false) continue;
-    // ciência: a partir de ~10 séries duras por semana o ganho é bem maior
-    const n = SMALL_GROUPS.includes(g) ? 7 : 10;
+    // sem objetivo: o moderado geral (10 séries; 3/4 nos grupos pequenos)
+    const n = Math.round(SMALL_GROUPS.includes(g) ? NO_GOAL_VOL[1] * 0.75 : NO_GOAL_VOL[1]);
     state.goals.groups[g] = { week: n, month: Math.round(n * daysInMonth(now) / 7), auto: true };
   }
   for (const [g, cur] of Object.entries(state.goals.groups)) {

@@ -54,7 +54,7 @@ document.addEventListener('submit', ev => {
 });
 
 // uma vez: metas de séries pela ciência / pelo objetivo (antes eram a cópia da ficha)
-if (state.onboarded && !state.settings.goalsV2) { defaultGroupGoals(); state.settings.goalsV2 = true; save(); }
+if (state.onboarded && !state.settings.goalsV3) { defaultGroupGoals(); state.settings.goalsV2 = state.settings.goalsV3 = true; save(); }
 initInstall();
 applyTheme();
 applyLang();
