@@ -6,6 +6,7 @@ import { state, save, onSave, exportData, applyRemote, mergeRemote, resetAll } f
 import { GOOGLE_CLIENT_ID } from './config.js';
 import { rerender } from './router.js';
 import { t } from './i18n.js';
+import { applyRepRanges } from './data.js';
 
 const SCOPE = 'https://www.googleapis.com/auth/drive.file';
 const FILE = 'overload-dados.json';
@@ -201,6 +202,8 @@ async function doSync() {
     state.sync.needLogin = false;
     state.sync.error = null;
     save({ touch: false });
+    // dados do Drive vindos de outra versão: põe a faixa de reps do objetivo (o resultado sobe no próximo envio)
+    if (changed && applyRepRanges()) save();
     if (changed) rerender();
     return true;
   } catch (e) {

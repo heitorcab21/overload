@@ -1488,6 +1488,7 @@ const help = [
     <p class="tip">La primera vez el navegador pide permiso para el micrófono. En Android, el reconocimiento de voz necesita internet. Si la voz no funciona, escribe la misma frase en el campo de abajo.</p>`],
   ['Cómo se sugiere la carga', 'La lógica de la progresión', `
     <p>La app usa la <b>doble progresión</b>: cada ejercicio tiene un rango de repeticiones (por ejemplo, 8 a 12).</p>
+    <p>El rango sigue tu objetivo, siempre hasta 12 reps: para músculo, entre 6 y 30 reps se crece parecido cerca del fallo, así que pasar de 12 solo aligera la carga. En <b>fuerza</b>, los compuestos quedan en 8 a 10; en músculo, 6 a 10 en los de barra y 8 a 12 en los demás; para adelgazar y salud, 8 a 12 y 10 a 12. Si cambias el rango de un ejercicio a mano, queda como lo dejaste.</p>
     <ol class="steps">
       <li>Con la misma carga, sumas <b>1 repetición a la vez</b>, empezando por la serie más débil.</li>
       <li>Cuando llegas al <b>tope del rango en todas las series</b>, la app sube la carga según el incremento del ejercicio y vuelve al inicio del rango.</li>

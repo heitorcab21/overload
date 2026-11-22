@@ -1,6 +1,7 @@
 // Ponto de entrada: liga as telas, os eventos globais e o modo offline.
 import { state, save } from './store.js';
 import { defaultGroupGoals } from './logic.js';
+import { applyRepRanges } from './data.js';
 import { $, $$, icon, actions, changes, submits, closeSheet } from './ui.js';
 import { rerender } from './router.js';
 import './views/home.js';
@@ -54,6 +55,8 @@ document.addEventListener('submit', ev => {
 });
 
 // uma vez: metas de séries pela ciência / pelo objetivo (antes eram a cópia da ficha)
+// faixa de reps pelo objetivo (exercícios que seguem a faixa automática)
+if (applyRepRanges()) save();
 if (state.onboarded && !state.settings.goalsV3) { defaultGroupGoals(); state.settings.goalsV2 = state.settings.goalsV3 = true; save(); }
 initInstall();
 applyTheme();

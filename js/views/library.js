@@ -360,6 +360,7 @@ submits.saveExercise = form => {
   let ex = state.exercises[form.dataset.id];
   // nome de exercício da biblioteca não mudou: mantém o original (assim ele segue o idioma escolhido)
   if (ex && name === exName(ex)) data.name = ex.name;
+  if (ex && (data.repMin !== ex.repMin || data.repMax !== ex.repMax)) data.repAuto = false; // faixa escolhida à mão: o objetivo não muda mais
   if (ex) Object.assign(ex, data);
   else {
     ex = { id: uid(), ...data };

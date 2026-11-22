@@ -91,6 +91,7 @@ const TOPICS = [
 
   ['Como a carga é sugerida', 'A lógica da progressão', `
     <p>O app usa a <b>dupla progressão</b>: cada exercício tem uma faixa de repetições (por exemplo, 8 a 12).</p>
+    <p>A faixa segue o seu objetivo, sempre até 12 reps: para massa, entre 6 e 30 reps o músculo cresce parecido perto da falha, então passar de 12 só deixa a carga mais leve. Em <b>força</b>, os compostos ficam em 8 a 10; em massa, 6 a 10 nos com barra e 8 a 12 nos demais; para emagrecer e saúde, 8 a 12 e 10 a 12. Se você mudar a faixa de um exercício à mão, ela fica como você deixou.</p>
     <ol class="steps">
       <li>Com a mesma carga, você ganha <b>1 repetição por vez</b>, começando pela série mais fraca.</li>
       <li>Quando bate o <b>topo da faixa em todas as séries</b>, o app sobe a carga pelo valor de aumento do exercício e volta para o início da faixa.</li>

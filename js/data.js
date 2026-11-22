@@ -528,6 +528,58 @@ const LOAD_OF = {
 };
 export const LOAD_TYPE = Object.fromEntries(Object.entries(LOAD_OF).flatMap(([k, ids]) => ids.map(id => [id, k])));
 
+// ---------- Faixa de repetições por objetivo ----------
+// Hipertrofia: o músculo cresce de forma parecida entre ~6 e 30 reps quando a série vai perto da falha
+// (Schoenfeld e cols., 2017 e 2021). Passar de 12 não rende mais músculo, só deixa a carga mais leve e a série
+// mais longa; por isso o teto é 12. Força: cargas mais pesadas rendem mais (mesmas revisões); os compostos ficam
+// em 8–10 (~75–80% do 1RM), forte o bastante para força sem descer a 6. Peso corporal mantém a faixa própria
+// (ali só as reps sobem). Os 4 tipos: compostos com barra, outros compostos, isoladores e isoladores pequenos.
+const REP_KIND = {
+  barra: ['supino-reto', 'supino-inclinado-barra', 'supino-declinado', 'supino-fechado', 'remada-curvada', 'desenvolvimento-barra',
+    'agachamento-livre', 'levantamento-terra', 'terra-sumo', 'stiff', 'bom-dia'],
+  comp: ['supino-inclinado-halteres', 'supino-reto-halteres', 'supino-maquina', 'supino-smith', 'puxada-frente', 'puxada-supinada',
+    'puxada-triangulo', 'remada-baixa', 'remada-unilateral', 'remada-halteres', 'remada-cavalinho', 'remada-maquina',
+    'desenvolvimento-halteres', 'desenvolvimento-maquina', 'desenvolvimento-arnold', 'leg-press', 'leg-press-horizontal', 'hack',
+    'agachamento-smith', 'agachamento-goblet', 'agachamento-bulgaro', 'afundo', 'afundo-caminhando', 'agachamento-sumo',
+    'subida-banco', 'elevacao-pelvica', 'ponte-gluteo', 'paralelas-maquina'],
+  small: ['elevacao-lateral', 'elevacao-lateral-polia', 'elevacao-frontal', 'crucifixo-inverso', 'crucifixo-inverso-maquina', 'face-pull',
+    'panturrilha-em-pe', 'panturrilha-sentado', 'panturrilha-leg-press', 'panturrilha-smith', 'abdominal-polia', 'abdominal-maquina',
+    'cadeira-abdutora', 'cadeira-adutora', 'aducao-polia', 'encolhimento', 'encolhimento-barra'],
+};
+const KIND_OF = Object.fromEntries(Object.entries(REP_KIND).flatMap(([k, ids]) => ids.map(id => [id, k])));
+export const REP_RANGES = {
+  forca: { barra: [8, 10], comp: [8, 10], iso: [8, 12], small: [10, 12] },
+  massa: { barra: [6, 10], comp: [8, 12], iso: [8, 12], small: [10, 12] },
+  emagrecer: { barra: [8, 12], comp: [10, 12], iso: [10, 12], small: [10, 12] },
+  saude: { barra: [8, 12], comp: [10, 12], iso: [10, 12], small: [10, 12] },
+};
+/** Faixa de reps [mín, máx] de um exercício da biblioteca para o objetivo (sem objetivo: a de massa). Null no peso corporal. */
+export function repRange(libId, goal = state.intent?.goal) {
+  const l = LIB_BY_ID[libId];
+  if (!l || l.bw || LOAD_TYPE[libId] === 'bw') return null;
+  return (REP_RANGES[goal] || REP_RANGES.massa)[KIND_OF[libId] || 'iso'];
+}
+/**
+ * Põe nos exercícios da pessoa a faixa do objetivo. Só mexe nos que seguem a faixa automática: os que ainda estão
+ * na faixa original da biblioteca ou que o app já ajustou antes. Faixa mudada à mão fica como está.
+ * Devolve quantos exercícios mudaram.
+ */
+export function applyRepRanges(goal = state.intent?.goal) {
+  let n = 0;
+  for (const ex of Object.values(state.exercises)) {
+    const id = ex.lib || ex.base;
+    const l = LIB_BY_ID[id];
+    const r = l && repRange(id, goal);
+    if (!r || ex.repAuto === false) continue;
+    if (ex.repAuto !== true) {
+      if (ex.repMin !== l.repMin || ex.repMax !== l.repMax) { ex.repAuto = false; n++; continue; }
+      ex.repAuto = true; n++;
+    }
+    if (ex.repMin !== r[0] || ex.repMax !== r[1]) { ex.repMin = r[0]; ex.repMax = r[1]; n++; }
+  }
+  return n;
+}
+
 /** Passos de aumento antigos (antes da carga total), para atualizar quem já tinha o exercício. */
 export const OLD_STEP = {
   'supino-inclinado-halteres': 2, 'supino-reto-halteres': 2, 'desenvolvimento-halteres': 2, 'elevacao-lateral': 1,
@@ -692,9 +744,10 @@ export function ensureExercise(libId) {
   if (state.exercises[libId]) return state.exercises[libId];
   const l = LIB_BY_ID[libId];
   if (!l) return null;
+  const r = repRange(libId);
   state.exercises[libId] = {
     id: libId, lib: libId, name: l.name, group: l.group,
-    sets: l.sets, repMin: l.repMin, repMax: l.repMax, step: l.step, bw: !!l.bw,
+    sets: l.sets, repMin: r ? r[0] : l.repMin, repMax: r ? r[1] : l.repMax, step: l.step, bw: !!l.bw, ...(r ? { repAuto: true } : {}),
   };
   return state.exercises[libId];
 }

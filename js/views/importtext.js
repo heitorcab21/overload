@@ -3,7 +3,7 @@ import { askNotifyOnce } from './workout.js';
 import { state, save, uid } from '../store.js';
 import { $, esc, fmt, icon, actions, changes, toast } from '../ui.js';
 import { route, go, rerender } from '../router.js';
-import { GROUPS, LIB, LIB_BY_ID, tg, exName, ensureExercise } from '../data.js';
+import { repRange, GROUPS, LIB, LIB_BY_ID, tg, exName, ensureExercise } from '../data.js';
 import { t, tn, exPack } from '../i18n.js';
 import { parseWorkoutText, matchExercise, setsOfLine } from '../textimport.js';
 import { aiEnabled, aiParseWorkoutText } from '../ai.js';
@@ -169,10 +169,11 @@ actions.impSave = () => {
         ex = created[key] || Object.values(state.exercises).find(e => !e.lib && e.name.toLowerCase() === name.toLowerCase() && e.group === group);
         if (!ex) {
           const reps = it.sets.map(x => x.r);
-          const repMin = base ? base.repMin : Math.max(1, Math.min(...reps));
-          const repMax = base ? base.repMax : Math.max(repMin, Math.max(...reps));
+          const rr = base && repRange(base.id);
+          const repMin = rr ? rr[0] : base ? base.repMin : Math.max(1, Math.min(...reps));
+          const repMax = rr ? rr[1] : base ? base.repMax : Math.max(repMin, Math.max(...reps));
           ex = { id: uid(), name, group, sets: base ? base.sets : Math.min(6, it.sets.length), repMin, repMax,
-            step: base ? base.step : 2.5, bw: base ? !!base.bw : it.sets.every(x => !x.w), ...(base ? { base: base.id } : {}) };
+            step: base ? base.step : 2.5, bw: base ? !!base.bw : it.sets.every(x => !x.w), ...(base ? { base: base.id } : {}), ...(rr ? { repAuto: true } : {}) };
           state.exercises[ex.id] = ex;
         }
         created[key] = ex;

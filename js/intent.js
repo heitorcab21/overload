@@ -2,6 +2,7 @@
 // séries por grupo, meta de cardio e treinos por semana. As metas de carga a pessoa escolhe em 3 cenários.
 import { state } from './store.js';
 import { defaultGroupGoals, GOAL_PLANS, sessionsIn, weekStart, addDays } from './logic.js';
+import { applyRepRanges } from './data.js';
 
 export const GOAL_IDS = ['massa', 'forca', 'emagrecer', 'saude'];
 export const intent = () => (state.intent && GOAL_PLANS[state.intent.goal] ? state.intent : null);
@@ -10,6 +11,7 @@ export const intent = () => (state.intent && GOAL_PLANS[state.intent.goal] ? sta
 export function saveIntent({ goal, focus = [], days = 3 }, now = new Date()) {
   state.intent = { goal, focus: [...new Set(focus)], days: Math.max(1, Math.min(7, Math.round(days))), set: now.toISOString() };
   state.cardioGoal = GOAL_PLANS[goal].cardio;
+  applyRepRanges(goal); // faixa de reps do objetivo (as mudadas à mão ficam)
   defaultGroupGoals(now);
 }
 

@@ -1488,6 +1488,7 @@ const help = [
     <p class="tip">The first time, the browser asks for microphone permission. On Android, speech recognition needs internet. If voice doesn't work, type the same phrase in the field below.</p>`],
   ['How the load is suggested', 'The progression logic', `
     <p>The app uses <b>double progression</b>: each exercise has a rep range (for example, 8 to 12).</p>
+    <p>The range follows your goal, always up to 12 reps: for muscle, growth is similar anywhere from 6 to 30 reps near failure, so going past 12 only makes the load lighter. For <b>strength</b>, compound lifts sit at 8 to 10; for muscle, 6 to 10 on barbell lifts and 8 to 12 on the rest; for fat loss and health, 8 to 12 and 10 to 12. If you change an exercise's range by hand, it stays as you set it.</p>
     <ol class="steps">
       <li>With the same load, you add <b>1 rep at a time</b>, starting with the weakest set.</li>
       <li>When you hit the <b>top of the range on every set</b>, the app raises the load by the exercise's increment and goes back to the bottom of the range.</li>

@@ -257,6 +257,25 @@ eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [10, { week: 10, 
   eq(cardioScenarios(null).map(x => x.n), [90, 150, 300], 'cardio: 90, 150 (OMS) e 300');
 }
 
+// ---- faixa de reps pelo objetivo ----
+{
+  const { repRange, applyRepRanges } = await import('../js/data.js');
+  eq([repRange('supino-reto', 'forca'), repRange('leg-press', 'forca'), repRange('rosca-direta', 'forca'), repRange('elevacao-lateral', 'forca')],
+    [[8, 10], [8, 10], [8, 12], [10, 12]], 'força: compostos 8–10, isoladores 8–12, pequenos 10–12');
+  eq([repRange('supino-reto', 'massa'), repRange('cadeira-extensora', 'massa'), repRange('supino-reto', 'saude')], [[6, 10], [8, 12], [8, 12]], 'massa e saúde');
+  eq(repRange('flexao', 'forca'), null, 'peso corporal mantém a faixa própria');
+  const keep = state.exercises;
+  state.exercises = {
+    a: { id: 'a', lib: 'cadeira-extensora', group: 'Quadríceps', sets: 3, repMin: 10, repMax: 15, step: 5 },
+    b: { id: 'b', lib: 'triceps-corda', group: 'Tríceps', sets: 3, repMin: 6, repMax: 8, step: 2.5 },
+  };
+  applyRepRanges('forca');
+  eq([state.exercises.a.repMin, state.exercises.a.repMax, state.exercises.b.repMin, state.exercises.b.repMax], [8, 12, 6, 8], 'só muda quem está na faixa padrão; a escolhida à mão fica');
+  applyRepRanges('emagrecer');
+  eq([state.exercises.a.repMin, state.exercises.a.repMax], [10, 12], 'trocar o objetivo refaz a faixa automática');
+  state.exercises = keep;
+}
+
 // ---- contagem fracionada por músculo ----
 {
   const { muscleShares } = await import('../js/shares.js');
