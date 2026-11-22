@@ -359,6 +359,7 @@ actions.aiWeek = async el => {
 };
 
 // ---------- Resumo do treino ----------
+const shownAdjust = new Set();
 
 function renderSummary(id) {
   const s = state.sessions.find(x => x.id === id);
@@ -372,6 +373,26 @@ function renderSummary(id) {
     const st = ex && exGoalStatus(ex);
     if (st && !st.expired && st.monthDone) hit.push(t('{ex}: meta de 30 dias batida', { ex: exName(ex) }));
     else if (st && !st.expired && st.weekDone) hit.push(t('{ex}: meta da semana batida', { ex: exName(ex) }));
+  }
+  // dupla progressão automática: o que o app já ajustou para o próximo treino de cada exercício
+  const KIND = {
+    up: [t('carga sobe'), 'good'], reps: [t('+ reps'), 'up'], goal: [t('rumo à meta'), 'up'],
+    hold: [t('repete'), ''], down: [t('carga desce'), 'warn'],
+  };
+  const adj = s.entries.filter(e => !e.skipped && e.sets.length && state.exercises[e.exId]).map(e => {
+    const ex = state.exercises[e.exId];
+    const p = planFor(ex);
+    if (!p || p.first) return null;
+    const load = p.w > 0 ? `${kg(p.w)} × ${p.reps.join(' · ')}` : `${p.reps.join(' · ')} reps`;
+    return { ex, p, load, kind: KIND[p.kind] || ['', ''] };
+  }).filter(Boolean);
+  const ups = adj.filter(a => a.p.kind === 'up').length;
+  // aviso uma vez por treino: bateu o topo da faixa (ou a meta) e o app já subiu as cargas
+  if ((ups || hit.length) && !shownAdjust.has(s.id)) {
+    shownAdjust.add(s.id);
+    setTimeout(() => toast(ups
+      ? tn(ups, 'Você bateu a meta em 1 exercício: o app já subiu a carga e ajustou as repetições do próximo treino.', 'Você bateu a meta em {n} exercícios: o app já subiu as cargas e ajustou as repetições do próximo treino.')
+      : t('Meta batida! O app já ajustou cargas e repetições do próximo treino.'), 6000), 400);
   }
   $('#view').innerHTML = `
     <div class="hero"><h1>${t('Treino concluído')}</h1><p class="muted">${esc(routineName(s))} · ${fmtDate(s.date)}</p>
@@ -387,6 +408,10 @@ function renderSummary(id) {
       ${prs.length ? `<div class="card"><h3>${t('Novos recordes')}</h3>
         ${prs.map(p => `<div class="plan-line"><span class="n">${esc(exName(state.exercises[p.exId]))}</span>
           <span class="badge up">${icon.trophy}${setStr(p.set)}</span></div>`).join('')}</div>` : ''}
+      ${adj.length ? `<div class="card stack next-adj"><h3>${icon.sync}${t('Próximo treino: o app já ajustou')}</h3>
+        <p class="small muted">${t('Pela dupla progressão: mais repetições com a mesma carga até o topo da faixa; aí a carga sobe e as reps recomeçam.')}</p>
+        ${adj.map(a => `<div class="adj-row"><div class="row between"><b class="grow">${esc(exName(a.ex))}</b>${a.kind[0] ? `<span class="badge ${a.kind[1]}">${esc(a.kind[0])}</span>` : ''}</div>
+          <span class="num adj-load">${esc(a.load)}</span>${a.p.note ? `<span class="small muted">${esc(a.p.note)}</span>` : ''}</div>`).join('')}</div>` : ''}
       ${hit.length ? `<div class="card"><h3>${t('Metas')}</h3>
         ${hit.map(h => `<div class="plan-line"><span class="n">${esc(h)}</span><span class="badge good">${icon.check}ok</span></div>`).join('')}</div>` : ''}
       ${(state.cardio || []).some(c => c.sessionId === s.id) ? `<div class="card"><h3>${t('Cardio')}</h3>

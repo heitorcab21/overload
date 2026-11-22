@@ -1022,3 +1022,9 @@ body.has-install .w-top { padding-right: 52px; }
 .w-top .w-discard:hover { color: var(--crit); }
 .r-info.r-tap { background: #0b0b0b; color: #fff; padding: 10px 14px; border-radius: 14px; margin-top: 4px; } /* fundo preto: dá ainda mais destaque à dica */
 .msg.slow-note { display: grid; gap: 8px; justify-items: start; }
+/* resumo: ajustes automáticos para o próximo treino */
+.next-adj h3 { display: flex; align-items: center; gap: 6px; }
+.next-adj h3 .ic { width: 16px; height: 16px; color: var(--accent); }
+.adj-row { display: grid; gap: 2px; padding: 8px 0; border-top: 1px solid var(--line); }
+.adj-row:first-of-type { border-top: 0; }
+.adj-load { font-weight: 700; color: var(--accent); }
