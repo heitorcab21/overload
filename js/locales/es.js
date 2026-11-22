@@ -1398,6 +1398,7 @@ const ui = {
   "Meta batida! O app já ajustou cargas e repetições do próximo treino.": "¡Meta cumplida! La app ya ajustó cargas y repeticiones del próximo entreno.",
   "Próximo treino: o app já ajustou": "Próximo entreno: la app ya ajustó",
   "Pela dupla progressão: mais repetições com a mesma carga até o topo da faixa; aí a carga sobe e as reps recomeçam.": "Doble progresión: más repeticiones con la misma carga hasta el tope del rango; luego la carga sube y las reps vuelven a empezar.",
+  "Você fez {n} reps em todas as séries: suba para {w} kg × {r}, o mesmo nível de força com mais carga.": "Hiciste {n} reps en todas las series: sube a {w} kg × {r}, el mismo nivel de fuerza con más carga.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };

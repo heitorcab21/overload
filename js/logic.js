@@ -126,8 +126,14 @@ function basePlan(ex) {
     if (ex.step > 0) {
       // em libras sobe um degrau de libra (135 -> 140 lb), sem cair em pesos quebrados
       const w2 = imperial() ? fromW(toW(w) + toStep(ex.step)) : w + ex.step;
-      return out(w2, Array(n).fill(ex.repMin),
-        ul(tr('Você fez {n} reps em todas as séries: hora de subir para {w} kg.', { n: ex.repMax, w: toW(w2).toLocaleString(locale()) })), 'up');
+      // recomeço inteligente: com a carga nova, as reps saem da força que você mostrou (série mais fraca),
+      // e não do início da faixa. Ex.: 80 kg × 10 ≈ 1RM 107 kg → 82,5 kg × 8, e não × 6.
+      // Fica pelo menos 1 rep abaixo do topo, para a progressão continuar existindo.
+      const E = e1rm(w, Math.min(...lr));
+      const fitR = Math.floor(30 * (E / w2 - 1) + 1e-9);
+      const r = Math.max(ex.repMin, Math.min(Math.max(ex.repMin, ex.repMax - 1), fitR));
+      return out(w2, Array(n).fill(r),
+        ul(tr('Você fez {n} reps em todas as séries: suba para {w} kg × {r}, o mesmo nível de força com mais carga.', { n: ex.repMax, w: toW(w2).toLocaleString(locale()), r })), 'up');
     }
     return out(w, lr.map(r => r + 1), tr('Topo da faixa em todas as séries: tente mais uma rep ou adicione carga.'), 'up');
   }

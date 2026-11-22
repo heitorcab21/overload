@@ -62,7 +62,7 @@ state.sessions = [sess(2, [{ w: 40, r: 12 }, { w: 40, r: 10 }, { w: 40, r: 8 }])
 eq([planFor(ex).w, planFor(ex).reps], [40, [12, 10, 9]], '+1 rep na série mais fraca');
 
 state.sessions = [sess(2, [{ w: 40, r: 12 }, { w: 40, r: 12 }, { w: 40, r: 12 }])];
-eq([planFor(ex).w, planFor(ex).reps, planFor(ex).kind], [42.5, [8, 8, 8], 'up'], 'sobe a carga no topo da faixa');
+eq([planFor(ex).w, planFor(ex).reps, planFor(ex).kind], [42.5, [9, 9, 9], 'up'], 'sobe a carga no topo da faixa com recomeço inteligente: 40 × 12 ≈ 1RM 56 → 42,5 × 9 (não volta para 8)');
 
 // ---- sistema imperial: guarda em kg, mostra em lb e sobe em degraus de libra ----
 {
@@ -75,7 +75,7 @@ eq([planFor(ex).w, planFor(ex).reps, planFor(ex).kind], [42.5, [8, 8, 8], 'up'],
   eq([U.heightStr(181), U.toLen(80), U.toDist(5), U.toSpeed(10)], ['5\'11"', 31.5, 3.11, 6.2], 'altura, medidas, distância e velocidade');
   state.sessions = [sess(2, [{ w: lb(135), r: 12 }, { w: lb(135), r: 12 }, { w: lb(135), r: 12 }])];
   eq(U.toW(planFor(ex).w), 140, 'imperial: 135 lb no topo da faixa sobe para 140 lb, não para 140,5');
-  eq(planFor(ex).note, 'Você fez 12 reps em todas as séries: hora de subir para 140 lb.', 'aviso de subida em lb');
+  eq(planFor(ex).note, 'Você fez 12 reps em todas as séries: suba para 140 lb × 10, o mesmo nível de força com mais carga.', 'aviso de subida em lb');
   eq(setsOfLine('135 lb x 10').map(s => U.toW(s.w)), [135], 'texto em libras vira kg');
   eq(setsOfLine('3x10 com 95').map(s => U.toW(s.w)), [95, 95, 95], 'imperial: número sem unidade é libra');
   eq(U.toW(parseSet('135 lb x 10').w), 135, 'planilha em libras');
