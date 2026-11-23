@@ -1488,6 +1488,20 @@ const ui = {
   "+{x} {u} por lado que as anilhas comuns não fecham": "+{x} {u} por lado que los discos comunes no completan",
   "Qual barra?": "¿Qué barra?",
   "Fica salva para este exercício. A carga anotada continua sendo a total (barra + anilhas).": "Queda guardada para este ejercicio. La carga anotada sigue siendo la total (barra + discos).",
+  "Cintura": "Cintura",
+  "Quadril": "Cadera",
+  "Braço": "Brazo",
+  "Coxa": "Muslo",
+  "Pescoço": "Cuello",
+  "Medidas": "Medidas",
+  "Opcional: braço, peito, coxa e outras, com fita métrica, a cada 2 a 4 semanas. Mostra se o braço cresce enquanto a cintura fica.": "Opcional: brazo, pecho, muslo y otras, con cinta métrica, cada 2 a 4 semanas. Muestra si el brazo crece mientras la cintura se mantiene.",
+  "{d} {u} desde {data}": "{d} {u} desde {data}",
+  "Anotada em {data}. Meça de novo daqui a algumas semanas para ver a evolução.": "Anotada el {data}. Vuelve a medir en unas semanas para ver la evolución.",
+  "Deixe em branco o que não mediu hoje. Em cinza, a última medida.": "Deja en blanco lo que no mediste hoy. En gris, la última medida.",
+  "Fita sem apertar, de preferência de manhã. Braço: contraído, na parte mais grossa. Peito: na altura dos mamilos, depois de soltar o ar. Coxa: no meio, em pé. Panturrilha: na parte mais grossa. Cintura: na altura do umbigo.": "Cinta sin apretar, de preferencia por la mañana. Brazo: contraído, en la parte más gruesa. Pecho: a la altura de los pezones, después de soltar el aire. Muslo: en el medio, de pie. Pantorrilla: en la parte más gruesa. Cintura: a la altura del ombligo.",
+  "Confira: {x}.": "Revisa: {x}.",
+  "Preencha pelo menos uma medida.": "Completa al menos una medida.",
+  "Medidas salvas.": "Medidas guardadas.",
   'Arquivo de backup inválido.': `Archivo de copia no válido.`,
   'O arquivo do Google Drive está corrompido.': `El archivo de Google Drive está dañado.`,
 };
@@ -1609,6 +1623,7 @@ const help = [
       <li><b>Masa magra y masa grasa</b> son el foco. El <b>IMC</b> aparece solo como número: no separa músculo de grasa.</li>
       <li><b>Grasa estimada</b>: con cintura y cuello (y cadera, en mujeres), la app usa la fórmula de la Marina de EE. UU. (error de unos 3 a 4 puntos). Sin esas medidas, usa IMC, edad y sexo (unos 5 puntos) y descuenta hasta 4 puntos si eres fuerte para tu peso.</li>
       <li><b>Peso corporal</b>: el gráfico está justo debajo de los valores. Un registro por día.</li>
+      <li><b>Medidas</b> (opcionales): en <b>Anotar</b>, cintura, cadera, pecho, brazo, muslo, pantorrilla y cuello, con cinta. Deja en blanco lo que no mediste. Toca una medida para ver su gráfico. Cintura, cuello y cadera también mejoran la estimación de grasa.</li>
       <li><b>Nivel de fuerza</b>: un <b>radar</b> con los 6 patrones de movimiento (empuje y tracción horizontal y vertical, sentadilla y bisagra de cadera). A la izquierda la parte delantera del cuerpo y a la derecha la trasera: la forma muestra desequilibrios. Toca un eje para ver el ejercicio y tu top. Es tu <b>nivel de entreno</b>: sale de tus series de los últimos 60 días (series iguales cuentan como reserva) y te compara con adultos del mismo sexo, edad y peso, según las normas del Cooper Institute usadas por el ACSM. Top 10% = más fuerte que el 90% de ellos.</li>
       <li>Toca la tarjeta para ver cada ejercicio, agrupado por patrón de movimiento, y <b>Consultar cualquier ejercicio</b> para ver el top al instante, sin guardar. Cuentan los ejercicios compuestos de cada patrón, incluso máquinas, poleas y flexiones, cada uno comparado con su propia tabla de Strength Level (millones de levantamientos registrados); los aislados (extensiones, aperturas, tríceps, pantorrillas, abdomen) también tienen nivel, pero quedan fuera del radar.</li>
       <li><b>Fuerza máxima (1RM)</b>: aparece aparte en la pantalla de cada ejercicio. Sale de tu mejor serie de los últimos 90 días (o de una <b>prueba de fuerza</b>) y se compara solo con quienes registran entrenos en Strength Level, un público dedicado: por eso su top es más exigente.</li>

@@ -39,6 +39,7 @@ Funciona no navegador do celular, pode ser instalado na tela inicial e roda sem 
 - **Nível de força** por exercício com as tabelas da Strength Level (89 exercícios), e **radar** com 6 padrões de movimento. O nível de treino compara com adultos em geral (normas do Cooper Institute, referência do ACSM) e a força máxima (1RM) com quem treina.
 - Toque numa fatia do radar para ver a carga que leva ao top % que você quiser.
 - **Composição corporal** (fórmula da Marinha americana ou pelo IMC, ajustada pela força) e gráfico do peso.
+- **Medidas com fita** (opcionais): cintura, quadril, peito, braço, coxa, panturrilha e pescoço, com histórico e gráfico de cada uma.
 
 **Treinos e biblioteca**
 - **98 exercícios** com fotos do início e do fim do movimento, passo a passo, erros comuns e uma dica.
@@ -125,6 +126,7 @@ O servidor abre em `http://localhost:5173`. Em localhost o service worker fica d
 | `js/logic.js` | Progressão de carga, séries efetivas, metas e estatísticas |
 | `js/shares.js` | Quanto cada série conta para cada músculo nos compostos |
 | `js/plates.js` | Calculadora de anilhas |
+| `js/measures.js` | Medidas do corpo com fita e histórico |
 | `js/duration.js` | Tempo estimado do treino, ajustado ao seu ritmo |
 | `js/loads.js` | Tipo de carga de cada exercício (barra, halteres, polia, máquina...) |
 | `js/scenarios.js` | Cenários das metas de carga e veredito da meta própria |

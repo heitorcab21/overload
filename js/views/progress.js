@@ -10,7 +10,8 @@ import {
   weekSeries, sessionsIn, monthStart, monthEnd, monthPRCount, entriesFor, bestOf, e1rm, exGoalStatus, tonnage, workSets, addDays,
 } from '../logic.js';
 import { columnChart, lineChart } from '../charts.js';
-import { imperial, toW, fromW, wUnit, toLen, fromLen, heightStr, ul } from '../units.js';
+import { imperial, toW, fromW, wUnit, toLen, fromLen, lenUnit, heightStr, ul } from '../units.js';
+import { MEASURES, measureOk, addMeasures, measureSeries, lastMeasures } from '../measures.js';
 
 
 // modo do gráfico de cada exercício: métrica (força ou volume) e período (por treino ou por mês)
@@ -158,6 +159,7 @@ function render() {
   }
   progs.forEach(p => p.prog.mount());
   mountWeightChart();
+  mountMeasureChart();
 }
 
 
@@ -497,6 +499,7 @@ function bodyCard() {
     </div>
     <div class="legend small"><span><i class="sw-lean"></i>${t('Massa magra')}</span><span><i class="sw-fat"></i>${t('Massa gorda')}</span></div>
     ${weightBlock(p)}
+    ${measuresBlock()}
     <p class="small muted">${method}</p>
 
     <p class="small muted">${t('Estimativas aproximadas. Não substituem uma avaliação física (bioimpedância, dobras cutâneas ou DEXA).')}</p>
@@ -522,6 +525,74 @@ function mountWeightChart() {
   if (!box || ws.length < 2) return;
   lineChart(box, ws.map(w => ({ label: fmtDate(w.date, false), value: toW(w.kg), tip: `${fmtDate(w.date)} · ${kg(w.kg)}` })), { unit: ` ${wUnit()}` });
 }
+
+// ---------- Medidas com fita ----------
+// Opcionais. Um chip por medida já anotada, com a última; o gráfico mostra a escolhida.
+
+let measSel = null;
+const measName = k => t(MEASURES.find(m => m[0] === k)[1]);
+
+function measuresBlock() {
+  const p = state.profile;
+  const last = lastMeasures(p);
+  const keys = MEASURES.map(m => m[0]).filter(k => last[k]);
+  const head = `<div class="row between"><b>${t('Medidas')}</b><button class="btn sm ghost" data-act="measEdit">${t('Anotar')}</button></div>`;
+  if (!keys.length) {
+    return `<div id="measBlock" class="stack meas-block">${head}
+      <p class="small muted">${t('Opcional: braço, peito, coxa e outras, com fita métrica, a cada 2 a 4 semanas. Mostra se o braço cresce enquanto a cintura fica.')}</p></div>`;
+  }
+  const sel = keys.includes(measSel) ? measSel : (keys.find(k => measureSeries(p, k).length >= 2) || keys[0]);
+  const ser = measureSeries(p, sel).slice(-30);
+  let note;
+  if (ser.length >= 2) {
+    const d = Math.round((toLen(ser.at(-1).cm) - toLen(ser[0].cm)) * 10) / 10;
+    note = t('{d} {u} desde {data}', { d: (d > 0 ? '+' : '') + fmt(d), u: lenUnit(), data: fmtDate(ser[0].date, false) });
+  } else {
+    note = t('Anotada em {data}. Meça de novo daqui a algumas semanas para ver a evolução.', { data: fmtDate(ser[0].date, false) });
+  }
+  return `<div id="measBlock" class="stack meas-block">${head}
+    <div class="chips wrap">${keys.map(k => `<button class="chip${k === sel ? ' on' : ''}" data-act="measPick" data-k="${k}" aria-pressed="${k === sel}">${esc(measName(k))} · ${fmt1(toLen(last[k].cm))}</button>`).join('')}</div>
+    <p class="small muted">${esc(note)}</p>
+    ${ser.length >= 2 ? '<div class="chart" id="msChart"></div>' : ''}
+  </div>`;
+}
+function mountMeasureChart() {
+  const box = $('#msChart');
+  const k = $('#measBlock .chip.on')?.dataset.k;
+  if (!box || !k) return;
+  const ser = measureSeries(state.profile, k).slice(-30);
+  lineChart(box, ser.map(m => ({ label: fmtDate(m.date, false), value: toLen(m.cm), tip: `${fmtDate(m.date)} · ${fmt1(toLen(m.cm))} ${lenUnit()}` })), { unit: ` ${lenUnit()}` });
+}
+actions.measPick = el => {
+  measSel = el.dataset.k;
+  const b = $('#measBlock');
+  if (b) { b.outerHTML = measuresBlock(); mountMeasureChart(); }
+};
+actions.measEdit = () => {
+  const p = state.profile || {};
+  const last = lastMeasures(p);
+  // sem histórico ainda, cintura, pescoço e quadril vêm do perfil
+  const prev = k => last[k]?.cm ?? (['waist', 'neck', 'hip'].includes(k) ? p[k] : null);
+  sheet(`<h2>${t('Medidas')}</h2>
+    <form class="stack" data-submit="measSave">
+      <p class="small muted">${t('Deixe em branco o que não mediu hoje. Em cinza, a última medida.')}</p>
+      <div class="two">${MEASURES.map(([k]) => `<label class="field">${esc(measName(k))} (${lenUnit()})<input type="number" inputmode="decimal" step="any" min="0" name="${k}" placeholder="${prev(k) ? fmt1(toLen(prev(k))) : ''}"></label>`).join('')}</div>
+      <p class="small muted">${t('Fita sem apertar, de preferência de manhã. Braço: contraído, na parte mais grossa. Peito: na altura dos mamilos, depois de soltar o ar. Coxa: no meio, em pé. Panturrilha: na parte mais grossa. Cintura: na altura do umbigo.')}</p>
+      <button class="btn primary big">${t('Salvar')}</button>
+    </form>`);
+};
+submits.measSave = form => {
+  const vals = {};
+  for (const [k] of MEASURES) {
+    const v = String(form[k].value).trim().replace(',', '.');
+    if (v !== '') vals[k] = fromLen(Number(v));
+  }
+  const bad = Object.keys(vals).filter(k => measureOk(k, vals[k]) == null);
+  if (bad.length) { toast(t('Confira: {x}.', { x: bad.map(measName).join(', ') }), 4000); return; }
+  if (!addMeasures(state.profile, vals)) { toast(t('Preencha pelo menos uma medida.'), 4000); return; }
+  save(); closeSheet(); rerender();
+  toast(t('Medidas salvas.'));
+};
 
 // perfil novo: valores de partida para ajustar no + e no − (o sexo continua obrigatório de escolher)
 const START = { age: 25, height: 170, weight: 70 }; // métrico; na tela vai para a unidade escolhida
@@ -586,7 +657,11 @@ submits.saveProfile = form => {
   state.profile = {
     sex: form.sex.value, birthYear: new Date().getFullYear() - Math.round(age), height, weight,
     waist: n('waist', 40, 200, fromLen), neck: n('neck', 20, 70, fromLen), hip: n('hip', 50, 200, fromLen), weights: weights.slice(-200),
+    ...(old.measures ? { measures: old.measures } : {}),
   };
+  // cintura, pescoço e quadril novos entram também no histórico das medidas
+  const changed = Object.fromEntries(['waist', 'neck', 'hip'].filter(k => state.profile[k] != null && state.profile[k] !== old[k]).map(k => [k, state.profile[k]]));
+  addMeasures(state.profile, changed);
   state.settings.profileAsked = true;
   save();
   if (form.dataset.next) { go(form.dataset.next); return; }

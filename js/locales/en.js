@@ -1488,6 +1488,20 @@ const ui = {
   "+{x} {u} por lado que as anilhas comuns não fecham": "+{x} {u} per side that standard plates can't make",
   "Qual barra?": "Which bar?",
   "Fica salva para este exercício. A carga anotada continua sendo a total (barra + anilhas).": "Saved for this exercise. The logged load is still the total (bar + plates).",
+  "Cintura": "Waist",
+  "Quadril": "Hips",
+  "Braço": "Arm",
+  "Coxa": "Thigh",
+  "Pescoço": "Neck",
+  "Medidas": "Measurements",
+  "Opcional: braço, peito, coxa e outras, com fita métrica, a cada 2 a 4 semanas. Mostra se o braço cresce enquanto a cintura fica.": "Optional: arm, chest, thigh and more, with a tape measure, every 2 to 4 weeks. Shows whether your arm grows while your waist stays put.",
+  "{d} {u} desde {data}": "{d} {u} since {data}",
+  "Anotada em {data}. Meça de novo daqui a algumas semanas para ver a evolução.": "Logged on {data}. Measure again in a few weeks to see the trend.",
+  "Deixe em branco o que não mediu hoje. Em cinza, a última medida.": "Leave blank what you didn't measure today. In gray, the last measurement.",
+  "Fita sem apertar, de preferência de manhã. Braço: contraído, na parte mais grossa. Peito: na altura dos mamilos, depois de soltar o ar. Coxa: no meio, em pé. Panturrilha: na parte mais grossa. Cintura: na altura do umbigo.": "Tape snug but not tight, ideally in the morning. Arm: flexed, at the thickest part. Chest: at nipple height, after breathing out. Thigh: at the middle, standing. Calf: at the thickest part. Waist: at belly-button height.",
+  "Confira: {x}.": "Check: {x}.",
+  "Preencha pelo menos uma medida.": "Fill in at least one measurement.",
+  "Medidas salvas.": "Measurements saved.",
   'Arquivo de backup inválido.': `Invalid backup file.`,
   'O arquivo do Google Drive está corrompido.': `The Google Drive file is corrupted.`,
 };
@@ -1609,6 +1623,7 @@ const help = [
       <li><b>Lean mass and fat mass</b> are the focus. <b>BMI</b> is shown only as a number: it does not separate muscle from fat.</li>
       <li><b>Estimated body fat</b>: with waist and neck (and hips, for women), the app uses the US Navy formula (about 3 to 4 points of error). Without them, it uses BMI, age and sex (about 5 points) and subtracts up to 4 points if you are strong for your weight.</li>
       <li><b>Body weight</b>: the chart sits right below the values. One entry per day.</li>
+      <li><b>Measurements</b> (optional): under <b>Log</b>, waist, hips, chest, arm, thigh, calf and neck, with a tape measure. Leave blank what you didn't measure. Tap a measurement to see its chart. Waist, neck and hips also improve the body fat estimate.</li>
       <li><b>Strength level</b>: a <b>radar</b> with the 6 movement patterns (horizontal and vertical push and pull, squat and hip hinge). The left side is the front of the body and the right side the back: the shape shows imbalances. Tap an axis to see the exercise and your percentile. It is your <b>training level</b>: it comes from your sets in the last 60 days (equal sets count as reserve) and compares you with adults of the same sex, age and weight, using the Cooper Institute norms used by the ACSM. Top 10% = stronger than 90% of them.</li>
       <li>Tap the card to see each exercise, grouped by movement pattern, and <b>Check any exercise</b> to see your percentile instantly, without saving. Compound exercises for each pattern count, including machines, cables and push-ups, each compared with its own Strength Level table (millions of logged lifts); isolation moves (leg extensions, flyes, triceps, calves, abs) also get a level but stay off the radar.</li>
       <li><b>Maximum strength (1RM)</b>: shown separately on each exercise screen. It comes from your best set in the last 90 days (or a <b>strength test</b>) and is compared only with people who log their training on Strength Level, a dedicated crowd, so its percentile is stricter.</li>

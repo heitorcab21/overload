@@ -46,6 +46,9 @@ function fullContext() {
   if (evo.length) L.push('', `EVOLUÇÃO NOS ÚLTIMOS 3 MESES (melhor série de cada mês, ${months.map(([a]) => a.toLocaleDateString('pt-BR', { month: 'short' })).join(' → ')}):`, ...evo);
   const ws = (state.profile?.weights || []).slice(-8);
   if (ws.length > 1) L.push('', `PESO CORPORAL (últimos registros): ${ws.map(w => `${d(w.date)} ${Math.round(w.kg * 10) / 10} kg`).join(', ')}`);
+  const ms = (state.profile?.measures || []).slice(-4);
+  const MS = { waist: 'cintura', hip: 'quadril', chest: 'peito', arm: 'braço', thigh: 'coxa', calf: 'panturrilha', neck: 'pescoço' };
+  if (ms.length) L.push('', `MEDIDAS COM FITA (cm, últimos registros): ${ms.map(m => `${d(m.date)} ${Object.keys(MS).filter(k => m[k] != null).map(k => `${MS[k]} ${m[k]}`).join(', ')}`).join('; ')}`);
   const notes = Object.values(state.exercises).filter(ex => ex.note).map(ex => `- ${ex.name}: ${ex.note}`);
   if (notes.length) L.push('', 'ANOTAÇÕES DA PESSOA NOS EXERCÍCIOS:', ...notes);
   const pain = [];

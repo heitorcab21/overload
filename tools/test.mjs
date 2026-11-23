@@ -322,6 +322,21 @@ eq([state.goals.groups.Peito.week, state.goals.groups.Costas], [10, { week: 10, 
   state.sessions = keep.s; state.exercises = keep.e; state.gyms = keep.g; state.settings.gym = keep.sg;
 }
 
+// ---- medidas do corpo ----
+{
+  const M = await import('../js/measures.js');
+  const p = { waist: 85 };
+  eq(M.addMeasures(p, { arm: 36, waist: 84.5, chest: '' }, new Date(2026, 9, 1, 8)), 2, 'só entram as medidas preenchidas');
+  eq(p.waist, 84.5, 'a cintura nova vai para o perfil (fórmula de gordura)');
+  M.addMeasures(p, { thigh: 58 }, new Date(2026, 9, 1, 20));
+  eq(p.measures.length, 1, 'no mesmo dia vira um registro só');
+  eq(M.addMeasures(p, { arm: 5, calf: 300 }, new Date(2026, 10, 1)), 0, 'fora da faixa não entra');
+  M.addMeasures(p, { arm: 37.2 }, new Date(2026, 10, 1));
+  eq(M.measureSeries(p, 'arm').map(m => m.cm), [36, 37.2], 'histórico do braço');
+  eq(M.lastMeasures(p).thigh.cm, 58, 'última de cada uma, mesmo sem medir de novo');
+  eq(p.waist, 84.5, 'cintura não medida de novo continua a última');
+}
+
 // ---- calculadora de anilhas ----
 {
   const P = await import('../js/plates.js');
